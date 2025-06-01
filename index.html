@@ -126,17 +126,12 @@
       auth.signOut();
     };
     // Otomatik giriş izleme
-    let firstCheck = true;
     auth.onAuthStateChanged(function(user){
       if(user){
         showProfile(user);
       }else{
         hideProfile();
-        if(firstCheck) {
-          firstCheck = false;
-          // Otomatik popup aç (isteğe bağlı, kaldırmak istersen aşağıdaki satırı kaldır)
-          loginBtn.click();
-        }
+        // Otomatik popup açma yok! (popup block engelini önler)
       }
     });
   </script>
