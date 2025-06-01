@@ -3,82 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <title>Kıbrıs Online</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --main-blue: #2563eb;
-      --main-blue-dark: #1746a2;
-      --main-bg: #f6faff;
-      --nav-bg: #fff;
-      --radius: 18px;
-      --shadow: 0 4px 24px #2563eb11;
-      --shadow-strong: 0 6px 32px #2563eb22;
-      --btn-grad: linear-gradient(90deg, #2563eb, #1746a2 80%);
-      --btn-grad-hover: linear-gradient(90deg, #1746a2, #2563eb 80%);
-      --input-bg: #f3f7fb;
-      --input-border: #c6d7ee;
-      --focus: #2563eb44;
-      --transition: .18s cubic-bezier(.4,0,.2,1);
-    }
-    html, body { height:100%; margin:0; padding:0; }
-    body {
-      min-height: 100vh;
-      background: var(--main-bg);
-      color: #1b263b;
+    html, body {
+      height: 100%; margin: 0; padding: 0;
       font-family: 'Inter', 'Montserrat', Arial, sans-serif;
-      letter-spacing: .01em;
+    }
+    body {
+      background: #f6faff;
+      color: #16213e;
       font-size: 17px;
+      min-height: 100vh;
+      letter-spacing: .01em;
     }
     /* NAVBAR */
     .navbar {
-      position: sticky;
-      top: 0; left: 0; right: 0;
-      z-index: 99;
-      background: var(--nav-bg);
-      box-shadow: var(--shadow);
+      width: 100vw;
+      background: #fff;
+      box-shadow: 0 2px 16px #2563eb17;
+      border-radius: 0 0 18px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 36px;
-      height: 68px;
-      border-radius: 0 0 18px 18px;
+      padding: 0 clamp(8px,5vw,36px);
+      height: 62px;
+      position: sticky;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
     }
     .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 15px;
       font-family: 'Montserrat', sans-serif;
-      font-size: 2.1rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      color: var(--main-blue);
-      letter-spacing: .02em;
-      text-shadow: 0 2px 12px #2563eb14;
+      color: #2563eb;
+      letter-spacing: .01em;
       user-select: none;
+      white-space: nowrap;
     }
     .nav-buttons {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       align-items: center;
     }
     .nav-btn {
-      padding: 10px 28px;
+      padding: 8px 18px;
       border-radius: 12px;
-      background: var(--btn-grad);
+      background: linear-gradient(90deg, #2563eb, #1746a2 80%);
       color: #fff;
-      font-weight: 700;
+      font-weight: 600;
       border: none;
-      font-size: 1.09rem;
+      font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 2px 8px #2563eb19;
-      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      box-shadow: 0 2px 8px #2563eb15;
+      transition: background .18s, transform .16s;
       letter-spacing: .01em;
     }
     .nav-btn:hover, .nav-btn:active {
-      background: var(--btn-grad-hover);
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 6px 28px #2563eb24;
+      background: linear-gradient(90deg, #1746a2, #2563eb 80%);
+      transform: scale(1.04);
     }
     .nav-user {
       display: flex;
@@ -87,154 +71,155 @@
       position: relative;
     }
     .nav-avatar {
-      width: 42px; height: 42px;
+      width: 36px; height: 36px;
       border-radius: 50%;
-      border: 2.5px solid #c6d7ee;
+      border: 2px solid #c6d7ee;
       object-fit: cover;
       background: #e3f0fe;
-      box-shadow: 0 1px 8px #2563eb15;
+      box-shadow: 0 1px 8px #2563eb11;
     }
     .nav-username {
-      max-width: 170px;
+      max-width: 120px;
       font-weight: 600;
-      color: var(--main-blue-dark);
-      font-size: 1.02rem;
+      color: #1746a2;
+      font-size: .98rem;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      font-family: 'Inter', sans-serif;
     }
     .nav-logout {
       background: transparent;
       color: #2563eb;
       border: none;
       font-weight: 700;
-      font-size: 1.04rem;
-      margin-left: 8px;
+      font-size: 1rem;
       cursor: pointer;
       border-radius: 7px;
-      padding: 6px 12px;
-      transition: background var(--transition), color var(--transition);
+      padding: 6px 11px;
+      transition: background .14s, color .14s;
     }
     .nav-logout:hover { background: #e0eaff; color: #1746a2;}
     .nav-login-btn {
-      background: var(--btn-grad);
+      background: linear-gradient(90deg, #2563eb, #1746a2 80%);
       color: #fff;
       font-weight: 700;
       border: none;
       border-radius: 10px;
-      padding: 10px 22px 10px 15px;
-      font-size: 1.07rem;
+      padding: 8px 16px 8px 11px;
+      font-size: .98rem;
       display: flex;
       align-items: center;
       gap: 7px;
       cursor: pointer;
-      box-shadow: 0 2px 6px #2563eb12;
-      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      box-shadow: 0 2px 6px #2563eb10;
+      transition: background .17s, transform .16s;
     }
     .nav-login-btn:hover, .nav-login-btn:active {
-      background: var(--btn-grad-hover);
+      background: linear-gradient(90deg, #1746a2, #2563eb 80%);
       transform: scale(1.03);
-      box-shadow: 0 6px 24px #2563eb28;
     }
-    .google-logo { width: 28px; height: 28px; border-radius: 50%; }
-    /* Hamburger */
-    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; margin-left: 10px;}
+    .google-logo { width: 23px; height: 23px; border-radius: 50%; }
+    .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; margin-left: 10px;}
     .hamburger span {
       display: block;
-      width: 30px; height: 4px;
+      width: 27px; height: 3.5px;
       border-radius: 2px;
-      background: var(--main-blue);
+      background: #2563eb;
       transition: all .3s;
     }
     /* Drawer */
     .nav-drawer {
       display: none;
-      position: absolute;
-      top: 68px; right: 0;
-      width: 100vw; max-width: 340px;
+      position: fixed;
+      top: 0; right: 0;
+      width: 85vw; max-width: 330px; height: 100vh;
       background: #fff;
-      box-shadow: var(--shadow-strong);
+      box-shadow: -2px 0 24px #2563eb28;
       border-radius: 0 0 18px 18px;
-      z-index: 150;
-      padding: 30px 22px 22px 22px;
+      z-index: 200;
+      padding: 39px 22px 22px 22px;
       flex-direction: column;
       gap: 16px;
-      animation: fadeInDrawer .35s;
+      animation: fadeInDrawer .38s;
+      min-width: 180px;
     }
     @keyframes fadeInDrawer {
-      from { opacity: 0; transform: translateY(-30px);}
-      to { opacity: 1; transform: translateY(0);}
+      from { opacity: 0; transform: translateX(60px);}
+      to { opacity: 1; transform: translateX(0);}
     }
     .nav-drawer .nav-btn { width: 100%; text-align: left; padding: 13px; margin-bottom: 7px;}
     .nav-drawer .nav-user { margin-top: 14px;}
+    .nav-drawer-close {
+      position: absolute; top: 16px; right: 18px;
+      font-size: 2rem; color: #2563eb;
+      background: none; border: none; cursor: pointer;
+    }
     /* HERO */
     .hero {
       display: flex;
-      flex-direction: row;
+      flex-direction: column-reverse;
       align-items: center;
       justify-content: center;
-      gap: 60px;
+      gap: 17px;
       margin: 0 auto;
-      padding: 65px 0 45px 0;
-      min-height: 340px;
-      max-width: 1100px;
+      padding: 40px 0 25px 0;
+      min-height: 250px;
+      width: 100vw; max-width: 100vw;
       background: linear-gradient(90deg, #eaf2ff 0, #f6faff 100%);
       border-radius: 0 0 32px 32px;
       box-shadow: 0 3px 24px #2563eb0d;
     }
     .hero-content {
-      flex: 1.2;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 15px;
-      margin-left: 25px;
+      align-items: center;
+      gap: 11px;
+      width: 98vw;
     }
     .hero-title {
-      font-size: 2.65rem;
+      font-size: 1.45rem;
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      color: var(--main-blue-dark);
+      color: #1746a2;
       margin-bottom: 7px;
-      letter-spacing: .02em;
-      text-shadow: 0 3px 24px #2563eb17;
+      letter-spacing: .01em;
+      text-align: center;
     }
     .hero-subtitle {
-      font-size: 1.25rem;
+      font-size: 1rem;
       color: #25507b;
       font-weight: 500;
-      margin-bottom: 20px;
-      max-width: 480px;
+      max-width: 92vw;
       line-height: 1.6;
+      text-align: center;
     }
     .hero-img {
-      width: 310px;
-      max-width: 90vw;
+      width: 130px;
+      max-width: 85vw;
       border-radius: 24px;
-      box-shadow: 0 5px 28px #2563eb22;
+      box-shadow: 0 5px 22px #2563eb0b;
       object-fit: cover;
-      flex: 1;
+      margin-bottom: 7px;
       background: #fff;
-      margin-right: 25px;
       animation: floatY 4s ease-in-out infinite;
     }
     @keyframes floatY {
       0%,100% { transform: translateY(0);}
-      50% { transform: translateY(-15px);}
+      50% { transform: translateY(-9px);}
     }
     /* CALC MODULE */
     .module-wrap {
-      max-width: 470px;
-      margin: 38px auto 18px auto;
+      width: 98vw;
+      margin: 29px auto 12px auto;
       background: #fff;
-      border-radius: 22px;
-      box-shadow: var(--shadow-strong);
-      padding: 36px 26px 28px 26px;
+      border-radius: 19px;
+      box-shadow: 0 2px 14px #2563eb13;
+      padding: 24px 2vw 21px 2vw;
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 18px;
       position: relative;
+      max-width: 420px;
       z-index: 2;
       animation: fadeInUp .7s;
     }
@@ -243,140 +228,135 @@
       to { opacity:1; transform: translateY(0);}
     }
     .module-title {
-      font-size: 1.38rem;
+      font-size: 1.13rem;
       font-weight: 700;
-      color: var(--main-blue);
+      color: #2563eb;
       text-align: center;
       margin-bottom: 10px;
       letter-spacing: .01em;
     }
     .calc-row {
       display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 6px;
+      width: 100%;
+    }
+    .calc-row-double {
       flex-direction: row;
-      gap: 14px;
-      margin-bottom: 10px;
+      gap: 8px;
     }
     .calc-col {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 5px;
+      min-width: 0;
     }
     .calc-label {
       font-weight: 600;
-      font-size: 1.01rem;
+      font-size: .96rem;
       margin-bottom: 2px;
       color: #1746a2;
       letter-spacing: .01em;
     }
     .calc-input, .calc-select {
-      padding: 11px 12px;
-      border-radius: 11px;
-      border: 1.6px solid var(--input-border);
-      font-size: 1.08rem;
+      padding: 9px 11px;
+      border-radius: 7px;
+      border: 1.3px solid #c6d7ee;
+      font-size: .99rem;
       outline: none;
-      background: var(--input-bg);
-      transition: border .14s, box-shadow .14s;
+      background: #f3f7fb;
+      transition: border .14s, box-shadow .13s;
       min-width: 0;
-      box-shadow: 0 1px 4px #2563eb0b;
+      box-shadow: 0 1px 3px #2563eb0b;
     }
     .calc-input:focus, .calc-select:focus {
-      border: 1.7px solid var(--main-blue);
+      border: 1.5px solid #2563eb;
       background: #fafdff;
-      box-shadow: 0 1px 12px var(--focus);
+      box-shadow: 0 1px 8px #2563eb18;
     }
     .calc-action-btn {
-      margin-top: 15px;
+      margin-top: 12px;
       width: 100%;
-      padding: 16px 0;
-      background: var(--btn-grad);
+      padding: 12px 0;
+      background: linear-gradient(90deg, #2563eb, #1746a2 80%);
       color: #fff;
-      font-size: 1.18rem;
+      font-size: 1.07rem;
       font-weight: 700;
       border: none;
-      border-radius: 11px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
-      box-shadow: 0 2px 9px #2563eb15;
+      transition: background .13s, box-shadow .13s, transform .14s;
+      box-shadow: 0 2px 9px #2563eb11;
       letter-spacing: .02em;
     }
     .calc-action-btn:active, .calc-action-btn:hover {
-      background: var(--btn-grad-hover);
-      transform: scale(1.025);
-      box-shadow: 0 8px 32px #2563eb23;
+      background: linear-gradient(90deg, #1746a2, #2563eb 80%);
+      transform: scale(1.018);
+      box-shadow: 0 8px 32px #2563eb17;
     }
     .calc-result {
-      margin-top: 10px;
-      padding: 15px 0 2px 0;
-      font-size: 1.18rem;
+      margin-top: 8px;
+      padding: 11px 0 2px 0;
+      font-size: 1.06rem;
       font-weight: 700;
       color: #1746a2;
       text-align: center;
-      min-height: 27px;
+      min-height: 23px;
       letter-spacing: .01em;
     }
     /* SHOP LOGOS */
     .shop-logos {
-      margin: 38px auto 0 auto;
+      margin: 27px auto 0 auto;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 34px;
+      gap: 17px;
       align-items: center;
-      max-width: 800px;
-      padding-bottom: 35px;
+      width: 97vw;
+      max-width: 540px;
+      padding-bottom: 23px;
     }
     .shop-logo-link {
       display: flex;
       align-items: center;
-      transition: transform .18s;
+      transition: transform .14s;
+      width: 21vw;
+      max-width: 105px;
+      min-width: 60px;
+      justify-content: center;
     }
-    .shop-logo-link:hover { transform: scale(1.13) translateY(-2px);}
+    .shop-logo-link:hover { transform: scale(1.10) translateY(-2px);}
     .shop-logo {
-      height: 44px;
+      height: 26px;
       object-fit: contain;
-      filter: grayscale(0.06);
-      max-width: 140px;
+      filter: grayscale(0.07);
+      max-width: 90px;
+      min-width: 38px;
       background: #fff;
-      border-radius: 10px;
+      border-radius: 7px;
       box-shadow: 0 2px 9px #2563eb0a;
-      padding: 7px 10px;
+      padding: 4px 6px;
       border: 1px solid #f1f5fa;
+      width: 100%;
       transition: box-shadow .14s;
     }
-    @media (max-width:1100px) {
-      .hero { flex-direction: column-reverse; gap: 22px; padding:40px 0 25px 0;}
-      .hero-content { align-items: center; margin-left:0; text-align: center;}
-      .hero-img { margin-right:0;}
+    @media (min-width: 700px) {
+      .navbar { height: 70px;}
+      .nav-brand { font-size: 2rem;}
+      .hero { flex-direction: row; gap: 39px; min-height: 340px; padding: 75px 0 45px 0;}
+      .hero-content { align-items: flex-start; width: 50vw; }
+      .hero-title { font-size: 2.1rem;}
+      .hero-img { width: 240px; margin-bottom: 0;}
+      .module-wrap { padding: 36px 32px 28px 32px; max-width: 460px;}
+      .calc-row { flex-direction: row; gap: 13px; }
+      .shop-logos { max-width: 700px; gap: 32px;}
     }
-    @media (max-width:900px) {
-      .navbar { padding: 0 8vw; }
-      .module-wrap { max-width: 97vw;}
-      .shop-logos { gap: 23px;}
-    }
-    @media (max-width:670px) {
-      .navbar { padding: 0 2vw; height: 60px;}
-      .nav-brand { font-size: 1.17rem;}
-      .nav-btn { font-size: .96rem; min-width: 90px; padding: 8px 10px;}
-      .nav-avatar { width: 29px; height: 29px;}
-      .nav-profile-name { font-size: .95rem;}
-      .hero-title { font-size: 1.15rem;}
-      .hero-img { width: 120px;}
-      .module-wrap { padding: 11vw 2vw;}
-      .shop-logo { height: 25px; max-width: 70px;}
-    }
-    @media (max-width:540px) {
-      .navbar { flex-wrap: wrap; height: auto; padding: 0 1vw;}
-      .nav-buttons { display: none;}
-      .hamburger { display: flex;}
-      .nav-drawer { display: flex;}
-      .module-wrap { padding: 7vw 1.5vw 8vw 1.5vw;}
-      .calc-row { flex-direction: column; gap: 0; }
-      .shop-logo { height: 16px; max-width: 42px;}
-      .module-title { font-size: 1.04rem;}
-      .calc-label { font-size: .93rem; }
-      .calc-input, .calc-select { font-size: .97rem; padding: 8px 6px;}
-      .calc-action-btn { font-size: .99rem; padding: 11px 0;}
+    @media (max-width: 440px) {
+      .nav-brand { font-size: 1.09rem;}
+      .module-wrap { padding: 7vw 1.5vw 8vw 1.5vw; }
+      .shop-logo { height: 17px; min-width: 24px;}
     }
   </style>
 </head>
@@ -404,6 +384,7 @@
       <span></span><span></span><span></span>
     </div>
     <div class="nav-drawer" id="nav-drawer" style="display:none;">
+      <button class="nav-drawer-close" id="drawer-close" aria-label="Kapat">&times;</button>
       <button class="nav-btn" id="drawer-siparis-ver">Sipariş Ver</button>
       <button class="nav-btn" id="drawer-siparislerim">Siparişlerim</button>
       <button class="nav-btn" id="drawer-kargo-takip">Kargo Takip</button>
@@ -440,7 +421,7 @@
         <input type="url" id="product-link" class="calc-input" placeholder="Ürün bağlantısını giriniz">
       </div>
     </div>
-    <div class="calc-row">
+    <div class="calc-row calc-row-double">
       <div class="calc-col">
         <label class="calc-label" for="product-price">Ürün Fiyatı (₺)</label>
         <input type="number" id="product-price" min="1" step="0.01" class="calc-input" placeholder="Fiyat">
@@ -457,7 +438,7 @@
         </select>
       </div>
     </div>
-    <div class="calc-row">
+    <div class="calc-row calc-row-double">
       <div class="calc-col">
         <label class="calc-label" for="delivery-type">Teslimat Tipi</label>
         <select id="delivery-type" class="calc-select">
@@ -523,25 +504,26 @@
     // Hamburger menu logic
     const hamburger = document.getElementById('hamburger');
     const navDrawer = document.getElementById('nav-drawer');
+    const drawerClose = document.getElementById('drawer-close');
     let drawerOpen = false;
-    hamburger.onclick = function() {
-      drawerOpen = !drawerOpen;
-      navDrawer.style.display = drawerOpen ? 'flex' : 'none';
-      document.body.style.overflow = drawerOpen ? 'hidden' : '';
-    };
+    function openDrawer() {
+      navDrawer.style.display = 'flex';
+      drawerOpen = true;
+      document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+      navDrawer.style.display = 'none';
+      drawerOpen = false;
+      document.body.style.overflow = '';
+    }
+    hamburger.onclick = openDrawer;
+    drawerClose.onclick = closeDrawer;
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 600) {
-        navDrawer.style.display = 'none';
-        drawerOpen = false;
-        document.body.style.overflow = '';
-      }
+      if (window.innerWidth > 700) closeDrawer();
     });
-    // Close drawer if clicked outside
     document.addEventListener('mousedown', function(e){
       if(drawerOpen && !navDrawer.contains(e.target) && !hamburger.contains(e.target)){
-        navDrawer.style.display = 'none';
-        drawerOpen = false;
-        document.body.style.overflow = '';
+        closeDrawer();
       }
     });
 
@@ -624,8 +606,7 @@
         window.location.href = "kargotakip.html";
       });
     };
-
-    // CALCULATION MODULE
+    // Hesaplama Modülü
     const categoryMultipliers = {
       mobilya: 1.7,
       elektronik: 1.7,
@@ -642,13 +623,12 @@
       iskele: 550,
       karpaz: 700
     };
-
     const deliveryType = document.getElementById('delivery-type');
     const cityGroup = document.getElementById('city-group');
     const citySelect = document.getElementById('city-select');
     const calcBtn = document.getElementById('calc-btn');
     const calcResult = document.getElementById('calc-result');
-    let calcState = "hesapla"; // or "siparisver"
+    let calcState = "hesapla";
     let lastCalculation = null;
 
     deliveryType.addEventListener('change', function() {
@@ -666,14 +646,11 @@
 
     calcBtn.addEventListener('click', function() {
       if (calcState === "hesapla") {
-        // Get values
         const price = parseFloat(document.getElementById('product-price').value);
         const category = document.getElementById('product-category').value;
         const delivery = deliveryType.value;
         let city = citySelect.value;
         calcResult.textContent = "";
-
-        // Validate
         if (isNaN(price) || price < 1) {
           calcResult.textContent = "Lütfen geçerli ürün fiyatı giriniz.";
           return;
@@ -690,17 +667,13 @@
           calcResult.textContent = "Lütfen şehir seçiniz.";
           return;
         }
-        // Calculation
         let total = price * categoryMultipliers[category];
-        if (delivery === "ev") {
-          total += cityFees[city];
-        }
+        if (delivery === "ev") total += cityFees[city];
         lastCalculation = total;
         calcResult.textContent = "Toplam Tutar: " + formatMoney(total);
         calcBtn.textContent = "Sipariş Ver";
         calcState = "siparisver";
       } else {
-        // Sipariş Ver
         if (!currentUser) {
           alert("Lütfen giriş yapınız");
           return;
@@ -709,10 +682,7 @@
       }
     });
 
-    // Reset button if any input changes
-    [
-      'product-link','product-price','product-category','delivery-type','city-select'
-    ].forEach(function(id){
+    ['product-link','product-price','product-category','delivery-type','city-select'].forEach(function(id){
       document.getElementById(id).addEventListener('input', function(){
         calcBtn.textContent = "Hesapla";
         calcState = "hesapla";
