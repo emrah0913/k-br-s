@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kıbrıs Online - Türkiye’den Sipariş</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-bg: #f7faff;
+      --header-bg: #fff;
+      --accent: #0e6fff;
+      --text-dark: #222;
+      --text-light: #555;
+      --button-bg: #0e6fff;
+      --button-text: #fff;
+      --border-radius: 10px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--primary-bg);
+      color: var(--text-dark);
+    }
+    .header {
+      width: 100%;
+      background: var(--header-bg);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      min-height: 62px;
+    }
+    .logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 1px;
+      padding: 16px 0;
+    }
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+    .menu a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      transition: color 0.2s;
+      border-radius: 6px;
+      padding: 9px 14px;
+    }
+    .menu a:hover {
+      background: #f0f4ff;
+      color: var(--accent);
+    }
+    .header-btn, .google-btn {
+      background: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 1px 4px rgba(14,111,255,0.10);
+      transition: background 0.2s;
+      margin-left: 12px;
+    }
+    .header-btn:hover, .google-btn:hover {
+      background: #0852b3;
+    }
+    #user-info {
+      font-weight: 500;
+      color: var(--accent);
+      margin-left: 10px;
+    }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .hamburger span {
+      width: 26px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+      display: block;
+      transition: 0.3s;
+    }
+    @media (max-width: 768px) {
+      .menu {
+        display: none;
+        flex-direction: column;
+        align-items: end;
+        position: absolute;
+        top: 64px;
+        right: 0;
+        background: var(--header-bg);
+        width: 70vw;
+        box-shadow: var(--shadow);
+        padding: 24px 0 16px 0;
+        border-radius: 0 0 0 20px;
+        z-index: 99;
+      }
+      .menu.show {
+        display: flex;
+      }
+      .hamburger {
+        display: flex;
+      }
+    }
+    /* Hero */
+    .hero-img {
+      width: 100vw;
+      max-width: 100%;
+      height: 210px;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto;
+      background: #eaf3fe;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+    }
+    .hero-content {
+      text-align: center;
+      margin: 36px 0 26px 0;
+    }
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+    .hero-desc {
+      font-size: 1.2rem;
+      color: var(--text-light);
+      font-weight: 500;
+      margin-bottom: 28px;
+    }
+    .scroll-btn {
+      background: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 13px 38px;
+      font-size: 1.18rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0 auto 34px auto;
+      display: block;
+      box-shadow: 0 2px 8px rgba(14,111,255,0.08);
+      transition: background .2s;
+    }
+    .scroll-btn:hover {
+      background: #0852b3;
+    }
+    .marketplaces {
+      display: flex;
+      justify-content: center;
+      gap: 35px;
+      margin: 34px 0 40px 0;
+      flex-wrap: wrap;
+    }
+    .marketplace-logo {
+      width: 72px;
+      height: 72px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      border: 1px solid #e4eefa;
+    }
+    .marketplace-logo img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+    .marketplace-logo:hover {
+      box-shadow: 0 2px 16px rgba(14,111,255,0.14);
+      transform: translateY(-3px) scale(1.05);
+    }
+    /* Calculator anchor */
+    #hesaplama-araci {
+      margin-top: 70px;
+    }
+    /* SSS */
+    .sss-section {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 850px;
+      margin: 70px auto 36px auto;
+      padding: 35px 22px 22px 22px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+    }
+    .sss-title {
+      font-size: 1.38rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--accent);
+      text-align: center;
+    }
+    .accordion {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .accordion-item {
+      border-bottom: 1px solid #f0f4ff;
+    }
+    .accordion-btn {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-size: 1.09rem;
+      font-weight: 600;
+      padding: 16px 8px;
+      color: var(--text-dark);
+      cursor: pointer;
+      outline: none;
+      transition: background .1s;
+      border-radius: 6px;
+      margin-bottom: 2px;
+    }
+    .accordion-btn:after {
+      content: '▼';
+      float: right;
+      color: var(--accent);
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+    .accordion-btn.active:after {
+      transform: rotate(-180deg);
+    }
+    .accordion-content {
+      display: none;
+      padding: 0 8px 14px 8px;
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+    .accordion-content.show {
+      display: block;
+    }
+    @media (max-width: 480px) {
+      .logo { font-size: 1.05rem; }
+      .hero-title { font-size: 1.3rem; }
+      .hero-img { height: 125px; }
+      .marketplaces { gap: 18px; }
+      .marketplace-logo { width: 55px; height: 55px; }
+      .marketplace-logo img { width: 36px; height: 36px; }
+      .sss-section { padding: 16px 8px 14px 8px; }
+      .accordion-btn { font-size: 0.96rem; padding: 12px 5px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">Kıbrıs Online</div>
+    <nav>
+      <div class="menu" id="menu">
+        <a href="siparisver.html">Sipariş Ver</a>
+        <a href="siparislerim.html">Siparişlerim</a>
+        <a href="kargotakip.html">Kargo Takip</a>
+        <a href="adminpanel.html" id="admin-panel-link" style="display:none">Admin Panel</a>
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+    <div id="auth-area">
+      <button class="google-btn" id="google-login-btn" style="display:none">Google ile Giriş Yap</button>
+      <span id="user-info" style="display:none"></span>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <img class="hero-img" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" alt="Gemi ile Kargo Görseli">
+  <div class="hero-content">
+    <h1 class="hero-title">Türkiye’den Kıbrıs’a Teslimat</h1>
+    <div class="hero-desc">Hızlı ve Güvenilir Kargo Hizmeti</div>
+    <button class="scroll-btn" onclick="document.getElementById('hesaplama-araci').scrollIntoView({behavior: 'smooth'})">
+      Hesaplama Aracı
+    </button>
+  </div>
+
+  <!-- Marketplace Logos -->
+  <div class="marketplaces">
+    <a class="marketplace-logo" href="https://www.trendyol.com/" target="_blank" rel="noopener" title="Trendyol">
+      <img src="https://cdn.kibrisonline.com/assets/marketplaces/trendyol.png" alt="Trendyol">
+    </a>
+    <a class="marketplace-logo" href="https://www.hepsiburada.com/" target="_blank" rel="noopener" title="Hepsiburada">
+      <img src="https://cdn.kibrisonline.com/assets/marketplaces/hepsiburada.png" alt="Hepsiburada">
+    </a>
+    <a class="marketplace-logo" href="https://www.n11.com/" target="_blank" rel="noopener" title="N11">
+      <img src="https://cdn.kibrisonline.com/assets/marketplaces/n11.png" alt="N11">
+    </a>
+    <a class="marketplace-logo" href="https://www.amazon.com.tr/" target="_blank" rel="noopener" title="Amazon Türkiye">
+      <img src="https://cdn.kibrisonline.com/assets/marketplaces/amazon.png" alt="Amazon">
+    </a>
+    <a class="marketplace-logo" href="https://www.ciceksepeti.com/" target="_blank" rel="noopener" title="ÇiçekSepeti">
+      <img src="https://cdn.kibrisonline.com/assets/marketplaces/ciceksepeti.png" alt="ÇiçekSepeti">
+    </a>
+  </div>
+
+  <!-- Hesaplama Aracı Anchor -->
+  <div id="hesaplama-araci"></div>
+  <!-- Buraya hesaplama modülü eklenecek -->
+
+  <!-- SSS Section -->
+  <section class="sss-section">
+    <div class="sss-title">Sıkça Sorulan Sorular (SSS)</div>
+    <div class="accordion" id="sss-accordion">
+      <div class="accordion-item">
+        <button class="accordion-btn">Kıbrıs Online’dan nasıl sipariş verebilirim?</button>
+        <div class="accordion-content">
+          Sipariş vermek için üstteki “Sipariş Ver” butonuna tıklayarak ilgili formu doldurabilirsiniz. Satın almak istediğiniz ürünün linkini ve teslimat bilgilerinizi girmeniz yeterli.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn">Kargo süresi ne kadar sürüyor?</button>
+        <div class="accordion-content">
+          Türkiye’den Kıbrıs’a teslimatlarımız genellikle 3-7 iş günü içinde tamamlanmaktadır. Yoğun dönemlerde bu süre değişebilir.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn">Kargo ücretini nasıl hesaplayabilirim?</button>
+        <div class="accordion-content">
+          Hesaplama Aracı butonuna tıklayarak kargo ücretinizi kolayca hesaplayabilirsiniz.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn">Siparişim hangi kargo firmasıyla gönderilecek?</button>
+        <div class="accordion-content">
+          Siparişleriniz anlaşmalı kargo firmalarımız ile güvenli şekilde teslim edilir ve tüm gönderiler kargo takip sistemi üzerinden izlenebilir.
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn">Siparişlerimi nasıl takip edebilirim?</button>
+        <div class="accordion-content">
+          “Kargo Takip” bölümünden sipariş numaranız veya kayıtlı hesabınız ile gönderinizi anlık olarak takip edebilirsiniz.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Firebase App (SDK) ve config -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script>
+    // 🔥 Firebase Config - Burayı kendin doldur!
+    // Firebase konsolunuzdan alınan bilgilerle doldurunuz:
+    const firebaseConfig = {
+      apiKey: "FIREBASE_API_KEYINIZ",
+      authDomain: "FIREBASE_AUTH_DOMAININIZ",
+      projectId: "FIREBASE_PROJECT_IDINIZ",
+      appId: "FIREBASE_APP_IDINIZ",
+      // ... diğer alanlar
+    };
+    // Firebase başlat
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <!-- Google Auth UI ve oturum -->
+  <script>
+    const auth = firebase.auth();
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const userInfo = document.getElementById('user-info');
+    const adminPanelLink = document.getElementById('admin-panel-link');
+
+    // Admin email listesi (gizli panel için)
+    const ADMIN_EMAILS = ["admin@kibrisonline.com", "emrah@example.com"];
+
+    function updateAuthUI(user) {
+      if (user) {
+        // Giriş yapılmışsa
+        googleLoginBtn.style.display = 'none';
+        userInfo.style.display = 'inline';
+        userInfo.textContent = user.displayName || user.email;
+        // Admin panel linkini sadece adminlere göster
+        if (ADMIN_EMAILS.includes(user.email)) {
+          adminPanelLink.style.display = 'inline';
+        } else {
+          adminPanelLink.style.display = 'none';
+        }
+      } else {
+        googleLoginBtn.style.display = 'inline-block';
+        userInfo.style.display = 'none';
+        adminPanelLink.style.display = 'none';
+        userInfo.textContent = '';
+      }
+    }
+
+    auth.onAuthStateChanged(user => {
+      updateAuthUI(user);
+    });
+
+    googleLoginBtn.addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider);
+    });
+  </script>
+  <!-- Hamburger Menü ve Responsive -->
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const menu = document.getElementById('menu');
+    hamburger.addEventListener('click', () => {
+      menu.classList.toggle('show');
+    });
+    // Menü otomatik kapanırken dışarıya tıklayınca kapanır
+    document.addEventListener('click', (e) => {
+      if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+        menu.classList.remove('show');
+      }
+    });
+  </script>
+  <!-- Accordion SSS -->
+  <script>
+    document.querySelectorAll('.accordion-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const content = this.nextElementSibling;
+        const isActive = this.classList.contains('active');
+        document.querySelectorAll('.accordion-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('show'));
+        if (!isActive) {
+          this.classList.add('active');
+          content.classList.add('show');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
