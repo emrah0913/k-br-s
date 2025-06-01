@@ -5,193 +5,255 @@
   <title>Kıbrıs Online</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --main-blue: #1e88e5;
+      --main-blue: #2563eb;
+      --main-blue-dark: #1746a2;
       --main-bg: #f6faff;
       --nav-bg: #fff;
-      --shadow: 0 2px 16px #d9e7fa33;
-      --radius: 14px;
-      --transition: 0.17s;
-      --btn-blue: #1565c0;
-      --btn-blue-light: #eaf3fe;
-      --profile-bg: #e3f0fe;
-      --module-bg: #fff;
-      --module-shadow: 0 2px 10px #bed8fd33;
+      --radius: 18px;
+      --shadow: 0 4px 24px #2563eb11;
+      --shadow-strong: 0 6px 32px #2563eb22;
+      --btn-grad: linear-gradient(90deg, #2563eb, #1746a2 80%);
+      --btn-grad-hover: linear-gradient(90deg, #1746a2, #2563eb 80%);
+      --input-bg: #f3f7fb;
+      --input-border: #c6d7ee;
+      --focus: #2563eb44;
+      --transition: .18s cubic-bezier(.4,0,.2,1);
     }
     html, body { height:100%; margin:0; padding:0; }
     body {
-      box-sizing: border-box;
       min-height: 100vh;
-      font-family: 'Inter', sans-serif;
       background: var(--main-bg);
-      color: #222;
+      color: #1b263b;
+      font-family: 'Inter', 'Montserrat', Arial, sans-serif;
+      letter-spacing: .01em;
+      font-size: 17px;
     }
     /* NAVBAR */
     .navbar {
+      position: sticky;
+      top: 0; left: 0; right: 0;
+      z-index: 99;
+      background: var(--nav-bg);
+      box-shadow: var(--shadow);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--nav-bg);
-      box-shadow: var(--shadow);
+      padding: 0 36px;
+      height: 68px;
       border-radius: 0 0 18px 18px;
-      padding: 12px 24px;
-      position: sticky;
-      top: 0;
-      z-index: 9;
-      flex-wrap: wrap;
-      min-height: 60px;
     }
-    .nav-left {
+    .nav-brand {
       display: flex;
       align-items: center;
-      gap: 24px;
-    }
-    .logo {
+      gap: 15px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.1rem;
       font-weight: 700;
-      font-size: 2rem;
-      letter-spacing: 1px;
       color: var(--main-blue);
+      letter-spacing: .02em;
+      text-shadow: 0 2px 12px #2563eb14;
       user-select: none;
-      font-family: 'Inter', sans-serif;
     }
-    .nav-btns {
+    .nav-buttons {
       display: flex;
-      gap: 12px;
+      gap: 16px;
+      align-items: center;
     }
     .nav-btn {
-      background: var(--btn-blue-light);
-      color: var(--btn-blue);
-      border: none;
-      padding: 8px 18px;
-      border-radius: var(--radius);
-      font-weight: 600;
-      font-size: 1.03rem;
-      cursor: pointer;
-      transition: background var(--transition), color var(--transition);
-      outline: none;
-      min-width: 108px;
-    }
-    .nav-btn:active, .nav-btn:hover {
-      background: var(--main-blue);
+      padding: 10px 28px;
+      border-radius: 12px;
+      background: var(--btn-grad);
       color: #fff;
+      font-weight: 700;
+      border: none;
+      font-size: 1.09rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #2563eb19;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      letter-spacing: .01em;
     }
-    .nav-profile {
+    .nav-btn:hover, .nav-btn:active {
+      background: var(--btn-grad-hover);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 6px 28px #2563eb24;
+    }
+    .nav-user {
       display: flex;
       align-items: center;
-      gap: 9px;
-      background: var(--profile-bg);
-      padding: 6px 12px 6px 9px;
-      border-radius: 20px;
-      box-shadow: 0 2px 8px #1e88e511;
+      gap: 8px;
+      position: relative;
     }
-    .nav-profile-img {
-      width: 36px;
-      height: 36px;
+    .nav-avatar {
+      width: 42px; height: 42px;
       border-radius: 50%;
+      border: 2.5px solid #c6d7ee;
       object-fit: cover;
-      border: 2px solid #d3e3fa;
-      background: #e2e9f4;
+      background: #e3f0fe;
+      box-shadow: 0 1px 8px #2563eb15;
     }
-    .nav-profile-name {
+    .nav-username {
+      max-width: 170px;
       font-weight: 600;
-      color: var(--main-blue);
-      font-size: 1rem;
+      color: var(--main-blue-dark);
+      font-size: 1.02rem;
       white-space: nowrap;
       text-overflow: ellipsis;
-      max-width: 120px;
       overflow: hidden;
+      font-family: 'Inter', sans-serif;
     }
-    .logout-btn {
+    .nav-logout {
       background: transparent;
-      color: var(--btn-blue);
+      color: #2563eb;
       border: none;
-      border-radius: 7px;
-      padding: 6px 11px;
       font-weight: 700;
+      font-size: 1.04rem;
+      margin-left: 8px;
       cursor: pointer;
-      font-size: .98rem;
-      margin-left: 2px;
-      transition: color var(--transition), background var(--transition);
+      border-radius: 7px;
+      padding: 6px 12px;
+      transition: background var(--transition), color var(--transition);
     }
-    .logout-btn:hover {
-      background: #d6e6fa;
-      color: #104b8c;
-    }
-    .google-login-btn {
-      background: var(--btn-blue-light);
+    .nav-logout:hover { background: #e0eaff; color: #1746a2;}
+    .nav-login-btn {
+      background: var(--btn-grad);
+      color: #fff;
+      font-weight: 700;
       border: none;
-      cursor: pointer;
+      border-radius: 10px;
+      padding: 10px 22px 10px 15px;
+      font-size: 1.07rem;
       display: flex;
       align-items: center;
       gap: 7px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #333;
-      padding: 7px 10px;
-      border-radius: 7px;
-      transition: background var(--transition);
+      cursor: pointer;
+      box-shadow: 0 2px 6px #2563eb12;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
     }
-    .google-login-btn:hover { background: #daeafd; }
-    .google-logo {
-      width: 30px; height: 30px; border-radius: 50%; background: #fff;
-      box-shadow: 0 1px 6px #1565c01a; padding: 2px;
-      border: 1.5px solid #e0e4f5;
-      object-fit: cover;
+    .nav-login-btn:hover, .nav-login-btn:active {
+      background: var(--btn-grad-hover);
+      transform: scale(1.03);
+      box-shadow: 0 6px 24px #2563eb28;
     }
-
+    .google-logo { width: 28px; height: 28px; border-radius: 50%; }
+    /* Hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; margin-left: 10px;}
+    .hamburger span {
+      display: block;
+      width: 30px; height: 4px;
+      border-radius: 2px;
+      background: var(--main-blue);
+      transition: all .3s;
+    }
+    /* Drawer */
+    .nav-drawer {
+      display: none;
+      position: absolute;
+      top: 68px; right: 0;
+      width: 100vw; max-width: 340px;
+      background: #fff;
+      box-shadow: var(--shadow-strong);
+      border-radius: 0 0 18px 18px;
+      z-index: 150;
+      padding: 30px 22px 22px 22px;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeInDrawer .35s;
+    }
+    @keyframes fadeInDrawer {
+      from { opacity: 0; transform: translateY(-30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .nav-drawer .nav-btn { width: 100%; text-align: left; padding: 13px; margin-bottom: 7px;}
+    .nav-drawer .nav-user { margin-top: 14px;}
     /* HERO */
     .hero {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      text-align: center;
-      padding: 38px 10px 24px 10px;
-      background: linear-gradient(0deg,#eaf2ff 0, #f6faff 100%);
+      justify-content: center;
+      gap: 60px;
+      margin: 0 auto;
+      padding: 65px 0 45px 0;
+      min-height: 340px;
+      max-width: 1100px;
+      background: linear-gradient(90deg, #eaf2ff 0, #f6faff 100%);
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 3px 24px #2563eb0d;
     }
-    .hero-img {
-      width: 160px;
-      max-width: 80vw;
-      margin-bottom: 18px;
-    }
-    .hero-title {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--main-blue);
-      margin-bottom: 10px;
-      font-family: 'Inter', sans-serif;
-    }
-    .hero-subtitle {
-      font-size: 1.16rem;
-      color: #114d81;
-      font-weight: 500;
-      margin-bottom: 0;
-    }
-
-    /* CALC MODULE */
-    .module-wrap {
-      max-width: 480px;
-      margin: 36px auto 18px auto;
-      background: var(--module-bg);
-      border-radius: 20px;
-      box-shadow: var(--module-shadow);
-      padding: 28px 22px 22px 22px;
+    .hero-content {
+      flex: 1.2;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      align-items: flex-start;
+      gap: 15px;
+      margin-left: 25px;
+    }
+    .hero-title {
+      font-size: 2.65rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: var(--main-blue-dark);
+      margin-bottom: 7px;
+      letter-spacing: .02em;
+      text-shadow: 0 3px 24px #2563eb17;
+    }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #25507b;
+      font-weight: 500;
+      margin-bottom: 20px;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+    .hero-img {
+      width: 310px;
+      max-width: 90vw;
+      border-radius: 24px;
+      box-shadow: 0 5px 28px #2563eb22;
+      object-fit: cover;
+      flex: 1;
+      background: #fff;
+      margin-right: 25px;
+      animation: floatY 4s ease-in-out infinite;
+    }
+    @keyframes floatY {
+      0%,100% { transform: translateY(0);}
+      50% { transform: translateY(-15px);}
+    }
+    /* CALC MODULE */
+    .module-wrap {
+      max-width: 470px;
+      margin: 38px auto 18px auto;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: var(--shadow-strong);
+      padding: 36px 26px 28px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      position: relative;
+      z-index: 2;
+      animation: fadeInUp .7s;
+    }
+    @keyframes fadeInUp {
+      from { opacity:0; transform: translateY(40px);}
+      to { opacity:1; transform: translateY(0);}
     }
     .module-title {
-      font-size: 1.3rem;
-      font-weight: 600;
+      font-size: 1.38rem;
+      font-weight: 700;
       color: var(--main-blue);
-      margin-bottom: 2px;
       text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: .01em;
     }
     .calc-row {
       display: flex;
       flex-direction: row;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 10px;
     }
     .calc-col {
@@ -201,148 +263,173 @@
       gap: 7px;
     }
     .calc-label {
-      font-weight: 500;
-      font-size: 1rem;
+      font-weight: 600;
+      font-size: 1.01rem;
       margin-bottom: 2px;
-      color: #114d81;
+      color: #1746a2;
+      letter-spacing: .01em;
     }
     .calc-input, .calc-select {
       padding: 11px 12px;
-      border-radius: 8px;
-      border: 1.3px solid #b5c6e3;
-      font-size: 1.07rem;
+      border-radius: 11px;
+      border: 1.6px solid var(--input-border);
+      font-size: 1.08rem;
       outline: none;
-      background: #fafdff;
-      transition: border .15s;
+      background: var(--input-bg);
+      transition: border .14s, box-shadow .14s;
       min-width: 0;
+      box-shadow: 0 1px 4px #2563eb0b;
     }
     .calc-input:focus, .calc-select:focus {
-      border: 1.5px solid var(--main-blue);
+      border: 1.7px solid var(--main-blue);
+      background: #fafdff;
+      box-shadow: 0 1px 12px var(--focus);
     }
     .calc-action-btn {
-      margin-top: 11px;
+      margin-top: 15px;
       width: 100%;
-      padding: 15px 0;
-      background: var(--main-blue);
+      padding: 16px 0;
+      background: var(--btn-grad);
       color: #fff;
       font-size: 1.18rem;
       font-weight: 700;
       border: none;
-      border-radius: 9px;
+      border-radius: 11px;
       cursor: pointer;
-      transition: background .13s;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      box-shadow: 0 2px 9px #2563eb15;
       letter-spacing: .02em;
     }
     .calc-action-btn:active, .calc-action-btn:hover {
-      background: #1565c0;
+      background: var(--btn-grad-hover);
+      transform: scale(1.025);
+      box-shadow: 0 8px 32px #2563eb23;
     }
     .calc-result {
-      margin-top: 8px;
-      padding: 13px 0 3px 0;
-      font-size: 1.16rem;
-      font-weight: 600;
-      color: #184a8f;
+      margin-top: 10px;
+      padding: 15px 0 2px 0;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #1746a2;
       text-align: center;
-      min-height: 25px;
+      min-height: 27px;
       letter-spacing: .01em;
     }
     /* SHOP LOGOS */
     .shop-logos {
-      margin: 28px auto 0 auto;
+      margin: 38px auto 0 auto;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 32px;
+      gap: 34px;
       align-items: center;
-      max-width: 700px;
-      padding-bottom: 30px;
+      max-width: 800px;
+      padding-bottom: 35px;
     }
     .shop-logo-link {
       display: flex;
       align-items: center;
-      transition: transform .15s;
+      transition: transform .18s;
     }
-    .shop-logo-link:hover { transform: scale(1.07);}
+    .shop-logo-link:hover { transform: scale(1.13) translateY(-2px);}
     .shop-logo {
-      height: 38px;
+      height: 44px;
       object-fit: contain;
-      filter: grayscale(0.09);
-      max-width: 120px;
+      filter: grayscale(0.06);
+      max-width: 140px;
       background: #fff;
-      border-radius: 9px;
-      box-shadow: 0 1px 7px #dbe8f9;
-      padding: 5px 8px;
-      transition: height .2s, max-width .2s;
+      border-radius: 10px;
+      box-shadow: 0 2px 9px #2563eb0a;
+      padding: 7px 10px;
+      border: 1px solid #f1f5fa;
+      transition: box-shadow .14s;
     }
-    @media (max-width: 990px) {
-      .navbar { padding: 10px 8vw;}
-      .module-wrap { max-width: 98vw;}
-      .shop-logos { gap: 20px;}
+    @media (max-width:1100px) {
+      .hero { flex-direction: column-reverse; gap: 22px; padding:40px 0 25px 0;}
+      .hero-content { align-items: center; margin-left:0; text-align: center;}
+      .hero-img { margin-right:0;}
     }
-    @media (max-width: 800px) {
-      .navbar { padding: 10px 3vw;}
-      .shop-logos { gap: 14px;}
+    @media (max-width:900px) {
+      .navbar { padding: 0 8vw; }
+      .module-wrap { max-width: 97vw;}
+      .shop-logos { gap: 23px;}
     }
-    @media (max-width:700px) {
-      .navbar { flex-direction: column; align-items: flex-start; gap: 9px;}
-      .nav-left { flex-direction: column; align-items: flex-start; gap: 6px;}
-      .logo { font-size: 1.2rem;}
-      .nav-btns { gap: 7px;}
-      .nav-btn { font-size: .97rem; min-width: 95px; padding: 7px 7px;}
-      .nav-profile-img { width: 29px; height: 29px;}
-      .nav-profile { padding: 3px 7px 3px 7px;}
+    @media (max-width:670px) {
+      .navbar { padding: 0 2vw; height: 60px;}
+      .nav-brand { font-size: 1.17rem;}
+      .nav-btn { font-size: .96rem; min-width: 90px; padding: 8px 10px;}
+      .nav-avatar { width: 29px; height: 29px;}
+      .nav-profile-name { font-size: .95rem;}
       .hero-title { font-size: 1.15rem;}
-      .hero-img { width: 90px;}
-      .module-wrap { padding: 17px 2vw;}
-      .shop-logo { height: 25px; max-width: 65px;}
+      .hero-img { width: 120px;}
+      .module-wrap { padding: 11vw 2vw;}
+      .shop-logo { height: 25px; max-width: 70px;}
     }
-    @media (max-width: 570px) {
-      .navbar { padding: 7px 1vw;}
-      .nav-btns { gap: 3px;}
-      .module-wrap { padding: 9vw 1vw 7vw 1vw;}
+    @media (max-width:540px) {
+      .navbar { flex-wrap: wrap; height: auto; padding: 0 1vw;}
+      .nav-buttons { display: none;}
+      .hamburger { display: flex;}
+      .nav-drawer { display: flex;}
+      .module-wrap { padding: 7vw 1.5vw 8vw 1.5vw;}
       .calc-row { flex-direction: column; gap: 0; }
-      .shop-logo { height: 18px; max-width: 44px;}
-      .module-title { font-size: 1.08rem;}
-      .calc-label { font-size: .95rem; }
-      .calc-input, .calc-select { font-size: .97rem; padding: 10px 7px;}
-      .calc-action-btn { font-size: 1rem; padding: 12px 0;}
-    }
-    @media (max-width: 430px) {
-      .module-wrap { padding: 5vw 0.3vw 5vw 0.3vw;}
-      .navbar { min-height: 48px;}
+      .shop-logo { height: 16px; max-width: 42px;}
+      .module-title { font-size: 1.04rem;}
+      .calc-label { font-size: .93rem; }
+      .calc-input, .calc-select { font-size: .97rem; padding: 8px 6px;}
+      .calc-action-btn { font-size: .99rem; padding: 11px 0;}
     }
   </style>
 </head>
 <body>
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="nav-left">
-      <span class="logo">Kıbrıs Online</span>
-      <div class="nav-btns">
-        <button class="nav-btn" id="btn-siparis-ver">Sipariş Ver</button>
-        <button class="nav-btn" id="btn-siparislerim">Siparişlerim</button>
-        <button class="nav-btn" id="btn-kargo-takip">Kargo Takip</button>
-      </div>
+    <span class="nav-brand">Kıbrıs Online</span>
+    <div class="nav-buttons" id="nav-buttons">
+      <button class="nav-btn" id="btn-siparis-ver">Sipariş Ver</button>
+      <button class="nav-btn" id="btn-siparislerim">Siparişlerim</button>
+      <button class="nav-btn" id="btn-kargo-takip">Kargo Takip</button>
     </div>
-    <div id="user-box">
-      <button class="google-login-btn" id="google-login-btn">
+    <div class="nav-user" id="nav-user">
+      <button class="nav-login-btn" id="google-login-btn">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-logo" alt="Google ile Giriş">
         <span>Google ile Giriş Yap</span>
       </button>
       <span id="profile-box" style="display:none;">
-        <span class="nav-profile">
-          <img src="" id="profile-img" class="nav-profile-img" alt="Profil Fotoğrafı">
-          <span class="nav-profile-name" id="profile-name"></span>
-          <button class="logout-btn" id="logout-btn">Çıkış Yap</button>
-        </span>
+        <img src="" id="profile-img" class="nav-avatar" alt="Profil Fotoğrafı">
+        <span class="nav-username" id="profile-name"></span>
+        <button class="nav-logout" id="logout-btn">Çıkış Yap</button>
       </span>
+    </div>
+    <div class="hamburger" id="hamburger" aria-label="Menüyü Aç/Kapat" tabindex="0">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="nav-drawer" id="nav-drawer" style="display:none;">
+      <button class="nav-btn" id="drawer-siparis-ver">Sipariş Ver</button>
+      <button class="nav-btn" id="drawer-siparislerim">Siparişlerim</button>
+      <button class="nav-btn" id="drawer-kargo-takip">Kargo Takip</button>
+      <div class="nav-user" id="drawer-user" style="margin-top:14px;">
+        <button class="nav-login-btn" id="drawer-google-login-btn">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-logo" alt="Google ile Giriş">
+          <span>Google ile Giriş Yap</span>
+        </button>
+        <span id="drawer-profile-box" style="display:none;">
+          <img src="" id="drawer-profile-img" class="nav-avatar" alt="Profil Fotoğrafı">
+          <span class="nav-username" id="drawer-profile-name"></span>
+          <button class="nav-logout" id="drawer-logout-btn">Çıkış Yap</button>
+        </span>
+      </div>
     </div>
   </nav>
   <!-- HERO BANNER -->
   <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Türkiye’den Kıbrıs’a Teslimat</h1>
+      <div class="hero-subtitle">
+        Hızlı ve Güvenilir Kargo Hizmeti<br>
+        Siparişlerinizi Türkiye’den Kıbrıs’a kolayca iletin, avantajlı fiyatlarla kapınıza gelsin.
+      </div>
+    </div>
     <img src="https://cdn.pixabay.com/photo/2016/03/31/20/11/boxes-1299512_1280.png" class="hero-img" alt="Kargo Görseli">
-    <h1 class="hero-title">Türkiye’den Kıbrıs’a Teslimat</h1>
-    <div class="hero-subtitle">Hızlı ve Güvenilir Kargo Hizmeti</div>
   </section>
   <!-- CALCULATION MODULE -->
   <div class="module-wrap" id="hesaplama-modulu">
@@ -420,7 +507,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script>
-    // Firebase config (YENİ BİLGİLERLE GÜNCELLENDİ)
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
       authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -433,6 +520,31 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
+    // Hamburger menu logic
+    const hamburger = document.getElementById('hamburger');
+    const navDrawer = document.getElementById('nav-drawer');
+    let drawerOpen = false;
+    hamburger.onclick = function() {
+      drawerOpen = !drawerOpen;
+      navDrawer.style.display = drawerOpen ? 'flex' : 'none';
+      document.body.style.overflow = drawerOpen ? 'hidden' : '';
+    };
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 600) {
+        navDrawer.style.display = 'none';
+        drawerOpen = false;
+        document.body.style.overflow = '';
+      }
+    });
+    // Close drawer if clicked outside
+    document.addEventListener('mousedown', function(e){
+      if(drawerOpen && !navDrawer.contains(e.target) && !hamburger.contains(e.target)){
+        navDrawer.style.display = 'none';
+        drawerOpen = false;
+        document.body.style.overflow = '';
+      }
+    });
+
     // Auth UI
     const loginBtn = document.getElementById('google-login-btn');
     const profileBox = document.getElementById('profile-box');
@@ -440,27 +552,39 @@
     const profileName = document.getElementById('profile-name');
     const logoutBtn = document.getElementById('logout-btn');
     let currentUser = null;
+    // Drawer auth UI
+    const drawerLoginBtn = document.getElementById('drawer-google-login-btn');
+    const drawerProfileBox = document.getElementById('drawer-profile-box');
+    const drawerProfileImg = document.getElementById('drawer-profile-img');
+    const drawerProfileName = document.getElementById('drawer-profile-name');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
 
     function showProfile(user) {
       if (!user) return;
       profileImg.src = user.photoURL || "";
       profileName.textContent = user.displayName || "";
-      profileBox.style.display = 'inline-block';
+      profileBox.style.display = 'inline-flex';
       loginBtn.style.display = 'none';
+
+      drawerProfileImg.src = user.photoURL || "";
+      drawerProfileName.textContent = user.displayName || "";
+      drawerProfileBox.style.display = 'inline-flex';
+      drawerLoginBtn.style.display = 'none';
     }
     function hideProfile() {
       profileBox.style.display = 'none';
       loginBtn.style.display = 'flex';
+      drawerProfileBox.style.display = 'none';
+      drawerLoginBtn.style.display = 'flex';
     }
-
-    loginBtn.onclick = function() {
+    loginBtn.onclick = drawerLoginBtn.onclick = function() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider)
         .catch(err => {
           alert("Giriş başarısız: " + (err.message || err));
         });
     };
-    logoutBtn.onclick = function() {
+    logoutBtn.onclick = drawerLogoutBtn.onclick = function() {
       auth.signOut();
     };
 
@@ -473,7 +597,7 @@
       }
     });
 
-    // NAV BAR BUTTONS
+    // NAV BAR BUTTONS & DRAWER BUTTONS
     function requireLogin(actionFn) {
       if (!currentUser) {
         alert("Lütfen giriş yapınız");
@@ -482,17 +606,20 @@
       if (typeof actionFn === "function") actionFn();
       return true;
     }
-    document.getElementById('btn-siparis-ver').onclick = function() {
+    document.getElementById('btn-siparis-ver').onclick =
+    document.getElementById('drawer-siparis-ver').onclick = function() {
       requireLogin(() => {
         window.location.href = "siparisver.html";
       });
     };
-    document.getElementById('btn-siparislerim').onclick = function() {
+    document.getElementById('btn-siparislerim').onclick =
+    document.getElementById('drawer-siparislerim').onclick = function() {
       requireLogin(() => {
         window.location.href = "siparislerim.html";
       });
     };
-    document.getElementById('btn-kargo-takip').onclick = function() {
+    document.getElementById('btn-kargo-takip').onclick =
+    document.getElementById('drawer-kargo-takip').onclick = function() {
       requireLogin(() => {
         window.location.href = "kargotakip.html";
       });
