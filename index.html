@@ -2,56 +2,586 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Firebase Google Giriş Örneği</title>
+  <title>Kıbrıs Online</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@700&display=swap" rel="stylesheet">
   <style>
-    body { margin:0; font-family:sans-serif; background:#f6faff; }
+    :root {
+      --accent: #1e88e5;
+      --accent-dark: #1565c0;
+      --header-bg: #fff;
+      --main-bg: #f6faff;
+      --text-dark: #1b263b;
+      --text-light: #5b7294;
+      --button-bg: var(--accent);
+      --button-hover: var(--accent-dark);
+      --button-text: #fff;
+      --shadow: 0 4px 24px rgba(60,110,255,0.09);
+      --radius-main: 18px;
+      --radius-large: 30px;
+      --card-bg: #fff;
+      --border: #e0e4f5;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      min-height: 100vh;
+      background: var(--main-bg);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      scroll-behavior: smooth;
+      box-sizing: border-box;
+    }
+    /* HEADER */
     .header {
-      display:flex; align-items:center; justify-content:flex-end;
-      background:#fff; padding:14px 18px; box-shadow:0 2px 16px #d9e7fa33;
-      border-radius:0 0 18px 18px;
+      width: 100%;
+      background: var(--header-bg);
+      box-shadow: var(--shadow);
+      border-radius: 0 0 var(--radius-large) var(--radius-large);
+      padding-bottom: 10px;
+      position: sticky; top: 0; z-index: 10;
     }
-    .user-box {
-      display:flex; align-items:center; gap:11px;
-      padding:7px 13px; border-radius:12px; background:#e0ecfa;
-      box-shadow:0 1px 6px #1565c01c;
-      font-size:1rem; font-weight:500;
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      min-height: 80px;
+      padding: 0 20px;
+      flex-wrap: wrap;
     }
-    .user-img {
-      width:36px; height:36px; border-radius:50%; object-fit:cover;
-      border:2.5px solid #cfe3fa; background:#dbeaff;
+    .logo {
+      font-family: 'Poppins', 'Inter', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 2px;
+      user-select: none;
+      text-shadow: 0 2px 24px rgba(30, 136, 229, 0.06);
+      padding: 12px 0;
+    }
+    .menu {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .menu-btn {
+      background: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      border-radius: 7px;
+      padding: 11px 22px;
+      font-size: 1.07rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s, box-shadow .18s;
+      box-shadow: 0 1px 6px rgba(30,136,229,0.08);
+      letter-spacing: 0.2px;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .menu-btn:disabled,
+    .menu-btn.disabled {
+      background: #b7cfee;
+      color: #fff;
+      cursor: not-allowed;
+    }
+    .menu-btn:hover:not(:disabled) {
+      background: var(--button-hover);
+      box-shadow: 0 2px 12px rgba(30,136,229,0.13);
+    }
+    /* User */
+    .profile-area {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-left: 18px;
+      background: #e3f0fe;
+      border-radius: 14px;
+      padding: 7px 13px;
+      box-shadow: 0 2px 8px rgba(30,136,229,0.06);
+      min-width: 0;
+    }
+    .profile-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e2e9f4;
+      border: 2px solid #d3e3fa;
+    }
+    .profile-name {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 1.05rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 120px;
+      overflow: hidden;
     }
     .logout-btn {
-      background:transparent; border:none; color:#1565c0; font-weight:700;
-      padding:7px 13px; border-radius:8px; cursor:pointer; margin-left:3px;
-      transition:background 0.14s, color 0.14s;
+      background: transparent;
+      color: var(--accent-dark);
+      border: none;
+      border-radius: 7px;
+      padding: 7px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-left: 2px;
+      transition: color 0.18s, background 0.16s;
     }
-    .logout-btn:hover { background:#d6e6fa; color:#0d3781; }
-    .login-btn {
-      background:#1e88e5; color:#fff; border:none; border-radius:8px;
-      padding:10px 28px; font-weight:700; font-size:1rem; cursor:pointer;
-      box-shadow:0 1px 6px #1565c01a;
-      display:flex; align-items:center; gap:8px;
+    .logout-btn:hover {
+      background: #d6e6fa;
+      color: #104b8c;
     }
-    .login-btn img { width:22px; height:22px; }
-    @media (max-width:600px) {
-      .header { padding:7px 4vw; }
-      .user-box { padding:5px 6px; font-size:.98rem;}
-      .user-img { width:28px; height:28px; }
-      .logout-btn, .login-btn { padding:7px 13px; font-size:.98rem; }
+    /* HERO */
+    .hero-img-wrap {
+      width: 100%;
+      border-radius: 0;
+      overflow: hidden;
+      box-shadow: 0 6px 48px rgba(30,136,229,0.13);
+      margin-bottom: 0;
+      background: #eaf3fe;
+      position: relative;
+      max-height: 320px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .hero-img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+    /* MARKETPLACES */
+    .marketplaces-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 24px auto;
+      background: transparent;
+      gap: 0;
+    }
+    .marketplaces {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin: 0 0 10px 0;
+      flex-wrap: wrap;
+      padding: 18px 0 0 0;
+    }
+    .marketplace-logo {
+      width: 64px;
+      height: 64px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(30,136,229,0.10);
+      cursor: pointer;
+      transition: box-shadow 0.24s, transform 0.22s;
+      border: 2px solid #eaf3fe;
+      margin-bottom: 6px;
+    }
+    .marketplace-logo img {
+      width: 40px; height: 40px; object-fit: contain;
+      filter: saturate(1.1) contrast(1.13);
+    }
+    .marketplace-logo:hover {
+      box-shadow: 0 4px 18px rgba(30,136,229,0.18);
+      transform: translateY(-4px) scale(1.08);
+      border-color: #b3d4fc;
+    }
+    /* CALCULATOR */
+    .calculator-section {
+      background: var(--card-bg);
+      border-radius: 28px;
+      max-width: 540px;
+      margin: 34px auto 18px auto;
+      padding: 32px 28px 22px 28px;
+      box-shadow: 0 6px 36px rgba(30,136,229,0.09);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      position: relative;
+      z-index: 2;
+    }
+    .calculator-section h2 {
+      text-align: center;
+      color: var(--accent-dark);
+      font-size: 1.32rem;
+      margin-bottom: 21px;
+      font-weight: 700;
+      letter-spacing: .6px;
+    }
+    .calc-form label {
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 3px;
+      display: block;
+      font-size: 1.07rem;
+    }
+    .calc-form input[type="text"],
+    .calc-form input[type="number"],
+    .calc-form select {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 11px;
+      border: 1.6px solid var(--border);
+      margin-bottom: 13px;
+      font-size: 1.11rem;
+      margin-top: 4px;
+      background: #faffff;
+      color: var(--text-dark);
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      transition: border-color .18s;
+    }
+    .calc-form input:focus,
+    .calc-form select:focus {
+      border-color: var(--accent);
+      outline: none;
+      background: #f0f7ff;
+    }
+    .calc-form .city-select {
+      margin-bottom: 11px;
+    }
+    .calc-form .hidden {
+      display: none;
+    }
+    .calc-form .calc-btn {
+      background: var(--button-bg);
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      padding: 13px 0;
+      font-size: 1.16rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.16s, box-shadow 0.17s;
+      margin-top: 5px;
+      box-shadow: 0 2px 12px rgba(30,136,229,0.11);
+      width: 100%;
+      letter-spacing: .7px;
+    }
+    .calc-form .calc-btn:disabled,
+    .calc-form .calc-btn.disabled {
+      background: #b7cfee;
+      cursor: not-allowed;
+      color: #fff;
+    }
+    .calc-form .calc-btn:hover:not(:disabled) {
+      background: var(--button-hover);
+      box-shadow: 0 4px 18px rgba(30,136,229,0.17);
+    }
+    .calc-result {
+      margin-top: 15px;
+      text-align: center;
+      color: var(--accent-dark);
+      font-size: 1.17rem;
+      font-weight: 700;
+      background: #e7f2ff;
+      border-radius: 12px;
+      padding: 10px 7px;
+      letter-spacing: .6px;
+      display: none;
+      box-shadow: 0 2px 6px rgba(30,136,229,0.07);
+    }
+    /* INFO/ADDRESS */
+    .info-section {
+      max-width: 540px;
+      margin: 25px auto 14px auto;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 4px 28px rgba(30,136,229,0.07);
+      padding: 22px 28px 14px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+    }
+    .info-section p {
+      color: var(--text-dark);
+      font-size: 1.13rem;
+      margin: 0 0 6px 0;
+      font-weight: 500;
+      text-align: center;
+    }
+    .address-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 7px;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .address-box {
+      background: #f3f7ff;
+      border: 1.5px solid #d4e4f9;
+      border-radius: 12px;
+      padding: 11px 17px;
+      font-size: 1.12rem;
+      color: #2e4c6d;
+      font-family: 'Inter', monospace, sans-serif;
+      flex: 1;
+      user-select: all;
+      overflow-x: auto;
+      min-width: 200px;
+      text-align: center;
+    }
+    .copy-btn {
+      background: #eaf3fe;
+      color: var(--accent);
+      border: none;
+      border-radius: 9px;
+      padding: 8px 19px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.02rem;
+      margin-left: 2px;
+      transition: background 0.14s, color .14s;
+    }
+    .copy-btn:hover { background: #cae1fc; color: var(--accent-dark);}
+    .iban-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      justify-content: center;
+    }
+    .iban-label {
+      font-size: 1.07rem;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+    .iban-value {
+      font-family: 'Inter', monospace, sans-serif;
+      font-size: 1.1rem;
+      color: #2e4c6d;
+      background: #f3f7ff;
+      border-radius: 12px;
+      padding: 8px 15px;
+      margin-left: 7px;
+      border: 1.5px solid #d4e4f9;
+      user-select: all;
+      overflow-x: auto;
+      font-weight: 600;
+      min-width: 200px;
+      text-align: center;
+      letter-spacing: .04em;
+    }
+    /* FOOTER */
+    .footer {
+      width: 100%;
+      background: #eaf3fe;
+      color: #4a668a;
+      text-align: center;
+      font-size: 1.07rem;
+      padding: 18px 6px 19px 6px;
+      margin-top: auto;
+      border-top: 1px solid #e3edfa;
+      letter-spacing: 0.1px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-radius: var(--radius-large) var(--radius-large) 0 0;
+    }
+    .footer a {
+      color: #2971c7;
+      text-decoration: none;
+      margin: 0 4px;
+      font-weight: 600;
+      transition: color .13s;
+    }
+    .footer a:hover {
+      color: var(--accent-dark);
+      text-decoration: underline;
+    }
+    /* Popup */
+    .popup-bg {
+      display: none;
+      position: fixed;
+      z-index: 99;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(30, 55, 90, 0.20);
+      align-items: center;
+      justify-content: center;
+      animation: fadein .15s;
+    }
+    .popup-bg.show {
+      display: flex;
+    }
+    .popup-box {
+      background: #fff;
+      border-radius: 15px;
+      padding: 24px 26px;
+      box-shadow: 0 2px 30px rgba(30,136,229,0.20);
+      text-align: center;
+      min-width: 220px;
+      max-width: 90vw;
+      font-size: 1.12rem;
+      color: var(--accent-dark);
+      font-weight: 700;
+      animation: fadein .2s;
+    }
+    .popup-btn {
+      margin-top: 17px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.17s;
+    }
+    .popup-btn:hover { background: var(--accent-dark);}
+    @media (max-width: 700px) {
+      .header-row { padding: 0 7px;}
+      .hero-img { height: 160px; }
+      .calculator-section, .info-section { max-width: 98vw; padding: 13px 2vw 10px 2vw;}
+      .marketplaces { gap: 13px;}
+      .marketplace-logo { width: 38px; height: 38px;}
+      .marketplace-logo img { width: 24px; height: 24px;}
+      .logo { font-size: 1.2rem;}
+    }
+    @media (max-width: 480px) {
+      .header-row { flex-direction: column; align-items: flex-start;}
+      .profile-area { margin-left: 0; margin-top: 11px;}
+      .footer { gap: 7px;}
+      .hero-img { height: 90px;}
+      .calculator-section, .info-section {padding: 7px 2vw 8px 2vw;}
+      .logo { font-size: 1.1rem;}
     }
   </style>
 </head>
 <body>
-  <header class="header">
-    <!-- Kullanıcı info burada -->
-    <span id="kullanici"></span>
-  </header>
-  <main style="max-width:420px;margin:64px auto 0 auto;padding:14px;">
-    <h2>Firebase Google Giriş Sistemi</h2>
-    <p>Google hesabınızla güvenli giriş yapın.</p>
-  </main>
-  <!-- Firebase SDK -->
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-row">
+      <div class="logo">Kıbrıs Online</div>
+      <div class="menu">
+        <button class="menu-btn" id="btn-siparisver">Sipariş Ver</button>
+        <button class="menu-btn" id="btn-siparislerim">Siparişlerim</button>
+        <button class="menu-btn" id="btn-kargotakip">Kargo Takip</button>
+        <div class="profile-area" id="profile-area" style="display:none">
+          <img src="" alt="Profil Fotoğrafı" class="profile-img" id="profile-img">
+          <span class="profile-name" id="profile-name"></span>
+          <button class="logout-btn" id="logout-btn">Çıkış Yap</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- HERO IMAGE -->
+  <div class="hero-img-wrap">
+    <img class="hero-img" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" alt="Gemi ile Kargo Görseli">
+  </div>
+  <!-- MARKETPLACES -->
+  <div class="marketplaces-wrap">
+    <div class="marketplaces">
+      <a class="marketplace-logo" href="https://www.trendyol.com/" target="_blank" title="Trendyol">
+        <img src="https://cdn.kibrisonline.com/assets/marketplaces/trendyol.png" alt="Trendyol">
+      </a>
+      <a class="marketplace-logo" href="https://www.hepsiburada.com/" target="_blank" title="Hepsiburada">
+        <img src="https://cdn.kibrisonline.com/assets/marketplaces/hepsiburada.png" alt="Hepsiburada">
+      </a>
+      <a class="marketplace-logo" href="https://www.n11.com/" target="_blank" title="N11">
+        <img src="https://cdn.kibrisonline.com/assets/marketplaces/n11.png" alt="N11">
+      </a>
+      <a class="marketplace-logo" href="https://www.amazon.com.tr/" target="_blank" title="Amazon Türkiye">
+        <img src="https://cdn.kibrisonline.com/assets/marketplaces/amazon.png" alt="Amazon">
+      </a>
+      <a class="marketplace-logo" href="https://www.ciceksepeti.com/" target="_blank" title="ÇiçekSepeti">
+        <img src="https://cdn.kibrisonline.com/assets/marketplaces/ciceksepeti.png" alt="ÇiçekSepeti">
+      </a>
+    </div>
+  </div>
+  <!-- HESAPLAMA MODÜLÜ -->
+  <section class="calculator-section" id="calculator-section">
+    <h2>Hesaplama Modülü</h2>
+    <form class="calc-form" id="calc-form" autocomplete="off">
+      <label for="urun-link">Ürün Linki</label>
+      <input type="text" id="urun-link" name="urun-link" placeholder="Ürün linkini giriniz" required>
+
+      <label for="urun-fiyat">Ürün Fiyatı (TL)</label>
+      <input type="number" min="1" step="any" id="urun-fiyat" name="urun-fiyat" placeholder="örn. 999" required>
+
+      <label for="kategori">Kategori</label>
+      <select id="kategori" name="kategori" required>
+        <option value="">Seçiniz</option>
+        <option value="mobilya">Mobilya</option>
+        <option value="elektronik">Elektronik</option>
+        <option value="giyim">Giyim</option>
+        <option value="kirtasiye">Kırtasiye</option>
+        <option value="kozmetik">Kozmetik</option>
+      </select>
+
+      <label for="teslimat-turu">Teslimat Türü</label>
+      <select id="teslimat-turu" name="teslimat-turu" required>
+        <option value="">Seçiniz</option>
+        <option value="eve">Eve Teslim</option>
+        <option value="depo">Depodan Teslim</option>
+      </select>
+
+      <div id="city-select-div" class="city-select hidden">
+        <label for="city">Şehir</label>
+        <select id="city" name="city">
+          <option value="">Seçiniz</option>
+          <option value="lefkosa">Lefkoşa (200₺)</option>
+          <option value="girne">Girne (350₺)</option>
+          <option value="magusa">Mağusa (500₺)</option>
+          <option value="guzelyurt">Güzelyurt (450₺)</option>
+          <option value="lefke">Lefke (600₺)</option>
+          <option value="iskele">İskele (550₺)</option>
+          <option value="karpaz">Karpaz (700₺)</option>
+        </select>
+      </div>
+      <button type="submit" class="calc-btn" id="calc-btn">Hesapla</button>
+      <div class="calc-result" id="calc-result"></div>
+    </form>
+  </section>
+  <!-- BİLGİ ve ADRES -->
+  <section class="info-section">
+    <p>
+      Türkiye’deki herhangi bir alışveriş sitesinden ürün alırken teslimat adresi olarak aşağıdaki Mersin adresimizi girin.
+    </p>
+    <div class="address-row">
+      <div class="address-box" id="address-box">
+        Mersin Depo: Örnek Mah. No:1 Akdeniz/Mersin
+      </div>
+      <button class="copy-btn" id="copy-address-btn">Kopyala</button>
+    </div>
+    <div class="iban-row">
+      <span class="iban-label">Ödeme için IBAN:</span>
+      <span class="iban-value" id="iban-value">TR00 0000 0000 0000 0000 00</span>
+    </div>
+  </section>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <a href="#">Gizlilik Politikası</a>|
+    <a href="#">Kullanım Şartları</a>|
+    <a href="#">İletişim</a>
+  </footer>
+  <!-- UYARI POPUP -->
+  <div class="popup-bg" id="popup-bg">
+    <div class="popup-box" id="popup-box">
+      <span id="popup-msg"></span><br>
+      <button class="popup-btn" id="popup-btn">Tamam</button>
+    </div>
+  </div>
+  <!-- Firebase Config ve Auth -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics-compat.js"></script>
@@ -66,66 +596,150 @@
       appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
       measurementId: "G-JL9P6BRZTD"
     };
-    // Init Firebase
     firebase.initializeApp(firebaseConfig);
     try { firebase.analytics && firebase.analytics(); } catch(e){}
-
     const auth = firebase.auth();
-    const kullaniciSpan = document.getElementById('kullanici');
-
-    // Kullanıcıyı göster
-    function showUser(user) {
-      kullaniciSpan.innerHTML = `
-        <span class="user-box">
-          <img src="${user.photoURL}" class="user-img" alt="Profil Fotoğrafı">
-          <span>${user.displayName}</span>
-          <button class="logout-btn" id="logout-btn">Çıkış Yap</button>
-        </span>
-      `;
-      document.getElementById('logout-btn').onclick = function() {
-        auth.signOut();
-      };
+    let currentUser = null;
+    const profileArea = document.getElementById('profile-area');
+    const profileImg = document.getElementById('profile-img');
+    const profileName = document.getElementById('profile-name');
+    const logoutBtn = document.getElementById('logout-btn');
+    const menuBtns = [
+      document.getElementById('btn-siparisver'),
+      document.getElementById('btn-siparislerim'),
+      document.getElementById('btn-kargotakip')
+    ];
+    // Uyarı Popup
+    function showPopup(msg) {
+      document.getElementById('popup-msg').textContent = msg;
+      document.getElementById('popup-bg').classList.add('show');
     }
-
-    // Otomatik Google giriş fonksiyonu
-    function googleSignIn() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .catch(function(error) {
-          alert("Giriş başarısız: " + (error.message || error));
-          console.log(error);
-        });
-    }
-
-    // İlk başta login butonu görünmez, otomatik giriş denenir
-    function showLoginBtn() {
-      kullaniciSpan.innerHTML = `<button style="display:none" id="hidden-google-login"></button>`;
-      setTimeout(() => document.getElementById('hidden-google-login').click(), 100);
-    }
-
-    // Giriş durumunu izle
-    let firstCheck = true;
-    auth.onAuthStateChanged(function(user) {
-      if(user) {
-        showUser(user);
+    document.getElementById('popup-btn').onclick = () =>
+      document.getElementById('popup-bg').classList.remove('show');
+    function updateProfileUI(user) {
+      if (user) {
+        profileImg.src = user.photoURL;
+        profileName.textContent = user.displayName;
+        profileArea.style.display = 'flex';
       } else {
-        if(firstCheck) {
-          firstCheck = false;
-          showLoginBtn();
-          googleSignIn();
-        } else {
-          // Kullanıcı yine gelmediyse login butonu göster
-          kullaniciSpan.innerHTML =
-            `<button class="login-btn" onclick="googleSignIn()">
-              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
-              Google ile Giriş Yap
-            </button>`;
-        }
+        profileArea.style.display = 'none';
+      }
+    }
+    // Menü butonları
+    menuBtns[0].onclick = function(e) {
+      if (!currentUser) {
+        showPopup("Lütfen giriş yapınız");
+        e.preventDefault();
+      } else {
+        window.location.href = "siparisver.html";
+      }
+    };
+    menuBtns[1].onclick = function(e) {
+      if (!currentUser) {
+        showPopup("Lütfen giriş yapınız");
+        e.preventDefault();
+      } else {
+        window.location.href = "siparislerim.html";
+      }
+    };
+    menuBtns[2].onclick = function(e) {
+      if (!currentUser) {
+        showPopup("Lütfen giriş yapınız");
+        e.preventDefault();
+      } else {
+        window.location.href = "kargotakip.html";
+      }
+    };
+    logoutBtn.onclick = function() {
+      auth.signOut();
+      showPopup("Çıkış yapıldı");
+      setTimeout(() => window.location.reload(), 500);
+    };
+    // Otomatik Google giriş popup'ı
+    let firstAuthCheck = true;
+    auth.onAuthStateChanged(user => {
+      currentUser = user;
+      updateProfileUI(user);
+      if (!user && firstAuthCheck) {
+        firstAuthCheck = false;
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+          .catch(err => {
+            showPopup("Giriş işlemi iptal edildi veya başarısız oldu.");
+            console.log(err);
+          });
       }
     });
-
-    // Login fonksiyonunu global yap (isteğe bağlı buton için)
-    window.googleSignIn = googleSignIn;
+  </script>
+  <!-- Hesaplama Modülü -->
+  <script>
+    const oranlar = {
+      mobilya: 0.7, elektronik: 0.7, giyim: 0.45, kirtasiye: 0.4, kozmetik: 0.7
+    };
+    const sehirUcret = {
+      lefkosa: 200, girne: 350, magusa: 500, guzelyurt: 450, lefke: 600, iskele: 550, karpaz: 700
+    };
+    const teslimatTuru = document.getElementById('teslimat-turu');
+    const cityDiv = document.getElementById('city-select-div');
+    const citySelect = document.getElementById('city');
+    const calcForm = document.getElementById('calc-form');
+    const calcBtn = document.getElementById('calc-btn');
+    const calcResult = document.getElementById('calc-result');
+    let hesaplananTutar = null;
+    teslimatTuru.onchange = function() {
+      if (this.value === "eve") {
+        cityDiv.classList.remove('hidden');
+        citySelect.required = true;
+      } else {
+        cityDiv.classList.add('hidden');
+        citySelect.required = false;
+      }
+    };
+    calcForm.onsubmit = function(e) {
+      e.preventDefault();
+      if (!currentUser) {
+        showPopup("Lütfen giriş yapınız");
+        return false;
+      }
+      const fiyat = parseFloat(document.getElementById('urun-fiyat').value);
+      const kategori = document.getElementById('kategori').value;
+      const teslimat = teslimatTuru.value;
+      let toplam = fiyat + fiyat * (oranlar[kategori] || 0);
+      let detay = `Kategori farkı eklendi. (+${Math.round((oranlar[kategori]||0)*100)}%)`;
+      if (teslimat === "eve") {
+        const sehir = citySelect.value;
+        if (!sehir) {
+          showPopup("Lütfen şehir seçiniz");
+          return false;
+        }
+        toplam += sehirUcret[sehir] || 0;
+        detay += ` + ${citySelect.options[citySelect.selectedIndex].text.split('(')[1].replace(')','')}`;
+      }
+      toplam = Math.round(toplam * 100) / 100;
+      hesaplananTutar = toplam;
+      calcResult.innerHTML = `Toplam Tutar: <b>${toplam} TL</b><br><span style="font-size:.99rem;color:#5c7ecc">${detay}</span>`;
+      calcResult.style.display = 'block';
+      calcBtn.textContent = "Sipariş Ver";
+      calcBtn.onclick = function(ev) {
+        ev.preventDefault();
+        if (!currentUser) {
+          showPopup("Lütfen giriş yapınız");
+          return false;
+        }
+        window.location.href = "siparisver.html";
+      };
+    };
+    // İlk açılışta buton Hesapla olsun
+    calcBtn.textContent = "Hesapla";
+    calcBtn.onclick = null;
+  </script>
+  <!-- Kopyala Butonu -->
+  <script>
+    document.getElementById('copy-address-btn').onclick = function() {
+      const address = document.getElementById('address-box').innerText;
+      navigator.clipboard && navigator.clipboard.writeText(address);
+      showPopup("Adres kopyalandı!");
+    };
   </script>
 </body>
 </html>
