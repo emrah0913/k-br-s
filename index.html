@@ -5,105 +5,417 @@
   <title>Kıbrıs Online</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { margin:0; font-family:'Inter',sans-serif; background:#f6faff; }
-    .header {
-      display:flex; align-items:center; justify-content:space-between;
-      background:#fff; box-shadow:0 2px 16px #d9e7fa33;
-      border-radius:0 0 18px 18px;
-      padding:12px 18px;
+    :root {
+      --main-blue: #1e88e5;
+      --main-bg: #f6faff;
+      --nav-bg: #fff;
+      --shadow: 0 2px 16px #d9e7fa33;
+      --radius: 14px;
+      --transition: 0.17s;
+      --btn-blue: #1565c0;
+      --btn-blue-light: #eaf3fe;
+      --profile-bg: #e3f0fe;
+      --module-bg: #fff;
+      --module-shadow: 0 2px 10px #bed8fd33;
+    }
+    html, body { height:100%; margin:0; padding:0; }
+    body {
+      box-sizing: border-box;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: var(--main-bg);
+      color: #222;
+    }
+    /* NAVBAR */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--nav-bg);
+      box-shadow: var(--shadow);
+      border-radius: 0 0 18px 18px;
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 9;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
     }
     .logo {
-      font-family:'Poppins',sans-serif; font-size:2rem; font-weight:700;
-      color:#1e88e5; letter-spacing:1px; user-select:none;
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      color: var(--main-blue);
+      user-select: none;
+      font-family: 'Inter', sans-serif;
     }
-    .user-actions {
-      display:flex; align-items:center; gap:13px;
+    .nav-btns {
+      display: flex;
+      gap: 12px;
     }
-    .google-login-btn {
-      background:transparent; border:none; cursor:pointer;
-      display:flex; align-items:center; gap:7px;
-      font-size:1rem; font-weight:600; color:#333;
-      padding:7px 10px; border-radius:7px; transition:background 0.17s;
+    .nav-btn {
+      background: var(--btn-blue-light);
+      color: var(--btn-blue);
+      border: none;
+      padding: 8px 18px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 1.03rem;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+      outline: none;
     }
-    .google-login-btn:hover { background:#eaf3fe; }
-    .google-logo {
-      width:32px; height:32px; border-radius:50%; background:#fff;
-      box-shadow:0 1px 6px #1565c01a; padding:2px;
-      border:1.5px solid #e0e4f5;
-      object-fit:cover;
+    .nav-btn:active, .nav-btn:hover {
+      background: var(--main-blue);
+      color: #fff;
     }
-    .profile-info {
-      display:flex; align-items:center; gap:9px; background:#e3f0fe;
-      border-radius:14px; padding:7px 13px; box-shadow:0 2px 8px #1e88e511;
+    .nav-profile {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--profile-bg);
+      padding: 6px 12px 6px 9px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px #1e88e511;
     }
-    .profile-img {
-      width:32px; height:32px; border-radius:50%; object-fit:cover;
-      border:2px solid #d3e3fa; background:#e2e9f4;
+    .nav-profile-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #d3e3fa;
+      background: #e2e9f4;
     }
-    .profile-name {
-      font-weight:600; color:#1e88e5; font-size:1rem;
-      white-space:nowrap; text-overflow:ellipsis; max-width:120px; overflow:hidden;
+    .nav-profile-name {
+      font-weight: 600;
+      color: var(--main-blue);
+      font-size: 1rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 120px;
+      overflow: hidden;
     }
     .logout-btn {
-      background:transparent; color:#1565c0; border:none; border-radius:7px;
-      padding:7px 12px; font-weight:700; cursor:pointer; font-size:1rem;
-      margin-left:2px; transition:color 0.18s, background 0.16s;
+      background: transparent;
+      color: var(--btn-blue);
+      border: none;
+      border-radius: 7px;
+      padding: 6px 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: .98rem;
+      margin-left: 2px;
+      transition: color var(--transition), background var(--transition);
     }
-    .logout-btn:hover { background:#d6e6fa; color:#104b8c; }
+    .logout-btn:hover {
+      background: #d6e6fa;
+      color: #104b8c;
+    }
+    .google-login-btn {
+      background: var(--btn-blue-light);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+      padding: 7px 10px;
+      border-radius: 7px;
+      transition: background var(--transition);
+    }
+    .google-login-btn:hover { background: #daeafd; }
+    .google-logo {
+      width: 30px; height: 30px; border-radius: 50%; background: #fff;
+      box-shadow: 0 1px 6px #1565c01a; padding: 2px;
+      border: 1.5px solid #e0e4f5;
+      object-fit: cover;
+    }
+
+    /* HERO */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 38px 10px 24px 10px;
+      background: linear-gradient(0deg,#eaf2ff 0, #f6faff 100%);
+    }
+    .hero-img {
+      width: 160px;
+      max-width: 80vw;
+      margin-bottom: 18px;
+    }
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--main-blue);
+      margin-bottom: 10px;
+      font-family: 'Inter', sans-serif;
+    }
+    .hero-subtitle {
+      font-size: 1.16rem;
+      color: #114d81;
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+
+    /* CALC MODULE */
+    .module-wrap {
+      max-width: 480px;
+      margin: 36px auto 18px auto;
+      background: var(--module-bg);
+      border-radius: 20px;
+      box-shadow: var(--module-shadow);
+      padding: 28px 22px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .module-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--main-blue);
+      margin-bottom: 2px;
+      text-align: center;
+    }
+    .calc-row {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .calc-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .calc-label {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 2px;
+      color: #114d81;
+    }
+    .calc-input, .calc-select {
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1.3px solid #b5c6e3;
+      font-size: 1rem;
+      outline: none;
+      background: #fafdff;
+      transition: border .15s;
+    }
+    .calc-input:focus, .calc-select:focus {
+      border: 1.5px solid var(--main-blue);
+    }
+    .calc-action-btn {
+      margin-top: 11px;
+      width: 100%;
+      padding: 12px 0;
+      background: var(--main-blue);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background .13s;
+    }
+    .calc-action-btn:active, .calc-action-btn:hover {
+      background: #1565c0;
+    }
+    .calc-result {
+      margin-top: 8px;
+      padding: 13px 0 3px 0;
+      font-size: 1.16rem;
+      font-weight: 600;
+      color: #184a8f;
+      text-align: center;
+      min-height: 25px;
+      letter-spacing: .01em;
+    }
+    /* SHOP LOGOS */
+    .shop-logos {
+      margin: 28px auto 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 32px;
+      align-items: center;
+      max-width: 700px;
+      padding-bottom: 30px;
+    }
+    .shop-logo-link {
+      display: flex;
+      align-items: center;
+      transition: transform .15s;
+    }
+    .shop-logo-link:hover { transform: scale(1.07);}
+    .shop-logo {
+      height: 38px;
+      object-fit: contain;
+      filter: grayscale(0.09);
+      max-width: 120px;
+      background: #fff;
+      border-radius: 9px;
+      box-shadow: 0 1px 7px #dbe8f9;
+      padding: 5px 8px;
+    }
+    @media (max-width:800px) {
+      .module-wrap { max-width: 98vw;}
+      .shop-logos { gap: 20px;}
+    }
     @media (max-width:600px) {
-      .header { flex-direction:column; align-items:flex-start; padding:6px 6vw;}
-      .logo { font-size:1.2rem;}
-      .profile-info {padding:5px 6px;}
-      .profile-img { width:28px; height:28px;}
-      .logout-btn, .google-login-btn { font-size:.98rem; padding:6px 9px;}
-      .google-logo { width:28px; height:28px;}
+      .navbar { flex-direction: column; align-items: flex-start; padding: 10px 5vw;}
+      .logo { font-size: 1.3rem;}
+      .nav-btn { font-size: .98rem; padding: 7px 10px;}
+      .nav-profile-img { width: 30px; height: 30px;}
+      .nav-profile { padding: 3px 7px 3px 7px;}
+      .hero-title { font-size: 1.25rem;}
+      .module-wrap { padding: 17px 5vw;}
+      .shop-logo { height: 27px;}
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <span class="logo">Kıbrıs Online</span>
-    <div class="user-actions">
-      <button class="google-login-btn" id="google-login-btn" style="display:flex;">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-logo" alt="Google ile Giriş Yap">
-        <span>Giriş Yap</span>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="logo">Kıbrıs Online</span>
+      <div class="nav-btns">
+        <button class="nav-btn" id="btn-siparis-ver">Sipariş Ver</button>
+        <button class="nav-btn" id="btn-siparislerim">Siparişlerim</button>
+        <button class="nav-btn" id="btn-kargo-takip">Kargo Takip</button>
+      </div>
+    </div>
+    <div id="user-box">
+      <button class="google-login-btn" id="google-login-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-logo" alt="Google ile Giriş">
+        <span>Google ile Giriş Yap</span>
       </button>
       <span id="profile-box" style="display:none;">
-        <span class="profile-info">
-          <img src="" id="profile-img" class="profile-img" alt="Profil Fotoğrafı">
-          <span class="profile-name" id="profile-name"></span>
-          <button class="logout-btn" id="logout-btn">Çıkış</button>
+        <span class="nav-profile">
+          <img src="" id="profile-img" class="nav-profile-img" alt="Profil Fotoğrafı">
+          <span class="nav-profile-name" id="profile-name"></span>
+          <button class="logout-btn" id="logout-btn">Çıkış Yap</button>
         </span>
       </span>
     </div>
+  </nav>
+  <!-- HERO BANNER -->
+  <section class="hero">
+    <img src="https://cdn.pixabay.com/photo/2016/03/31/20/11/boxes-1299512_1280.png" class="hero-img" alt="Kargo Görseli">
+    <h1 class="hero-title">Türkiye’den Kıbrıs’a Teslimat</h1>
+    <div class="hero-subtitle">Hızlı ve Güvenilir Kargo Hizmeti</div>
+  </section>
+  <!-- CALCULATION MODULE -->
+  <div class="module-wrap" id="hesaplama-modulu">
+    <div class="module-title">Hesaplama Modülü</div>
+    <div class="calc-row">
+      <div class="calc-col" style="flex:2;">
+        <label class="calc-label" for="product-link">Ürün Linki</label>
+        <input type="url" id="product-link" class="calc-input" placeholder="Ürün bağlantısını giriniz">
+      </div>
+    </div>
+    <div class="calc-row">
+      <div class="calc-col">
+        <label class="calc-label" for="product-price">Ürün Fiyatı (₺)</label>
+        <input type="number" id="product-price" min="1" step="0.01" class="calc-input" placeholder="Fiyat">
+      </div>
+      <div class="calc-col">
+        <label class="calc-label" for="product-category">Kategori</label>
+        <select id="product-category" class="calc-select">
+          <option value="">Seçiniz</option>
+          <option value="mobilya">Mobilya</option>
+          <option value="elektronik">Elektronik</option>
+          <option value="giyim">Giyim</option>
+          <option value="kirtasiye">Kırtasiye</option>
+          <option value="kozmetik">Kozmetik</option>
+        </select>
+      </div>
+    </div>
+    <div class="calc-row">
+      <div class="calc-col">
+        <label class="calc-label" for="delivery-type">Teslimat Tipi</label>
+        <select id="delivery-type" class="calc-select">
+          <option value="">Seçiniz</option>
+          <option value="ev">Eve Teslim</option>
+          <option value="depo">Depodan Teslim</option>
+        </select>
+      </div>
+      <div class="calc-col" id="city-group" style="display:none;">
+        <label class="calc-label" for="city-select">Şehir</label>
+        <select id="city-select" class="calc-select">
+          <option value="">Şehir Seçiniz</option>
+          <option value="lefkosa">Lefkoşa (200₺)</option>
+          <option value="girne">Girne (350₺)</option>
+          <option value="magusa">Mağusa (500₺)</option>
+          <option value="guzelyurt">Güzelyurt (450₺)</option>
+          <option value="lefke">Lefke (600₺)</option>
+          <option value="iskele">İskele (550₺)</option>
+          <option value="karpaz">Karpaz (700₺)</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <button class="calc-action-btn" id="calc-btn">Hesapla</button>
+      <div class="calc-result" id="calc-result"></div>
+    </div>
   </div>
-  <!-- Firebase SDK -->
+  <!-- SHOP LOGOS -->
+  <div class="shop-logos">
+    <a href="https://www.trendyol.com/" class="shop-logo-link" target="_blank" rel="noopener">
+      <img src="https://cdn.logo.com/hotlink-ok/logo-social.png?logo=trendyol" alt="Trendyol" class="shop-logo">
+    </a>
+    <a href="https://www.hepsiburada.com/" class="shop-logo-link" target="_blank" rel="noopener">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Hepsiburada_logo.svg/512px-Hepsiburada_logo.svg.png" alt="Hepsiburada" class="shop-logo">
+    </a>
+    <a href="https://www.n11.com/" class="shop-logo-link" target="_blank" rel="noopener">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/N11_logo.svg/512px-N11_logo.svg.png" alt="N11" class="shop-logo">
+    </a>
+    <a href="https://www.amazon.com.tr/" class="shop-logo-link" target="_blank" rel="noopener">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="shop-logo">
+    </a>
+    <a href="https://www.ciceksepeti.com/" class="shop-logo-link" target="_blank" rel="noopener">
+      <img src="https://cdn.ciceksepeti.net/assets/images/newdesign/logos/ciceksepeti-logos/ciceksepeti-logo-2022.svg" alt="ÇiçekSepeti" class="shop-logo">
+    </a>
+  </div>
+  <!-- FIREBASE SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <script>
-    // Firebase config (senin verdiğinle aynı)
+    // Firebase config
     const firebaseConfig = {
-      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-      authDomain: "kibris-6b4f7.firebaseapp.com",
-      projectId: "kibris-6b4f7",
-      storageBucket: "kibris-6b4f7.firebasestorage.app",
-      messagingSenderId: "141262926171",
-      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-      measurementId: "G-JL9P6BRZTD"
+      apiKey: "AIzaSyBw9GP1srYUgPf9sqlpLu_ZnqM8w0Iau4Y",
+      authDomain: "kibrisonline-b5cf3.firebaseapp.com",
+      projectId: "kibrisonline-b5cf3",
+      storageBucket: "kibrisonline-b5cf3.firebasestorage.app",
+      messagingSenderId: "673734723670",
+      appId: "1:673734723670:web:55c7a34e22b1ad26e453f7",
+      measurementId: "G-D5P5SGGPB8"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+
+    // Auth UI
     const loginBtn = document.getElementById('google-login-btn');
     const profileBox = document.getElementById('profile-box');
     const profileImg = document.getElementById('profile-img');
     const profileName = document.getElementById('profile-name');
     const logoutBtn = document.getElementById('logout-btn');
+    let currentUser = null;
 
     function showProfile(user) {
-      profileImg.src = user.photoURL;
-      profileName.textContent = user.displayName;
+      if (!user) return;
+      profileImg.src = user.photoURL || "";
+      profileName.textContent = user.displayName || "";
       profileBox.style.display = 'inline-block';
       loginBtn.style.display = 'none';
     }
@@ -112,27 +424,144 @@
       loginBtn.style.display = 'flex';
     }
 
-    // Giriş butonu tıklandığında popup ile Google Sign-In
     loginBtn.onclick = function() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider)
         .catch(err => {
           alert("Giriş başarısız: " + (err.message || err));
-          console.log(err);
         });
     };
-    // Çıkış
     logoutBtn.onclick = function() {
       auth.signOut();
     };
-    // Otomatik giriş izleme
+
     auth.onAuthStateChanged(function(user){
+      currentUser = user;
       if(user){
         showProfile(user);
       }else{
         hideProfile();
-        // Otomatik popup açma yok! (popup block engelini önler)
       }
+    });
+
+    // NAV BAR BUTTONS
+    function requireLogin(actionFn) {
+      if (!currentUser) {
+        alert("Lütfen giriş yapınız");
+        return false;
+      }
+      if (typeof actionFn === "function") actionFn();
+      return true;
+    }
+    document.getElementById('btn-siparis-ver').onclick = function() {
+      requireLogin(() => {
+        window.location.href = "siparisver.html";
+      });
+    };
+    document.getElementById('btn-siparislerim').onclick = function() {
+      requireLogin(() => {
+        window.location.href = "siparislerim.html";
+      });
+    };
+    document.getElementById('btn-kargo-takip').onclick = function() {
+      requireLogin(() => {
+        window.location.href = "kargotakip.html";
+      });
+    };
+
+    // CALCULATION MODULE
+    const categoryMultipliers = {
+      mobilya: 1.7,
+      elektronik: 1.7,
+      giyim: 1.45,
+      kirtasiye: 1.4,
+      kozmetik: 1.7
+    };
+    const cityFees = {
+      lefkosa: 200,
+      girne: 350,
+      magusa: 500,
+      guzelyurt: 450,
+      lefke: 600,
+      iskele: 550,
+      karpaz: 700
+    };
+
+    const deliveryType = document.getElementById('delivery-type');
+    const cityGroup = document.getElementById('city-group');
+    const citySelect = document.getElementById('city-select');
+    const calcBtn = document.getElementById('calc-btn');
+    const calcResult = document.getElementById('calc-result');
+    let calcState = "hesapla"; // or "siparisver"
+    let lastCalculation = null;
+
+    deliveryType.addEventListener('change', function() {
+      if (deliveryType.value === "ev") {
+        cityGroup.style.display = "flex";
+      } else {
+        citySelect.value = "";
+        cityGroup.style.display = "none";
+      }
+    });
+
+    function formatMoney(val) {
+      return Number(val).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " ₺";
+    }
+
+    calcBtn.addEventListener('click', function() {
+      if (calcState === "hesapla") {
+        // Get values
+        const price = parseFloat(document.getElementById('product-price').value);
+        const category = document.getElementById('product-category').value;
+        const delivery = deliveryType.value;
+        let city = citySelect.value;
+        calcResult.textContent = "";
+
+        // Validate
+        if (isNaN(price) || price < 1) {
+          calcResult.textContent = "Lütfen geçerli ürün fiyatı giriniz.";
+          return;
+        }
+        if (!category || !categoryMultipliers[category]) {
+          calcResult.textContent = "Lütfen kategori seçiniz.";
+          return;
+        }
+        if (!delivery) {
+          calcResult.textContent = "Lütfen teslimat tipi seçiniz.";
+          return;
+        }
+        if (delivery === "ev" && (!city || !cityFees[city])) {
+          calcResult.textContent = "Lütfen şehir seçiniz.";
+          return;
+        }
+        // Calculation
+        let total = price * categoryMultipliers[category];
+        if (delivery === "ev") {
+          total += cityFees[city];
+        }
+        lastCalculation = total;
+        calcResult.textContent = "Toplam Tutar: " + formatMoney(total);
+        calcBtn.textContent = "Sipariş Ver";
+        calcState = "siparisver";
+      } else {
+        // Sipariş Ver
+        if (!currentUser) {
+          alert("Lütfen giriş yapınız");
+          return;
+        }
+        window.location.href = "siparisver.html";
+      }
+    });
+
+    // Reset button if any input changes
+    [
+      'product-link','product-price','product-category','delivery-type','city-select'
+    ].forEach(function(id){
+      document.getElementById(id).addEventListener('input', function(){
+        calcBtn.textContent = "Hesapla";
+        calcState = "hesapla";
+        calcResult.textContent = "";
+      });
     });
   </script>
 </body>
