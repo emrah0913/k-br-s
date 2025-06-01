@@ -40,6 +40,8 @@
       position: sticky;
       top: 0;
       z-index: 9;
+      flex-wrap: wrap;
+      min-height: 60px;
     }
     .nav-left {
       display: flex;
@@ -69,6 +71,7 @@
       cursor: pointer;
       transition: background var(--transition), color var(--transition);
       outline: none;
+      min-width: 108px;
     }
     .nav-btn:active, .nav-btn:hover {
       background: var(--main-blue);
@@ -204,13 +207,14 @@
       color: #114d81;
     }
     .calc-input, .calc-select {
-      padding: 7px 10px;
+      padding: 11px 12px;
       border-radius: 8px;
       border: 1.3px solid #b5c6e3;
-      font-size: 1rem;
+      font-size: 1.07rem;
       outline: none;
       background: #fafdff;
       transition: border .15s;
+      min-width: 0;
     }
     .calc-input:focus, .calc-select:focus {
       border: 1.5px solid var(--main-blue);
@@ -218,15 +222,16 @@
     .calc-action-btn {
       margin-top: 11px;
       width: 100%;
-      padding: 12px 0;
+      padding: 15px 0;
       background: var(--main-blue);
       color: #fff;
-      font-size: 1.15rem;
+      font-size: 1.18rem;
       font-weight: 700;
       border: none;
       border-radius: 9px;
       cursor: pointer;
       transition: background .13s;
+      letter-spacing: .02em;
     }
     .calc-action-btn:active, .calc-action-btn:hover {
       background: #1565c0;
@@ -267,20 +272,44 @@
       border-radius: 9px;
       box-shadow: 0 1px 7px #dbe8f9;
       padding: 5px 8px;
+      transition: height .2s, max-width .2s;
     }
-    @media (max-width:800px) {
+    @media (max-width: 990px) {
+      .navbar { padding: 10px 8vw;}
       .module-wrap { max-width: 98vw;}
       .shop-logos { gap: 20px;}
     }
-    @media (max-width:600px) {
-      .navbar { flex-direction: column; align-items: flex-start; padding: 10px 5vw;}
-      .logo { font-size: 1.3rem;}
-      .nav-btn { font-size: .98rem; padding: 7px 10px;}
-      .nav-profile-img { width: 30px; height: 30px;}
+    @media (max-width: 800px) {
+      .navbar { padding: 10px 3vw;}
+      .shop-logos { gap: 14px;}
+    }
+    @media (max-width:700px) {
+      .navbar { flex-direction: column; align-items: flex-start; gap: 9px;}
+      .nav-left { flex-direction: column; align-items: flex-start; gap: 6px;}
+      .logo { font-size: 1.2rem;}
+      .nav-btns { gap: 7px;}
+      .nav-btn { font-size: .97rem; min-width: 95px; padding: 7px 7px;}
+      .nav-profile-img { width: 29px; height: 29px;}
       .nav-profile { padding: 3px 7px 3px 7px;}
-      .hero-title { font-size: 1.25rem;}
-      .module-wrap { padding: 17px 5vw;}
-      .shop-logo { height: 27px;}
+      .hero-title { font-size: 1.15rem;}
+      .hero-img { width: 90px;}
+      .module-wrap { padding: 17px 2vw;}
+      .shop-logo { height: 25px; max-width: 65px;}
+    }
+    @media (max-width: 570px) {
+      .navbar { padding: 7px 1vw;}
+      .nav-btns { gap: 3px;}
+      .module-wrap { padding: 9vw 1vw 7vw 1vw;}
+      .calc-row { flex-direction: column; gap: 0; }
+      .shop-logo { height: 18px; max-width: 44px;}
+      .module-title { font-size: 1.08rem;}
+      .calc-label { font-size: .95rem; }
+      .calc-input, .calc-select { font-size: .97rem; padding: 10px 7px;}
+      .calc-action-btn { font-size: 1rem; padding: 12px 0;}
+    }
+    @media (max-width: 430px) {
+      .module-wrap { padding: 5vw 0.3vw 5vw 0.3vw;}
+      .navbar { min-height: 48px;}
     }
   </style>
 </head>
