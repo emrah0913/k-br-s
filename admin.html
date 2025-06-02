@@ -747,7 +747,7 @@
   const auth = getAuth(app);
 
   onAuthStateChanged(auth, (user) => {
-    const allowedAdminEmail = "seninmailin@gmail.com"; // <--- BURAYI KENDİ GOOGLE E-POSTANLA DEĞİŞTİR
+    const allowedAdminEmail = "emirmob09@gmail.com"; // <--- BURAYI KENDİ GOOGLE E-POSTANLA DEĞİŞTİR
     if (user) {
       if (user.email === allowedAdminEmail) {
         console.log("✅ Admin girişi başarılı:", user.email);
