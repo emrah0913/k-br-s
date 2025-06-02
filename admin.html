@@ -358,10 +358,11 @@
         });
         renderOrders(allOrders);
         renderSummary(allOrders);
-      } catch(e) {
+        } catch(e) {
+        console.error("HATA (loadOrders):", e); // bu satırı ekle
         tbody.innerHTML = `<tr><td colspan="8" style="color:var(--danger);font-weight:600;">Siparişler yüklenemedi.</td></tr>`;
         document.querySelector("#summaryBox").innerHTML = "Siparişler yüklenemedi!";
-      }
+        }
     }
     function renderOrders(orders) {
       const tbody = document.querySelector("#ordersTable tbody");
