@@ -2,9 +2,10 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Kargo Takip - Getir Kıbrıs</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -113,20 +114,27 @@
       background: var(--white);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 18px;
+      padding: 18px 18px 12px 18px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      font-size: 1.02rem;
+      gap: 7px;
+      font-size: 1.03rem;
+      position: relative;
     }
     .order-label {
       font-weight: 600;
       color: var(--primary);
+      margin-right: 5px;
+    }
+    .order-link {
+      color: #257ad7;
+      text-decoration: underline;
+      word-break: break-all;
     }
     .order-status {
-      margin-top: 6px;
-      color: #333;
-      font-weight: 600;
+      margin-top: 4px;
+      font-weight: bold;
+      color: #f39c12;
     }
     .empty-info {
       text-align: center;
@@ -137,6 +145,18 @@
       padding: 26px 6px 14px 6px;
       box-shadow: 0 2px 14px rgba(0,0,0,0.03);
       margin-top: 24px;
+    }
+    @media (max-width: 700px) {
+      .nav-btn-row { gap: 7px; }
+      .order-card { padding: 13px 5vw 11px 5vw; }
+      .container { max-width: 99vw; }
+      .logo { max-width: 60px; }
+    }
+    @media (max-width: 470px) {
+      .header-bar { padding: 10px 4px 0 4px; }
+      .logo-wrap { margin-bottom: 5px; }
+      .nav-btn { font-size: .94rem; min-width: 0; padding: 9px 8px; }
+      .order-card { padding: 8px 2vw 7px 2vw; }
     }
   </style>
 </head>
@@ -154,17 +174,17 @@
       <button class="nav-btn" onclick="goPageOrWarn('index.html')">Ana Sayfa</button>
       <button class="nav-btn" onclick="goPageOrWarn('siparisver.html')">Sipariş Ver</button>
       <button class="nav-btn" onclick="goPageOrWarn('siparislerim.html')">Siparişlerim</button>
-      <button class="nav-btn" onclick="goPageOrWarn('kargotakip.html')">Kargo Takip</button>
+      <button class="nav-btn" onclick="goPageOrWarn('index.html#hesapla')">Hesapla</button>
     </div>
     <div id="ordersList" class="orders-list"></div>
-    <div id="emptyInfo" class="empty-info" style="display:none;">Takip edilecek kargo bulunmamaktadır.</div>
+    <div id="emptyInfo" class="empty-info" style="display:none;">Kargo takip kaydınız bulunmamaktadır.</div>
   </div>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
       authDomain: "kibris-6b4f7.firebaseapp.com",
       projectId: "kibris-6b4f7",
-      storageBucket: "kibris-6b4f7.firebasestorage.app",
+      storageBucket: "kibris-6b4f7.appspot.com",
       messagingSenderId: "141262926171",
       appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
       measurementId: "G-JL9P6BRZTD"
@@ -182,7 +202,7 @@
 
     auth.onAuthStateChanged(function(currentUser) {
       user = currentUser;
-      updateAuthUI(user);
+      updateAuthUI(currentUser);
       if (!user) {
         window.location.href = "index.html";
       } else {
@@ -191,9 +211,10 @@
     });
 
     function updateAuthUI(currentUser) {
-      if (currentUser) {
+      user = currentUser;
+      if (user) {
         loginBtn.style.display = 'none';
-        profileImg.src = currentUser.photoURL || '';
+        profileImg.src = user.photoURL || '';
         profileImg.style.display = '';
         logoutBtn.style.display = '';
       } else {
@@ -205,9 +226,8 @@
 
     loginBtn.onclick = function() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(e => alert("Giriş başarısız: " + e.message));
+      auth.signInWithPopup(provider).catch(e => alert('Giriş başarısız! ' + e.message));
     };
-
     logoutBtn.onclick = function() {
       auth.signOut().then(() => location.reload());
     };
@@ -223,31 +243,28 @@
     async function loadOrders() {
       ordersList.innerHTML = "";
       emptyInfo.style.display = 'none';
+      let q = db.collection("siparisler")
+        .where("uid", "==", user.uid)
+        .orderBy("createdAt", "desc");
       try {
-        const snapshot = await db.collection("siparisler")
-          .where("uid", "==", user.uid)
-          .orderBy("createdAt", "desc")
-          .get();
-
-        if (snapshot.empty) {
+        const snap = await q.get();
+        if (snap.empty) {
           emptyInfo.style.display = '';
           return;
         }
-
-        snapshot.forEach(doc => {
+        snap.forEach(doc => {
           const s = doc.data();
-          const div = document.createElement('div');
-          div.className = 'order-card';
-          div.innerHTML = `
+          const card = document.createElement('div');
+          card.className = 'order-card';
+          card.innerHTML = `
             <div><span class="order-label">Sipariş Kodu:</span> ${s.siparisKodu || '-'}</div>
             <div><span class="order-label">Teslimat Tipi:</span> ${s.teslimatTipi || '-'}</div>
-            <div class="order-status">Durum: Hazırlanıyor</div>
+            <div class="order-status">Durum: ${s.durum || 'Hazırlanıyor'}</div>
           `;
-          ordersList.appendChild(div);
+          ordersList.appendChild(card);
         });
-
       } catch (e) {
-        ordersList.innerHTML = '<div class="empty-info">Siparişler yüklenirken hata oluştu.</div>';
+        ordersList.innerHTML = '<div class="empty-info">Kargo takibi yüklenirken hata oluştu.</div>';
       }
     }
   </script>
