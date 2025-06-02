@@ -1,185 +1,599 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getir Kıbrıs - Türkiye'den Kıbrıs'a Teslimat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getir Kıbrıs</title>
+  <!-- Google Fonts for modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <style>
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
+    :root {
+      --primary: #0094da;
+      --accent: #ffcb05;
+      --dark: #232323;
+      --light-bg: #f7fafc;
+      --white: #fff;
+      --gray: #ececec;
+      --radius: 16px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.07);
     }
+
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #fffefa;
-      color: #2b2b2b;
+      font-family: 'Montserrat', Arial, sans-serif;
+      margin: 0;
+      background: var(--light-bg);
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    header {
-      background-color: #ffcb05;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    .container {
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 16px 0 16px;
+      box-sizing: border-box;
+      flex: 1;
     }
-    header img {
-      max-width: 200px;
+
+    /* HEADER */
+    .header-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 12px 16px 0 16px;
+      gap: 16px;
     }
-    nav {
+    .profile-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      background: var(--gray);
+    }
+    .btn {
+      padding: 8px 18px;
+      border-radius: var(--radius);
+      border: none;
+      font-weight: 600;
+      background: var(--primary);
+      color: var(--white);
+      font-size: 1rem;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn:hover { background: #007dc1; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    .logo-wrap {
       display: flex;
       justify-content: center;
-      gap: 30px;
-      background-color: #2b2b2b;
-      padding: 15px 0;
+      margin-top: 0;
+      margin-bottom: 12px;
     }
-    nav a {
-      color: #ffffff;
+    .logo {
+      max-width: 220px;
+      width: 60vw;
+      height: auto;
+    }
+
+    /* HERO */
+    .hero-img-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero-img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero-slogan {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+      text-shadow: 0 2px 16px rgba(0,0,0,0.18);
+      letter-spacing: 1px;
+      background: none;
+      padding: 0 12px;
+      user-select: none;
+    }
+
+    /* NAV BUTTONS */
+    .nav-btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin: 24px 0 12px 0;
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: var(--dark);
+      padding: 13px 28px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: background .17s;
+      min-width: 128px;
+    }
+    .nav-btn:hover { background: #ffe780; }
+    .nav-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* HESAPLAMA MODÜLÜ */
+    .calc-module {
+      margin: 0 auto 24px auto;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      max-width: 480px;
+      padding: 28px 24px 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .calc-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-row label {
+      font-size: .95rem;
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+    .form-row input, .form-row select {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1.2px solid var(--gray);
+      font-size: 1rem;
+      background: var(--light-bg);
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .result-info {
+      background: #eafdff;
+      border-radius: 7px;
+      margin-top: 10px;
+      padding: 12px;
+      color: #1880a7;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    /* BİLGİLENDİRME */
+    .info-area {
+      background: var(--gray);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      margin: 22px auto 16px auto;
+      font-size: 1.01rem;
+      max-width: 650px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .info-area ol {
+      margin: 0 0 0 20px;
+      padding: 0;
+    }
+    .info-area li {
+      margin-bottom: 6px;
+    }
+
+    /* DEPO ADRESİ ve BANKA */
+    .depo-banka-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .copy-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+      min-width: 260px;
+      max-width: 350px;
+      flex: 1 1 260px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .copy-title {
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 7px;
+      font-size: 1.08rem;
+    }
+    .copy-content {
+      font-family: 'Courier New', monospace;
+      font-size: .98rem;
+      margin-bottom: 8px;
+      background: #eafdff;
+      padding: 6px 8px;
+      border-radius: 5px;
+      word-break: break-word;
+      white-space: pre-line;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      background: var(--accent);
+      color: var(--dark);
+      border: none;
+      border-radius: 7px;
+      padding: 4px 10px;
+      font-size: .96rem;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background .15s;
+    }
+    .copy-btn:hover { background: #ffe780; }
+
+    /* FOOTER */
+    .footer {
+      background: var(--white);
+      border-top: 1.5px solid var(--gray);
+      padding: 18px 8px 8px 8px;
+      text-align: center;
+      font-size: .98rem;
+      margin-top: auto;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      margin-bottom: 7px;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--primary);
       text-decoration: none;
       font-weight: 600;
+      font-size: 1.01rem;
+      transition: color .15s;
     }
-    .hero {
-      background-color: #fffefa;
-      text-align: center;
-      padding: 60px 20px;
+    .footer-links a:hover {
+      color: #007dc1;
+      text-decoration: underline;
     }
-    .hero h1 {
-      font-size: 2.4em;
-      margin-bottom: 10px;
-      color: #2b2b2b;
+
+    @media (max-width: 700px) {
+      .hero-slogan { font-size: 1.14rem; }
+      .hero-img-wrap { max-width: 100vw; }
+      .nav-btn-row { gap: 7px; }
+      .calc-module { padding: 22px 6vw 12px 6vw; }
+      .info-area { padding: 12px 6vw; }
+      .depo-banka-area { flex-direction: column; gap: 14px; }
+      .copy-box { max-width: 100%; min-width: 0; }
     }
-    .hero p {
-      font-size: 1.2em;
-      color: #666;
-    }
-    .calculator {
-      background: #ffffff;
-      padding: 30px;
-      margin: 30px auto;
-      border-radius: 12px;
-      max-width: 500px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .calculator label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-    .calculator input, .calculator select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .calculator button {
-      margin-top: 20px;
-      padding: 12px;
-      width: 100%;
-      background-color: #2b2b2b;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .result {
-      margin-top: 20px;
-      font-weight: bold;
-      color: #2b2b2b;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9em;
-      background: #ffcb05;
-      margin-top: 40px;
+    @media (max-width: 470px) {
+      .header-bar { padding: 10px 4px 0 4px; }
+      .logo-wrap { margin-bottom: 5px; }
+      .nav-btn { font-size: .94rem; min-width: 0; padding: 9px 8px; }
+      .calc-module { padding: 12px 2vw 8px 2vw; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Getir Kıbrıs Logo">
-  </header>
-  <nav>
-    <a href="#">Hesaplama</a>
-    <a href="#">Sipariş Ver</a>
-    <a href="#">Giriş Yap</a>
-  </nav>
-  <section class="hero">
-    <h1>Getir Kıbrıs'a Hoşgeldiniz</h1>
-    <p>Türkiye'den Kıbrıs'a uygun fiyatlı ve güvenilir teslimat</p>
-  </section>
-  <section class="calculator">
-    <label for="link">Ürün Linki</label>
-    <input type="text" id="link" placeholder="Ürün bağlantısını girin">
-
-    <label for="price">Ürün Fiyatı (TL)</label>
-    <input type="number" id="price" placeholder="Ürün fiyatı">
-
-    <label for="category">Kategori</label>
-    <select id="category">
-      <option value="mobilya">Mobilya</option>
-      <option value="giyim">Giyim</option>
-      <option value="elektronik">Elektronik</option>
-    </select>
-
-    <label for="delivery">Teslimat Tipi</label>
-    <select id="delivery">
-      <option value="depodan">Depodan Teslim</option>
-      <option value="eve">Eve Teslim</option>
-    </select>
-
-    <div id="citySelect" style="display:none">
-      <label for="city">Şehir</label>
-      <select id="city">
-        <option value="lefkoşa">Lefkoşa - 200TL</option>
-        <option value="girne">Girne - 350TL</option>
-        <option value="magusa">Mağusa - 500TL</option>
-      </select>
+  <!-- HEADER -->
+  <div class="header-bar">
+    <button id="loginBtn" class="btn" style="display:none;">Google ile Giriş Yap</button>
+    <img id="profileImg" class="profile-img" alt="Profil" style="display:none;">
+    <button id="logoutBtn" class="btn" style="display:none;background:#e74c3c;">Çıkış Yap</button>
+  </div>
+  <div class="logo-wrap">
+    <img src="https://getirkibris.com/logo.png" alt="Getir Kıbrıs Logo" class="logo">
+  </div>
+  
+  <div class="container">
+    <!-- HERO BANNER -->
+    <div class="hero-img-wrap">
+      <img class="hero-img" src="https://cdn.pixabay.com/photo/2021/09/16/21/27/container-ship-6631117_1280.jpg" alt="Gemi Görseli">
+      <div class="hero-slogan">Türkiye’den Kıbrıs’a getiriyoruz</div>
     </div>
 
-    <button onclick="calculate()">Hesapla</button>
-    <div class="result" id="result"></div>
-  </section>
-  <footer>
-    &copy; 2025 Getir Kıbrıs. Tüm hakları saklıdır.
-  </footer>
+    <!-- NAV BUTTONS -->
+    <div class="nav-btn-row">
+      <button class="nav-btn" id="btnHesapla" onclick="scrollToCalc()">Hesapla</button>
+      <button class="nav-btn" id="btnSiparisVer" onclick="goPageOrWarn('siparis.html')">Sipariş Ver</button>
+      <button class="nav-btn" id="btnSiparislerim" onclick="goPageOrWarn('siparislerim.html')">Siparişlerim</button>
+      <button class="nav-btn" id="btnKargoTakip" onclick="goPageOrWarn('kargotakip.html')">Kargo Takip</button>
+    </div>
 
+    <!-- HESAPLAMA MODÜLÜ -->
+    <form class="calc-module" id="calcForm" autocomplete="off">
+      <div class="calc-title" id="calcTitle">Hesaplama Modülü</div>
+      <div class="form-row">
+        <label for="urunLinki">Ürün Linki</label>
+        <input type="url" id="urunLinki" placeholder="https://www.trendyol.com/..." required>
+      </div>
+      <div class="form-row">
+        <label for="urunFiyati">Ürün Fiyatı (TL)</label>
+        <input type="number" id="urunFiyati" min="1" placeholder="örn: 1000" required>
+      </div>
+      <div class="form-row">
+        <label for="kategori">Kategori</label>
+        <select id="kategori" required>
+          <option value="">Seçiniz</option>
+          <option value="Mobilya">Mobilya</option>
+          <option value="Giyim">Giyim</option>
+          <option value="Elektronik">Elektronik</option>
+          <option value="Kırtasiye">Kırtasiye</option>
+          <option value="Kozmetik">Kozmetik</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="teslimatTipi">Teslimat Tipi</label>
+        <select id="teslimatTipi" required>
+          <option value="">Seçiniz</option>
+          <option value="Depodan Teslim">Depodan Teslim</option>
+          <option value="Eve Teslim">Eve Teslim</option>
+        </select>
+      </div>
+      <div class="form-row" id="adresRow" style="display:none;">
+        <label for="adresSecimi">Teslimat Adresi</label>
+        <select id="adresSecimi">
+          <option value="">Seçiniz</option>
+          <option value="Mağusa">Mağusa</option>
+          <option value="Lefkoşa">Lefkoşa</option>
+          <option value="Girne">Girne</option>
+          <option value="İskele">İskele</option>
+          <option value="Güzelyurt">Güzelyurt</option>
+          <option value="Lefke">Lefke</option>
+          <option value="Karpaz">Karpaz</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn" id="hesaplaBtn">Hesapla</button>
+      </div>
+      <div id="resultInfo" class="result-info" style="display:none;"></div>
+    </form>
+
+    <!-- BİLGİLENDİRME -->
+    <div class="info-area">
+      <b>Sistemi Nasıl Kullanırım?</b>
+      <ol>
+        <li>Türkiye’deki alışveriş sitelerinden (ör: Trendyol) istediğiniz ürünü seçin.</li>
+        <li>Ürün linkini kopyalayın.</li>
+        <li>Yukarıdaki hesaplama modülüne ürün linki ve fiyatını, kategori ve teslimat tipini girin.</li>
+        <li>Hesapla butonuna basarak toplam maliyeti öğrenin.</li>
+        <li>Giriş yaptıktan sonra siparişinizi kolayca oluşturun.</li>
+        <li>Ödemenizi aşağıdaki banka hesabına yapın.</li>
+        <li>Siparişlerim ve Kargo Takip ile süreci takip edin.</li>
+      </ol>
+    </div>
+
+    <!-- DEPO ADRESİ ve BANKA -->
+    <div class="depo-banka-area">
+      <div class="copy-box">
+        <div class="copy-title">Türkiye Depo Adresi</div>
+        <div class="copy-content" id="depoAdres">
+Esentepe Mah. 3075. Sk. No:2, 34510 Esenyurt/İstanbul
+Açıklama: <b>Adınız Soyadınız + Getir Kıbrıs</b>
+Telefon: <b>+90 555 555 55 55</b>
+        </div>
+        <button class="copy-btn" onclick="copyText('depoAdres', this)">Kopyala</button>
+      </div>
+      <div class="copy-box">
+        <div class="copy-title">Banka Bilgileri</div>
+        <div class="copy-content">
+Banka: Ziraat Bankası<br>
+IBAN: <b>TR00 0000 0000 0000 0000 0000 00</b><br>
+Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-links">
+      <a href="#">Gizlilik Politikası</a>
+      <a href="#">Kullanım Şartları</a>
+      <a href="#">İletişim</a>
+    </div>
+    <div>© 2025 Getir Kıbrıs. Tüm hakları saklıdır.</div>
+  </div>
+
+  <!-- FIREBASE & PAGE JS -->
   <script>
-    const delivery = document.getElementById("delivery");
-    const citySelect = document.getElementById("citySelect");
+    // TODO: Doldurun! Firebase config (değiştirin)
+    const firebaseConfig = {
+      apiKey: "FIREBASE_API_KEY",
+      authDomain: "FIREBASE_AUTH_DOMAIN",
+      projectId: "FIREBASE_PROJECT_ID",
+      appId: "FIREBASE_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-    delivery.addEventListener("change", () => {
-      if (delivery.value === "eve") {
-        citySelect.style.display = "block";
+    // UI Elements
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const profileImg = document.getElementById('profileImg');
+    const btnSiparisVer = document.getElementById('btnSiparisVer');
+    const btnSiparislerim = document.getElementById('btnSiparislerim');
+    const btnKargoTakip = document.getElementById('btnKargoTakip');
+    const hesaplaBtn = document.getElementById('hesaplaBtn');
+    const calcForm = document.getElementById('calcForm');
+    const resultInfo = document.getElementById('resultInfo');
+    const calcTitle = document.getElementById('calcTitle');
+    let user = null;
+
+    // Giriş/Çıkış UI
+    function updateAuthUI(currentUser) {
+      user = currentUser;
+      if (user) {
+        loginBtn.style.display = 'none';
+        profileImg.src = user.photoURL || '';
+        profileImg.style.display = '';
+        logoutBtn.style.display = '';
+        // Enable buttons
+        [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = false);
+        if (hesaplaBtn.innerText === 'Sipariş Ver') hesaplaBtn.disabled = false;
       } else {
-        citySelect.style.display = "none";
+        loginBtn.style.display = '';
+        profileImg.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        // Disable user-only buttons
+        [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = true);
+        if (hesaplaBtn.innerText === 'Sipariş Ver') hesaplaBtn.disabled = true;
       }
+    }
+
+    // Firebase Auth listeners
+    auth.onAuthStateChanged(function(currentUser) {
+      updateAuthUI(currentUser);
     });
 
-    function calculate() {
-      const price = parseFloat(document.getElementById("price").value) || 0;
-      const category = document.getElementById("category").value;
-      const deliveryType = document.getElementById("delivery").value;
-      const city = document.getElementById("city").value;
-      let oran = 0;
-      let cityPrice = 0;
+    loginBtn.onclick = function() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(e=>alert('Giriş başarısız! '+e.message));
+    };
+    logoutBtn.onclick = function() {
+      auth.signOut().then(()=>location.reload());
+    };
 
-      switch (category) {
-        case "mobilya": oran = 0.7; break;
-        case "giyim": oran = 0.45; break;
-        case "elektronik": oran = 0.7; break;
+    // Butonlara erişim kontrolü ve yönlendirme
+    function goPageOrWarn(page) {
+      if (user) {
+        window.location.href = page;
+      } else {
+        alert("Lütfen giriş yapınız.");
       }
-
-      if (deliveryType === "eve") {
-        switch (city) {
-          case "lefkoşa": cityPrice = 200; break;
-          case "girne": cityPrice = 350; break;
-          case "magusa": cityPrice = 500; break;
-        }
-      }
-
-      const result = price + (price * oran) + cityPrice;
-      document.getElementById("result").innerText = `Toplam Teslimat Tutarı: ${result.toFixed(2)} TL`;
     }
+    function scrollToCalc() {
+      document.getElementById('calcForm').scrollIntoView({behavior: 'smooth'});
+    }
+
+    // Teslimat tipi - adres alanı kontrolü
+    document.getElementById('teslimatTipi').addEventListener('change', function() {
+      const show = this.value === 'Eve Teslim';
+      document.getElementById('adresRow').style.display = show ? '' : 'none';
+      if (!show) document.getElementById('adresSecimi').value = '';
+    });
+
+    // Hesaplama kuralları
+    const kategoriYuzdeleri = {
+      'Mobilya': 0.7,
+      'Giyim': 0.45,
+      'Elektronik': 0.7,
+      'Kırtasiye': 0.4,
+      'Kozmetik': 0.7
+    };
+    const kargoUcretleri = {
+      'Mağusa': 500,
+      'Lefkoşa': 200,
+      'Girne': 350,
+      'İskele': 550,
+      'Güzelyurt': 350,
+      'Lefke': 450,
+      'Karpaz': 750
+    };
+
+    calcForm.onsubmit = function(e) {
+      e.preventDefault();
+      // Form verileri
+      const link = document.getElementById('urunLinki').value.trim();
+      const fiyat = parseFloat(document.getElementById('urunFiyati').value.trim());
+      const kategori = document.getElementById('kategori').value;
+      const teslimat = document.getElementById('teslimatTipi').value;
+      const adres = document.getElementById('adresSecimi').value;
+
+      if (!link || !fiyat || !kategori || !teslimat) {
+        alert('Lütfen tüm alanları doldurunuz.');
+        return;
+      }
+      if (teslimat === 'Eve Teslim' && !adres) {
+        alert('Teslimat adresini seçiniz.');
+        return;
+      }
+
+      // Hesaplama
+      let ekYuzde = kategoriYuzdeleri[kategori] || 0;
+      let araFiyat = fiyat + (fiyat * ekYuzde);
+      let kargo = 0;
+      if (teslimat === 'Eve Teslim') {
+        kargo = kargoUcretleri[adres] || 0;
+      }
+      let toplam = Math.round(araFiyat + kargo);
+      // Sonuç göster
+      resultInfo.innerHTML = `Toplam Tutar: <b>${toplam} TL</b> <br> (${kategori} için +%${(ekYuzde*100).toFixed(0)}, ${teslimat === 'Eve Teslim' ? adres+' '+kargo+' TL kargo dahil' : 'kargo ücreti yok'})`;
+      resultInfo.style.display = '';
+      // Butonu Sipariş Ver'e çevir
+      hesaplaBtn.innerText = 'Sipariş Ver';
+      hesaplaBtn.type = 'button';
+      // Sadece giriş yapan tıklayabilir
+      hesaplaBtn.onclick = function() {
+        if (!user) {
+          alert('Lütfen giriş yapınız.');
+        } else {
+          // Sipariş sayfasına yönlendir (veya burada sipariş oluşturulabilir)
+          window.location.href = 'siparis.html';
+        }
+      };
+      // Eğer kullanıcı yoksa disable et
+      hesaplaBtn.disabled = !user;
+    };
+
+    // Eğer hesaplama modülü tekrar doldurulursa buton tekrar Hesapla olur
+    Array.from(calcForm.elements).forEach(el=>{
+      el.addEventListener('input', function() {
+        if (hesaplaBtn.innerText !== 'Hesapla') {
+          hesaplaBtn.innerText = 'Hesapla';
+          hesaplaBtn.type = 'submit';
+          hesaplaBtn.disabled = false;
+          resultInfo.style.display = 'none';
+        }
+      });
+    });
+
+    // Kopyala fonksiyonu
+    function copyText(elemId, btn) {
+      const text = document.getElementById(elemId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerText = "Kopyalandı!";
+        setTimeout(() => btn.innerText = "Kopyala", 1500);
+      });
+    }
+
+    // İlk yüklemede login butonunu göster
+    loginBtn.style.display = '';
+    // Başlangıçta user-only butonları disable et
+    [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = true);
   </script>
 </body>
 </html>
