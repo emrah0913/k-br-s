@@ -538,7 +538,236 @@
         calcForm.reset();
         document.getElementById('adresRow').style.display = 'none';
         document.getElementById('acikAdresRow').style.display = 'none';
-        toplamTutar = null;
+        toplamTutar = null;<!-- ... (önceki kodlar aynı) ... -->
+<script>
+  // FIREBASE CONFIG (Senin config'in)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+    authDomain: "kibris-6b4f7.firebaseapp.com",
+    projectId: "kibris-6b4f7",
+    storageBucket: "kibris-6b4f7.firebasestorage.app",
+    messagingSenderId: "141262926171",
+    appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+    measurementId: "G-JL9P6BRZTD"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // UI Elements
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const profileImg = document.getElementById('profileImg');
+  const hesaplaBtn = document.getElementById('hesaplaBtn');
+  const onaylaBtn = document.getElementById('onaylaBtn');
+  const calcForm = document.getElementById('calcForm');
+  const resultInfo = document.getElementById('resultInfo');
+  const successInfo = document.getElementById('successInfo');
+  const errorInfo = document.getElementById('errorInfo');
+  let user = null, toplamTutar = null;
+
+  // Giriş kontrolü: Sayfa sadece giriş yapanlara açık
+  auth.onAuthStateChanged(function(currentUser) {
+    user = currentUser;
+    updateAuthUI(currentUser);
+    if (!user) {
+      window.location.href = "index.html";
+    }
+  });
+
+  function updateAuthUI(currentUser) {
+    user = currentUser;
+    if (user) {
+      loginBtn.style.display = 'none';
+      profileImg.src = user.photoURL || '';
+      profileImg.style.display = '';
+      logoutBtn.style.display = '';
+    } else {
+      loginBtn.style.display = '';
+      profileImg.style.display = 'none';
+      logoutBtn.style.display = 'none';
+    }
+  }
+
+  loginBtn.onclick = function() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(e=>alert('Giriş başarısız! '+e.message));
+  };
+  logoutBtn.onclick = function() {
+    auth.signOut().then(()=>location.reload());
+  };
+
+  // Navigasyon ve erişim
+  function goPageOrWarn(page) {
+    if (user) {
+      window.location.href = page;
+    } else {
+      alert("Lütfen giriş yapınız.");
+    }
+  }
+  function scrollToCalc() {
+    document.getElementById('calcForm').scrollIntoView({behavior: 'smooth'});
+  }
+
+  // Form alanları
+  document.getElementById('teslimatTipi').addEventListener('change', function() {
+    const show = this.value === 'Eve Teslim';
+    document.getElementById('adresRow').style.display = show ? '' : 'none';
+    if (!show) {
+      document.getElementById('adresSecimi').value = '';
+      document.getElementById('acikAdresRow').style.display = 'none';
+      document.getElementById('acikAdres').value = '';
+    }
+  });
+  document.getElementById('adresSecimi').addEventListener('change', function() {
+    const show = this.value ? true : false;
+    document.getElementById('acikAdresRow').style.display = show ? '' : 'none';
+    if (!show) document.getElementById('acikAdres').value = '';
+  });
+
+  // Hesaplama kuralları
+  const kategoriYuzdeleri = {
+    'Mobilya': 0.7,
+    'Giyim': 0.45,
+    'Elektronik': 0.7,
+    'Kırtasiye': 0.4,
+    'Kozmetik': 0.7
+  };
+  const kargoUcretleri = {
+    'Mağusa': 500,
+    'Lefkoşa': 200,
+    'Girne': 350,
+    'İskele': 550,
+    'Güzelyurt': 350,
+    'Lefke': 450,
+    'Karpaz': 750
+  };
+
+  hesaplaBtn.onclick = function() {
+    const link = document.getElementById('urunLinki').value.trim();
+    const siparisKodu = document.getElementById('siparisKodu').value.trim();
+    const fiyat = parseFloat(document.getElementById('urunFiyati').value.trim());
+    const kategori = document.getElementById('kategori').value;
+    const teslimat = document.getElementById('teslimatTipi').value;
+    const sehir = document.getElementById('adresSecimi').value;
+    const acikAdres = document.getElementById('acikAdres').value.trim();
+
+    errorInfo.style.display = 'none';
+    successInfo.style.display = 'none';
+
+    if (!link || !fiyat || !kategori || !teslimat || !siparisKodu) {
+      errorInfo.innerText = "Lütfen tüm alanları doldurunuz.";
+      errorInfo.style.display = '';
+      return;
+    }
+    if (teslimat === 'Eve Teslim' && !sehir) {
+      errorInfo.innerText = "Teslimat şehrini seçiniz.";
+      errorInfo.style.display = '';
+      return;
+    }
+    if (teslimat === 'Eve Teslim' && sehir && !acikAdres) {
+      errorInfo.innerText = "Teslimat adresinizi giriniz.";
+      errorInfo.style.display = '';
+      return;
+    }
+    let ekYuzde = kategoriYuzdeleri[kategori] || 0;
+    let araFiyat = fiyat + (fiyat * ekYuzde);
+    let kargo = 0;
+    if (teslimat === 'Eve Teslim') {
+      kargo = kargoUcretleri[sehir] || 0;
+    }
+    toplamTutar = Math.round(araFiyat + kargo);
+    resultInfo.innerHTML = `Toplam Tutar: <b>${toplamTutar} TL</b> <br> (${kategori} için +%${(ekYuzde*100).toFixed(0)}, ${teslimat === 'Eve Teslim' ? sehir+' '+kargo+' TL kargo dahil' : 'kargo ücreti yok'})`;
+    resultInfo.style.display = '';
+    onaylaBtn.style.display = 'block';
+  };
+
+  // 🔽 YENİ onaylaBtn.onclick fonksiyonu (yönlendirme ile!) 🔽
+  onaylaBtn.onclick = async function() {
+    const link = document.getElementById('urunLinki').value.trim();
+    const siparisKodu = document.getElementById('siparisKodu').value.trim();
+    const fiyat = parseFloat(document.getElementById('urunFiyati').value.trim());
+    const kategori = document.getElementById('kategori').value;
+    const teslimat = document.getElementById('teslimatTipi').value;
+    const sehir = document.getElementById('adresSecimi').value;
+    const acikAdres = document.getElementById('acikAdres').value.trim();
+
+    errorInfo.style.display = 'none';
+    successInfo.style.display = 'none';
+
+    if (!user) {
+      errorInfo.innerText = "Lütfen giriş yapınız.";
+      errorInfo.style.display = '';
+      return;
+    }
+    if (!link || !fiyat || !kategori || !teslimat || !siparisKodu) {
+      errorInfo.innerText = "Lütfen tüm alanları doldurunuz.";
+      errorInfo.style.display = '';
+      return;
+    }
+    if (teslimat === 'Eve Teslim' && (!sehir || !acikAdres)) {
+      errorInfo.innerText = "Teslimat şehri ve açık adres gerekli.";
+      errorInfo.style.display = '';
+      return;
+    }
+    if (toplamTutar === null) {
+      errorInfo.innerText = "Lütfen önce Hesapla butonuna basınız.";
+      errorInfo.style.display = '';
+      return;
+    }
+
+    onaylaBtn.disabled = true;
+    try {
+      await db.collection("siparisler").add({
+        uid: user.uid,
+        email: user.email,
+        urunLinki: link,
+        siparisKodu: siparisKodu,
+        urunFiyati: fiyat,
+        kategori,
+        teslimatTipi: teslimat,
+        sehir: teslimat === 'Eve Teslim' ? sehir : "",
+        acikAdres: teslimat === 'Eve Teslim' ? acikAdres : "",
+        toplamTutar,
+        createdAt: new Date()
+      });
+
+      successInfo.innerText = "Siparişiniz başarıyla kaydedildi!";
+      successInfo.style.display = '';
+      errorInfo.style.display = 'none';
+      resultInfo.style.display = 'none';
+
+      // ☑️ 1.5 saniye sonra siparislerim.html'e yönlendir
+      setTimeout(() => {
+        window.location.href = "siparislerim.html";
+      }, 1500);
+
+      // Formu sıfırla
+      calcForm.reset();
+      document.getElementById('adresRow').style.display = 'none';
+      document.getElementById('acikAdresRow').style.display = 'none';
+      toplamTutar = null;
+      onaylaBtn.style.display = 'none';
+
+    } catch (e) {
+      errorInfo.innerText = "Bir hata oluştu, lütfen tekrar deneyin.";
+      errorInfo.style.display = '';
+    }
+    onaylaBtn.disabled = false;
+  };
+
+  // Form sıfırlama
+  Array.from(calcForm.elements).forEach(el=>{
+    el.addEventListener('input', function() {
+      errorInfo.style.display = 'none';
+      successInfo.style.display = 'none';
+      onaylaBtn.style.display = 'none';
+      resultInfo.style.display = 'none';
+      toplamTutar = null;
+    });
+  });
+</script>
+<!-- ... (sonraki kodlar aynı) ... -->
         onaylaBtn.style.display = 'none';
       } catch (e) {
         errorInfo.innerText = "Bir hata oluştu, lütfen tekrar deneyin.";
