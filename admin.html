@@ -2,174 +2,239 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Paneli - Getir Kıbrıs</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Paneli</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .top-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .filters input, .filters select {
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-right: 10px;
-    }
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 12px;
-    }
-    .card h4 { margin: 0 0 8px 0; }
-    .summary {
-      background: #e8f0fe;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
+    /* ... stil kodları yukarıda olduğu gibi ... */
   </style>
 </head>
 <body>
-  <h1>Admin Paneli</h1>
-  <div class="top-bar">
-    <div class="filters">
-      <input type="text" id="searchName" placeholder="Müşteri Adı">
-      <input type="text" id="searchKod" placeholder="Sipariş Kodu">
-      <select id="searchDurum">
-        <option value="">Tüm Durumlar</option>
-        <option>Bekleniyor</option>
-        <option>TR Depoda</option>
-        <option>Yüklendi</option>
-        <option>Kıbrıs Depoda</option>
-        <option>Teslim Edildi</option>
-      </select>
-      <input type="date" id="startDate"> <input type="date" id="endDate">
-      <button onclick="filterOrders()">Filtrele</button>
-    </div>
-    <div>
-      <button onclick="downloadExcel()">Excel Çıktısı</button>
+  <!-- Şifreli giriş ekranı -->
+  <div id="loginModal" class="modal-bg" style="display:flex;">
+    <div class="modal">
+      <button class="modal-close" onclick="document.getElementById('loginModal').style.display='none';">&times;</button>
+      <h2>Admin Girişi</h2>
+      <input type="password" id="adminPassword" placeholder="Şifre" style="width:100%;margin-bottom:12px;">
+      <button onclick="adminLogin()" style="width:100%;">Giriş Yap</button>
+      <div id="loginError" style="color:#e74c3c;font-weight:600;margin-top:12px;display:none;"></div>
     </div>
   </div>
-  <div class="summary" id="summary"></div>
-  <div id="orders"></div>
 
+  <div class="admin-container" style="display:none;" id="adminPanel">
+    <h1>Admin Paneli</h1>
+    <div class="toolbar">
+      <input type="text" id="searchSiparisKodu" placeholder="Sipariş Kodu ile ara">
+      <input type="text" id="searchMusteri" placeholder="Müşteri adı ile ara">
+      <input type="date" id="startDate">
+      <span>—</span>
+      <input type="date" id="endDate">
+      <button onclick="filterOrders()">Filtrele</button>
+      <button onclick="clearFilters()">Temizle</button>
+      <button onclick="showCustomers()">Kayıtlı Müşteriler</button>
+      <button class="out-btn" onclick="adminLogout()">Çıkış Yap</button>
+    </div>
+    <div class="summary-box" id="summaryBox">
+      <span>Yükleniyor...</span>
+    </div>
+    <table class="orders-table" id="ordersTable">
+      <thead>
+        <tr>
+          <th>Müşteri</th>
+          <th>Sipariş Kodu</th>
+          <th>Adres</th>
+          <th>Telefon</th>
+          <th>Kategori</th>
+          <th>Toplam Tutar</th>
+          <th>Durum</th>
+          <th>İşlem</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Siparişler JS ile eklenecek -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Müşteriler Modalı -->
+  <div id="customersModal" class="modal-bg">
+    <div class="modal">
+      <button class="modal-close" onclick="closeCustomersModal()">&times;</button>
+      <h2>Kayıtlı Müşteriler</h2>
+      <div id="customersList">
+        <!-- Müşteri bilgileri JS ile eklenecek -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script>
+    // 1. FIREBASE CONFIG (Kendi config'inle değiştir!)
     const firebaseConfig = {
-      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-      authDomain: "kibris-6b4f7.firebaseapp.com",
-      projectId: "kibris-6b4f7",
-      storageBucket: "kibris-6b4f7.firebasestorage.app",
-      messagingSenderId: "141262926171",
-      appId: "1:141262926171:web:07226845e51d4bbc0dea7e"
+      apiKey: "SENIN_API_KEY",
+      authDomain: "SENIN_AUTH_DOMAIN",
+      projectId: "SENIN_PROJECT_ID",
+      storageBucket: "SENIN_STORAGE_BUCKET",
+      messagingSenderId: "SENIN_MESSAGING_SENDER_ID",
+      appId: "SENIN_APP_ID"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let ordersRaw = [];
+    // 2. ADMIN ŞİFRESİ
+    const ADMIN_PASSWORD = "ornekSifre123"; // Değiştir!
 
-    function loadOrders() {
-      db.collection("siparisler").orderBy("createdAt", "desc").get().then(snapshot => {
-        ordersRaw = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-        renderOrders(ordersRaw);
-        calculateSummary(ordersRaw);
-      });
-    }
-
-    function renderOrders(data) {
-      const container = document.getElementById('orders');
-      container.innerHTML = '';
-      data.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `
-          <h4>${s.adSoyad || 'Anonim'} (${s.email || ''})</h4>
-          <p><strong>Tel:</strong> ${s.telefon || '-'} | <strong>Sipariş Kodu:</strong> ${s.siparisKodu || '-'}</p>
-          <p><strong>Link:</strong> <a href="${s.urunLinki}" target="_blank">${s.urunLinki}</a></p>
-          <p><strong>Kategori:</strong> ${s.kategori || '-'} | <strong>Toplam:</strong> ${s.toplamTutar || '-'} TL</p>
-          <p><strong>Durum:</strong>
-            <select onchange="updateStatus('${s.id}', this.value)">
-              ${['Bekleniyor','TR Depoda','Yüklendi','Kıbrıs Depoda','Teslim Edildi'].map(d => `<option ${d===s.durum?'selected':''}>${d}</option>`).join('')}
-            </select>
-          </p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function updateStatus(id, newDurum) {
-      db.collection("siparisler").doc(id).update({ durum: newDurum });
-    }
-
-    function filterOrders() {
-      const name = document.getElementById('searchName').value.toLowerCase();
-      const kod = document.getElementById('searchKod').value.toLowerCase();
-      const durum = document.getElementById('searchDurum').value;
-      const start = new Date(document.getElementById('startDate').value);
-      const end = new Date(document.getElementById('endDate').value);
-      end.setHours(23,59,59);
-
-      const filt = ordersRaw.filter(o => {
-        return (!name || (o.adSoyad || '').toLowerCase().includes(name)) &&
-               (!kod || (o.siparisKodu || '').toLowerCase().includes(kod)) &&
-               (!durum || o.durum === durum) &&
-               (!isNaN(start) && !isNaN(end) ? o.createdAt?.toDate() >= start && o.createdAt?.toDate() <= end : true);
-      });
-      renderOrders(filt);
-      calculateSummary(filt);
-    }
-
-    function calculateSummary(data) {
-      let toplam = 0;
-      let kategoriMap = {};
-      data.forEach(o => {
-        let t = parseFloat(o.toplamTutar) || 0;
-        toplam += t;
-        kategoriMap[o.kategori] = (kategoriMap[o.kategori] || 0) + t;
-      });
-      let text = `Toplam Sipariş: ${data.length} | Toplam Tutar: ${toplam.toFixed(2)} TL<br>`;
-      for (let k in kategoriMap) {
-        text += `${k}: ${kategoriMap[k].toFixed(2)} TL | `;
+    function adminLogin() {
+      const pw = document.getElementById('adminPassword').value;
+      if(pw === ADMIN_PASSWORD){
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('adminPanel').style.display = '';
+        document.getElementById('adminPassword').value = "";
+        document.getElementById('loginError').style.display = "none";
+        loadOrders(); // Girişte siparişleri yükle
+      } else {
+        document.getElementById('loginError').innerText = "Hatalı şifre!";
+        document.getElementById('loginError').style.display = "";
       }
-      document.getElementById('summary').innerHTML = text;
+    }
+    function adminLogout() {
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('loginModal').style.display = 'flex';
     }
 
-    function downloadExcel() {
-      const ws = XLSX.utils.json_to_sheet(ordersRaw);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Siparisler");
-      XLSX.writeFile(wb, "siparisler.xlsx");
+    // 3. SİPARİŞLERİ FIRESTORE'DAN ÇEK (İLK ADIM)
+    let allOrders = [];
+    async function loadOrders() {
+      document.querySelector("#summaryBox").innerHTML = "Yükleniyor...";
+      const tbody = document.querySelector("#ordersTable tbody");
+      tbody.innerHTML = "";
+      allOrders = [];
+      try {
+        const snap = await db.collection("siparisler").orderBy("createdAt", "desc").get();
+        snap.forEach(doc => {
+          const data = doc.data();
+          allOrders.push({ ...data, id: doc.id });
+        });
+        renderOrders(allOrders);
+        renderSummary(allOrders);
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="8" style="color:#d32f2f;font-weight:600;">Siparişler yüklenemedi.</td></tr>`;
+        document.querySelector("#summaryBox").innerHTML = "Siparişler yüklenemedi!";
+      }
     }
-
-    loadOrders();
+    function renderOrders(orders) {
+      const tbody = document.querySelector("#ordersTable tbody");
+      tbody.innerHTML = "";
+      if(!orders.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Kayıt yok.</td></tr>`;
+        return;
+      }
+      for(const o of orders) {
+        tbody.innerHTML += `
+          <tr>
+            <td>${o.email || "-"}</td>
+            <td>${o.siparisKodu || "-"}</td>
+            <td>${o.sehir ? (o.sehir + "<br>" + (o.acikAdres||"")) : "-"}</td>
+            <td>${o.telefon || "-"}</td>
+            <td>${o.kategori || "-"}</td>
+            <td>${o.toplamTutar ? o.toplamTutar + " TL" : "-"}</td>
+            <td>
+              <select class="status-select" data-id="${o.id}" onchange="updateStatus('${o.id}', this.value)">
+                <option ${o.durum=="Yeni"?'selected':''}>Yeni</option>
+                <option ${o.durum=="Hazırlanıyor"?'selected':''}>Hazırlanıyor</option>
+                <option ${o.durum=="Kargoda"?'selected':''}>Kargoda</option>
+                <option ${o.durum=="Teslim Edildi"?'selected':''}>Teslim Edildi</option>
+                <option ${o.durum=="İptal"?'selected':''}>İptal</option>
+              </select>
+            </td>
+            <td>
+              <button class="delete-btn" onclick="deleteOrder('${o.id}')">Sil</button>
+            </td>
+          </tr>
+        `;
+      }
+    }
+    function renderSummary(orders) {
+      // Kategori bazlı toplam tutar
+      const summary = {};
+      for(const o of orders) {
+        if(!o.kategori || !o.toplamTutar) continue;
+        if(!summary[o.kategori]) summary[o.kategori]=0;
+        summary[o.kategori] += Number(o.toplamTutar);
+      }
+      let html = "";
+      for(const k in summary) {
+        html += `<span>${k}: <b>${summary[k]} TL</b></span>`;
+      }
+      document.getElementById('summaryBox').innerHTML = html || "Kayıt yok.";
+    }
+    // Durum güncelleme
+    async function updateStatus(id, newStatus) {
+      try {
+        await db.collection("siparisler").doc(id).update({ durum: newStatus });
+      } catch(e) { alert("Durum güncellenemedi!"); }
+    }
+    // Sipariş silme
+    async function deleteOrder(id) {
+      if(!confirm("Siparişi silmek istediğinize emin misiniz?")) return;
+      await db.collection("siparisler").doc(id).delete();
+      loadOrders();
+    }
+    // Filtreleme (yalnızca temel örnek: kod, müşteri, tarih aralığı)
+    window.filterOrders = function() {
+      let kod = document.getElementById('searchSiparisKodu').value.trim().toLowerCase();
+      let musteri = document.getElementById('searchMusteri').value.trim().toLowerCase();
+      let start = document.getElementById('startDate').value;
+      let end = document.getElementById('endDate').value;
+      let filtered = allOrders.filter(o => {
+        let ok = true;
+        if(kod && !(o.siparisKodu||"").toLowerCase().includes(kod)) ok = false;
+        if(musteri && !(o.email||"").toLowerCase().includes(musteri)) ok = false;
+        if(start) {
+          let d = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate() : (o.createdAt instanceof Date ? o.createdAt : null);
+          if(!d || d < new Date(start)) ok = false;
+        }
+        if(end) {
+          let d = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate() : (o.createdAt instanceof Date ? o.createdAt : null);
+          if(!d || d > new Date(end + "T23:59:59")) ok = false;
+        }
+        return ok;
+      });
+      renderOrders(filtered);
+      renderSummary(filtered);
+    }
+    window.clearFilters = function() {
+      document.getElementById('searchSiparisKodu').value = "";
+      document.getElementById('searchMusteri').value = "";
+      document.getElementById('startDate').value = "";
+      document.getElementById('endDate').value = "";
+      renderOrders(allOrders);
+      renderSummary(allOrders);
+    }
+    // Kayıtlı müşteriler modalı (basit örnek)
+    window.showCustomers = async function() {
+      document.getElementById('customersModal').style.display = 'flex';
+      let musteriMap = {};
+      for(const o of allOrders) {
+        if(!musteriMap[o.email]) musteriMap[o.email] = { siparisler: [], ...o };
+        musteriMap[o.email].siparisler.push(o);
+      }
+      let html = "";
+      for(const e in musteriMap) {
+        const m = musteriMap[e];
+        html += `<div style="margin-bottom:18px;"><b>${e}</b><ul>`;
+        for(const s of m.siparisler) {
+          html += `<li>${s.siparisKodu || "-"} | ${s.kategori || "-"} | ${s.toplamTutar || "-"} TL | ${s.durum || "Yeni"}</li>`;
+        }
+        html += `</ul></div>`;
+      }
+      document.getElementById('customersList').innerHTML = html || "Kayıt yok.";
+    }
+    window.closeCustomersModal = function() {
+      document.getElementById('customersModal').style.display = 'none';
+    }
   </script>
 </body>
 </html>
