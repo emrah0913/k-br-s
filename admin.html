@@ -350,7 +350,7 @@
       tbody.innerHTML = "";
       allOrders = [];
       try {
-        const snap = await db.collection("siparisler").orderBy("createdAt", "desc").get();
+        const snap = await db.collection("siparisler")
 
         snap.forEach(doc => {
           const data = doc.data();
