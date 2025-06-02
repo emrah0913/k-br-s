@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Siparişlerim - Getir Kıbrıs</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -179,8 +178,8 @@
     <div id="ordersList" class="orders-list"></div>
     <div id="emptyInfo" class="empty-info" style="display:none;">Siparişiniz bulunmamaktadır.</div>
   </div>
+
   <script>
-    // FIREBASE CONFIG (Senin config'in)
     const firebaseConfig = {
       apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
       authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -194,7 +193,6 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // UI Elements
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const profileImg = document.getElementById('profileImg');
@@ -202,7 +200,6 @@
     const emptyInfo = document.getElementById('emptyInfo');
     let user = null;
 
-    // Giriş kontrolü: Sayfa sadece giriş yapanlara açık
     auth.onAuthStateChanged(function(currentUser) {
       user = currentUser;
       updateAuthUI(currentUser);
@@ -214,10 +211,9 @@
     });
 
     function updateAuthUI(currentUser) {
-      user = currentUser;
-      if (user) {
+      if (currentUser) {
         loginBtn.style.display = 'none';
-        profileImg.src = user.photoURL || '';
+        profileImg.src = currentUser.photoURL || '';
         profileImg.style.display = '';
         logoutBtn.style.display = '';
       } else {
@@ -229,10 +225,11 @@
 
     loginBtn.onclick = function() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(e=>alert('Giriş başarısız! '+e.message));
+      auth.signInWithPopup(provider).catch(e => alert('Giriş başarısız! ' + e.message));
     };
+
     logoutBtn.onclick = function() {
-      auth.signOut().then(()=>location.reload());
+      auth.signOut().then(() => location.reload());
     };
 
     function goPageOrWarn(page) {
@@ -243,14 +240,13 @@
       }
     }
 
-    // Siparişleri yükle
     async function loadOrders() {
       ordersList.innerHTML = "";
       emptyInfo.style.display = 'none';
-      let q = db.collection("siparisler")
-        .where("uid", "==", user.uid)
-        .orderBy("createdAt", "desc");
       try {
+        const q = db.collection("siparisler")
+                    .where("uid", "==", user.uid)
+                    .orderBy("createdAt", "desc");
         const snap = await q.get();
         if (snap.empty) {
           emptyInfo.style.display = '';
@@ -265,12 +261,13 @@
             <div><span class="order-label">Sipariş Kodu:</span> ${s.siparisKodu || '-'}</div>
             <div><span class="order-label">Kategori:</span> ${s.kategori || '-'}</div>
             <div><span class="order-label">Teslimat Tipi:</span> ${s.teslimatTipi || '-'}</div>
-            ${s.teslimatTipi==="Eve Teslim"? `<div><span class="order-label">Adres:</span> ${s.sehir ? s.sehir : ""}${s.acikAdres ? ', '+s.acikAdres : ""}</div>` : ""}
-            <div class="order-price">Toplam Fiyat: ${s.toplamTutar ? s.toplamTutar + " TL" : "-"}</div>
+            ${s.teslimatTipi === "Eve Teslim" ? `<div><span class="order-label">Adres:</span> ${s.sehir || ''}${s.acikAdres ? ', ' + s.acikAdres : ''}</div>` : ''}
+            <div class="order-price">Toplam Fiyat: ${s.toplamTutar || '-'} TL</div>
           `;
           ordersList.appendChild(card);
         });
       } catch (e) {
+        console.error("Siparişler yüklenirken hata oluştu:", e);
         ordersList.innerHTML = '<div class="empty-info">Siparişler yüklenirken hata oluştu.</div>';
       }
     }
