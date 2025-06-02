@@ -264,6 +264,20 @@
       padding-left: 18px;
       font-size: 1rem;
     }
+    /* EK: Durum filtresi select'i için stil */
+    .status-filter-select {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1.2px solid #ececec;
+      font-size: 1rem;
+      background: #f7fafc;
+      outline: none;
+      transition: border .13s;
+      min-width: 165px;
+    }
+    .status-filter-select:focus {
+      border-color: #0094da;
+    }
     @media (max-width: 900px) {
       .summary-box, .orders-card { max-width: 99vw; }
       .modal { min-width: 0; width: 99vw; }
@@ -300,6 +314,15 @@
       <input type="date" id="startDate">
       <span style="color:#ececec;">—</span>
       <input type="date" id="endDate">
+      <!-- EK: Durum filtresi için açılır liste -->
+      <select id="statusFilter" class="status-filter-select">
+        <option value="">Tüm Durumlar</option>
+        <option value="Bekleniyor">Bekleniyor</option>
+        <option value="Tr Depoda">Tr Depoda</option>
+        <option value="Yüklendi">Yüklendi</option>
+        <option value="Kıbrıs Depoda">Kıbrıs Depoda</option>
+        <option value="Teslim Edildi">Teslim Edildi</option>
+      </select>
       <button onclick="filterOrders()">Filtrele</button>
       <button onclick="clearFilters()">Temizle</button>
       <button onclick="showCustomers()">Kayıtlı Müşteriler</button>
@@ -499,6 +522,7 @@
       let musteri = document.getElementById('searchMusteri').value.trim().toLowerCase();
       let start = document.getElementById('startDate').value;
       let end = document.getElementById('endDate').value;
+      let status = document.getElementById('statusFilter').value; // <-- EKLENDİ
       let filtered = allOrders.filter(o => {
         let ok = true;
         if(kod && !(o.siparisKodu||"").toLowerCase().includes(kod)) ok = false;
@@ -511,6 +535,7 @@
           let d = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate() : (o.createdAt instanceof Date ? o.createdAt : null);
           if(!d || d > new Date(end + "T23:59:59")) ok = false;
         }
+        if(status && (o.durum||"") !== status) ok = false; // <-- EKLENDİ
         return ok;
       });
       renderOrders(filtered);
@@ -521,6 +546,7 @@
       document.getElementById('searchMusteri').value = "";
       document.getElementById('startDate').value = "";
       document.getElementById('endDate').value = "";
+      document.getElementById('statusFilter').value = ""; // <-- EKLENDİ
       renderOrders(allOrders);
       renderSummary(allOrders);
     }
@@ -550,6 +576,16 @@
     window.closeCustomersModal = function() {
       document.getElementById('customersModal').style.display = 'none';
     }
+
+    // EK: Durum filtresi değişince otomatik filtre uygula
+    document.addEventListener('DOMContentLoaded', function() {
+      var statusFilter = document.getElementById('statusFilter');
+      if (statusFilter) {
+        statusFilter.addEventListener('change', function() {
+          filterOrders();
+        });
+      }
+    });
   </script>
 </body>
 </html>
