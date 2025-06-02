@@ -728,5 +728,39 @@
       }
     });
   </script>
+<!-- ADMIN GİRİŞ KONTROLÜ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+    authDomain: "kibris-6b4f7.firebaseapp.com",
+    projectId: "kibris-6b4f7",
+    storageBucket: "kibris-6b4f7.firebasestorage.app",
+    messagingSenderId: "141262926171",
+    appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+    measurementId: "G-JL9P6BRZTD"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    const allowedAdminEmail = "seninmailin@gmail.com"; // <--- BURAYI KENDİ GOOGLE E-POSTANLA DEĞİŞTİR
+    if (user) {
+      if (user.email === allowedAdminEmail) {
+        console.log("✅ Admin girişi başarılı:", user.email);
+      } else {
+        alert("❌ Bu sayfaya erişim yetkiniz yok.");
+        window.location.href = "index.html";
+      }
+    } else {
+      // Hiç giriş yapılmamışsa
+      window.location.href = "index.html";
+    }
+  });
+</script>
+
 </body>
 </html>
