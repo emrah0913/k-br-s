@@ -457,7 +457,7 @@
           sehir: teslimat === 'Eve Teslim' ? sehir : "",
           acikAdres: teslimat === 'Eve Teslim' ? acikAdres : "",
           toplamTutar,
-          createdAt: firebase.firestore.Timestamp.now()
+          createdAt: new Date()
         });
 
         successInfo.innerText = "Siparişiniz başarıyla kaydedildi!";
