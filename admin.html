@@ -350,7 +350,11 @@
       tbody.innerHTML = "";
       allOrders = [];
       try {
-        const snap = await db.collection("siparisler")
+        const snap = await db.collection("siparisler").get();
+snap.docs.forEach(doc => {
+  const data = doc.data();
+  allOrders.push({ ...data, id: doc.id });
+});
 
         snap.forEach(doc => {
           const data = doc.data();
