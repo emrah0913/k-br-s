@@ -437,11 +437,11 @@
             <td>${o.toplamTutar ? o.toplamTutar + " TL" : "-"}</td>
             <td>
               <select class="status-select" data-id="${o.id}" onchange="updateStatus('${o.id}', this.value)">
-                <option ${o.durum=="Yeni"?'selected':''}>Yeni</option>
-                <option ${o.durum=="Hazırlanıyor"?'selected':''}>Hazırlanıyor</option>
-                <option ${o.durum=="Kargoda"?'selected':''}>Kargoda</option>
+                <option ${o.durum=="Bekleniyor"?'selected':''}>Bekleniyor</option>
+                <option ${o.durum=="Tr Depoda"?'selected':''}>Tr Depoda</option>
+                <option ${o.durum=="Yüklendi"?'selected':''}>Yüklendi</option>
+                <option ${o.durum=="Kıbrıs Depoda"?'selected':''}>Kıbrıs Depoda</option>
                 <option ${o.durum=="Teslim Edildi"?'selected':''}>Teslim Edildi</option>
-                <option ${o.durum=="İptal"?'selected':''}>İptal</option>
               </select>
             </td>
             <td>
