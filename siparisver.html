@@ -210,6 +210,16 @@
     </div>
     <form class="calc-module" id="calcForm" autocomplete="off">
       <div class="calc-title">Sipariş ve Hesaplama Modülü</div>
+      <!-- EKLENEN ALANLAR: Ad Soyad ve Telefon -->
+      <div class="form-row">
+        <label for="adSoyad">Ad Soyad</label>
+        <input type="text" id="adSoyad" placeholder="Ad Soyad" required>
+      </div>
+      <div class="form-row">
+        <label for="telefon">Telefon</label>
+        <input type="tel" id="telefon" placeholder="Telefon" required>
+      </div>
+      <!-- /EKLENEN ALANLAR -->
       <div class="form-row">
         <label for="urunLinki">Ürün Linki</label>
         <input type="url" id="urunLinki" placeholder="https://www.trendyol.com/..." required>
@@ -379,10 +389,17 @@
       const teslimat = document.getElementById('teslimatTipi').value;
       const sehir = document.getElementById('adresSecimi').value;
       const acikAdres = document.getElementById('acikAdres').value.trim();
+      const adSoyad = document.getElementById('adSoyad').value.trim();
+      const telefon = document.getElementById('telefon').value.trim();
 
       errorInfo.style.display = 'none';
       successInfo.style.display = 'none';
 
+      if (!adSoyad || !telefon) {
+        errorInfo.innerText = "Lütfen ad soyad ve telefon bilgilerinizi giriniz.";
+        errorInfo.style.display = '';
+        return;
+      }
       if (!link || !fiyat || !kategori || !teslimat || !siparisKodu) {
         errorInfo.innerText = "Lütfen tüm alanları doldurunuz.";
         errorInfo.style.display = '';
@@ -419,10 +436,17 @@
       const teslimat = document.getElementById('teslimatTipi').value;
       const sehir = document.getElementById('adresSecimi').value;
       const acikAdres = document.getElementById('acikAdres').value.trim();
+      const adSoyad = document.getElementById('adSoyad').value.trim();
+      const telefon = document.getElementById('telefon').value.trim();
 
       errorInfo.style.display = 'none';
       successInfo.style.display = 'none';
 
+      if (!adSoyad || !telefon) {
+        errorInfo.innerText = "Lütfen ad soyad ve telefon bilgilerinizi giriniz.";
+        errorInfo.style.display = '';
+        return;
+      }
       if (!user) {
         errorInfo.innerText = "Lütfen giriş yapınız.";
         errorInfo.style.display = '';
@@ -449,6 +473,8 @@
         await db.collection("siparisler").add({
           uid: user.uid,
           email: user.email,
+          adSoyad: adSoyad,
+          telefon: telefon,
           urunLinki: link,
           siparisKodu: siparisKodu,
           urunFiyati: fiyat,
