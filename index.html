@@ -1,761 +1,185 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Kıbrıs Online</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700&family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getir Kıbrıs - Türkiye'den Kıbrıs'a Teslimat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --main-gradient: linear-gradient(90deg, #00b4d8 0%, #3a86ff 100%);
-      --main-bg: #f1f6fb;
-      --accent-bg: #fff;
-      --main-blue: #3a86ff;
-      --main-cyan: #00b4d8;
-      --soft-cyan: #caf0f8;
-      --soft-blue: #e0e7ff;
-      --deep-blue: #1b263b;
-      --radius: 22px;
-      --shadow: 0 4px 24px #3a86ff16;
-      --btn-grad: linear-gradient(90deg, #00b4d8 0%, #3a86ff 100%);
-      --btn-grad-hover: linear-gradient(90deg, #3a86ff 0%, #00b4d8 100%);
-      --input-bg: #f8fbfd;
-      --input-border: #b6d0f7;
-      --focus: #3a86ff38;
-      --transition: .18s cubic-bezier(.4,0,.2,1);
-      --slogan-clr: #1b263b;
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
     }
-    html, body { height:100%; margin:0; padding:0;}
     body {
-      background: var(--main-bg);
-      color: var(--deep-blue);
-      font-family: 'Inter', Arial, sans-serif;
-      font-size: 17px;
-      min-height: 100vh;
-      letter-spacing: .01em;
+      font-family: 'Inter', sans-serif;
+      background-color: #fffefa;
+      color: #2b2b2b;
     }
-    /* HEADER */
-    .header-bar {
-      width: 100%;
-      background: var(--accent-bg);
-      box-shadow: var(--shadow);
-      padding: 0;
-      position: sticky;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      height: 58px;
-    }
-    .login-area {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-right: 18px;
-    }
-    .nav-login-btn {
-      background: var(--btn-grad);
-      color: #fff;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      padding: 7px 13px 7px 10px;
-      font-size: .98rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      box-shadow: 0 2px 6px #3a86ff10;
-      transition: background .17s, transform .16s;
-    }
-    .nav-login-btn:hover, .nav-login-btn:active {
-      background: var(--btn-grad-hover);
-      transform: scale(1.03);
-    }
-    .google-logo { width: 18px; height: 18px; border-radius: 50%; }
-    .nav-avatar {
-      width: 27px; height: 27px;
-      border-radius: 50%;
-      border: 1.7px solid #b6d0f7;
-      object-fit: cover;
-      background: #caf0f8;
-    }
-    .nav-username {
-      max-width: 105px;
-      font-weight: 600;
-      color: var(--deep-blue);
-      font-size: .98rem;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-    .nav-logout {
-      background: transparent;
-      color: #00b4d8;
-      border: none;
-      font-weight: 700;
-      font-size: .97rem;
-      cursor: pointer;
-      border-radius: 7px;
-      padding: 4px 8px;
-      transition: background .14s, color .14s;
-    }
-    .nav-logout:hover { background: #e0f7fa; color: #3a86ff;}
-
-    /* SITE TITLE */
-    .site-header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 28px;
-      margin-bottom: 6px;
-      gap: 0;
-    }
-    .site-title {
-      font-family: 'Manrope', 'Montserrat', Arial, sans-serif;
-      font-size: 2.8rem;
-      color: transparent;
-      background: var(--main-gradient);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 800;
-      letter-spacing: .07em;
-      margin: 0;
+    header {
+      background-color: #ffcb05;
+      padding: 20px;
       text-align: center;
-      user-select: none;
-      text-shadow: 0 3px 32px #3a86ff21;
-      line-height: 1.1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .main-nav {
+    header img {
+      max-width: 200px;
+    }
+    nav {
       display: flex;
-      gap: 16px;
-      margin-top: 12px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
       justify-content: center;
+      gap: 30px;
+      background-color: #2b2b2b;
+      padding: 15px 0;
     }
-    .main-btn {
-      padding: 11px 29px;
-      border-radius: 15px;
-      background: var(--btn-grad);
-      color: #fff;
-      font-weight: 700;
-      border: none;
-      font-size: 1.14rem;
-      cursor: pointer;
-      box-shadow: 0 2px 9px #00b4d81a;
-      transition: background .18s, transform .17s;
-      letter-spacing: .01em;
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
     }
-    .main-btn:hover, .main-btn:active {
-      background: var(--btn-grad-hover);
-      transform: scale(1.045);
+    .hero {
+      background-color: #fffefa;
+      text-align: center;
+      padding: 60px 20px;
     }
-
-    /* SHIP HERO */
-    .ship-hero-wrap {
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 14px;
+    .hero h1 {
+      font-size: 2.4em;
       margin-bottom: 10px;
-      gap: 0;
-      position: relative;
+      color: #2b2b2b;
     }
-    .ship-img-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: min(430px, 97vw);
+    .hero p {
+      font-size: 1.2em;
+      color: #666;
     }
-    .ship-img {
-      width: 100%;
-      max-width: 430px;
-      min-width: 220px;
-      border-radius: 28px;
-      box-shadow: 0 5px 38px #3a86ff18, 0 1px 3px #00b4d80c;
-      object-fit: cover;
-      background: #fff;
-      margin-bottom: 0;
-      margin-top: 0;
+    .calculator {
+      background: #ffffff;
+      padding: 30px;
+      margin: 30px auto;
+      border-radius: 12px;
+      max-width: 500px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .calculator label {
       display: block;
-    }
-    .slogan-over-ship {
-      position: absolute;
-      top: 16%;
-      left: 50%;
-      transform: translate(-50%, 0);
-      width: 92%;
-      color: #fff;
-      font-family: 'Manrope', 'Montserrat', Arial, sans-serif;
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: .03em;
-      text-shadow: 0 4px 32px #1b263b66, 0 1px 3px #3a86ff66;
-      background: linear-gradient(90deg, #00b4d8e0 0%, #3a86ffe0 100%);
-      border-radius: 15px;
-      padding: 12px 5px 9px 5px;
-      text-align: center;
-      box-shadow: 0 1px 12px #00b4d866;
-      user-select: none;
-    }
-
-    /* CALC MODULE */
-    .module-wrap {
-      width: 98vw;
-      margin: 20px auto 10px auto;
-      background: var(--accent-bg);
-      border-radius: 19px;
-      box-shadow: 0 2px 18px #00b4d814;
-      padding: 26px 2vw 19px 2vw;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      position: relative;
-      max-width: 440px;
-      z-index: 2;
-    }
-    .module-title {
-      font-size: 1.14rem;
-      font-weight: 700;
-      color: #00b4d8;
-      text-align: center;
-      margin-bottom: 7px;
-      letter-spacing: .01em;
-    }
-    .calc-row {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      margin-bottom: 5px;
-      width: 100%;
-    }
-    .calc-row-double {
-      flex-direction: row;
-      gap: 8px;
-    }
-    .calc-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      min-width: 0;
-    }
-    .calc-label {
+      margin-top: 15px;
       font-weight: 600;
-      font-size: .93rem;
-      margin-bottom: 2px;
-      color: #0077b6;
-      letter-spacing: .01em;
     }
-    .calc-input, .calc-select {
-      padding: 8px 10px;
-      border-radius: 7px;
-      border: 1.2px solid var(--input-border);
-      font-size: .97rem;
-      outline: none;
-      background: var(--input-bg);
-      transition: border .14s, box-shadow .13s;
-      min-width: 0;
-    }
-    .calc-input:focus, .calc-select:focus {
-      border: 1.5px solid #00b4d8;
-      background: #fafdff;
-      box-shadow: 0 1px 8px #3a86ff29;
-    }
-    .calc-action-btn {
-      margin-top: 9px;
+    .calculator input, .calculator select {
       width: 100%;
-      padding: 12px 0;
-      background: var(--btn-grad);
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .calculator button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: #2b2b2b;
       color: #fff;
-      font-size: 1.08rem;
-      font-weight: 700;
       border: none;
       border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background .13s, box-shadow .13s, transform .14s;
-      box-shadow: 0 2px 9px #00b4d812;
-      letter-spacing: .01em;
     }
-    .calc-action-btn:active, .calc-action-btn:hover {
-      background: var(--btn-grad-hover);
-      transform: scale(1.018);
-      box-shadow: 0 8px 32px #00b4d817;
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #2b2b2b;
     }
-    .calc-result {
-      margin-top: 7px;
-      padding: 9px 0 2px 0;
-      font-size: .99rem;
-      font-weight: 700;
-      color: #3a86ff;
+    footer {
       text-align: center;
-      min-height: 21px;
-      letter-spacing: .01em;
-    }
-    /* SHOP LOGOS */
-    .shop-logos {
-      margin: 13px auto 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 13px;
-      align-items: center;
-      width: 97vw;
-      max-width: 440px;
-      padding-bottom: 13px;
-    }
-    .shop-logo-link {
-      display: flex;
-      align-items: center;
-      transition: transform .14s;
-      width: 17vw;
-      max-width: 75px;
-      min-width: 40px;
-      justify-content: center;
-    }
-    .shop-logo-link:hover { transform: scale(1.10);}
-    .shop-logo {
-      height: 20px;
-      object-fit: contain;
-      filter: grayscale(0.07);
-      max-width: 60px;
-      min-width: 28px;
-      background: #fff;
-      border-radius: 7px;
-      box-shadow: 0 2px 6px #00b4d80e;
-      padding: 3px 4px;
-      border: 1px solid #f1f5fa;
-      width: 100%;
-      transition: box-shadow .14s;
-    }
-    /* HOW TO USE */
-    .how-to-use-wrap {
-      width: 97vw;
-      max-width: 440px;
-      margin: 0 auto 22px auto;
-      background: var(--accent-bg);
-      border-radius: 12px;
-      box-shadow: 0 2px 10px #00b4d80e;
-      padding: 18px 13px 13px 13px;
-    }
-    .how-title {
-      font-weight: 700;
-      color: #00b4d8;
-      font-size: 1.08rem;
-      margin-bottom: 8px;
-      text-align: left;
-    }
-    .how-list {
-      margin: 0 0 0 0;
-      padding-left: 19px;
-      font-size: .99rem;
-    }
-    .how-list li {
-      margin-bottom: 5px;
-      line-height: 1.6;
-      font-size: .99rem;
-    }
-    /* DELIVERY ADDRESS */
-    .address-wrap {
-      width: 97vw;
-      max-width: 440px;
-      margin: 0 auto 17px auto;
-      background: var(--accent-bg);
-      border-radius: 12px;
-      box-shadow: 0 2px 10px #00b4d80c;
-      padding: 14px 13px 13px 13px;
-      font-size: .97rem;
-    }
-    .address-title {
-      font-weight: 700;
-      color: #00b4d8;
-      font-size: 1.05rem;
-      margin-bottom: 7px;
-    }
-    .address-box {
-      background: #e0f7fa;
-      border-radius: 7px;
-      padding: 10px 13px;
-      font-size: 1.01rem;
-      font-family: 'Inter', monospace;
-      margin-bottom: 6px;
-      user-select: all;
-      word-break: break-all;
-    }
-    /* BANK INFO */
-    .bank-wrap {
-      width: 97vw;
-      max-width: 440px;
-      margin: 0 auto 17px auto;
-      background: var(--accent-bg);
-      border-radius: 12px;
-      box-shadow: 0 2px 10px #00b4d80c;
-      padding: 14px 13px 13px 13px;
-      font-size: .97rem;
-    }
-    .bank-title {
-      font-weight: 700;
-      color: #00b4d8;
-      font-size: 1.05rem;
-      margin-bottom: 7px;
-    }
-    .bank-box {
-      background: #e0f7fa;
-      border-radius: 7px;
-      padding: 10px 13px;
-      font-size: 1.01rem;
-      font-family: 'Inter', monospace;
-      margin-bottom: 6px;
-      user-select: all;
-      word-break: break-all;
-    }
-    /* FOOTER */
-    .footer {
-      width: 100vw;
-      background: #e0f7fa;
-      color: #3a86ff;
-      font-size: .98rem;
-      text-align: center;
-      padding: 17px 10px 14px 10px;
-      margin-top: 25px;
-      border-top: 1px solid #caf0f8;
-      letter-spacing: .01em;
-    }
-    @media (min-width: 700px) {
-      .site-title { font-size: 3.2rem;}
-      .module-wrap, .how-to-use-wrap, .address-wrap, .bank-wrap { max-width: 510px;}
-      .shop-logos { max-width: 570px;}
-      .ship-img-container { max-width: 510px;}
-    }
-    @media (max-width: 440px) {
-      .site-title { font-size: 1.45rem;}
-      .module-wrap, .how-to-use-wrap, .address-wrap, .bank-wrap { padding-left: 3vw; padding-right: 3vw;}
-      .how-title, .address-title, .bank-title { font-size: .97rem;}
+      padding: 20px;
+      font-size: 0.9em;
+      background: #ffcb05;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <div class="header-bar">
-    <div class="login-area" id="nav-user">
-      <button class="nav-login-btn" id="google-login-btn">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-logo" alt="Google ile Giriş">
-        <span>Google ile Giriş Yap</span>
-      </button>
-      <span id="profile-box" style="display:none;">
-        <img src="" id="profile-img" class="nav-avatar" alt="Profil Fotoğrafı">
-        <span class="nav-username" id="profile-name"></span>
-        <button class="nav-logout" id="logout-btn">Çıkış Yap</button>
-      </span>
-    </div>
-  </div>
-  <!-- SITE TITLE -->
- <div class="site-header">
-  <div style="display: flex; justify-content: center; margin-top: 20px;">
-    <img src="/mnt/data/A_2D_digital_graphic_design_features_the_logo_of_.png" class="site-logo" alt="Getir Kıbrıs Logo">
-  </div>
+  <header>
+    <img src="logo.png" alt="Getir Kıbrıs Logo">
+  </header>
+  <nav>
+    <a href="#">Hesaplama</a>
+    <a href="#">Sipariş Ver</a>
+    <a href="#">Giriş Yap</a>
+  </nav>
+  <section class="hero">
+    <h1>Getir Kıbrıs'a Hoşgeldiniz</h1>
+    <p>Türkiye'den Kıbrıs'a uygun fiyatlı ve güvenilir teslimat</p>
+  </section>
+  <section class="calculator">
+    <label for="link">Ürün Linki</label>
+    <input type="text" id="link" placeholder="Ürün bağlantısını girin">
 
-    <div class="main-nav">
-      <button class="main-btn" id="btn-siparis-ver">Sipariş Ver</button>
-      <button class="main-btn" id="btn-siparislerim">Siparişlerim</button>
-      <button class="main-btn" id="btn-kargo-takip">Kargo Takip</button>
+    <label for="price">Ürün Fiyatı (TL)</label>
+    <input type="number" id="price" placeholder="Ürün fiyatı">
+
+    <label for="category">Kategori</label>
+    <select id="category">
+      <option value="mobilya">Mobilya</option>
+      <option value="giyim">Giyim</option>
+      <option value="elektronik">Elektronik</option>
+    </select>
+
+    <label for="delivery">Teslimat Tipi</label>
+    <select id="delivery">
+      <option value="depodan">Depodan Teslim</option>
+      <option value="eve">Eve Teslim</option>
+    </select>
+
+    <div id="citySelect" style="display:none">
+      <label for="city">Şehir</label>
+      <select id="city">
+        <option value="lefkoşa">Lefkoşa - 200TL</option>
+        <option value="girne">Girne - 350TL</option>
+        <option value="magusa">Mağusa - 500TL</option>
+      </select>
     </div>
-  </div>
-  <!-- SHIP HERO -->
-  <div class="ship-hero-wrap">
-    <div class="ship-img-container">
-      <img src="https://globelink-unimar.com/wp-content/uploads/2022/05/gemi-tasimaciligi-neden-tercih-edilmelidir.jpg"
-           class="ship-img" alt="Yük Gemisi">
-      <div class="slogan-over-ship">Sizler için Türkiye'den Kıbrıs'a getiriyoruz</div>
-    </div>
-  </div>
-  <!-- CALCULATION MODULE -->
-  <div class="module-wrap" id="hesaplama-modulu">
-    <div class="module-title">Hesaplama Modülü</div>
-    <div class="calc-row">
-      <div class="calc-col" style="flex:2;">
-        <label class="calc-label" for="product-link">Ürün Linki</label>
-        <input type="url" id="product-link" class="calc-input" placeholder="Ürün bağlantısını giriniz">
-      </div>
-    </div>
-    <div class="calc-row calc-row-double">
-      <div class="calc-col">
-        <label class="calc-label" for="product-price">Ürün Fiyatı (₺)</label>
-        <input type="number" id="product-price" min="1" step="0.01" class="calc-input" placeholder="Fiyat">
-      </div>
-      <div class="calc-col">
-        <label class="calc-label" for="product-category">Kategori</label>
-        <select id="product-category" class="calc-select">
-          <option value="">Seçiniz</option>
-          <option value="mobilya">Mobilya</option>
-          <option value="elektronik">Elektronik</option>
-          <option value="giyim">Giyim</option>
-          <option value="kirtasiye">Kırtasiye</option>
-          <option value="kozmetik">Kozmetik</option>
-        </select>
-      </div>
-    </div>
-    <div class="calc-row calc-row-double">
-      <div class="calc-col">
-        <label class="calc-label" for="delivery-type">Teslimat Tipi</label>
-        <select id="delivery-type" class="calc-select">
-          <option value="">Seçiniz</option>
-          <option value="ev">Eve Teslim</option>
-          <option value="depo">Depodan Teslim</option>
-        </select>
-      </div>
-      <div class="calc-col" id="city-group" style="display:none;">
-        <label class="calc-label" for="city-select">Şehir</label>
-        <select id="city-select" class="calc-select">
-          <option value="">Şehir Seçiniz</option>
-          <option value="lefkosa">Lefkoşa (200₺)</option>
-          <option value="girne">Girne (350₺)</option>
-          <option value="magusa">Mağusa (500₺)</option>
-          <option value="guzelyurt">Güzelyurt (450₺)</option>
-          <option value="lefke">Lefke (600₺)</option>
-          <option value="iskele">İskele (550₺)</option>
-          <option value="karpaz">Karpaz (700₺)</option>
-        </select>
-      </div>
-    </div>
-    <div>
-      <button class="calc-action-btn" id="calc-btn">Hesapla</button>
-      <div class="calc-result" id="calc-result"></div>
-    </div>
-  </div>
-  <!-- SHOP LOGOS -->
-  <div class="shop-logos">
-    <a href="https://www.trendyol.com/" class="shop-logo-link" target="_blank" rel="noopener">
-      <img src="https://cdn.logo.com/hotlink-ok/logo-social.png?logo=trendyol" alt="Trendyol" class="shop-logo">
-    </a>
-    <a href="https://www.hepsiburada.com/" class="shop-logo-link" target="_blank" rel="noopener">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Hepsiburada_logo.svg/512px-Hepsiburada_logo.svg.png" alt="Hepsiburada" class="shop-logo">
-    </a>
-    <a href="https://www.n11.com/" class="shop-logo-link" target="_blank" rel="noopener">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/N11_logo.svg/512px-N11_logo.svg.png" alt="N11" class="shop-logo">
-    </a>
-    <a href="https://www.amazon.com.tr/" class="shop-logo-link" target="_blank" rel="noopener">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon" class="shop-logo">
-    </a>
-    <a href="https://www.ciceksepeti.com/" class="shop-logo-link" target="_blank" rel="noopener">
-      <img src="https://cdn.ciceksepeti.net/assets/images/newdesign/logos/ciceksepeti-logos/ciceksepeti-logo-2022.svg" alt="ÇiçekSepeti" class="shop-logo">
-    </a>
-  </div>
-  <!-- HOW TO USE -->
-  <div class="how-to-use-wrap">
-    <div class="how-title">Sistemi Nasıl Kullanacaksınız?</div>
-    <ul class="how-list">
-      <li>Google ile hesabınıza giriş yapınız.</li>
-      <li>Türkiye'deki alışveriş sitelerinden istediğiniz ürünü seçin.</li>
-      <li>Ürün linki ve fiyat bilgisiyle hesaplama modülünden fiyatı hesaplayın.</li>
-      <li>“Sipariş Ver” butonuna tıklayarak siparişinizi oluşturun.</li>
-      <li>Türkiye’deki alışveriş sitelerinde aşağıdaki teslimat adresini kullanın.</li>
-      <li>Ödemenizi aşağıdaki banka bilgilerimize yapınız.</li>
-      <li>Tüm süreçleri “Siparişlerim” ve “Kargo Takip” bölümlerinden takip edebilirsiniz.</li>
-    </ul>
-  </div>
-  <!-- DELIVERY ADDRESS -->
-  <div class="address-wrap">
-    <div class="address-title">Teslimat Adresiniz</div>
-    <div class="address-box" id="address-copy">
-      İsminiz Soyadınız<br>
-      Kıbrıs Online - Sizin Adınız<br>
-      Barbaros Mah. Yıldırım Beyazıt Cad. No: 99<br>
-      PK: 34746 Ataşehir / İstanbul<br>
-      Tel: 0 555 555 55 55
-    </div>
-    <div style="font-size:.93rem; color:#00b4d8;">Bu adresi alışveriş yaptığınız sitelere teslimat adresi olarak ekleyin.</div>
-  </div>
-  <!-- BANK INFO -->
-  <div class="bank-wrap">
-    <div class="bank-title">Banka Bilgilerimiz</div>
-    <div class="bank-box">
-      <b>Banka:</b> Türkiye İş Bankası<br>
-      <b>Hesap Sahibi:</b> Kıbrıs Online Lojistik Ltd.<br>
-      <b>IBAN:</b> TR12 0006 4000 0001 2345 6789 01
-    </div>
-    <div style="font-size:.93rem; color:#00b4d8;">Ödemenizi yaptıktan sonra dekontu sisteme yükleyebilirsiniz.</div>
-  </div>
-  <!-- FOOTER -->
-  <div class="footer">
-    © 2025 Kıbrıs Online Lojistik Ltd. | Tüm hakları saklıdır.<br>
-    Site içeriği ve tasarımı Kıbrıs Online’a aittir. İzinsiz kullanılamaz.<br>
-    KVKK ve Kişisel Verilerin Korunması kapsamında bilgileriniz güvendedir.
-  </div>
-  <!-- FIREBASE SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+
+    <button onclick="calculate()">Hesapla</button>
+    <div class="result" id="result"></div>
+  </section>
+  <footer>
+    &copy; 2025 Getir Kıbrıs. Tüm hakları saklıdır.
+  </footer>
+
   <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-      authDomain: "kibris-6b4f7.firebaseapp.com",
-      projectId: "kibris-6b4f7",
-      storageBucket: "kibris-6b4f7.firebasestorage.app",
-      messagingSenderId: "141262926171",
-      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-      measurementId: "G-JL9P6BRZTD"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const delivery = document.getElementById("delivery");
+    const citySelect = document.getElementById("citySelect");
 
-    // Auth UI
-    const loginBtn = document.getElementById('google-login-btn');
-    const profileBox = document.getElementById('profile-box');
-    const profileImg = document.getElementById('profile-img');
-    const profileName = document.getElementById('profile-name');
-    const logoutBtn = document.getElementById('logout-btn');
-    let currentUser = null;
-
-    function showProfile(user) {
-      if (!user) return;
-      profileImg.src = user.photoURL || "";
-      profileName.textContent = user.displayName || "";
-      profileBox.style.display = 'inline-flex';
-      loginBtn.style.display = 'none';
-    }
-    function hideProfile() {
-      profileBox.style.display = 'none';
-      loginBtn.style.display = 'flex';
-    }
-    loginBtn.onclick = function() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .catch(err => {
-          alert("Giriş başarısız: " + (err.message || err));
-        });
-    };
-    logoutBtn.onclick = function() {
-      auth.signOut();
-    };
-    auth.onAuthStateChanged(function(user){
-      currentUser = user;
-      if(user){
-        showProfile(user);
-      }else{
-        hideProfile();
-      }
-    });
-
-    // NAV BAR BUTTONS
-    function requireLogin(actionFn) {
-      if (!currentUser) {
-        alert("Lütfen giriş yapınız");
-        return false;
-      }
-      if (typeof actionFn === "function") actionFn();
-      return true;
-    }
-    document.getElementById('btn-siparis-ver').onclick = function() {
-      requireLogin(() => {
-        window.location.href = "siparisver.html";
-      });
-    };
-    document.getElementById('btn-siparislerim').onclick = function() {
-      requireLogin(() => {
-        window.location.href = "siparislerim.html";
-      });
-    };
-    document.getElementById('btn-kargo-takip').onclick = function() {
-      requireLogin(() => {
-        window.location.href = "kargotakip.html";
-      });
-    };
-
-    // HESAPLAMA MODÜLÜ
-    const categoryMultipliers = {
-      mobilya: 1.7,
-      elektronik: 1.7,
-      giyim: 1.45,
-      kirtasiye: 1.4,
-      kozmetik: 1.7
-    };
-    const cityFees = {
-      lefkosa: 200,
-      girne: 350,
-      magusa: 500,
-      guzelyurt: 450,
-      lefke: 600,
-      iskele: 550,
-      karpaz: 700
-    };
-    const deliveryType = document.getElementById('delivery-type');
-    const cityGroup = document.getElementById('city-group');
-    const citySelect = document.getElementById('city-select');
-    const calcBtn = document.getElementById('calc-btn');
-    const calcResult = document.getElementById('calc-result');
-    let calcState = "hesapla";
-    let lastCalculation = null;
-
-    deliveryType.addEventListener('change', function() {
-      if (deliveryType.value === "ev") {
-        cityGroup.style.display = "flex";
+    delivery.addEventListener("change", () => {
+      if (delivery.value === "eve") {
+        citySelect.style.display = "block";
       } else {
-        citySelect.value = "";
-        cityGroup.style.display = "none";
+        citySelect.style.display = "none";
       }
     });
 
-    function formatMoney(val) {
-      return Number(val).toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " ₺";
+    function calculate() {
+      const price = parseFloat(document.getElementById("price").value) || 0;
+      const category = document.getElementById("category").value;
+      const deliveryType = document.getElementById("delivery").value;
+      const city = document.getElementById("city").value;
+      let oran = 0;
+      let cityPrice = 0;
+
+      switch (category) {
+        case "mobilya": oran = 0.7; break;
+        case "giyim": oran = 0.45; break;
+        case "elektronik": oran = 0.7; break;
+      }
+
+      if (deliveryType === "eve") {
+        switch (city) {
+          case "lefkoşa": cityPrice = 200; break;
+          case "girne": cityPrice = 350; break;
+          case "magusa": cityPrice = 500; break;
+        }
+      }
+
+      const result = price + (price * oran) + cityPrice;
+      document.getElementById("result").innerText = `Toplam Teslimat Tutarı: ${result.toFixed(2)} TL`;
     }
-
-    calcBtn.addEventListener('click', function() {
-      if (calcState === "hesapla") {
-        const price = parseFloat(document.getElementById('product-price').value);
-        const category = document.getElementById('product-category').value;
-        const delivery = deliveryType.value;
-        let city = citySelect.value;
-        calcResult.textContent = "";
-        if (isNaN(price) || price < 1) {
-          calcResult.textContent = "Lütfen geçerli ürün fiyatı giriniz.";
-          return;
-        }
-        if (!category || !categoryMultipliers[category]) {
-          calcResult.textContent = "Lütfen kategori seçiniz.";
-          return;
-        }
-        if (!delivery) {
-          calcResult.textContent = "Lütfen teslimat tipi seçiniz.";
-          return;
-        }
-        if (delivery === "ev" && (!city || !cityFees[city])) {
-          calcResult.textContent = "Lütfen şehir seçiniz.";
-          return;
-        }
-        let total = price * categoryMultipliers[category];
-        if (delivery === "ev") total += cityFees[city];
-        lastCalculation = total;
-        calcResult.textContent = "Toplam Tutar: " + formatMoney(total);
-        calcBtn.textContent = "Sipariş Ver";
-        calcState = "siparisver";
-      } else {
-        if (!currentUser) {
-          alert("Lütfen giriş yapınız");
-          return;
-        }
-        window.location.href = "siparisver.html";
-      }
-    });
-
-    ['product-link','product-price','product-category','delivery-type','city-select'].forEach(function(id){
-      document.getElementById(id).addEventListener('input', function(){
-        calcBtn.textContent = "Hesapla";
-        calcState = "hesapla";
-        calcResult.textContent = "";
-      });
-    });
- </script>
-
-<footer style="text-align:center; font-size:13px; color:#999; margin-top:30px;">
-  Güncel Sürüm: 1 Haziran 2025, 03:00
-</footer>
-
+  </script>
 </body>
-</html> 
+</html>
