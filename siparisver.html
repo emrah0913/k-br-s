@@ -411,7 +411,79 @@
     };
 
     // Onayla ve Firebase'e kaydet
-    onaylaBtn.onclick = async function() {
+   onaylaBtn.onclick = async function() {
+  const link = document.getElementById('urunLinki').value.trim();
+  const siparisKodu = document.getElementById('siparisKodu').value.trim();
+  const fiyat = parseFloat(document.getElementById('urunFiyati').value.trim());
+  const kategori = document.getElementById('kategori').value;
+  const teslimat = document.getElementById('teslimatTipi').value;
+  const sehir = document.getElementById('adresSecimi').value;
+  const acikAdres = document.getElementById('acikAdres').value.trim();
+
+  errorInfo.style.display = 'none';
+  successInfo.style.display = 'none';
+
+  if (!user) {
+    errorInfo.innerText = "Lütfen giriş yapınız.";
+    errorInfo.style.display = '';
+    return;
+  }
+  if (!link || !fiyat || !kategori || !teslimat || !siparisKodu) {
+    errorInfo.innerText = "Lütfen tüm alanları doldurunuz.";
+    errorInfo.style.display = '';
+    return;
+  }
+  if (teslimat === 'Eve Teslim' && (!sehir || !acikAdres)) {
+    errorInfo.innerText = "Teslimat şehri ve açık adres gerekli.";
+    errorInfo.style.display = '';
+    return;
+  }
+  if (toplamTutar === null) {
+    errorInfo.innerText = "Lütfen önce Hesapla butonuna basınız.";
+    errorInfo.style.display = '';
+    return;
+  }
+
+  onaylaBtn.disabled = true;
+  try {
+    await db.collection("siparisler").add({
+      uid: user.uid,
+      email: user.email,
+      urunLinki: link,
+      siparisKodu: siparisKodu,
+      urunFiyati: fiyat,
+      kategori,
+      teslimatTipi: teslimat,
+      sehir: teslimat === 'Eve Teslim' ? sehir : "",
+      acikAdres: teslimat === 'Eve Teslim' ? acikAdres : "",
+      toplamTutar,
+      createdAt: new Date()
+    });
+
+    successInfo.innerText = "Siparişiniz başarıyla kaydedildi!";
+    successInfo.style.display = '';
+    errorInfo.style.display = 'none';
+    resultInfo.style.display = 'none';
+
+    // 🔁 Yönlendirme satırı (eklenen)
+    setTimeout(() => {
+      window.location.href = "siparislerim.html";
+    }, 1500);
+
+    // Formu sıfırla
+    calcForm.reset();
+    document.getElementById('adresRow').style.display = 'none';
+    document.getElementById('acikAdresRow').style.display = 'none';
+    toplamTutar = null;
+    onaylaBtn.style.display = 'none';
+
+  } catch (e) {
+    errorInfo.innerText = "Bir hata oluştu, lütfen tekrar deneyin.";
+    errorInfo.style.display = '';
+  }
+  onaylaBtn.disabled = false;
+};
+
       const link = document.getElementById('urunLinki').value.trim();
       const siparisKodu = document.getElementById('siparisKodu').value.trim();
       const fiyat = parseFloat(document.getElementById('urunFiyati').value.trim());
