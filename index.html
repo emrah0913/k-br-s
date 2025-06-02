@@ -2,11 +2,10 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Getir Kıbrıs</title>
-  <!-- Google Fonts for modern look -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <style>
@@ -20,7 +19,6 @@
       --radius: 16px;
       --shadow: 0 4px 24px rgba(0,0,0,0.07);
     }
-
     body {
       font-family: 'Montserrat', Arial, sans-serif;
       margin: 0;
@@ -30,7 +28,6 @@
       display: flex;
       flex-direction: column;
     }
-
     .container {
       width: 100%;
       max-width: 1080px;
@@ -39,8 +36,6 @@
       box-sizing: border-box;
       flex: 1;
     }
-
-    /* HEADER */
     .header-bar {
       display: flex;
       justify-content: flex-end;
@@ -70,7 +65,6 @@
     }
     .btn:hover { background: #007dc1; }
     .btn:disabled { opacity: .6; cursor: not-allowed; }
-
     .logo-wrap {
       display: flex;
       justify-content: center;
@@ -78,12 +72,12 @@
       margin-bottom: 12px;
     }
     .logo {
-      max-width: 220px;
-      width: 60vw;
+      max-width: 90px;
+      width: 18vw;
+      min-width: 56px;
       height: auto;
+      display: block;
     }
-
-    /* HERO */
     .hero-img-wrap {
       position: relative;
       width: 100%;
@@ -113,8 +107,6 @@
       padding: 0 12px;
       user-select: none;
     }
-
-    /* NAV BUTTONS */
     .nav-btn-row {
       display: flex;
       justify-content: center;
@@ -137,8 +129,6 @@
     }
     .nav-btn:hover { background: #ffe780; }
     .nav-btn:disabled { opacity: .5; cursor: not-allowed; }
-
-    /* HESAPLAMA MODÜLÜ */
     .calc-module {
       margin: 0 auto 24px auto;
       background: var(--white);
@@ -191,8 +181,6 @@
       text-align: center;
       font-size: 1.1rem;
     }
-
-    /* BİLGİLENDİRME */
     .info-area {
       background: var(--gray);
       border-radius: var(--radius);
@@ -209,8 +197,6 @@
     .info-area li {
       margin-bottom: 6px;
     }
-
-    /* DEPO ADRESİ ve BANKA */
     .depo-banka-area {
       display: flex;
       flex-wrap: wrap;
@@ -261,8 +247,6 @@
       transition: background .15s;
     }
     .copy-btn:hover { background: #ffe780; }
-
-    /* FOOTER */
     .footer {
       background: var(--white);
       border-top: 1.5px solid var(--gray);
@@ -289,7 +273,6 @@
       color: #007dc1;
       text-decoration: underline;
     }
-
     @media (max-width: 700px) {
       .hero-slogan { font-size: 1.14rem; }
       .hero-img-wrap { max-width: 100vw; }
@@ -308,7 +291,6 @@
   </style>
 </head>
 <body>
-  <!-- HEADER -->
   <div class="header-bar">
     <button id="loginBtn" class="btn" style="display:none;">Google ile Giriş Yap</button>
     <img id="profileImg" class="profile-img" alt="Profil" style="display:none;">
@@ -317,23 +299,17 @@
   <div class="logo-wrap">
     <img src="https://getirkibris.com/logo.png" alt="Getir Kıbrıs Logo" class="logo">
   </div>
-  
   <div class="container">
-    <!-- HERO BANNER -->
     <div class="hero-img-wrap">
       <img class="hero-img" src="https://cdn.pixabay.com/photo/2021/09/16/21/27/container-ship-6631117_1280.jpg" alt="Gemi Görseli">
       <div class="hero-slogan">Türkiye’den Kıbrıs’a getiriyoruz</div>
     </div>
-
-    <!-- NAV BUTTONS -->
     <div class="nav-btn-row">
       <button class="nav-btn" id="btnHesapla" onclick="scrollToCalc()">Hesapla</button>
       <button class="nav-btn" id="btnSiparisVer" onclick="goPageOrWarn('siparis.html')">Sipariş Ver</button>
       <button class="nav-btn" id="btnSiparislerim" onclick="goPageOrWarn('siparislerim.html')">Siparişlerim</button>
       <button class="nav-btn" id="btnKargoTakip" onclick="goPageOrWarn('kargotakip.html')">Kargo Takip</button>
     </div>
-
-    <!-- HESAPLAMA MODÜLÜ -->
     <form class="calc-module" id="calcForm" autocomplete="off">
       <div class="calc-title" id="calcTitle">Hesaplama Modülü</div>
       <div class="form-row">
@@ -381,8 +357,6 @@
       </div>
       <div id="resultInfo" class="result-info" style="display:none;"></div>
     </form>
-
-    <!-- BİLGİLENDİRME -->
     <div class="info-area">
       <b>Sistemi Nasıl Kullanırım?</b>
       <ol>
@@ -395,8 +369,6 @@
         <li>Siparişlerim ve Kargo Takip ile süreci takip edin.</li>
       </ol>
     </div>
-
-    <!-- DEPO ADRESİ ve BANKA -->
     <div class="depo-banka-area">
       <div class="copy-box">
         <div class="copy-title">Türkiye Depo Adresi</div>
@@ -417,8 +389,6 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
       </div>
     </div>
   </div>
-
-  <!-- FOOTER -->
   <div class="footer">
     <div class="footer-links">
       <a href="#">Gizlilik Politikası</a>
@@ -427,20 +397,19 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
     </div>
     <div>© 2025 Getir Kıbrıs. Tüm hakları saklıdır.</div>
   </div>
-
-  <!-- FIREBASE & PAGE JS -->
   <script>
-    // TODO: Doldurun! Firebase config (değiştirin)
+    // FIREBASE CONFIG - ENTEGRE EDİLDİ!
     const firebaseConfig = {
-      apiKey: "FIREBASE_API_KEY",
-      authDomain: "FIREBASE_AUTH_DOMAIN",
-      projectId: "FIREBASE_PROJECT_ID",
-      appId: "FIREBASE_APP_ID"
+      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+      authDomain: "kibris-6b4f7.firebaseapp.com",
+      projectId: "kibris-6b4f7",
+      storageBucket: "kibris-6b4f7.firebasestorage.app",
+      messagingSenderId: "141262926171",
+      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+      measurementId: "G-JL9P6BRZTD"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-
-    // UI Elements
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const profileImg = document.getElementById('profileImg');
@@ -450,10 +419,8 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
     const hesaplaBtn = document.getElementById('hesaplaBtn');
     const calcForm = document.getElementById('calcForm');
     const resultInfo = document.getElementById('resultInfo');
-    const calcTitle = document.getElementById('calcTitle');
     let user = null;
 
-    // Giriş/Çıkış UI
     function updateAuthUI(currentUser) {
       user = currentUser;
       if (user) {
@@ -461,20 +428,17 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
         profileImg.src = user.photoURL || '';
         profileImg.style.display = '';
         logoutBtn.style.display = '';
-        // Enable buttons
         [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = false);
         if (hesaplaBtn.innerText === 'Sipariş Ver') hesaplaBtn.disabled = false;
       } else {
         loginBtn.style.display = '';
         profileImg.style.display = 'none';
         logoutBtn.style.display = 'none';
-        // Disable user-only buttons
         [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = true);
         if (hesaplaBtn.innerText === 'Sipariş Ver') hesaplaBtn.disabled = true;
       }
     }
 
-    // Firebase Auth listeners
     auth.onAuthStateChanged(function(currentUser) {
       updateAuthUI(currentUser);
     });
@@ -487,7 +451,6 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
       auth.signOut().then(()=>location.reload());
     };
 
-    // Butonlara erişim kontrolü ve yönlendirme
     function goPageOrWarn(page) {
       if (user) {
         window.location.href = page;
@@ -499,14 +462,12 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
       document.getElementById('calcForm').scrollIntoView({behavior: 'smooth'});
     }
 
-    // Teslimat tipi - adres alanı kontrolü
     document.getElementById('teslimatTipi').addEventListener('change', function() {
       const show = this.value === 'Eve Teslim';
       document.getElementById('adresRow').style.display = show ? '' : 'none';
       if (!show) document.getElementById('adresSecimi').value = '';
     });
 
-    // Hesaplama kuralları
     const kategoriYuzdeleri = {
       'Mobilya': 0.7,
       'Giyim': 0.45,
@@ -526,13 +487,11 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
 
     calcForm.onsubmit = function(e) {
       e.preventDefault();
-      // Form verileri
       const link = document.getElementById('urunLinki').value.trim();
       const fiyat = parseFloat(document.getElementById('urunFiyati').value.trim());
       const kategori = document.getElementById('kategori').value;
       const teslimat = document.getElementById('teslimatTipi').value;
       const adres = document.getElementById('adresSecimi').value;
-
       if (!link || !fiyat || !kategori || !teslimat) {
         alert('Lütfen tüm alanları doldurunuz.');
         return;
@@ -541,8 +500,6 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
         alert('Teslimat adresini seçiniz.');
         return;
       }
-
-      // Hesaplama
       let ekYuzde = kategoriYuzdeleri[kategori] || 0;
       let araFiyat = fiyat + (fiyat * ekYuzde);
       let kargo = 0;
@@ -550,26 +507,20 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
         kargo = kargoUcretleri[adres] || 0;
       }
       let toplam = Math.round(araFiyat + kargo);
-      // Sonuç göster
       resultInfo.innerHTML = `Toplam Tutar: <b>${toplam} TL</b> <br> (${kategori} için +%${(ekYuzde*100).toFixed(0)}, ${teslimat === 'Eve Teslim' ? adres+' '+kargo+' TL kargo dahil' : 'kargo ücreti yok'})`;
       resultInfo.style.display = '';
-      // Butonu Sipariş Ver'e çevir
       hesaplaBtn.innerText = 'Sipariş Ver';
       hesaplaBtn.type = 'button';
-      // Sadece giriş yapan tıklayabilir
       hesaplaBtn.onclick = function() {
         if (!user) {
           alert('Lütfen giriş yapınız.');
         } else {
-          // Sipariş sayfasına yönlendir (veya burada sipariş oluşturulabilir)
           window.location.href = 'siparis.html';
         }
       };
-      // Eğer kullanıcı yoksa disable et
       hesaplaBtn.disabled = !user;
     };
 
-    // Eğer hesaplama modülü tekrar doldurulursa buton tekrar Hesapla olur
     Array.from(calcForm.elements).forEach(el=>{
       el.addEventListener('input', function() {
         if (hesaplaBtn.innerText !== 'Hesapla') {
@@ -581,7 +532,6 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
       });
     });
 
-    // Kopyala fonksiyonu
     function copyText(elemId, btn) {
       const text = document.getElementById(elemId).innerText;
       navigator.clipboard.writeText(text).then(() => {
@@ -590,9 +540,7 @@ Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
       });
     }
 
-    // İlk yüklemede login butonunu göster
     loginBtn.style.display = '';
-    // Başlangıçta user-only butonları disable et
     [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = true);
   </script>
 </body>
