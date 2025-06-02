@@ -275,5 +275,15 @@
       }
     }
   </script>
+<script>
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      alert("Giriş yapan kullanıcı UID'si:\n" + user.uid);
+    } else {
+      alert("Giriş yapılmamış!");
+    }
+  });
+</script>
+
 </body>
 </html>
