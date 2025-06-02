@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yönetici Paneli - Getir Kıbrıs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f7f8fb;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      background: #003366;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .container {
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    input, select {
+      padding: 10px;
+      margin: 5px;
+      font-size: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+    }
+    button {
+      padding: 8px 12px;
+      font-weight: 600;
+      background: #0094da;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    button:hover {
+      background: #007bb5;
+    }
+    .filter-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loginSection" class="login">
+    <h2>Yönetici Girişi</h2>
+    <input type="password" id="adminPassword" placeholder="Şifre">
+    <button onclick="checkLogin()">Giriş Yap</button>
+  </div>
+
+  <div id="panel" style="display:none">
+    <div class="header">
+      <h2>Yönetici Paneli</h2>
+      <button onclick="logout()">Çıkış Yap</button>
+    </div>
+
+    <div class="container">
+      <div class="filter-area">
+        <input type="text" id="searchName" placeholder="Müşteri Adı Soyadı" oninput="filterTable()">
+        <input type="text" id="searchCode" placeholder="Sipariş Kodu" oninput="filterTable()">
+        <select id="searchDurum" onchange="filterTable()">
+          <option value="">Tüm Durumlar</option>
+          <option>Bekleniyor</option>
+          <option>TR Depoda</option>
+          <option>Yüklendi</option>
+          <option>Kıbrıs Depoda</option>
+          <option>Teslim Edildi</option>
+        </select>
+        <button onclick="exportToExcel()">Excel'e Aktar</button>
+      </div>
+
+      <table id="siparisTable">
+        <thead>
+          <tr>
+            <th>Ad Soyad</th>
+            <th>Telefon</th>
+            <th>Sipariş Kodu</th>
+            <th>Link</th>
+            <th>Kategori</th>
+            <th>Teslimat</th>
+            <th>Adres</th>
+            <th>Fiyat</th>
+            <th>Durum</th>
+          </tr>
+        </thead>
+        <tbody id="siparisBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+      authDomain: "kibris-6b4f7.firebaseapp.com",
+      projectId: "kibris-6b4f7",
+      storageBucket: "kibris-6b4f7.appspot.com",
+      messagingSenderId: "141262926171",
+      appId: "1:141262926171:web:07226845e51d4bbc0dea7e"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const correctPassword = "emirkutlu123";
+    function checkLogin() {
+      const pass = document.getElementById('adminPassword').value;
+      if (pass === correctPassword) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('panel').style.display = 'block';
+        loadData();
+      } else {
+        alert("Şifre yanlış!");
+      }
+    }
+
+    function logout() {
+      document.getElementById('panel').style.display = 'none';
+      document.getElementById('loginSection').style.display = 'flex';
+    }
+
+    async function loadData() {
+      const tbody = document.getElementById('siparisBody');
+      tbody.innerHTML = "";
+      const snap = await db.collection("siparisler").orderBy("createdAt", "desc").get();
+      snap.forEach(doc => {
+        const d = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${d.ad || "-"}</td>
+          <td>${d.telefon || "-"}</td>
+          <td>${d.siparisKodu || "-"}</td>
+          <td><a href="${d.urunLinki}" target="_blank">Link</a></td>
+          <td>${d.kategori}</td>
+          <td>${d.teslimatTipi}</td>
+          <td>${d.sehir || ""} ${d.acikAdres || ""}</td>
+          <td>${d.toplamTutar} TL</td>
+          <td>
+            <select onchange="updateDurum('${doc.id}', this.value)">
+              <option ${d.durum==="Bekleniyor"?"selected":""}>Bekleniyor</option>
+              <option ${d.durum==="TR Depoda"?"selected":""}>TR Depoda</option>
+              <option ${d.durum==="Yüklendi"?"selected":""}>Yüklendi</option>
+              <option ${d.durum==="Kıbrıs Depoda"?"selected":""}>Kıbrıs Depoda</option>
+              <option ${d.durum==="Teslim Edildi"?"selected":""}>Teslim Edildi</option>
+            </select>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function updateDurum(id, yeniDurum) {
+      await db.collection("siparisler").doc(id).update({ durum: yeniDurum });
+      loadData();
+    }
+
+    function filterTable() {
+      const ad = document.getElementById("searchName").value.toLowerCase();
+      const kod = document.getElementById("searchCode").value.toLowerCase();
+      const durum = document.getElementById("searchDurum").value;
+      const rows = document.querySelectorAll("#siparisBody tr");
+      rows.forEach(row => {
+        const cols = row.querySelectorAll("td");
+        const matchAd = cols[0].textContent.toLowerCase().includes(ad);
+        const matchKod = cols[2].textContent.toLowerCase().includes(kod);
+        const matchDurum = !durum || cols[8].querySelector("select").value === durum;
+        row.style.display = (matchAd && matchKod && matchDurum) ? "" : "none";
+      });
+    }
+
+    function exportToExcel() {
+      const table = document.getElementById("siparisTable").outerHTML;
+      const dataUri = 'data:application/vnd.ms-excel,' + encodeURIComponent(table);
+      const link = document.createElement("a");
+      link.href = dataUri;
+      link.download = "siparisler.xls";
+      link.click();
+    }
+  </script>
+</body>
+</html>
