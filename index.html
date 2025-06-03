@@ -782,7 +782,8 @@
             profileImg.alt = user.displayName || "Profil";
             // Admin butonunu göster (örnek olarak, belirli bir UID'ye sahipse)
             // Gerçek uygulamada bu kontrol backend'de yapılmalıdır.
-            if (user.uid === 'YOUR_ADMIN_UID_HERE') { // Buraya kendi admin UID'nizi girin
+            if (user.uid === 'JKy2CJircqSgC8ftIx9kY7iHlXC3
+') { // Buraya kendi admin UID'nizi girin
                 // Admin paneli navigasyonunu buraya ekleyebilirsiniz
                 // Örneğin: Admin butonu ekleme
                 if (!document.getElementById('admin-nav-btn')) {
@@ -1051,7 +1052,8 @@
     let unsubscribeCargoListener = null;
 
     function setupAdminCargoListener() {
-        if (!isAuthReady || !currentUser || currentUser.uid !== 'YOUR_ADMIN_UID_HERE') { // Admin UID kontrolü
+        if (!isAuthReady || !currentUser || currentUser.uid !== 'JKy2CJircqSgC8ftIx9kY7iHlXC3
+') { // Admin UID kontrolü
             if (unsubscribeCargoListener) {
                 unsubscribeCargoListener(); // Dinleyiciyi durdur
                 unsubscribeCargoListener = null;
@@ -1064,7 +1066,8 @@
         // Firestore'dan kargo listesini gerçek zamanlı dinle
         // Güvenlik kurallarınızın buna izin verdiğinden emin olun:
         // match /artifacts/{appId}/public/data/cargoTracking/{cargoId} {
-        //   allow read, write: if request.auth != null && request.auth.uid == 'YOUR_ADMIN_UID_HERE';
+        //   allow read, write: if request.auth != null && request.auth.uid == 'JKy2CJircqSgC8ftIx9kY7iHlXC3
+';
         // }
         unsubscribeCargoListener = db.collection(`artifacts/${appId}/public/data/cargoTracking`)
             .onSnapshot(snapshot => {
@@ -1108,7 +1111,8 @@
         // İlk yüklemede veya auth durumu değiştiğinde dinleyiciyi kur
         auth.onAuthStateChanged(user => {
             updateAuthUI(user); // UI'ı güncelle
-            if (user && user.uid === 'YOUR_ADMIN_UID_HERE') { // Admin UID kontrolü
+            if (user && user.uid === 'JKy2CJircqSgC8ftIx9kY7iHlXC3
+') { // Admin UID kontrolü
                 setupAdminCargoListener();
             } else if (unsubscribeCargoListener) {
                 unsubscribeCargoListener(); // Dinleyiciyi durdur
@@ -1120,7 +1124,8 @@
     adminCargoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        if (!isAuthReady || !currentUser || currentUser.uid !== 'YOUR_ADMIN_UID_HERE') { // Admin UID kontrolü
+        if (!isAuthReady || !currentUser || currentUser.uid !== 'JKy2CJircqSgC8ftIx9kY7iHlXC3
+') { // Admin UID kontrolü
             showToast('Bu işlemi yapmak için yönetici olarak giriş yapmalısınız.');
             showModal(authRequiredModal);
             return;
@@ -1196,7 +1201,8 @@
         if (e.target.closest('.delete-cargo-btn')) {
             const cargoId = e.target.closest('.delete-cargo-btn').dataset.id;
 
-            if (!isAuthReady || !currentUser || currentUser.uid !== 'YOUR_ADMIN_UID_HERE') { // Admin UID kontrolü
+            if (!isAuthReady || !currentUser || currentUser.uid !== 'JKy2CJircqSgC8ftIx9kY7iHlXC3
+') { // Admin UID kontrolü
                 showToast('Bu işlemi yapmak için yönetici olarak giriş yapmalısınız.');
                 showModal(authRequiredModal);
                 return;
