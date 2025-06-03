@@ -91,11 +91,11 @@
                  alt="Getir Kıbrıs" class="h-12">
             <span id="header-page-title" class="text-sm font-medium text-primary mt-1">Ana Sayfa</span>
         </div>
-        <div id="auth-button" class="w-8 h-8 flex items-center justify-center relative z-50"> <!-- z-index eklendi -->
-            <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer z-50"> <!-- z-index eklendi -->
+        <div id="auth-button" class="w-8 h-8 flex items-center justify-center relative z-[60]"> <!-- z-index artırıldı -->
+            <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer z-[60]"> <!-- z-index artırıldı -->
                 <i class="ri-google-fill ri-lg"></i>
             </button>
-            <div id="profile-container" class="hidden">
+            <div id="profile-container" class="hidden z-[60]"> <!-- z-index artırıldı -->
                 <img id="profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer">
             </div>
         </div>
@@ -478,21 +478,80 @@
 
         <!-- Sipariş Ver Bölümü -->
         <div id="order-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
-            <h3 class="text-lg font-semibold mb-4 text-primary">Sipariş Ver</h3>
-            <p class="text-gray-600">Burada sipariş verme formu veya bilgileri yer alacak.</p>
-            <!-- Buraya sipariş formu veya yönlendirme bilgileri eklenebilir -->
-            <div class="mt-4 p-4 bg-blue-50 rounded-lg text-blue-700">
-                <p>Bu bölüm henüz geliştirme aşamasındadır. Lütfen ana sayfaya dönün.</p>
-            </div>
+            <h3 class="text-lg font-semibold mb-4 text-primary">Yeni Sipariş Oluştur</h3>
+            <form id="order-form" class="space-y-4">
+                <div>
+                    <label for="order-product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
+                    <div class="relative">
+                        <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="url" id="order-product-link"
+                               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
+                               placeholder="https://www.example.com/urun" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="order-product-name" class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı</label>
+                    <div class="relative">
+                        <i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="order-product-name"
+                               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
+                               placeholder="Ürün adı" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="order-product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
+                    <div class="relative">
+                        <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="number" id="order-product-price"
+                               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
+                               placeholder="0.00" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="order-product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                    <div class="relative">
+                        <i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <select id="order-product-category"
+                                class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm" required>
+                            <option value="" disabled selected>Kategori seçin</option>
+                            <option value="furniture">Mobilya</option>
+                            <option value="electronics">Elektronik</option>
+                            <option value="clothing">Giyim</option>
+                            <option value="cosmetics">Kozmetik</option>
+                            <option value="stationery">Kırtasiye</option>
+                            <option value="other">Diğer</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div>
+                    <label for="order-product-quantity" class="block text-sm font-medium text-gray-700 mb-1">Miktar</label>
+                    <div class="relative">
+                        <i class="ri-numbers-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="number" id="order-product-quantity"
+                               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
+                               placeholder="1" min="1" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="order-notes" class="block text-sm font-medium text-gray-700 mb-1">Notlar (İsteğe Bağlı)</label>
+                    <textarea id="order-notes"
+                              class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
+                              rows="3" placeholder="Özel renk, boyut veya ek bilgiler"></textarea>
+                </div>
+                <button type="submit"
+                        class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
+                    Siparişi Oluştur
+                </button>
+            </form>
         </div>
 
         <!-- Siparişlerim Bölümü -->
         <div id="my-orders-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
             <h3 class="text-lg font-semibold mb-4 text-primary">Siparişlerim</h3>
-            <p class="text-gray-600">Geçmiş siparişlerinizin listesi burada görüntülenecek.</p>
-            <!-- Buraya kullanıcı sipariş geçmişi listesi eklenebilir -->
-            <div class="mt-4 p-4 bg-blue-50 rounded-lg text-blue-700">
-                <p>Bu bölüm henüz geliştirme aşamasındadır. Lütfen ana sayfaya dönün.</p>
+            <div id="orders-list" class="space-y-4">
+                <!-- Siparişler buraya dinamik olarak eklenecek -->
+                <p id="no-orders-message" class="text-center text-gray-500">Henüz siparişiniz bulunmamaktadır.</p>
             </div>
         </div>
 
@@ -511,12 +570,13 @@
                     <label for="admin-tracking-number" class="block text-sm font-medium text-gray-700 mb-1">Takip Numarası</label>
                     <input type="text" id="admin-tracking-number"
                            class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                           placeholder="Takip Numarası">
+                           placeholder="Takip Numarası" required>
                 </div>
                 <div>
                     <label for="admin-status" class="block text-sm font-medium text-gray-700 mb-1">Durum</label>
                     <select id="admin-status"
-                            class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+                            class="w-full px-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm" required>
+                        <option value="Beklemede">Beklemede</option>
                         <option value="Hazırlanıyor">Hazırlanıyor</option>
                         <option value="Yolda">Yolda</option>
                         <option value="Gümrükte">Gümrükte</option>
@@ -709,6 +769,20 @@
     const trackingDetailsDiv = document.getElementById('tracking-details');
     const noTrackingFoundDiv = document.getElementById('no-tracking-found');
 
+    // Sipariş Ver modülü elementleri
+    const orderForm = document.getElementById('order-form');
+    const orderProductLinkInput = document.getElementById('order-product-link');
+    const orderProductNameInput = document.getElementById('order-product-name');
+    const orderProductPriceInput = document.getElementById('order-product-price');
+    const orderProductCategorySelect = document.getElementById('order-product-category');
+    const orderProductQuantityInput = document.getElementById('order-product-quantity');
+    const orderNotesTextarea = document.getElementById('order-notes');
+
+    // Siparişlerim modülü elementleri
+    const ordersListDiv = document.getElementById('orders-list');
+    const noOrdersMessage = document.getElementById('no-orders-message');
+
+
     // Toast ve Modal elementleri
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
@@ -739,6 +813,11 @@
         headerPageTitle.textContent = title; // Başlığı güncelle
         activeSection = sectionToShow.id; // Aktif bölümü kaydet
         sectionToShow.scrollIntoView({behavior: 'smooth', block: 'start'}); // Bölüme kaydır
+
+        // Siparişlerim bölümü gösterildiğinde siparişleri yükle
+        if (sectionToShow.id === 'my-orders-section') {
+            loadUserOrders();
+        }
     }
 
     /**
@@ -944,7 +1023,8 @@
     };
 
     // Profil resmine tıklandığında çıkış onayı
-    profileContainer.onclick = async function () {
+    profileContainer.addEventListener('click', async function () { // addEventListener kullanıldı
+        console.log('Profile container click handler triggered!'); // Hata ayıklama için eklendi
         const confirmed = await showConfirmationModal('Çıkış Onayı', 'Çıkış yapmak istediğinize emin misiniz?');
         if (confirmed) {
             auth.signOut().then(function () {
@@ -954,7 +1034,7 @@
                 console.error("Çıkış hatası:", e);
             });
         }
-    };
+    });
 
     // Auth gerekli modalını kapatma butonu
     closeAuthModal.onclick = () => hideModal(authRequiredModal);
@@ -968,16 +1048,26 @@
     // Korunan butonlar için olay dinleyicileri (giriş yoksa modal aç)
     // Sipariş Ver butonu
     orderBtn.addEventListener('click', function (e) {
+        if (!isAuthReady) {
+            showToast('Lütfen kimlik doğrulama işleminin tamamlanmasını bekleyin.');
+            e.preventDefault();
+            return;
+        }
         if (!currentUser) {
             e.preventDefault();
             showModal(authRequiredModal);
         } else {
-            showSection(orderSection, 'Sipariş Ver'); // İç bölümü göster
+            showSection(orderSection, 'Yeni Sipariş Oluştur'); // İç bölümü göster
         }
     });
 
     // Siparişlerim butonu
     myOrdersBtn.addEventListener('click', function (e) {
+        if (!isAuthReady) {
+            showToast('Lütfen kimlik doğrulama işleminin tamamlanmasını bekleyin.');
+            e.preventDefault();
+            return;
+        }
         if (!currentUser) {
             e.preventDefault();
             showModal(authRequiredModal);
@@ -1063,6 +1153,146 @@
         calculationResult.classList.remove('hidden');
         calculationResult.scrollIntoView({behavior: 'smooth'});
     });
+
+    // --- Sipariş Ver Modülü ---
+    orderForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!isAuthReady || !currentUser) {
+            showToast('Sipariş oluşturmak için giriş yapmalısınız.');
+            showModal(authRequiredModal);
+            return;
+        }
+
+        const productLink = orderProductLinkInput.value.trim();
+        const productName = orderProductNameInput.value.trim();
+        const productPrice = parseFloat(orderProductPriceInput.value);
+        const productCategory = orderProductCategorySelect.value;
+        const productQuantity = parseInt(orderProductQuantityInput.value);
+        const orderNotes = orderNotesTextarea.value.trim();
+
+        if (!productLink || !productName || isNaN(productPrice) || productPrice <= 0 || !productCategory || isNaN(productQuantity) || productQuantity <= 0) {
+            showToast('Lütfen tüm gerekli alanları doldurun ve geçerli değerler girin.');
+            return;
+        }
+
+        const orderData = {
+            productLink,
+            productName,
+            productPrice,
+            productCategory,
+            productQuantity,
+            orderNotes: orderNotes || 'Yok', // Not yoksa 'Yok' yaz
+            status: 'Beklemede', // Başlangıç durumu
+            orderDate: Date.now(), // Sipariş tarihi (Unix timestamp)
+            userId: currentUser.uid, // Siparişi veren kullanıcının UID'si
+            userName: currentUser.displayName || 'Anonim Kullanıcı', // Kullanıcının adı
+            userEmail: currentUser.email || 'Yok' // Kullanıcının e-postası
+        };
+
+        try {
+            // Kullanıcının kendi siparişleri koleksiyonuna kaydet
+            // Güvenlik kuralları: match /artifacts/{appId}/users/{userId}/orders/{orderId} { allow read, write: if request.auth != null && request.auth.uid == userId; }
+            await db.collection(`artifacts/${appId}/users/${currentUser.uid}/orders`).add(orderData);
+            showToast('Siparişiniz başarıyla oluşturuldu!');
+            orderForm.reset(); // Formu sıfırla
+        } catch (error) {
+            console.error("Sipariş oluşturma hatası:", error);
+            showToast('Sipariş oluşturulurken bir hata oluştu: ' + error.message);
+        }
+    });
+
+    // --- Siparişlerim Modülü ---
+    let unsubscribeOrdersListener = null;
+
+    function loadUserOrders() {
+        if (!isAuthReady || !currentUser) {
+            ordersListDiv.innerHTML = '<p class="text-center text-gray-500">Siparişlerinizi görmek için lütfen giriş yapın.</p>';
+            noOrdersMessage.classList.add('hidden');
+            if (unsubscribeOrdersListener) {
+                unsubscribeOrdersListener();
+                unsubscribeOrdersListener = null;
+            }
+            return;
+        }
+
+        // Önceki dinleyiciyi durdur (sayfa değiştiğinde veya kullanıcı değiştiğinde)
+        if (unsubscribeOrdersListener) {
+            unsubscribeOrdersListener();
+        }
+
+        ordersListDiv.innerHTML = '<p class="text-center text-gray-500">Siparişleriniz yükleniyor...</p>';
+        noOrdersMessage.classList.add('hidden');
+
+        // Kullanıcının siparişlerini gerçek zamanlı dinle
+        // Güvenlik kuralları: match /artifacts/{appId}/users/{userId}/orders/{orderId} { allow read: if request.auth != null && request.auth.uid == userId; }
+        unsubscribeOrdersListener = db.collection(`artifacts/${appId}/users/${currentUser.uid}/orders`)
+            .orderBy('orderDate', 'desc') // En yeni siparişleri en üste getir
+            .onSnapshot(snapshot => {
+                ordersListDiv.innerHTML = ''; // Listeyi temizle
+                if (snapshot.empty) {
+                    noOrdersMessage.classList.remove('hidden');
+                    ordersListDiv.appendChild(noOrdersMessage); // Mesajı listeye ekle
+                } else {
+                    noOrdersMessage.classList.add('hidden');
+                    snapshot.forEach(doc => {
+                        const order = doc.data();
+                        const orderId = doc.id; // Siparişin ID'si
+                        const orderItem = document.createElement('div');
+                        orderItem.className = 'bg-gray-50 p-3 rounded-lg border border-gray-200';
+                        orderItem.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <h5 class="font-medium text-gray-800">${order.productName}</h5>
+                                <span class="text-xs font-semibold px-2 py-1 rounded-full ${order.status === 'Beklemede' ? 'bg-yellow-100 text-yellow-800' : order.status === 'Teslim Edildi' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                                    ${order.status}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-1">Fiyat: ${order.productPrice.toFixed(2)} ₺ | Miktar: ${order.productQuantity}</p>
+                            <p class="text-xs text-gray-500">Sipariş Tarihi: ${new Date(order.orderDate).toLocaleString('tr-TR')}</p>
+                            <p class="text-xs text-gray-500 truncate">Link: <a href="${order.productLink}" target="_blank" class="text-primary hover:underline">${order.productLink}</a></p>
+                            <p class="text-xs text-gray-500">Notlar: ${order.orderNotes}</p>
+                            <div class="flex justify-end mt-2">
+                                <button data-id="${orderId}" class="delete-order-btn text-red-500 hover:text-red-700 text-sm">
+                                    <i class="ri-delete-bin-line"></i> Sil
+                                </button>
+                            </div>
+                        `;
+                        ordersListDiv.appendChild(orderItem);
+                    });
+                }
+            }, error => {
+                console.error("Siparişler yüklenirken hata oluştu:", error);
+                showToast('Siparişleriniz yüklenirken bir hata oluştu.');
+                ordersListDiv.innerHTML = '<p class="text-center text-red-500">Siparişler yüklenemedi.</p>';
+                noOrdersMessage.classList.add('hidden');
+            });
+    }
+
+    // Sipariş silme butonu dinleyicisi
+    ordersListDiv.addEventListener('click', async (e) => {
+        if (e.target.closest('.delete-order-btn')) {
+            const orderId = e.target.closest('.delete-order-btn').dataset.id;
+
+            if (!isAuthReady || !currentUser) {
+                showToast('Bu işlemi yapmak için giriş yapmalısınız.');
+                showModal(authRequiredModal);
+                return;
+            }
+
+            const confirmed = await showConfirmationModal('Siparişi Sil', 'Bu siparişi silmek istediğinizden emin misiniz?');
+            if (confirmed) {
+                try {
+                    // Güvenlik kuralları: allow delete: if request.auth != null && request.auth.uid == userId;
+                    await db.collection(`artifacts/${appId}/users/${currentUser.uid}/orders`).doc(orderId).delete();
+                    showToast('Sipariş başarıyla silindi.');
+                } catch (error) {
+                    console.error("Sipariş silme hatası:", error);
+                    showToast('Sipariş silinirken bir hata oluştu: ' + error.message);
+                }
+            }
+        }
+    });
+
 
     // --- Kargo Takip Modülü ---
 
@@ -1300,7 +1530,7 @@
                 }
             }
         }
-    });
+    }); // Bu satırdaki fazladan ')' kaldırıldı.
 
     // --- Genel Kopyala Fonksiyonu ---
     document.querySelectorAll('.copy-btn').forEach(function (btn) {
