@@ -398,18 +398,39 @@ function updateAuthUI(user) {
     profileContainer.classList.remove('hidden');
     profileImg.src = user.photoURL || "";
     profileImg.alt = user.displayName || "Profil";
-    [orderBtn, myOrdersBtn, trackBtn].forEach(btn => btn.classList.remove('opacity-50'));
-    [orderBtn, myOrdersBtn, trackBtn].forEach(btn => btn.disabled = false);
+    [orderBtn, myOrdersBtn, trackBtn].forEach(btn => {
+      btn.classList.remove('opacity-50');
+      btn.disabled = false;
+      btn.setAttribute("data-auth", "ok");
+    });
     if (orderDirectBtn) orderDirectBtn.disabled = false;
   } else {
     loginBtn.classList.remove('hidden');
     profileContainer.classList.add('hidden');
-    [orderBtn, myOrdersBtn, trackBtn].forEach(btn => btn.classList.add('opacity-50'));
-    [orderBtn, myOrdersBtn, trackBtn].forEach(btn => btn.disabled = true);
+    [orderBtn, myOrdersBtn, trackBtn].forEach(btn => {
+      btn.classList.add('opacity-50');
+      btn.disabled = false; // Pasif görünüyor ama tıklanabilir!
+      btn.setAttribute("data-auth", "no");
+    });
     if (orderDirectBtn) orderDirectBtn.disabled = true;
   }
 }
 auth.onAuthStateChanged(updateAuthUI);
+
+// Butonlara tıklandığında giriş yoksa "Lütfen kayıt olunuz" toastı göster
+[orderBtn, myOrdersBtn, trackBtn].forEach(btn => {
+  btn.onclick = function(e) {
+    if (!currentUser) {
+      showToast("Lütfen kayıt olunuz.");
+      e.preventDefault();
+      return false;
+    }
+    // Girişli ise gerçek yönlendirme:
+    if (btn === orderBtn) window.location.href = "siparisver.html";
+    if (btn === myOrdersBtn) window.location.href = "siparislerim.html";
+    if (btn === trackBtn) window.location.href = "kargotakip.html";
+  }
+});
 
 loginBtn.onclick = function() {
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -421,18 +442,6 @@ profileContainer.onclick = function() {
     auth.signOut().then(() => showToast("Çıkış yapıldı!"));
   }
 };
-
-// === Buton Erişim Kontrolü ===
-function gotoProtected(page) {
-  if (!currentUser) {
-    showToast("Lütfen giriş yapınız.");
-    return;
-  }
-  window.location.href = page;
-}
-orderBtn.onclick = () => gotoProtected("siparisver.html");
-myOrdersBtn.onclick = () => gotoProtected("siparislerim.html");
-trackBtn.onclick = () => gotoProtected("kargotakip.html");
 
 // === Hesaplama Mantığı (ikinci koddan) ===
 const categoryPercents = {
@@ -539,7 +548,7 @@ calculatorForm.onsubmit = function(e) {
   // Sipariş ver tuşu
   orderDirectBtn.onclick = function() {
     if (!currentUser) {
-      showToast("Lütfen giriş yapınız.");
+      showToast("Lütfen kayıt olunuz.");
     } else {
       window.location.href = "siparisver.html";
     }
@@ -548,7 +557,7 @@ calculatorForm.onsubmit = function(e) {
   calculateSubmitBtn.onclick = function() {
     if (calculateSubmitBtn.innerText==="Sipariş Ver") {
       if (!currentUser) {
-        showToast("Lütfen giriş yapınız.");
+        showToast("Lütfen kayıt olunuz.");
       } else {
         window.location.href = "siparisver.html";
       }
