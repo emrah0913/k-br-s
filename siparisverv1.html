@@ -72,6 +72,15 @@ transform: scale(0.95);
 <span class="text-base font-medium">Kargo Takip</span>
 </a>
 </div>
+
+<!-- SİPARİŞLERİM KUTUSU (BUTONLARIN ALTINDA) -->
+<div id="my-orders-box" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-6">
+  <h3 class="text-lg font-semibold mb-4 text-primary">Siparişlerim</h3>
+  <ul id="orders-list" class="space-y-3 text-sm text-gray-700">
+    <li class="text-gray-400 italic">Henüz sipariş yok.</li>
+  </ul>
+</div>
+
 <!-- Calculator Section -->
 <div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8">
 <h3 class="text-lg font-semibold mb-4 text-primary">Sipariş Modülü</h3>
@@ -181,8 +190,9 @@ transform: scale(0.95);
 </div>
 </div>
 </div>
-<button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-Siparişi Onayla
+<!-- DEĞİŞTİ: Buton submit değil, type="button" ve id ile kontrol -->
+<button type="button" id="calculate-or-order-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
+Hesapla
 </button>
 </form>
 <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
@@ -547,167 +557,153 @@ const calculateBtn = document.getElementById('calculate-btn');
 updateAuthUI();
 });
 </script>
-<script id="calculator-script">
+<!-- BAŞLANGIÇ: Sipariş Akışı ve Siparişlerim Kutusu JS -->
+<script id="order-flow-script">
 document.addEventListener('DOMContentLoaded', function() {
-const calculatorSection = document.getElementById('calculator-section');
-const calculatorForm = document.getElementById('calculator-form');
-const citySelection = document.getElementById('city-selection');
-const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
-const calculationResult = document.getElementById('calculation-result');
-const resultCityRow = document.getElementById('result-city-row');
-const orderMethod = document.getElementById('order-method');
-const orderCodeInput = document.getElementById('order-code-input');
-const citySelect = document.getElementById('city');
-const deliveryAddressInput = document.getElementById('delivery-address-input');
-citySelect.addEventListener('change', function() {
-if (this.value) {
-deliveryAddressInput.classList.remove('hidden');
-} else {
-deliveryAddressInput.classList.add('hidden');
-}
-});
-orderMethod.addEventListener('change', function() {
-if (this.value === 'self') {
-orderCodeInput.classList.remove('hidden');
-} else {
-orderCodeInput.classList.add('hidden');
-}
-});
-// Toggle calculator section
-window.toggleCalculatorSection = function() {
-calculatorSection.classList.toggle('hidden');
-if (!calculatorSection.classList.contains('hidden')) {
-// Scroll to calculator section
-calculatorSection.scrollIntoView({ behavior: 'smooth' });
-}
-};
-// Handle delivery type change
-function handleDeliveryTypeChange(radio) {
-document.querySelectorAll('.delivery-radio div').forEach(dot => {
-dot.classList.add('hidden');
-});
-radio.parentElement.querySelector('.delivery-radio div').classList.remove('hidden');
-if (radio.value === 'home') {
-citySelection.classList.remove('hidden');
-} else {
-citySelection.classList.add('hidden');
-}
-}
-deliveryRadios.forEach(radio => {
-// Handle radio input change
-radio.addEventListener('change', function() {
-handleDeliveryTypeChange(this);
-});
-// Handle custom radio button click
-const customRadio = radio.parentElement.querySelector('.delivery-radio');
-customRadio.addEventListener('click', function() {
-radio.checked = true;
-handleDeliveryTypeChange(radio);
-});
-});
-// Initialize radio button state
-const defaultRadio = document.querySelector('input[name="delivery-type"]:checked');
-if (defaultRadio) {
-handleDeliveryTypeChange(defaultRadio);
-}
-// Handle form submission
-calculatorForm.addEventListener('submit', function(e) {
-e.preventDefault();
-const orderMethod = document.getElementById('order-method').value;
-const fullName = document.getElementById('full-name').value;
-const phone = document.getElementById('phone').value;
-const price = parseFloat(document.getElementById('product-price').value) || 0;
-const orderCode = document.getElementById('order-code').value;
-const productLink = document.getElementById('product-link').value;
-const category = document.getElementById('product-category').value;
-const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-const city = document.getElementById('city').value;
-const deliveryAddress = document.getElementById('delivery-address') ? document.getElementById('delivery-address').value : '';
-if (!fullName.trim()) {
-showToast('Lütfen ad soyad girin');
-return;
-}
-if (orderMethod === 'self' && !orderCode.trim()) {
-showToast('Lütfen sipariş kodunu girin');
-return;
-}
-if (!phone.trim()) {
-showToast('Lütfen telefon numarası girin');
-return;
-}
-// Simple phone number validation
-const phoneRegex = /^[0-9\s]{10,15}$/;
-if (!phoneRegex.test(phone.replace(/\D/g, ''))) {
-showToast('Lütfen geçerli bir telefon numarası girin');
-return;
-}
-if (!orderMethod) {
-showToast('Lütfen sipariş yöntemi seçin');
-return;
-}
-if (price <= 0) {
-showToast('Lütfen geçerli bir fiyat girin');
-return;
-}
-if (!category) {
-showToast('Lütfen bir kategori seçin');
-return;
-}
-// Calculate costs
-const categoryRates = {
-'furniture': 0.70,
-'electronics': 0.70,
-'clothing': 0.45,
-'cosmetics': 0.70,
-'stationery': 0.40
-};
-const categoryFee = price * categoryRates[category];
-let deliveryFee = 0;
-if (deliveryType === 'home') {
-deliveryFee = 200; // Fixed delivery fee
-}
-const total = price + categoryFee + deliveryFee;
-// Update result
-document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
-document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
-document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
-document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
-// Show/hide city fee row
-if (deliveryType === 'home') {
-resultCityRow.classList.remove('hidden');
-} else {
-resultCityRow.classList.add('hidden');
-}
-// Show result
-calculationResult.classList.remove('hidden');
-calculationResult.scrollIntoView({ behavior: 'smooth' });
-// --- FIREBASE: Save order to Firestore ---
-if (typeof firebase !== "undefined" && firebase.firestore) {
-  try {
-    db.collection('orders').add({
-      fullName,
-      phone,
-      productLink,
-      productPrice: price,
-      orderMethod,
-      orderCode: orderMethod === 'self' ? orderCode : '',
-      category,
-      categoryFee,
-      deliveryType,
-      city: deliveryType === 'home' ? city : '',
-      deliveryAddress: deliveryType === 'home' ? deliveryAddress : '',
-      deliveryFee,
-      total,
-      createdAt: new Date(),
-      user: firebase.auth().currentUser ? firebase.auth().currentUser.uid : null
+  const calculatorForm = document.getElementById('calculator-form');
+  const calculateOrOrderBtn = document.getElementById('calculate-or-order-btn');
+  const calculationResult = document.getElementById('calculation-result');
+  const ordersList = document.getElementById('orders-list');
+  let calculatedOrder = null;
+  let state = "calculate"; // "calculate" veya "order"
+
+  // Siparişlerim kutusunu güncelle
+  function renderOrders(orders) {
+    ordersList.innerHTML = "";
+    if (!orders.length) {
+      ordersList.innerHTML = '<li class="text-gray-400 italic">Henüz sipariş yok.</li>';
+      return;
+    }
+    orders.forEach(order => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <div>
+          <span class="font-medium">${order.fullName}</span> - 
+          <span>${order.productPrice?.toFixed(2) || 0} ₺</span>
+          <br>
+          <span class="text-xs text-gray-500">${order.category} | ${order.deliveryType === "home" ? "Eve Teslim" : "Depodan"}</span>
+        </div>
+      `;
+      ordersList.appendChild(li);
     });
-  } catch (err) {
-    showToast("Sipariş kaydedilemedi: " + (err.message || "Bilinmeyen hata"));
   }
-}
-});
+
+  // Firebase'den kullanıcıya ait son siparişleri çek
+  function fetchOrders() {
+    if (typeof firebase !== "undefined" && firebase.auth().currentUser) {
+      const uid = firebase.auth().currentUser.uid;
+      db.collection("orders")
+        .where("user", "==", uid)
+        .orderBy("createdAt", "desc")
+        .limit(10)
+        .get()
+        .then(snapshot => {
+          const orders = [];
+          snapshot.forEach(doc => orders.push(doc.data()));
+          renderOrders(orders);
+        });
+    } else {
+      renderOrders([]);
+    }
+  }
+
+  // Giriş değişiminde siparişleri güncelle
+  if (typeof firebase !== "undefined") {
+    firebase.auth().onAuthStateChanged(() => {
+      fetchOrders();
+    });
+  }
+
+  // Buton click ile akış yönetimi
+  calculateOrOrderBtn.addEventListener('click', function() {
+    if (state === "calculate") {
+      // Hesapla
+      const orderMethod = document.getElementById('order-method').value;
+      const fullName = document.getElementById('full-name').value;
+      const phone = document.getElementById('phone').value;
+      const price = parseFloat(document.getElementById('product-price').value) || 0;
+      const orderCode = document.getElementById('order-code')?.value || '';
+      const productLink = document.getElementById('product-link').value;
+      const category = document.getElementById('product-category').value;
+      const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+      const city = document.getElementById('city')?.value || '';
+      const deliveryAddress = document.getElementById('delivery-address')?.value || '';
+
+      // Kontroller
+      if (!fullName.trim()) return showToast('Lütfen ad soyad girin');
+      if (orderMethod === 'self' && !orderCode.trim()) return showToast('Lütfen sipariş kodunu girin');
+      if (!phone.trim()) return showToast('Lütfen telefon numarası girin');
+      const phoneRegex = /^[0-9\s]{10,15}$/;
+      if (!phoneRegex.test(phone.replace(/\D/g, ''))) return showToast('Lütfen geçerli bir telefon numarası girin');
+      if (!orderMethod) return showToast('Lütfen sipariş yöntemi seçin');
+      if (price <= 0) return showToast('Lütfen geçerli bir fiyat girin');
+      if (!category) return showToast('Lütfen bir kategori seçin');
+
+      // Hesapla
+      const categoryRates = {
+        'furniture': 0.70,
+        'electronics': 0.70,
+        'clothing': 0.45,
+        'cosmetics': 0.70,
+        'stationery': 0.40
+      };
+      const categoryFee = price * categoryRates[category];
+      let deliveryFee = (deliveryType === 'home') ? 200 : 0;
+      const total = price + categoryFee + deliveryFee;
+
+      // Sonucu göster
+      document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
+      document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
+      document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
+      document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
+      calculationResult.classList.remove('hidden');
+      calculationResult.scrollIntoView({ behavior: 'smooth' });
+
+      // Sipariş verilecek veriyi hazırla
+      calculatedOrder = {
+        orderMethod,
+        fullName,
+        phone,
+        orderCode: (orderMethod === 'self') ? orderCode : '',
+        productLink,
+        productPrice: price,
+        category,
+        categoryFee,
+        deliveryType,
+        city: (deliveryType === 'home') ? city : '',
+        deliveryAddress: (deliveryType === 'home') ? deliveryAddress : '',
+        deliveryFee,
+        total,
+        createdAt: new Date(),
+        user: (typeof firebase !== "undefined" && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : null
+      };
+      // Buton adını değiştir
+      calculateOrOrderBtn.textContent = "Siparişi Onayla";
+      state = "order";
+    } else if (state === "order") {
+      // Siparişi Firebase'e Ekle
+      if (!calculatedOrder) return;
+      if (typeof firebase !== "undefined" && firebase.firestore && calculatedOrder.user) {
+        db.collection('orders').add(calculatedOrder).then(() => {
+          showToast("Siparişiniz kaydedildi!");
+          fetchOrders();
+          // Buton ve state sıfırla
+          calculateOrOrderBtn.textContent = "Hesapla";
+          state = "calculate";
+        }).catch(err => {
+          showToast("Sipariş kaydedilemedi: " + (err.message || "Bilinmeyen hata"));
+        });
+      } else {
+        showToast("Giriş yapmadan sipariş veremezsiniz.");
+      }
+    }
+  });
+
+  // İlk yüklemede siparişler gelsin
+  fetchOrders();
 });
 </script>
+<!-- BİTİŞ: Sipariş Akışı ve Siparişlerim Kutusu JS -->
 <script id="utils-script">
 document.addEventListener('DOMContentLoaded', function() {
 // Copy to clipboard functionality
