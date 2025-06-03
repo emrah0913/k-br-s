@@ -87,12 +87,12 @@
     <header class="fixed top-0 w-full max-w-md bg-white shadow-sm z-50 px-4 py-3 flex justify-between items-center">
         <div class="w-8"></div>
         <div class="flex flex-col items-center">
-            <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png"
+            <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9177d5e8d147b21dbfa093538290a.png"
                  alt="Getir Kıbrıs" class="h-12">
             <span id="header-page-title" class="text-sm font-medium text-primary mt-1">Ana Sayfa</span>
         </div>
-        <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
-            <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
+        <div id="auth-button" class="w-8 h-8 flex items-center justify-center relative z-50"> <!-- z-index eklendi -->
+            <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer z-50"> <!-- z-index eklendi -->
                 <i class="ri-google-fill ri-lg"></i>
             </button>
             <div id="profile-container" class="hidden">
@@ -895,10 +895,10 @@
     // Giriş butonu tıklama olayı
     console.log('loginBtn element:', loginBtn); // Hata ayıklama için eklendi
     if (loginBtn) { // loginBtn'nin varlığını kontrol et
-        loginBtn.onclick = function () {
+        loginBtn.addEventListener('click', function () { // addEventListener kullanıldı
             console.log('Login button click handler triggered!'); // Hata ayıklama için eklendi
             showModal(loginModal);
-        };
+        });
     } else {
         console.error('loginBtn elementi bulunamadı. ID kontrol edin.');
     }
