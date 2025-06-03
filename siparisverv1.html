@@ -10,6 +10,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
 :where([class^="ri-"])::before { content: "\f3c2"; }
 body {
@@ -36,6 +40,7 @@ transform: scale(0.95);
 </button>
 <div id="profile-container" class="hidden">
 <img id="profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer">
+<button id="logout-btn" class="text-xs text-red-500 font-medium ml-2 cursor-pointer hidden">Çıkış</button>
 </div>
 </div>
 </header>
@@ -43,25 +48,25 @@ transform: scale(0.95);
 <main class="pt-24 pb-20">
 <!-- Main Action Buttons -->
 <div class="grid grid-cols-2 gap-4 px-4 mb-8">
-<a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/f80cdc56-2fdf-4e3c-be86-465c62bd066c" data-readdy="true" id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<a href="#" id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
 <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-3">
 <i class="ri-calculator-line ri-2x text-primary"></i>
 </div>
 <span class="text-base font-medium">Hesapla</span>
 </a>
-<a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/f80cdc56-2fdf-4e3c-be86-465c62bd066c" data-readdy="true" id="order-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<a href="#" id="order-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
 <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-3">
 <i class="ri-home-line ri-2x text-primary"></i>
 </div>
 <span class="text-base font-medium">Ana Sayfa</span>
 </a>
-<a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/3af37ec5-1c9d-4306-b2c2-90c1bdb926e2" data-readdy="true" id="my-orders-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<a href="#" id="my-orders-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
 <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-3">
 <i class="ri-file-list-3-line ri-2x text-primary"></i>
 </div>
 <span class="text-base font-medium">Siparişlerim</span>
 </a>
-<a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/263e9a58-8e36-4b2d-89bb-7927a220fb76" data-readdy="true" id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<a href="#" id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-36 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
 <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-3">
 <i class="ri-truck-line ri-2x text-primary"></i>
 </div>
@@ -71,61 +76,47 @@ transform: scale(0.95);
 <!-- Calculator Section -->
 <div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8">
 <h3 class="text-lg font-semibold mb-4 text-primary">Sipariş Modülü</h3>
-<form id="calculator-form" class="space-y-4">
-<div>
-<label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
-<div class="relative mb-4">
-<i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<select id="order-method" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
-<option value="" disabled selected>Sipariş yöntemi seçin</option>
-<option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
-<option value="service">Ürünü benim yerime siz sipariş edin, size ödeme yapacağım</option>
-</select>
-<i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-</div>
-<div id="order-code-input" class="hidden">
-<label for="order-code" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Kodu</label>
-<div class="relative">
-<i class="ri-barcode-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<input type="text" id="order-code" name="order-code" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Sipariş kodunuzu girin">
-</div>
-</div>
-<div class="space-y-4 mb-4">
+<form id="calculator-form" class="space-y-4" autocomplete="off">
 <div>
 <label for="full-name" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
 <div class="relative">
 <i class="ri-user-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<input type="text" id="full-name" name="full-name" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Ad Soyad">
+<input type="text" id="full-name" name="full-name" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Ad Soyad" required>
 </div>
 </div>
 <div>
 <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefon Numarası</label>
 <div class="relative">
 <i class="ri-phone-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<input type="tel" id="phone" name="phone" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0533 123 4567">
-</div>
+<input type="tel" id="phone" name="phone" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0533 123 4567" required>
 </div>
 </div>
 <div>
 <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
 <div class="relative">
 <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<input type="url" id="product-link" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="https://www.example.com/urun">
+<input type="url" id="product-link" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="https://www.example.com/urun" required>
 </div>
+</div>
+<div>
+<label for="order-code" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Kodu</label>
+<div class="relative">
+<i class="ri-barcode-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<input type="text" id="order-code" name="order-code" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Sipariş kodunuzu girin" required>
 </div>
 </div>
 <div>
 <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
 <div class="relative">
 <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00">
+<input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00" min="1" required>
 </div>
 </div>
 <div>
 <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
 <div class="relative">
 <i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<select id="product-category" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+<select id="product-category" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm" required>
 <option value="" disabled selected>Kategori seçin</option>
 <option value="furniture">Mobilya</option>
 <option value="electronics">Elektronik</option>
@@ -161,11 +152,13 @@ transform: scale(0.95);
 <i class="ri-building-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
 <select id="city" name="city" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
 <option value="" disabled selected>Şehir seçin</option>
+<option value="magusa">Mağusa</option>
 <option value="lefkosa">Lefkoşa</option>
 <option value="girne">Girne</option>
-<option value="magusa">Gazimağusa</option>
-<option value="guzelyurt">Güzelyurt</option>
 <option value="iskele">İskele</option>
+<option value="guzelyurt">Güzelyurt</option>
+<option value="lefke">Lefke</option>
+<option value="karpaz">Karpaz</option>
 </select>
 <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
 </div>
@@ -177,10 +170,14 @@ transform: scale(0.95);
 </div>
 </div>
 </div>
-<button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-Siparişi Onayla
+<div class="form-actions flex gap-2">
+<button type="button" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button" id="calculate-btn2">
+Hesapla
 </button>
-</form>
+<button type="button" class="w-full bg-green-600 text-white py-3 rounded-button font-medium hover:bg-green-700 transition-colors cursor-pointer !rounded-button" id="submit-btn" style="display:none;">
+Onayla
+</button>
+</div>
 <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
 <h4 class="font-medium text-gray-800 mb-2">Hesaplama Sonucu</h4>
 <div class="space-y-2 text-sm">
@@ -202,6 +199,9 @@ Siparişi Onayla
 </div>
 </div>
 </div>
+<div id="error-info" class="mt-4 text-sm text-red-600 hidden"></div>
+<div id="success-info" class="mt-4 text-sm text-green-700 hidden"></div>
+</form>
 </div>
 <!-- Popular E-commerce Sites -->
 <div class="px-4 mb-8">
@@ -380,287 +380,285 @@ Siparişi Onayla
 <a href="#" class="text-xs text-gray-600 hover:text-primary">S.S.S.</a>
 </div>
 </div>
-<!-- Login Modal -->
-<div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-<div class="bg-white rounded-lg p-6 w-[320px] relative">
-<button id="close-login-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
-<i class="ri-close-line ri-lg"></i>
-</button>
-<div class="text-center mb-6">
-<h3 class="text-xl font-semibold text-gray-800">Giriş Yap</h3>
-<p class="text-sm text-gray-600 mt-1">Hizmetlerimizi kullanmak için giriş yapın</p>
-</div>
-<button id="google-login-btn" class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-button py-3 font-medium hover:bg-gray-50 transition-colors cursor-pointer">
-<i class="ri-google-fill ri-lg text-primary"></i>
-<span>Google ile Giriş Yap</span>
-</button>
-</div>
-</div>
-<!-- Auth Required Modal -->
-<div id="auth-required-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-<div class="bg-white rounded-lg p-6 w-[320px]">
-<div class="text-center mb-6">
-<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-<i class="ri-lock-line ri-2x text-red-500"></i>
-</div>
-<h3 class="text-xl font-semibold text-gray-800">Giriş Gerekli</h3>
-<p class="text-sm text-gray-600 mt-2">Bu özelliği kullanmak için lütfen giriş yapın.</p>
-</div>
-<button id="auth-login-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-Giriş Yap
-</button>
-<button id="close-auth-modal" class="w-full text-gray-600 py-2 mt-2 font-medium hover:text-gray-800 transition-colors cursor-pointer">
-Kapat
-</button>
-</div>
-</div>
 <!-- Toast Notification -->
 <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 z-50">
 <span id="toast-message">Kopyalandı!</span>
 </div>
-<script id="auth-script">
-document.addEventListener('DOMContentLoaded', function() {
-// Mock authentication state
-let isLoggedIn = false;
-let userProfile = null;
+<script>
+// FIREBASE CONFIG (Kendi config'in ile değiştir)
+const firebaseConfig = {
+  apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+  authDomain: "kibris-6b4f7.firebaseapp.com",
+  projectId: "kibris-6b4f7",
+  storageBucket: "kibris-6b4f7.firebasestorage.app",
+  messagingSenderId: "141262926171",
+  appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+  measurementId: "G-JL9P6BRZTD"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let user = null, toplamTutar = null;
+
+// Giriş UI yönetimi
 const loginBtn = document.getElementById('login-btn');
 const profileContainer = document.getElementById('profile-container');
 const profileImg = document.getElementById('profile-img');
-const loginModal = document.getElementById('login-modal');
-const closeLoginModal = document.getElementById('close-login-modal');
-const googleLoginBtn = document.getElementById('google-login-btn');
-const authRequiredModal = document.getElementById('auth-required-modal');
-const authLoginBtn = document.getElementById('auth-login-btn');
-const closeAuthModal = document.getElementById('close-auth-modal');
-// Show login modal
-loginBtn.addEventListener('click', function() {
-loginModal.classList.remove('hidden');
-});
-// Close login modal
-closeLoginModal.addEventListener('click', function() {
-loginModal.classList.add('hidden');
-});
-// Google login simulation
-googleLoginBtn.addEventListener('click', function() {
-// Simulate successful login
-isLoggedIn = true;
-userProfile = {
-name: 'Ahmet Yılmaz',
-email: 'ahmet.yilmaz@example.com',
-photoUrl: 'https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20Turkish%20man%2C%20neutral%20expression%2C%20high%20quality%20portrait%20photo&width=100&height=100&seq=7&orientation=squarish'
-};
-updateAuthUI();
-loginModal.classList.add('hidden');
-showToast('Giriş başarılı!');
-});
-// Show auth required modal
-function showAuthRequiredModal() {
-authRequiredModal.classList.remove('hidden');
+const logoutBtn = document.getElementById('logout-btn');
+
+function updateAuthUI(currentUser) {
+  user = currentUser;
+  if (user) {
+    loginBtn.classList.add('hidden');
+    profileContainer.classList.remove('hidden');
+    profileImg.src = user.photoURL || '';
+    profileImg.alt = user.displayName || '';
+    logoutBtn.classList.remove('hidden');
+  } else {
+    loginBtn.classList.remove('hidden');
+    profileContainer.classList.add('hidden');
+    logoutBtn.classList.add('hidden');
+  }
 }
-// Close auth required modal
-closeAuthModal.addEventListener('click', function() {
-authRequiredModal.classList.add('hidden');
+
+auth.onAuthStateChanged(function(currentUser) {
+  updateAuthUI(currentUser);
 });
-// Auth login button
-authLoginBtn.addEventListener('click', function() {
-authRequiredModal.classList.add('hidden');
-loginModal.classList.remove('hidden');
+
+loginBtn && loginBtn.addEventListener('click', function() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(e=>alert('Giriş başarısız! '+e.message));
 });
-// Update UI based on auth state
-function updateAuthUI() {
-if (isLoggedIn && userProfile) {
-loginBtn.classList.add('hidden');
-profileContainer.classList.remove('hidden');
-profileImg.src = userProfile.photoUrl;
-profileImg.alt = userProfile.name;
-} else {
-loginBtn.classList.remove('hidden');
-profileContainer.classList.add('hidden');
+logoutBtn && logoutBtn.addEventListener('click', function() {
+  auth.signOut().then(()=>location.reload());
+});
+
+// Navigasyon
+function goPageOrWarn(page) {
+  if (user) {
+    window.location.href = page;
+  } else {
+    alert("Lütfen giriş yapınız.");
+  }
 }
-}
-// Profile click - logout
-profileContainer.addEventListener('click', function() {
-if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-isLoggedIn = false;
-userProfile = null;
-updateAuthUI();
-showToast('Çıkış yapıldı');
-}
-});
-// Check auth for protected actions
-const protectedButtons = [
-document.getElementById('order-btn'),
-document.getElementById('my-orders-btn'),
-document.getElementById('track-btn')
-];
-protectedButtons.forEach(button => {
-if (button) {
-button.addEventListener('click', function(e) {
-if (!isLoggedIn) {
-e.preventDefault();
-showAuthRequiredModal();
-}
-});
-}
-});
-// Calculator button (no auth required)
-const calculateBtn = document.getElementById('calculate-btn');
-// Initialize UI
-updateAuthUI();
-});
-</script>
-<script id="calculator-script">
-document.addEventListener('DOMContentLoaded', function() {
-const calculatorSection = document.getElementById('calculator-section');
-const calculatorForm = document.getElementById('calculator-form');
-const citySelection = document.getElementById('city-selection');
+document.getElementById('order-btn').onclick = () => goPageOrWarn('index.html');
+document.getElementById('my-orders-btn').onclick = () => goPageOrWarn('siparislerim.html');
+document.getElementById('track-btn').onclick = () => goPageOrWarn('kargotakip.html');
+document.getElementById('calculate-btn').onclick = () => document.getElementById('calculator-section').scrollIntoView({behavior: 'smooth'});
+
+// Form şehir ve adres kontrolü
 const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
-const calculationResult = document.getElementById('calculation-result');
-const resultCityRow = document.getElementById('result-city-row');
-const orderMethod = document.getElementById('order-method');
-const orderCodeInput = document.getElementById('order-code-input');
+const citySelection = document.getElementById('city-selection');
 const citySelect = document.getElementById('city');
 const deliveryAddressInput = document.getElementById('delivery-address-input');
-citySelect.addEventListener('change', function() {
-if (this.value) {
-deliveryAddressInput.classList.remove('hidden');
-} else {
-deliveryAddressInput.classList.add('hidden');
-}
-});
-orderMethod.addEventListener('change', function() {
-if (this.value === 'self') {
-orderCodeInput.classList.remove('hidden');
-} else {
-orderCodeInput.classList.add('hidden');
-}
-});
-// Toggle calculator section
-window.toggleCalculatorSection = function() {
-calculatorSection.classList.toggle('hidden');
-if (!calculatorSection.classList.contains('hidden')) {
-// Scroll to calculator section
-calculatorSection.scrollIntoView({ behavior: 'smooth' });
-}
-};
-// Handle delivery type change
 deliveryRadios.forEach(radio => {
-radio.addEventListener('change', function() {
-// Update radio button UI
-document.querySelectorAll('.delivery-radio div').forEach(dot => {
-dot.classList.add('hidden');
+  radio.addEventListener('change', function() {
+    document.querySelectorAll('.delivery-radio div').forEach(dot => {dot.classList.add('hidden');});
+    this.parentElement.querySelector('.delivery-radio div').classList.remove('hidden');
+    if (this.value === 'home') {
+      citySelection.classList.remove('hidden');
+    } else {
+      citySelection.classList.add('hidden');
+      citySelect.value = '';
+      deliveryAddressInput.classList.add('hidden');
+      document.getElementById('delivery-address').value = '';
+    }
+  });
 });
-this.parentElement.querySelector('.delivery-radio div').classList.remove('hidden');
-// Show/hide address input only for home delivery
-if (this.value === 'home') {
-citySelection.classList.remove('hidden');
-} else {
-citySelection.classList.add('hidden');
-}
+citySelect.addEventListener('change', function() {
+  if (this.value) {
+    deliveryAddressInput.classList.remove('hidden');
+  } else {
+    deliveryAddressInput.classList.add('hidden');
+    document.getElementById('delivery-address').value = '';
+  }
 });
-});
-// Handle form submission
-calculatorForm.addEventListener('submit', function(e) {
-e.preventDefault();
-const orderMethod = document.getElementById('order-method').value;
-const fullName = document.getElementById('full-name').value;
-const phone = document.getElementById('phone').value;
-const price = parseFloat(document.getElementById('product-price').value) || 0;
-const orderCode = document.getElementById('order-code').value;
-if (!fullName.trim()) {
-showToast('Lütfen ad soyad girin');
-return;
-}
-if (orderMethod === 'self' && !orderCode.trim()) {
-showToast('Lütfen sipariş kodunu girin');
-return;
-}
-if (!phone.trim()) {
-showToast('Lütfen telefon numarası girin');
-return;
-}
-// Simple phone number validation
-const phoneRegex = /^[0-9\s]{10,15}$/;
-if (!phoneRegex.test(phone.replace(/\D/g, ''))) {
-showToast('Lütfen geçerli bir telefon numarası girin');
-return;
-}
-const category = document.getElementById('product-category').value;
-const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-const city = document.getElementById('city').value;
-if (!orderMethod) {
-showToast('Lütfen sipariş yöntemi seçin');
-return;
-}
-// Validate inputs
-if (price <= 0) {
-showToast('Lütfen geçerli bir fiyat girin');
-return;
-}
-if (!category) {
-showToast('Lütfen bir kategori seçin');
-return;
-}
-// Calculate costs
+
+// Hesaplama oranları ve kargo ücretleri
 const categoryRates = {
-'furniture': 0.70,
-'electronics': 0.70,
-'clothing': 0.45,
-'cosmetics': 0.70,
-'stationery': 0.40
+  'furniture': 0.70,
+  'electronics': 0.70,
+  'clothing': 0.45,
+  'cosmetics': 0.70,
+  'stationery': 0.40
 };
-const categoryFee = price * categoryRates[category];
-let deliveryFee = 0;
-if (deliveryType === 'home') {
-deliveryFee = 200; // Fixed delivery fee
-}
-const total = price + categoryFee + deliveryFee;
-// Update result
-document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
-document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
-document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
-document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
-// Show/hide city fee row
-if (deliveryType === 'home') {
-resultCityRow.classList.remove('hidden');
-} else {
-resultCityRow.classList.add('hidden');
-}
-// Show result
-calculationResult.classList.remove('hidden');
-calculationResult.scrollIntoView({ behavior: 'smooth' });
-});
-});
-</script>
-<script id="utils-script">
-document.addEventListener('DOMContentLoaded', function() {
-// Copy to clipboard functionality
-const copyButtons = document.querySelectorAll('.copy-btn');
-copyButtons.forEach(button => {
-button.addEventListener('click', function() {
-const targetId = this.getAttribute('data-copy');
-const textToCopy = document.getElementById(targetId).textContent;
-navigator.clipboard.writeText(textToCopy)
-.then(() => {
-showToast('Kopyalandı!');
-})
-.catch(err => {
-showToast('Kopyalama başarısız');
-console.error('Kopyalama hatası:', err);
-});
-});
-});
-// Toast notification
-window.showToast = function(message) {
-const toast = document.getElementById('toast');
-const toastMessage = document.getElementById('toast-message');
-toastMessage.textContent = message;
-toast.classList.remove('opacity-0');
-setTimeout(() => {
-toast.classList.add('opacity-0');
-}, 3000);
+const kargoUcretleri = {
+  'magusa': 500,
+  'lefkosa': 200,
+  'girne': 350,
+  'iskele': 550,
+  'guzelyurt': 350,
+  'lefke': 450,
+  'karpaz': 750
 };
+
+// Hesapla buton
+document.getElementById('calculate-btn2').onclick = function() {
+  const adSoyad = document.getElementById('full-name').value.trim();
+  const telefon = document.getElementById('phone').value.trim();
+  const urunLinki = document.getElementById('product-link').value.trim();
+  const siparisKodu = document.getElementById('order-code').value.trim();
+  const fiyat = parseFloat(document.getElementById('product-price').value.trim());
+  const kategori = document.getElementById('product-category').value;
+  const teslimat = document.querySelector('input[name="delivery-type"]:checked').value;
+  const sehir = document.getElementById('city').value;
+  const acikAdres = document.getElementById('delivery-address').value.trim();
+
+  document.getElementById('error-info').classList.add('hidden');
+  document.getElementById('success-info').classList.add('hidden');
+
+  if (!adSoyad || !telefon) {
+    document.getElementById('error-info').innerText = "Lütfen ad soyad ve telefon bilgilerinizi giriniz.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+  if (!urunLinki || !fiyat || !kategori || !teslimat || !siparisKodu) {
+    document.getElementById('error-info').innerText = "Lütfen tüm alanları doldurunuz.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+  if (teslimat === 'home' && !sehir) {
+    document.getElementById('error-info').innerText = "Teslimat şehrini seçiniz.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+  if (teslimat === 'home' && sehir && !acikAdres) {
+    document.getElementById('error-info').innerText = "Teslimat adresinizi giriniz.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+
+  let ekYuzde = categoryRates[kategori] || 0;
+  let araFiyat = fiyat + (fiyat * ekYuzde);
+  let kargo = 0;
+  if (teslimat === 'home') {
+    kargo = kargoUcretleri[sehir] || 0;
+  }
+  toplamTutar = Math.round(araFiyat + kargo);
+
+  document.getElementById('result-price').textContent = `${fiyat.toFixed(2)} ₺`;
+  document.getElementById('result-category-fee').textContent = `${(fiyat*ekYuzde).toFixed(2)} ₺`;
+  document.getElementById('result-delivery-fee').textContent = `${kargo.toFixed(2)} ₺`;
+  document.getElementById('result-total').textContent = `${toplamTutar.toFixed(2)} ₺`;
+  if (teslimat === 'home') {
+    document.getElementById('result-city-row').classList.remove('hidden');
+  } else {
+    document.getElementById('result-city-row').classList.add('hidden');
+  }
+  document.getElementById('calculation-result').classList.remove('hidden');
+  document.getElementById('submit-btn').style.display = 'block';
+};
+
+// Onayla (sipariş gönder)
+document.getElementById('submit-btn').onclick = async function() {
+  const adSoyad = document.getElementById('full-name').value.trim();
+  const telefon = document.getElementById('phone').value.trim();
+  const urunLinki = document.getElementById('product-link').value.trim();
+  const siparisKodu = document.getElementById('order-code').value.trim();
+  const fiyat = parseFloat(document.getElementById('product-price').value.trim());
+  const kategori = document.getElementById('product-category').value;
+  const teslimat = document.querySelector('input[name="delivery-type"]:checked').value;
+  const sehir = document.getElementById('city').value;
+  const acikAdres = document.getElementById('delivery-address').value.trim();
+
+  document.getElementById('error-info').classList.add('hidden');
+  document.getElementById('success-info').classList.add('hidden');
+
+  if (!adSoyad || !telefon) {
+    document.getElementById('error-info').innerText = "Lütfen ad soyad ve telefon bilgilerinizi giriniz.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+  if (!user) {
+    document.getElementById('error-info').innerText = "Lütfen giriş yapınız.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+  if (!urunLinki || !fiyat || !kategori || !teslimat || !siparisKodu) {
+    document.getElementById('error-info').innerText = "Lütfen tüm alanları doldurunuz.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+  if (teslimat === 'home' && (!sehir || !acikAdres)) {
+    document.getElementById('error-info').innerText = "Teslimat şehri ve açık adres gerekli.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+  if (toplamTutar === null) {
+    document.getElementById('error-info').innerText = "Lütfen önce Hesapla butonuna basınız.";
+    document.getElementById('error-info').classList.remove('hidden');
+    return;
+  }
+
+  document.getElementById('submit-btn').disabled = true;
+  try {
+    await db.collection("siparisler").add({
+      uid: user.uid,
+      email: user.email,
+      adSoyad: adSoyad,
+      telefon: telefon,
+      urunLinki: urunLinki,
+      siparisKodu: siparisKodu,
+      urunFiyati: fiyat,
+      kategori,
+      teslimatTipi: teslimat === 'home' ? 'Eve Teslim' : 'Depodan Teslim',
+      sehir: teslimat === 'home' ? sehir : "",
+      acikAdres: teslimat === 'home' ? acikAdres : "",
+      toplamTutar,
+      createdAt: new Date()
+    });
+
+    document.getElementById('success-info').innerText = "Siparişiniz başarıyla kaydedildi!";
+    document.getElementById('success-info').classList.remove('hidden');
+    document.getElementById('error-info').classList.add('hidden');
+    document.getElementById('calculation-result').classList.add('hidden');
+
+    setTimeout(() => {
+      window.location.href = "siparislerim.html";
+    }, 1500);
+
+    document.getElementById('calculator-form').reset();
+    citySelection.classList.add('hidden');
+    deliveryAddressInput.classList.add('hidden');
+    toplamTutar = null;
+    document.getElementById('submit-btn').style.display = 'none';
+
+  } catch (e) {
+    document.getElementById('error-info').innerText = "Bir hata oluştu, lütfen tekrar deneyin.";
+    document.getElementById('error-info').classList.remove('hidden');
+  }
+  document.getElementById('submit-btn').disabled = false;
+};
+
+// Form sıfırlama ve otomatik hata/success gizleme
+Array.from(document.getElementById('calculator-form').elements).forEach(el=>{
+  el.addEventListener('input', function() {
+    document.getElementById('error-info').classList.add('hidden');
+    document.getElementById('success-info').classList.add('hidden');
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('calculation-result').classList.add('hidden');
+    toplamTutar = null;
+  });
 });
+
+// IBAN kopyala
+document.querySelectorAll('.copy-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const targetId = this.getAttribute('data-copy');
+    const textToCopy = document.getElementById(targetId).textContent;
+    navigator.clipboard.writeText(textToCopy)
+    .then(() => {showToast('Kopyalandı!');})
+    .catch(() => {showToast('Kopyalama başarısız');});
+  });
+});
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toast-message');
+  toastMessage.textContent = message;
+  toast.classList.remove('opacity-0');
+  setTimeout(() => {toast.classList.add('opacity-0');}, 3000);
+}
 </script>
 </body>
 </html>
