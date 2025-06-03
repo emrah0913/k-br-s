@@ -153,31 +153,37 @@
                 <div class="grid grid-cols-3 gap-4">
                     <a href="https://www.trendyol.com" target="_blank"
                        class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-                        <img src="https://cdn.trendyol.com/web/assets/images/ty-logo.png" alt="Trendyol" class="h-8 object-contain">
+                        <img src="https://cdn.trendyol.com/web/assets/images/ty-logo.png" alt="Trendyol" class="h-8 object-contain"
+                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/333333?text=Trendyol';">
                     </a>
                     <a href="https://www.hepsiburada.com" target="_blank"
                        class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                         <img src="https://www.hepsiburada.com/assets/images/hepsiburada-logo.svg" alt="Hepsiburada"
-                             class="h-8 object-contain">
+                             class="h-8 object-contain"
+                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/333333?text=Hepsiburada';">
                     </a>
                     <a href="https://www.n11.com" target="_blank"
                        class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-                        <img src="https://www.n11.com/assets/images/n11-logo.svg" alt="n11" class="h-8 object-contain">
+                        <img src="https://www.n11.com/assets/images/n11-logo.svg" alt="n11" class="h-8 object-contain"
+                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/333333?text=n11';">
                     </a>
                     <a href="https://www.amazon.com.tr" target="_blank"
                        class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon"
-                             class="h-8 object-contain">
+                             class="h-8 object-contain"
+                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/333333?text=Amazon';">
                     </a>
                     <a href="https://www.gittigidiyor.com" target="_blank"
                        class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                         <img src="https://www.gittigidiyor.com/assets/images/logo.svg" alt="GittiGidiyor"
-                             class="h-8 object-contain">
+                             class="h-8 object-contain"
+                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/333333?text=GittiGidiyor';">
                     </a>
                     <a href="https://www.vatanbilgisayar.com" target="_blank"
                        class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                         <img src="https://www.vatanbilgisayar.com/assets/images/vatan-logo.svg" alt="Vatan Bilgisayar"
-                             class="h-8 object-contain">
+                             class="h-8 object-contain"
+                             onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/333333?text=Vatan';">
                     </a>
                 </div>
             </div>
@@ -343,14 +349,14 @@
                         </select>
                         <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                     </div>
-                    <div>
-                        <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
-                        <div class="relative">
-                            <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="url" id="product-link"
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                                   placeholder="https://www.example.com/urun">
-                        </div>
+                </div>
+                <div>
+                    <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
+                    <div class="relative">
+                        <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="url" id="product-link"
+                               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
+                               placeholder="https://www.example.com/urun">
                     </div>
                 </div>
                 <div>
@@ -604,7 +610,7 @@
 <script>
     // Global değişkenleri al (Canvas ortamında sağlanır)
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+    let firebaseConfig = {
         // Varsayılan veya geliştirme için Firebase yapılandırması
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -614,6 +620,17 @@
         appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
         measurementId: "G-JL9P6BRZTD"
     };
+
+    // __firebase_config global değişkeni varsa onu kullan, hata yakalama eklendi
+    if (typeof __firebase_config !== 'undefined') {
+        try {
+            firebaseConfig = JSON.parse(__firebase_config);
+            console.log('Firebase config loaded from __firebase_config.');
+        } catch (e) {
+            console.error('Error parsing __firebase_config:', e);
+            // Hata durumunda varsayılan config kullanılmaya devam edilecek
+        }
+    }
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
     // Firebase'i başlat
@@ -725,13 +742,21 @@
             confirmationTitle.textContent = title;
             confirmationMessage.textContent = message;
             confirmationModal.classList.remove('hidden');
-            // Animasyonu başlatmak için doğru elementi hedefle
-            confirmationModal.querySelector('div.modal-content-enter-from')?.classList.remove('modal-content-enter-from');
+            // Animasyonu başlatmak için doğru elementi hedefle, null kontrolü eklendi
+            const modalContentDiv = confirmationModal.querySelector('div');
+            if (modalContentDiv) {
+                modalContentDiv.classList.remove('modal-content-enter-from');
+            } else {
+                console.warn('Confirmation modal content div not found.');
+            }
+
 
             const handleConfirm = () => {
                 confirmationModal.classList.add('hidden');
-                // Animasyonu sıfırlamak için doğru elementi hedefle
-                confirmationModal.querySelector('div')?.classList.add('modal-content-enter-from');
+                // Animasyonu sıfırlamak için doğru elementi hedefle, null kontrolü eklendi
+                if (modalContentDiv) {
+                    modalContentDiv.classList.add('modal-content-enter-from');
+                }
                 confirmOkBtn.removeEventListener('click', handleConfirm);
                 confirmCancelBtn.removeEventListener('click', handleCancel);
                 resolve(true);
@@ -739,8 +764,10 @@
 
             const handleCancel = () => {
                 confirmationModal.classList.add('hidden');
-                // Animasyonu sıfırlamak için doğru elementi hedefle
-                confirmationModal.querySelector('div')?.classList.add('modal-content-enter-from');
+                // Animasyonu sıfırlamak için doğru elementi hedefle, null kontrolü eklendi
+                if (modalContentDiv) {
+                    modalContentDiv.classList.add('modal-content-enter-from');
+                }
                 confirmOkBtn.removeEventListener('click', handleConfirm);
                 confirmCancelBtn.removeEventListener('click', handleCancel);
                 resolve(false);
@@ -756,8 +783,17 @@
      * @param {HTMLElement} modalElement - Gösterilecek modal elementi.
      */
     function showModal(modalElement) {
-        modalElement.classList.remove('hidden');
-        modalElement.querySelector('div')?.classList.remove('modal-content-enter-from');
+        if (modalElement) {
+            modalElement.classList.remove('hidden');
+            const modalContent = modalElement.querySelector('div');
+            if (modalContent) {
+                modalContent.classList.remove('modal-content-enter-from');
+            } else {
+                console.warn('Modal content div not found for:', modalElement.id);
+            }
+        } else {
+            console.warn('Modal element not found for showModal call.');
+        }
     }
 
     /**
@@ -765,8 +801,17 @@
      * @param {HTMLElement} modalElement - Gizlenecek modal elementi.
      */
     function hideModal(modalElement) {
-        modalElement.classList.add('hidden');
-        modalElement.querySelector('div')?.classList.add('modal-content-enter-from');
+        if (modalElement) {
+            modalElement.classList.add('hidden');
+            const modalContent = modalElement.querySelector('div');
+            if (modalContent) {
+                modalContent.classList.add('modal-content-enter-from');
+            } else {
+                console.warn('Modal content div not found for:', modalElement.id);
+            }
+        } else {
+            console.warn('Modal element not found for hideModal call.');
+        }
     }
 
 
@@ -775,6 +820,7 @@
     // Auth durumunu güncelleme fonksiyonu
     function updateAuthUI(user) {
         currentUser = user;
+        console.log('Auth UI updated. Current user:', user); // Hata ayıklama için eklendi
         if (user) {
             loginBtn.classList.add('hidden');
             profileContainer.classList.remove('hidden');
@@ -782,8 +828,8 @@
             profileImg.alt = user.displayName || "Profil";
             // Admin butonunu göster (örnek olarak, belirli bir UID'ye sahipse)
             // Gerçek uygulamada bu kontrol backend'de yapılmalıdır.
-            if (user.uid === 'JKy2CJircqSgC8ftIx9kY7iHlXC3
-') { // Buraya kendi admin UID'nizi girin
+            // BURAYA KENDİ ADMİN UID'NİZİ TIRNAK İÇİNDE YAPIŞTIRIN: Örnek: 'abcdefg12345'
+            if (user.uid === 'YOUR_ADMIN_UID_HERE') { 
                 // Admin paneli navigasyonunu buraya ekleyebilirsiniz
                 // Örneğin: Admin butonu ekleme
                 if (!document.getElementById('admin-nav-btn')) {
@@ -847,9 +893,16 @@
     });
 
     // Giriş butonu tıklama olayı
-    loginBtn.onclick = function () {
-        showModal(loginModal);
-    };
+    console.log('loginBtn element:', loginBtn); // Hata ayıklama için eklendi
+    if (loginBtn) { // loginBtn'nin varlığını kontrol et
+        loginBtn.onclick = function () {
+            console.log('Login button click handler triggered!'); // Hata ayıklama için eklendi
+            showModal(loginModal);
+        };
+    } else {
+        console.error('loginBtn elementi bulunamadı. ID kontrol edin.');
+    }
+
 
     // Giriş modalını kapatma butonu
     closeLoginModal.onclick = () => hideModal(loginModal);
@@ -1052,8 +1105,8 @@
     let unsubscribeCargoListener = null;
 
     function setupAdminCargoListener() {
-        if (!isAuthReady || !currentUser || currentUser.uid !== 'JKy2CJircqSgC8ftIx9kY7iHlXC3
-') { // Admin UID kontrolü
+        // BURAYA KENDİ ADMİN UID'NİZİ TIRNAK İÇİNDE YAPIŞTIRIN: Örnek: 'abcdefg12345'
+        if (!isAuthReady || !currentUser || currentUser.uid !== 'YOUR_ADMIN_UID_HERE') { 
             if (unsubscribeCargoListener) {
                 unsubscribeCargoListener(); // Dinleyiciyi durdur
                 unsubscribeCargoListener = null;
@@ -1066,8 +1119,7 @@
         // Firestore'dan kargo listesini gerçek zamanlı dinle
         // Güvenlik kurallarınızın buna izin verdiğinden emin olun:
         // match /artifacts/{appId}/public/data/cargoTracking/{cargoId} {
-        //   allow read, write: if request.auth != null && request.auth.uid == 'JKy2CJircqSgC8ftIx9kY7iHlXC3
-';
+        //   allow read, write: if request.auth != null && request.auth.uid == 'YOUR_ADMIN_UID_HERE';
         // }
         unsubscribeCargoListener = db.collection(`artifacts/${appId}/public/data/cargoTracking`)
             .onSnapshot(snapshot => {
@@ -1111,8 +1163,8 @@
         // İlk yüklemede veya auth durumu değiştiğinde dinleyiciyi kur
         auth.onAuthStateChanged(user => {
             updateAuthUI(user); // UI'ı güncelle
-            if (user && user.uid === 'JKy2CJircqSgC8ftIx9kY7iHlXC3
-') { // Admin UID kontrolü
+            // BURAYA KENDİ ADMİN UID'NİZİ TIRNAK İÇİNDE YAPIŞTIRIN: Örnek: 'abcdefg12345'
+            if (user && user.uid === 'YOUR_ADMIN_UID_HERE') { 
                 setupAdminCargoListener();
             } else if (unsubscribeCargoListener) {
                 unsubscribeCargoListener(); // Dinleyiciyi durdur
@@ -1124,8 +1176,8 @@
     adminCargoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        if (!isAuthReady || !currentUser || currentUser.uid !== 'JKy2CJircqSgC8ftIx9kY7iHlXC3
-') { // Admin UID kontrolü
+        // BURAYA KENDİ ADMİN UID'NİZİ TIRNAK İÇİNDE YAPIŞTIRIN: Örnek: 'abcdefg12345'
+        if (!isAuthReady || !currentUser || currentUser.uid !== 'YOUR_ADMIN_UID_HERE') { 
             showToast('Bu işlemi yapmak için yönetici olarak giriş yapmalısınız.');
             showModal(authRequiredModal);
             return;
@@ -1201,8 +1253,8 @@
         if (e.target.closest('.delete-cargo-btn')) {
             const cargoId = e.target.closest('.delete-cargo-btn').dataset.id;
 
-            if (!isAuthReady || !currentUser || currentUser.uid !== 'JKy2CJircqSgC8ftIx9kY7iHlXC3
-') { // Admin UID kontrolü
+            // BURAYA KENDİ ADMİN UID'NİZİ TIRNAK İÇİNDE YAPIŞTIRIN: Örnek: 'abcdefg12345'
+            if (!isAuthReady || !currentUser || currentUser.uid !== 'YOUR_ADMIN_UID_HERE') { 
                 showToast('Bu işlemi yapmak için yönetici olarak giriş yapmalısınız.');
                 showModal(authRequiredModal);
                 return;
