@@ -1,738 +1,381 @@
-<!-- Kayıtlı Müşteriler açılır liste ve detaylı sipariş gösterimi entegre edildi! -->
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin Paneli</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Montserrat', Arial, sans-serif;
-      margin: 0;
-      background: #f7fafc;
-      color: #232323;
-      min-height: 100vh;
-    }
-    .admin-container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 40px 12px 50px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 {
-      color: #0094da;
-      margin-bottom: 18px;
-      font-size: 2.1rem;
-      font-weight: 700;
-      letter-spacing: -.5px;
-      text-align: center;
-    }
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 30px;
-      justify-content: center;
-      width: 100%;
-    }
-    .toolbar input, .toolbar select {
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1.2px solid #ececec;
-      font-size: 1rem;
-      background: #f7fafc;
-      margin-right: 0;
-      outline: none;
-      transition: border .13s;
-    }
-    .toolbar input:focus, .toolbar select:focus {
-      border-color: #0094da;
-    }
-    .toolbar button {
-      padding: 12px 22px;
-      border-radius: 999px;
-      border: none;
-      font-weight: 700;
-      background: #ffcb05;
-      color: #232323;
-      font-size: 1.07rem;
-      box-shadow: 0 2px 16px rgba(255,203,5,0.10);
-      cursor: pointer;
-      transition: background .15s;
-      margin-right: 0;
-      margin-top: 4px;
-    }
-    .toolbar button:hover { background: #ffd940; }
-    .toolbar .out-btn {
-      background: #ee4949 !important;
-      color: #fff !important;
-      box-shadow: 0 2px 10px rgba(238,73,73,0.13);
-      margin-left: 8px;
-    }
-    .toolbar .out-btn:hover { background: #d62d2d !important; }
-    .summary-box {
-      background: #fff;
-      border-radius: 32px;
-      padding: 20px 36px;
-      margin-bottom: 28px;
-      color: #0094da;
-      font-weight: 700;
-      font-size: 1.13rem;
-      display: flex;
-      gap: 38px;
-      flex-wrap: wrap;
-      box-shadow: 0 2px 24px rgba(0,0,0,0.07);
-      width: 100%;
-      max-width: 900px;
-      justify-content: center;
-    }
-    .orders-card {
-      width: 100%;
-      max-width: 900px;
-      background: #fff;
-      border-radius: 32px;
-      box-shadow: 0 2px 24px rgba(0,0,0,0.09);
-      overflow: hidden;
-      margin-bottom: 36px;
-      padding: 0 0 12px 0;
-    }
-    .orders-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: transparent;
-    }
-    .orders-table th, .orders-table td {
-      padding: 15px 10px;
-      border-bottom: 1px solid #f2f2f2;
-      font-size: 1.07rem;
-      text-align: left;
-      vertical-align: top;
-    }
-    .orders-table th {
-      background: #f7fafc;
-      color: #0094da;
-      font-weight: 700;
-      border-bottom: 2px solid #ececec;
-      font-size: 1.08rem;
-    }
-    .orders-table tr:last-child td {
-      border-bottom: none;
-    }
-    .status-select {
-      padding: 7px 14px;
-      border-radius: 999px;
-      border: 1px solid #ececec;
-      background: #eafdff;
-      color: #0094da;
-      font-weight: 700;
-      font-size: 1rem;
-      outline: none;
-      transition: border .13s;
-    }
-    .status-select:focus {
-      border-color: #0094da;
-    }
-    .delete-btn {
-      background: #ffefef;
-      color: #ee4949;
-      border: none;
-      border-radius: 999px;
-      padding: 7px 18px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1rem;
-      transition: background .14s, color .14s;
-    }
-    .delete-btn:hover { background: #ee4949; color: #fff; }
-    .modal-bg {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.11);
-      z-index: 10001;
-      justify-content: center;
-      align-items: center;
-      transition: background .2s;
-    }
-    .modal {
-      background: #fff;
-      border-radius: 32px;
-      padding: 32px 28px 22px 28px;
-      min-width: 340px;
-      box-shadow: 0 2px 24px rgba(0,0,0,0.11);
-      text-align: left;
-      max-width: 98vw;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-    .modal-close {
-      position: absolute;
-      right: 16px;
-      top: 10px;
-      background: none;
-      border: none;
-      color: #ee4949;
-      font-size: 2rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .modal h2 {
-      color: #0094da;
-      margin-top: 0;
-      margin-bottom: 18px;
-      font-size: 1.32rem;
-      font-weight: 700;
-      letter-spacing: -.2px;
-      text-align: center;
-    }
-    .google-btn {
-      background: #fff;
-      color: #444;
-      border: 1.2px solid #ececec;
-      font-weight: 700;
-      font-family: inherit;
-      border-radius: 999px;
-      padding: 13px 28px;
-      font-size: 1.13rem;
-      cursor: pointer;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-      margin: 0 auto 8px auto;
-      transition: background .13s;
-    }
-    .google-btn:hover { background: #f7fafc; }
-    .google-logo {
-      width: 25px;
-      height: 25px;
-      display: inline-block;
-    }
-    .modal .error-msg {
-      color: #ee4949;
-      font-weight: 700;
-      margin-top: 12px;
-      font-size: 1rem;
-      display: none;
-      text-align: center;
-    }
-    .success-info {
-      background: #e1f8e7;
-      color: #24a85c;
-      border-radius: 999px;
-      padding: 10px 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      text-align: center;
-      font-size: 1.05rem;
-      display: none;
-      max-width: 350px;
-    }
-    .error-info {
-      background: #ffeaea;
-      color: #ee4949;
-      border-radius: 999px;
-      padding: 10px 18px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      text-align: center;
-      font-size: 1.05rem;
-      display: none;
-      max-width: 350px;
-    }
-    .customer-dropdown-list {
-      width: 100%;
-      max-width: 520px;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 2px 18px rgba(0,0,0,0.09);
-      margin: 18px auto 0 auto;
-      padding: 0;
-      z-index: 10010;
-      position: absolute;
-      left: 0; right: 0;
-      display: none;
-    }
-    .customer-dropdown-row {
-      cursor: pointer;
-      padding: 13px 28px;
-      border-bottom: 1px solid #f1f1f1;
-      font-size: 1.09rem;
-      transition: background .13s;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .customer-dropdown-row:hover {
-      background: #f7fafc;
-    }
-    .customer-dropdown-details {
-      padding: 14px 38px 18px 38px;
-      background: #f7fafc;
-      font-size: 1rem;
-      color: #333;
-      display: none;
-    }
-    .customer-dropdown-details ul {
-      margin: 0 0 0 18px;
-      padding: 0;
-    }
-    .customer-dropdown-details li {
-      margin-bottom: 5px;
-    }
-    .show { display: block !important; }
-    /* Müşteriler modalı */
-    .customer-group {
-      margin-bottom: 18px;
-      background: #f7fafc;
-      border-radius: 24px;
-      padding: 16px 18px;
-      box-shadow: 0 1px 8px rgba(0,0,0,0.04);
-    }
-    .customer-group b {
-      color: #0094da;
-      font-size: 1.07rem;
-    }
-    .customer-group ul {
-      margin: 8px 0 0 2px;
-      padding-left: 18px;
-      font-size: 1rem;
-    }
-    /* EK: Durum filtresi select'i için stil */
-    .status-filter-select {
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1.2px solid #ececec;
-      font-size: 1rem;
-      background: #f7fafc;
-      outline: none;
-      transition: border .13s;
-      min-width: 165px;
-    }
-    .status-filter-select:focus {
-      border-color: #0094da;
-    }
-    @media (max-width: 900px) {
-      .summary-box, .orders-card { max-width: 99vw; }
-      .modal { min-width: 0; width: 99vw; }
-      .orders-table th, .orders-table td { font-size: .99rem; }
-      .toolbar { flex-direction: column; gap: 7px;}
-      .customer-dropdown-list { max-width: 99vw; }
-    }
-    @media (max-width: 540px) {
-      h1 { font-size: 1.18rem; }
-      .modal { padding: 18px 4vw 12px 4vw; }
-      .orders-card { padding:0; }
-      .summary-box { padding:10px 5vw;}
-      .toolbar input, .toolbar button { width: 98vw; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<!-- Firebase SDK (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f9fafb;
+}
+.sidebar {
+transition: all 0.3s ease;
+}
+.main-content {
+transition: all 0.3s ease;
+}
+@media (max-width: 768px) {
+.sidebar {
+transform: translateX(-100%);
+}
+.sidebar.active {
+transform: translateX(0);
+}
+}
+</style>
 </head>
-<body>
-  <!-- Google ile Giriş ekranı -->
-  <div id="loginModal" class="modal-bg" style="display:flex;">
-    <div class="modal">
-      <h2>Google ile Giriş Yap</h2>
-      <button class="google-btn" onclick="googleSignIn()">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-logo" alt="Google">
-        Google hesabı ile giriş yap
-      </button>
-      <div id="loginError" class="error-msg"></div>
-    </div>
-  </div>
-
-  <div class="admin-container" style="display:none;" id="adminPanel">
-    <h1>Admin Paneli</h1>
-    <div class="toolbar" style="position:relative;">
-      <input type="text" id="searchSiparisKodu" placeholder="Sipariş Kodu ile ara">
-      <input type="text" id="searchMusteri" placeholder="Müşteri adı ile ara">
-      <input type="date" id="startDate">
-      <span style="color:#ececec;">—</span>
-      <input type="date" id="endDate">
-      <select id="statusFilter" class="status-filter-select">
-        <option value="">Tüm Durumlar</option>
-        <option value="Bekleniyor">Bekleniyor</option>
-        <option value="Tr Depoda">Tr Depoda</option>
-        <option value="Yüklendi">Yüklendi</option>
-        <option value="Kıbrıs Depoda">Kıbrıs Depoda</option>
-        <option value="Teslim Edildi">Teslim Edildi</option>
-      </select>
-      <button onclick="filterOrders()">Filtrele</button>
-      <button onclick="clearFilters()">Temizle</button>
-      <button onclick="toggleCustomersDropdown()">Kayıtlı Müşteriler</button>
-      <button class="out-btn" onclick="adminLogout()">Çıkış Yap</button>
-      <!-- Açılır müşteri listesi -->
-      <div id="customersDropdown" class="customer-dropdown-list"></div>
-    </div>
-    <div class="summary-box" id="summaryBox">
-      <span>Yükleniyor...</span>
-    </div>
-    <div class="success-info" id="successInfo"></div>
-    <div class="error-info" id="errorInfo"></div>
-    <div class="orders-card">
-      <table class="orders-table" id="ordersTable">
-        <thead>
-          <tr>
-            <th>Müşteri</th>
-            <th>Sipariş Kodu</th>
-            <th>Adres</th>
-            <th>Telefon</th>
-            <th>Kategori</th>
-            <th>Toplam Tutar</th>
-            <th>Durum</th>
-            <th>İşlem</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Siparişler JS ile eklenecek -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Müşteriler Modalı (artık açılır listeden gösteriliyor, ister sil ister bırak) -->
-  <div id="customersModal" class="modal-bg">
-    <div class="modal" style="max-width:520px;">
-      <button class="modal-close" onclick="closeCustomersModal()">&times;</button>
-      <h2>Kayıtlı Müşteriler</h2>
-      <div id="customersList">
-        <!-- Müşteri bilgileri JS ile eklenecek -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-      authDomain: "kibris-6b4f7.firebaseapp.com",
-      projectId: "kibris-6b4f7",
-      storageBucket: "kibris-6b4f7.appspot.com",
-      messagingSenderId: "141262926171",
-      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-      measurementId: "G-JL9P6BRZTD"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-
-    // Google ile giriş fonksiyonu
-    function googleSignIn() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then((result) => {
-          document.getElementById('loginModal').style.display = 'none';
-          document.getElementById('adminPanel').style.display = '';
-          document.getElementById('loginError').style.display = "none";
-          loadOrders();
-        })
-        .catch((error) => {
-          document.getElementById('loginError').innerText = "Giriş başarısız: " + error.message;
-          document.getElementById('loginError').style.display = "";
-        });
-    }
-
-    // Çıkış
-    function adminLogout() {
-      firebase.auth().signOut().then(() => {
-        document.getElementById('adminPanel').style.display = 'none';
-        document.getElementById('loginModal').style.display = 'flex';
-        document.getElementById('successInfo').style.display = "none";
-        document.getElementById('errorInfo').style.display = "none";
-      });
-    }
-
-    // Oturum kontrolü (her sayfa yenilemede)
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById('loginModal').style.display = 'none';
-        document.getElementById('adminPanel').style.display = '';
-        loadOrders();
-      } else {
-        document.getElementById('adminPanel').style.display = 'none';
-        document.getElementById('loginModal').style.display = 'flex';
-      }
-    });
-
-    let allOrders = [];
-    async function loadOrders() {
-      document.querySelector("#summaryBox").innerHTML = "<span>Yükleniyor...</span>";
-      const tbody = document.querySelector("#ordersTable tbody");
-      tbody.innerHTML = "";
-      allOrders = [];
-      try {
-        const snap = await db.collection("siparisler").orderBy("createdAt", "desc").get();
-        snap.forEach(doc => {
-          const data = doc.data();
-          allOrders.push({ ...data, id: doc.id });
-        });
-        renderOrders(allOrders);
-        renderSummary(allOrders);
-      } catch(e) {
-        tbody.innerHTML = `<tr><td colspan="8" style="color:#ee4949;font-weight:700;">Siparişler yüklenemedi.</td></tr>`;
-        document.querySelector("#summaryBox").innerHTML = "Siparişler yüklenemedi!";
-      }
-    }
-    function renderOrders(orders) {
-      const tbody = document.querySelector("#ordersTable tbody");
-      tbody.innerHTML = "";
-      if(!orders.length) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Kayıt yok.</td></tr>`;
-        return;
-      }
-      for(const o of orders) {
-        tbody.innerHTML += `
-          <tr>
-            <td>${o.adSoyad || "-"}</td>
-            <td>${o.siparisKodu || "-"}</td>
-            <td>${o.sehir ? (o.sehir + "<br>" + (o.acikAdres||"")) : "-"}</td>
-            <td>${o.telefon || "-"}</td>
-            <td>${o.kategori || "-"}</td>
-            <td>${o.toplamTutar ? o.toplamTutar + " TL" : "-"}</td>
-            <td>
-              <select class="status-select" data-id="${o.id}" onchange="updateStatus('${o.id}', this.value)">
-                <option ${o.durum=="Bekleniyor"?'selected':''}>Bekleniyor</option>
-                <option ${o.durum=="Tr Depoda"?'selected':''}>Tr Depoda</option>
-                <option ${o.durum=="Yüklendi"?'selected':''}>Yüklendi</option>
-                <option ${o.durum=="Kıbrıs Depoda"?'selected':''}>Kıbrıs Depoda</option>
-                <option ${o.durum=="Teslim Edildi"?'selected':''}>Teslim Edildi</option>
-              </select>
-            </td>
-            <td>
-              <button class="delete-btn" onclick="deleteOrder('${o.id}')">Sil</button>
-            </td>
-          </tr>
-        `;
-      }
-    }
-    function renderSummary(orders) {
-      // Kategori bazlı toplam tutar
-      const summary = {};
-      for(const o of orders) {
-        if(!o.kategori || !o.toplamTutar) continue;
-        if(!summary[o.kategori]) summary[o.kategori]=0;
-        summary[o.kategori] += Number(o.toplamTutar);
-      }
-      let html = "";
-      for(const k in summary) {
-        html += `<span>${k}: <b>${summary[k]} TL</b></span>`;
-      }
-      document.getElementById('summaryBox').innerHTML = html || "<span>Kayıt yok.</span>";
-    }
-    // Durum güncelleme
-    async function updateStatus(id, newStatus) {
-      try {
-        await db.collection("siparisler").doc(id).update({ durum: newStatus });
-        document.getElementById('successInfo').innerText = "Durum güncellendi.";
-        document.getElementById('successInfo').style.display = "";
-        setTimeout(()=>document.getElementById('successInfo').style.display="none", 1300);
-      } catch(e) {
-        document.getElementById('errorInfo').innerText = "Durum güncellenemedi!";
-        document.getElementById('errorInfo').style.display = "";
-        setTimeout(()=>document.getElementById('errorInfo').style.display="none", 2000);
-      }
-    }
-    // Sipariş silme
-    async function deleteOrder(id) {
-      if(!confirm("Siparişi silmek istediğinize emin misiniz?")) return;
-      try {
-        await db.collection("siparisler").doc(id).delete();
-        loadOrders();
-        document.getElementById('successInfo').innerText = "Sipariş silindi.";
-        document.getElementById('successInfo').style.display = "";
-        setTimeout(()=>document.getElementById('successInfo').style.display="none", 1300);
-      } catch(e) {
-        document.getElementById('errorInfo').innerText = "Sipariş silinemedi!";
-        document.getElementById('errorInfo').style.display = "";
-        setTimeout(()=>document.getElementById('errorInfo').style.display="none", 2000);
-      }
-    }
-    // Filtreleme
-    window.filterOrders = function() {
-      let kod = document.getElementById('searchSiparisKodu').value.trim().toLowerCase();
-      let musteri = document.getElementById('searchMusteri').value.trim().toLowerCase();
-      let start = document.getElementById('startDate').value;
-      let end = document.getElementById('endDate').value;
-      let status = document.getElementById('statusFilter').value; // <-- EKLENDİ
-      let filtered = allOrders.filter(o => {
-        let ok = true;
-        if(kod && !(o.siparisKodu||"").toLowerCase().includes(kod)) ok = false;
-        if(musteri && !(o.email||"").toLowerCase().includes(musteri)) ok = false;
-        if(start) {
-          let d = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate() : (o.createdAt instanceof Date ? o.createdAt : null);
-          if(!d || d < new Date(start)) ok = false;
-        }
-        if(end) {
-          let d = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate() : (o.createdAt instanceof Date ? o.createdAt : null);
-          if(!d || d > new Date(end + "T23:59:59")) ok = false;
-        }
-        if(status && (o.durum||"") !== status) ok = false; // <-- EKLENDİ
-        return ok;
-      });
-      renderOrders(filtered);
-      renderSummary(filtered);
-    }
-    window.clearFilters = function() {
-      document.getElementById('searchSiparisKodu').value = "";
-      document.getElementById('searchMusteri').value = "";
-      document.getElementById('startDate').value = "";
-      document.getElementById('endDate').value = "";
-      document.getElementById('statusFilter').value = ""; // <-- EKLENDİ
-      renderOrders(allOrders);
-      renderSummary(allOrders);
-    }
-
-    // AÇILIR LİSTE KAYITLI MÜŞTERİLER BAŞLANGIÇ
-    function toggleCustomersDropdown() {
-      const dropdown = document.getElementById('customersDropdown');
-      if(dropdown.style.display === "block") {
-        dropdown.style.display = "none";
-        dropdown.innerHTML = "";
-        return;
-      }
-      // allOrders içinden müşteri haritası oluştur
-      let musteriMap = {};
-      for(const o of allOrders) {
-        let key = (o.adSoyad || "-") + "___" + (o.telefon || "-");
-        if(!musteriMap[key]) musteriMap[key] = [];
-        musteriMap[key].push(o);
-      }
-      // HTML'i oluştur
-      let idx = 0;
-      let html = "";
-      for(const key in musteriMap) {
-        const [adSoyad, telefon] = key.split("___");
-        html += `
-          <div class="customer-dropdown-row" onclick="toggleCustomerDetailsRow(${idx})">
-            <span><b>${adSoyad}</b></span>
-            <span>${telefon}</span>
-          </div>
-          <div class="customer-dropdown-details" id="customerDropdownDetails${idx}">
-          </div>
-        `;
-        idx++;
-      }
-      dropdown.innerHTML = html;
-      dropdown.style.display = "block";
-    }
-    // Açılır müşteri detaylarını göster/gizle
-    function toggleCustomerDetailsRow(idx) {
-      const detailDiv = document.getElementById('customerDropdownDetails'+idx);
-      if(!detailDiv) return;
-      if(detailDiv.style.display === "block") {
-        detailDiv.style.display = "none";
-        detailDiv.innerHTML = "";
-        return;
-      }
-      // Hangi müşteri?
-      const dropdown = document.getElementById('customersDropdown');
-      let rows = dropdown.querySelectorAll('.customer-dropdown-details');
-      let key = Object.keys(getCustomerMap())[idx];
-      let siparisler = getCustomerMap()[key];
-      // Siparişleri listele
-      let sipHtml = "";
-      if(!siparisler || !siparisler.length) {
-        sipHtml = `<i>Sipariş bulunamadı.</i>`;
-      } else {
-        sipHtml = `<ul>`;
-        siparisler.forEach(sip => {
-          sipHtml += `<li>
-            <b>Kod:</b> ${sip.siparisKodu || "-"}&nbsp;
-            <b>Kategori:</b> ${sip.kategori || "-"}&nbsp;
-            <b>Ürün:</b> ${(sip.urun || "-")}&nbsp;
-            <b>Tutar:</b> ${sip.toplamTutar ? sip.toplamTutar + " TL" : "-"}&nbsp;
-            <b>Durum:</b> ${sip.durum || "-"}&nbsp;
-            <b>Tarih:</b> ${
-              sip.createdAt && sip.createdAt.toDate ? sip.createdAt.toDate().toLocaleDateString("tr-TR") :
-              (sip.createdAt instanceof Date ? sip.createdAt.toLocaleDateString("tr-TR") : "-")
-            }
-            <br>
-            <b>Adres:</b> ${sip.sehir ? (sip.sehir + " / " + (sip.acikAdres||"")) : "-"}
-            <br>
-            <b>Telefon:</b> ${sip.telefon || "-"}
-          </li>`;
-        });
-        sipHtml += `</ul>`;
-      }
-      detailDiv.innerHTML = sipHtml;
-      detailDiv.style.display = "block";
-    }
-    function getCustomerMap() {
-      let musteriMap = {};
-      for(const o of allOrders) {
-        let key = (o.adSoyad || "-") + "___" + (o.telefon || "-");
-        if(!musteriMap[key]) musteriMap[key] = [];
-        musteriMap[key].push(o);
-      }
-      return musteriMap;
-    }
-    // AÇILIR LİSTE KAYITLI MÜŞTERİLER SON
-
-    // Kayıtlı müşteriler eski modalı (artık kullanılmıyor, istersen silebilirsin)
-    window.showCustomers = function() {
-      document.getElementById('customersModal').style.display = 'flex';
-      let musteriMap = {};
-      for(const o of allOrders) {
-        if(!o.email) continue;
-        if(!musteriMap[o.email]) musteriMap[o.email] = { siparisler: [], telefon: o.telefon, adres: (o.sehir||'')+" "+(o.acikAdres||'') };
-        musteriMap[o.email].siparisler.push(o);
-      }
-      let html = "";
-      for(const e in musteriMap) {
-        const m = musteriMap[e];
-        html += `<div class="customer-group"><b>${e}</b>
-        <br>Telefon: <span>${m.telefon||"-"}</span>
-        <br>Adres: <span>${m.adres||"-"}</span>
-        <ul>`;
-        for(const s of m.siparisler) {
-          html += `<li>${s.siparisKodu || "-"} | ${s.kategori || "-"} | ${s.toplamTutar || "-"} TL | ${s.durum || "Yeni"}</li>`;
-        }
-        html += `</ul></div>`;
-      }
-      document.getElementById('customersList').innerHTML = html || "Kayıt yok.";
-    }
-    window.closeCustomersModal = function() {
-      document.getElementById('customersModal').style.display = 'none';
-    }
-
-    // EK: Durum filtresi değişince otomatik filtre uygula
-    document.addEventListener('DOMContentLoaded', function() {
-      var statusFilter = document.getElementById('statusFilter');
-      if (statusFilter) {
-        statusFilter.addEventListener('change', function() {
-          filterOrders();
-        });
-      }
-    });
-    // Kayıtlı Müşteriler açılır liste dışına tıklanınca kapanır
-    document.addEventListener('click', function(e) {
-      const dropdown = document.getElementById('customersDropdown');
-      const btn = document.querySelector('button[onclick="toggleCustomersDropdown()"]');
-      if(dropdown && dropdown.style.display === "block") {
-        if (!dropdown.contains(e.target) && e.target !== btn) {
-          dropdown.style.display = "none";
-          dropdown.innerHTML = "";
-        }
-      }
-    });
-  </script>
-<!-- ADMIN GİRİŞ KONTROLÜ -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+<body class="bg-gray-50 text-gray-800">
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-40 transform -translate-x-full md:translate-x-0">
+<div class="p-4 border-b flex items-center">
+<span class="text-2xl font-['Pacifico'] text-primary">logo</span>
+</div>
+<nav class="mt-6">
+<div class="px-4 py-2">
+<p class="text-xs uppercase text-gray-400 tracking-wider">Ana Menü</p>
+</div>
+<a href="#" class="flex items-center px-4 py-3 text-primary bg-indigo-50 border-r-4 border-primary">
+<div class="w-6 h-6 flex items-center justify-center mr-3">
+<i class="ri-dashboard-line ri-lg"></i>
+</div>
+<span>Dashboard</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 cursor-pointer">
+<div class="w-6 h-6 flex items-center justify-center mr-3">
+<i class="ri-user-line ri-lg"></i>
+</div>
+<span>Kullanıcı Yönetimi</span>
+</a>
+<a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/7b30791c-f383-49e1-bee5-d1c63c4472dc" data-readdy="true" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 cursor-pointer">
+<div class="w-6 h-6 flex items-center justify-center mr-3">
+<i class="ri-shopping-cart-line ri-lg"></i>
+</div>
+<span>Sipariş Yönetimi</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 cursor-pointer">
+<div class="w-6 h-6 flex items-center justify-center mr-3">
+<i class="ri-store-line ri-lg"></i>
+</div>
+<span>Ürün Yönetimi</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 cursor-pointer">
+<div class="w-6 h-6 flex items-center justify-center mr-3">
+<i class="ri-message-3-line ri-lg"></i>
+</div>
+<span>Yorumlar</span>
+</a>
+<div class="px-4 py-2 mt-4">
+<p class="text-xs uppercase text-gray-400 tracking-wider">Ayarlar</p>
+</div>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 cursor-pointer">
+<div class="w-6 h-6 flex items-center justify-center mr-3">
+<i class="ri-settings-line ri-lg"></i>
+</div>
+<span>Genel Ayarlar</span>
+</a>
+<a href="#" id="logout-btn" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 cursor-pointer">
+<div class="w-6 h-6 flex items-center justify-center mr-3">
+<i class="ri-logout-box-line ri-lg"></i>
+</div>
+<span>Çıkış Yap</span>
+</a>
+</nav>
+</div>
+<!-- Main Content -->
+<div id="main-content" class="main-content md:ml-64 min-h-screen pb-20">
+<!-- Top Navigation -->
+<header class="bg-white shadow-sm fixed top-0 left-0 right-0 z-30 md:left-64">
+<div class="flex items-center justify-between px-4 py-3">
+<div class="flex items-center">
+<button id="menu-toggle" class="text-gray-600 focus:outline-none md:hidden w-8 h-8 flex items-center justify-center cursor-pointer">
+<i class="ri-menu-line ri-lg"></i>
+</button>
+<h1 class="text-lg font-semibold ml-2 md:ml-0">Admin Panel</h1>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative cursor-pointer">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-notification-3-line ri-lg"></i>
+</div>
+<span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+</div>
+<div class="flex items-center cursor-pointer" id="admin-profile">
+<img id="admin-profile-img" src="https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20Turkish%20businessman%20in%20suit%2C%2035%20years%20old%2C%20beard%2C%20professional%20look%2C%20high%20quality%20portrait&width=80&height=80&seq=1&orientation=squarish" alt="Admin" class="w-8 h-8 rounded-full object-cover">
+<span id="admin-profile-name" class="ml-2 text-sm font-medium hidden md:block">Ahmet Yılmaz</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="pt-16 px-4">
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+<div class="bg-white rounded shadow p-4 border-l-4 border-primary">
+<div class="flex items-center">
+<div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
+<i class="ri-user-line ri-lg text-primary"></i>
+</div>
+<div>
+<p class="text-sm text-gray-500">Toplam Kullanıcı</p>
+<p id="stat-users" class="text-2xl font-semibold">-</p>
+</div>
+</div>
+<div id="users-growth" class="mt-2 text-xs text-green-600 flex items-center">
+<i class="ri-arrow-up-line"></i>
+<span class="ml-1">%12.5 artış</span>
+</div>
+</div>
+<div class="bg-white rounded shadow p-4 border-l-4 border-secondary">
+<div class="flex items-center">
+<div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4">
+<i class="ri-shopping-cart-line ri-lg text-secondary"></i>
+</div>
+<div>
+<p class="text-sm text-gray-500">Aktif Siparişler</p>
+<p id="stat-orders" class="text-2xl font-semibold">-</p>
+</div>
+</div>
+<div id="orders-growth" class="mt-2 text-xs text-green-600 flex items-center">
+<i class="ri-arrow-up-line"></i>
+<span class="ml-1">%8.2 artış</span>
+</div>
+</div>
+<div class="bg-white rounded shadow p-4 border-l-4 border-purple-500">
+<div class="flex items-center">
+<div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-4">
+<i class="ri-money-dollar-circle-line ri-lg text-purple-500"></i>
+</div>
+<div>
+<p class="text-sm text-gray-500">Toplam Gelir</p>
+<p id="stat-revenue" class="text-2xl font-semibold">-</p>
+</div>
+</div>
+<div id="revenue-growth" class="mt-2 text-xs text-green-600 flex items-center">
+<i class="ri-arrow-up-line"></i>
+<span class="ml-1">%23.8 artış</span>
+</div>
+</div>
+<div class="bg-white rounded shadow p-4 border-l-4 border-amber-500">
+<div class="flex items-center">
+<div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mr-4">
+<i class="ri-eye-line ri-lg text-amber-500"></i>
+</div>
+<div>
+<p class="text-sm text-gray-500">Ziyaretçi Sayısı</p>
+<p id="stat-visitors" class="text-2xl font-semibold">-</p>
+</div>
+</div>
+<div id="visitors-growth" class="mt-2 text-xs text-red-600 flex items-center">
+<i class="ri-arrow-down-line"></i>
+<span class="ml-1">%3.2 azalış</span>
+</div>
+</div>
+</div>
+<!-- Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+<div class="bg-white rounded shadow p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-lg font-semibold">Satış İstatistikleri</h2>
+<div class="flex space-x-2">
+<button class="px-3 py-1 text-xs bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200 cursor-pointer">Günlük</button>
+<button class="px-3 py-1 text-xs bg-primary rounded-full text-white cursor-pointer">Haftalık</button>
+<button class="px-3 py-1 text-xs bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200 cursor-pointer">Aylık</button>
+</div>
+</div>
+<div id="sales-chart" class="h-64"></div>
+</div>
+<div class="bg-white rounded shadow p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-lg font-semibold">Ürün Kategorileri</h2>
+<button class="text-primary text-sm cursor-pointer">Tümünü Gör</button>
+</div>
+<div id="category-chart" class="h-64"></div>
+</div>
+</div>
+<!-- Recent Orders -->
+<div class="mt-6 bg-white rounded shadow">
+<div class="flex justify-between items-center p-4 border-b">
+<h2 class="text-lg font-semibold">Son Siparişler</h2>
+<div class="flex items-center">
+<div class="relative mr-4">
+<input id="order-search" type="text" placeholder="Sipariş ara..." class="pl-8 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+<div class="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-button text-sm flex items-center cursor-pointer">
+<i class="ri-add-line mr-1"></i>
+<span>Yeni Sipariş</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead class="bg-gray-50 text-xs uppercase text-gray-600 border-b">
+<tr>
+<th class="px-4 py-3 text-left">Sipariş No</th>
+<th class="px-4 py-3 text-left">Müşteri</th>
+<th class="px-4 py-3 text-left">Tarih</th>
+<th class="px-4 py-3 text-left">Tutar</th>
+<th class="px-4 py-3 text-left">Durum</th>
+<th class="px-4 py-3 text-left">İşlemler</th>
+</tr>
+</thead>
+<tbody id="orders-table" class="divide-y">
+<!-- Orders will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+<div class="flex justify-between items-center p-4 border-t">
+<p class="text-sm text-gray-600" id="orders-total-info">Toplam 0 sipariş gösteriliyor</p>
+<div class="flex space-x-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border text-gray-600 hover:bg-gray-50 cursor-pointer">
+<i class="ri-arrow-left-s-line"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-white cursor-pointer">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border text-gray-600 hover:bg-gray-50 cursor-pointer">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border text-gray-600 hover:bg-gray-50 cursor-pointer">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border text-gray-600 hover:bg-gray-50 cursor-pointer">
+<i class="ri-arrow-right-s-line"></i>
+</button>
+</div>
+</div>
+</div>
+<!-- Recent Activities -->
+<div class="mt-6 bg-white rounded shadow">
+<div class="flex justify-between items-center p-4 border-b">
+<h2 class="text-lg font-semibold">Son Aktiviteler</h2>
+<button class="text-primary text-sm cursor-pointer">Tümünü Gör</button>
+</div>
+<div class="p-4">
+<div class="relative">
+<div class="border-l-2 border-gray-200 absolute h-full left-4 top-0"></div>
+<!-- Aktiviteler burada statik bırakıldı -->
+<div class="flex mb-6 relative">
+<div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center z-10 mr-4">
+<i class="ri-user-add-line text-white"></i>
+</div>
+<div>
+<p class="text-sm"><span class="font-medium">Emre Aksoy</span> adlı yeni kullanıcı kaydoldu</p>
+<p class="text-xs text-gray-500 mt-1">Bugün, 14:25</p>
+</div>
+</div>
+<div class="flex mb-6 relative">
+<div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center z-10 mr-4">
+<i class="ri-shopping-cart-line text-white"></i>
+</div>
+<div>
+<p class="text-sm"><span class="font-medium">Zeynep Kaya</span> yeni bir sipariş oluşturdu</p>
+<p class="text-xs text-gray-500 mt-1">Bugün, 12:40</p>
+</div>
+</div>
+<div class="flex mb-6 relative">
+<div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center z-10 mr-4">
+<i class="ri-store-line text-white"></i>
+</div>
+<div>
+<p class="text-sm"><span class="font-medium">Ahmet Yılmaz</span> yeni bir ürün ekledi</p>
+<p class="text-xs text-gray-500 mt-1">Bugün, 10:15</p>
+</div>
+</div>
+<div class="flex mb-6 relative">
+<div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center z-10 mr-4">
+<i class="ri-settings-line text-white"></i>
+</div>
+<div>
+<p class="text-sm">Sistem güncellemesi yapıldı</p>
+<p class="text-xs text-gray-500 mt-1">Dün, 18:30</p>
+</div>
+</div>
+<div class="flex relative">
+<div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center z-10 mr-4">
+<i class="ri-close-circle-line text-white"></i>
+</div>
+<div>
+<p class="text-sm"><span class="font-medium">Mustafa Öztürk</span> siparişini iptal etti</p>
+<p class="text-xs text-gray-500 mt-1">Dün, 16:45</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Action Button -->
+<div class="fixed right-4 bottom-4 z-50">
+<button class="w-14 h-14 rounded-full bg-primary text-white shadow-lg flex items-center justify-center cursor-pointer">
+<i class="ri-add-fill ri-xl"></i>
+</button>
+</div>
+<!-- Notification Modal -->
+<div id="notification-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="flex justify-between items-center p-4 border-b">
+<h3 class="font-semibold">Bildirimler</h3>
+<button id="close-notification" class="text-gray-500 hover:text-gray-700 cursor-pointer">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4 max-h-96 overflow-y-auto">
+<div class="mb-4 pb-4 border-b">
+<div class="flex">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3 flex-shrink-0">
+<i class="ri-user-line text-blue-600"></i>
+</div>
+<div>
+<p class="text-sm font-medium">Yeni Kullanıcı Kaydı</p>
+<p class="text-xs text-gray-600 mt-1">Emre Aksoy adlı yeni kullanıcı sisteme kaydoldu.</p>
+<p class="text-xs text-gray-500 mt-2">14:25</p>
+</div>
+</div>
+</div>
+<div class="mb-4 pb-4 border-b">
+<div class="flex">
+<div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3 flex-shrink-0">
+<i class="ri-shopping-cart-line text-green-600"></i>
+</div>
+<div>
+<p class="text-sm font-medium">Yeni Sipariş</p>
+<p class="text-xs text-gray-600 mt-1">Zeynep Kaya yeni bir sipariş oluşturdu. Sipariş tutarı: ₺1,250.00</p>
+<p class="text-xs text-gray-500 mt-2">12:40</p>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<div class="flex">
+<div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3 flex-shrink-0">
+<i class="ri-error-warning-line text-red-600"></i>
+</div>
+<div>
+<p class="text-sm font-medium">Stok Uyarısı</p>
+<p class="text-xs text-gray-600 mt-1">"Akıllı Telefon X5" ürününün stok seviyesi kritik seviyeye düştü.</p>
+<p class="text-xs text-gray-500 mt-2">10:15</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t bg-gray-50">
+<button class="w-full py-2 text-primary text-sm font-medium cursor-pointer">Tüm Bildirimleri Gör</button>
+</div>
+</div>
+</div>
+<!-- Firebase Config & Admin Auth -->
+<script id="firebase-config">
+  // Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
     authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -742,25 +385,252 @@
     appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
     measurementId: "G-JL9P6BRZTD"
   };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  onAuthStateChanged(auth, (user) => {
-    const allowedAdminEmail = "emirmob09@gmail.com"; // <--- BURAYI KENDİ GOOGLE E-POSTANLA DEĞİŞTİR
-    if (user) {
-      if (user.email === allowedAdminEmail) {
-        console.log("✅ Admin girişi başarılı:", user.email);
-      } else {
-        alert("❌ Bu sayfaya erişim yetkiniz yok.");
-        window.location.href = "index.html";
-      }
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
+<script id="admin-auth-script">
+document.addEventListener('DOMContentLoaded', function() {
+  // Admin login check (example: only allow a specific email, e.g. admin)
+  auth.onAuthStateChanged(function(user) {
+    if (!user) {
+      window.location.href = "/login.html"; // Redirect to login if not logged in
     } else {
-      // Hiç giriş yapılmamışsa
-      window.location.href = "index.html";
+      // Show admin info if available
+      if (user.displayName) {
+        document.getElementById('admin-profile-name').textContent = user.displayName;
+      }
+      if (user.photoURL) {
+        document.getElementById('admin-profile-img').src = user.photoURL;
+      }
     }
   });
+  // Logout
+  const logoutBtn = document.getElementById('logout-btn');
+  logoutBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    auth.signOut().then(() => {
+      window.location.href = "/login.html";
+    });
+  });
+});
 </script>
-
+<script id="dashboard-stats-script">
+document.addEventListener('DOMContentLoaded', function() {
+  // Kullanıcı sayısı
+  db.collection('users').get().then(function(snapshot) {
+    document.getElementById('stat-users').textContent = snapshot.size;
+  }).catch(()=>document.getElementById('stat-users').textContent='-');
+  // Sipariş sayısı ve aktif siparişler
+  db.collection('orders').get().then(function(snapshot) {
+    let total = 0, active = 0, revenue = 0;
+    snapshot.forEach(doc => {
+      total++;
+      const data = doc.data();
+      if (data.status === 'Aktif' || data.status === 'active' || data.status === 'İşlemde') active++;
+      if (data.productPrice) revenue += Number(data.productPrice) || 0;
+    });
+    document.getElementById('stat-orders').textContent = active;
+    document.getElementById('orders-total-info').textContent = `Toplam ${total} sipariş gösteriliyor`;
+    document.getElementById('stat-revenue').textContent = `₺${revenue.toLocaleString('tr-TR',{maximumFractionDigits:2})}`;
+  }).catch(()=>{document.getElementById('stat-orders').textContent='-'; document.getElementById('stat-revenue').textContent='-';});
+  // Ziyaretçi (örnek statik, Firestore ile entegre edilebilir)
+  document.getElementById('stat-visitors').textContent = '12,458';
+});
+</script>
+<script id="orders-table-script">
+document.addEventListener('DOMContentLoaded', function() {
+  // Siparişler tablosunu doldur
+  const ordersTable = document.getElementById('orders-table');
+  db.collection('orders')
+    .orderBy("createdAt", "desc")
+    .limit(20)
+    .get()
+    .then(querySnapshot => {
+      let html = '';
+      querySnapshot.forEach(doc => {
+        const d = doc.data();
+        const customer = d.fullName || '-';
+        const email = d.email || '';
+        const photo = d.photoUrl || 'https://readdy.ai/api/search-image?query=customer&width=40&height=40';
+        const orderNo = d.orderCode || doc.id;
+        const tarih = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleDateString('tr-TR') : '-';
+        const tutar = d.productPrice ? `₺${Number(d.productPrice).toLocaleString('tr-TR',{maximumFractionDigits:2})}` : '-';
+        let durumStr = '';
+        if (d.status === "Tamamlandı") {
+          durumStr = '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Tamamlandı</span>';
+        } else if (d.status === "İşlemde" || d.status === "Aktif") {
+          durumStr = '<span class="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-800">İşlemde</span>';
+        } else if (d.status === "İptal Edildi") {
+          durumStr = '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">İptal Edildi</span>';
+        } else {
+          durumStr = '<span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Bekliyor</span>';
+        }
+        html += `
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 text-sm">#${orderNo}</td>
+          <td class="px-4 py-3">
+            <div class="flex items-center">
+              <img src="${photo}" alt="Customer" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <div>
+                <p class="text-sm font-medium">${customer}</p>
+                <p class="text-xs text-gray-500">${email}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-sm">${tarih}</td>
+          <td class="px-4 py-3 text-sm font-medium">${tutar}</td>
+          <td class="px-4 py-3">${durumStr}</td>
+          <td class="px-4 py-3 text-sm">
+            <div class="flex space-x-2">
+              <button class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 cursor-pointer">
+                <i class="ri-eye-line"></i>
+              </button>
+              <button class="w-8 h-8 flex items-center justify-center rounded-full bg-amber-100 text-amber-600 hover:bg-amber-200 cursor-pointer">
+                <i class="ri-edit-line"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        `;
+      });
+      ordersTable.innerHTML = html;
+    });
+});
+</script>
+<script id="chart-script">
+document.addEventListener('DOMContentLoaded', function() {
+// Sales Chart
+const salesChart = echarts.init(document.getElementById('sales-chart'));
+const salesOption = {
+tooltip: {
+trigger: 'axis',
+axisPointer: {
+type: 'shadow'
+}
+},
+grid: {
+left: '3%',
+right: '4%',
+bottom: '3%',
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+axisTick: {
+alignWithLabel: true
+}
+},
+yAxis: {
+type: 'value'
+},
+series: [
+{
+name: 'Satış',
+type: 'bar',
+barWidth: '60%',
+data: [1200, 1900, 1500, 2300, 1800, 2500, 2100],
+itemStyle: {
+color: '#4F46E5'
+}
+}
+]
+};
+salesChart.setOption(salesOption);
+// Category Chart
+const categoryChart = echarts.init(document.getElementById('category-chart'));
+const categoryOption = {
+tooltip: {
+trigger: 'item'
+},
+legend: {
+orient: 'vertical',
+right: 10,
+top: 'center',
+data: ['Elektronik', 'Giyim', 'Ev Eşyaları', 'Kozmetik', 'Diğer']
+},
+series: [
+{
+name: 'Kategori',
+type: 'pie',
+radius: ['40%', '70%'],
+center: ['40%', '50%'],
+avoidLabelOverlap: false,
+itemStyle: {
+borderRadius: 10,
+borderColor: '#fff',
+borderWidth: 2
+},
+label: {
+show: false,
+position: 'center'
+},
+emphasis: {
+label: {
+show: true,
+fontSize: '14',
+fontWeight: 'bold'
+}
+},
+labelLine: {
+show: false
+},
+data: [
+{ value: 1048, name: 'Elektronik' },
+{ value: 735, name: 'Giyim' },
+{ value: 580, name: 'Ev Eşyaları' },
+{ value: 484, name: 'Kozmetik' },
+{ value: 300, name: 'Diğer' }
+],
+color: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
+}
+]
+};
+categoryChart.setOption(categoryOption);
+// Resize charts when window size changes
+window.addEventListener('resize', function() {
+salesChart.resize();
+categoryChart.resize();
+});
+});
+</script>
+<script id="sidebar-script">
+document.addEventListener('DOMContentLoaded', function() {
+const menuToggle = document.getElementById('menu-toggle');
+const sidebar = document.getElementById('sidebar');
+menuToggle.addEventListener('click', function() {
+sidebar.classList.toggle('active');
+});
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+const isMobile = window.innerWidth < 768;
+const isMenuToggle = event.target === menuToggle || menuToggle.contains(event.target);
+const isSidebar = event.target === sidebar || sidebar.contains(event.target);
+if (isMobile && !isMenuToggle && !isSidebar && sidebar.classList.contains('active')) {
+sidebar.classList.remove('active');
+}
+});
+});
+</script>
+<script id="notification-script">
+document.addEventListener('DOMContentLoaded', function() {
+const notificationBell = document.querySelector('.ri-notification-3-line').parentNode;
+const notificationModal = document.getElementById('notification-modal');
+const closeNotification = document.getElementById('close-notification');
+notificationBell.addEventListener('click', function() {
+notificationModal.classList.remove('hidden');
+});
+closeNotification.addEventListener('click', function() {
+notificationModal.classList.add('hidden');
+});
+// Close modal when clicking outside
+notificationModal.addEventListener('click', function(event) {
+if (event.target === notificationModal) {
+notificationModal.classList.add('hidden');
+}
+});
+});
+</script>
 </body>
 </html>
