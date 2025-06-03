@@ -124,21 +124,21 @@
                     </div>
                     <span class="text-sm font-medium">Hesapla</span>
                 </button>
-                <button id="order-btn"
+                <button id="order-btn" disabled
                         class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                     <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                         <i class="ri-shopping-cart-line ri-xl text-primary"></i>
                     </div>
                     <span class="text-sm font-medium">Sipariş Ver</span>
                 </button>
-                <button id="my-orders-btn"
+                <button id="my-orders-btn" disabled
                         class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                     <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                         <i class="ri-file-list-3-line ri-xl text-primary"></i>
                     </div>
                     <span class="text-sm font-medium">Siparişlerim</span>
                 </button>
-                <button id="track-btn"
+                <button id="track-btn" disabled
                         class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                     <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                         <i class="ri-truck-line ri-xl text-primary"></i>
@@ -927,6 +927,12 @@
             profileContainer.classList.remove('hidden');
             profileImg.src = user.photoURL || "https://placehold.co/32x32/cccccc/333333?text=P"; // Varsayılan profil resmi
             profileImg.alt = user.displayName || "Profil";
+            
+            // Kullanıcı giriş yaptığında korumalı butonları etkinleştir
+            orderBtn.disabled = false;
+            myOrdersBtn.disabled = false;
+            trackBtn.disabled = false;
+
             // Admin butonunu göster (örnek olarak, belirli bir UID'ye sahipse)
             // Gerçek uygulamada bu kontrol backend'de yapılmalıdır.
             // BURAYA KENDİ ADMİN UID'NİZİ TIRNAK İÇİNDE YAPIŞTIRIN: Örnek: 'abcdefg12345'
@@ -954,7 +960,12 @@
         } else {
             loginBtn.classList.remove('hidden');
             profileContainer.classList.add('hidden');
-            // Admin butonu varsa gizle
+            
+            // Kullanıcı çıkış yaptığında korumalı butonları pasifleştir
+            orderBtn.disabled = true;
+            myOrdersBtn.disabled = true;
+            trackBtn.disabled = true;
+
             const adminNavBtn = document.getElementById('admin-nav-btn');
             if (adminNavBtn) adminNavBtn.remove();
         }
@@ -1048,6 +1059,7 @@
     // Korunan butonlar için olay dinleyicileri (giriş yoksa modal aç)
     // Sipariş Ver butonu
     orderBtn.addEventListener('click', function (e) {
+        console.log('Order button clicked.'); // Hata ayıklama için eklendi
         if (!isAuthReady) {
             showToast('Lütfen kimlik doğrulama işleminin tamamlanmasını bekleyin.');
             e.preventDefault();
@@ -1063,6 +1075,7 @@
 
     // Siparişlerim butonu
     myOrdersBtn.addEventListener('click', function (e) {
+        console.log('My Orders button clicked.'); // Hata ayıklama için eklendi
         if (!isAuthReady) {
             showToast('Lütfen kimlik doğrulama işleminin tamamlanmasını bekleyin.');
             e.preventDefault();
@@ -1078,8 +1091,22 @@
 
     // Ana navigasyon butonları için event listener'lar
     document.getElementById('home-btn')?.addEventListener('click', () => showSection(homeSection, 'Ana Sayfa'));
-    calculateBtn.addEventListener('click', () => showSection(calculatorSection, 'Ürün Maliyeti Hesapla'));
-    trackBtn.addEventListener('click', () => showSection(trackSection, 'Kargo Takip'));
+    calculateBtn.addEventListener('click', () => {
+        console.log('Calculate button clicked.'); // Hata ayıklama için eklendi
+        showSection(calculatorSection, 'Ürün Maliyeti Hesapla')
+    });
+    trackBtn.addEventListener('click', () => {
+        console.log('Track button clicked.'); // Hata ayıklama için eklendi
+        if (!isAuthReady) {
+            showToast('Lütfen kimlik doğrulama işleminin tamamlanmasını bekleyin.');
+            return;
+        }
+        if (!currentUser) {
+            showModal(authRequiredModal);
+            return;
+        }
+        showSection(trackSection, 'Kargo Takip');
+    });
 
 
     // --- Hesaplama Modülü ---
@@ -1297,6 +1324,7 @@
     // --- Kargo Takip Modülü ---
 
     trackCargoBtn.addEventListener('click', async () => {
+        console.log('Track button clicked.'); // Hata ayıklama için eklendi
         if (!isAuthReady) {
             showToast('Lütfen kimlik doğrulama işleminin tamamlanmasını bekleyin.');
             return;
@@ -1530,7 +1558,7 @@
                 }
             }
         }
-    }); // Bu satırdaki fazladan ')' kaldırıldı.
+    }); 
 
     // --- Genel Kopyala Fonksiyonu ---
     document.querySelectorAll('.copy-btn').forEach(function (btn) {
