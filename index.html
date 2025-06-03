@@ -476,6 +476,26 @@
             </div>
         </div>
 
+        <!-- Sipariş Ver Bölümü -->
+        <div id="order-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
+            <h3 class="text-lg font-semibold mb-4 text-primary">Sipariş Ver</h3>
+            <p class="text-gray-600">Burada sipariş verme formu veya bilgileri yer alacak.</p>
+            <!-- Buraya sipariş formu veya yönlendirme bilgileri eklenebilir -->
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg text-blue-700">
+                <p>Bu bölüm henüz geliştirme aşamasındadır. Lütfen ana sayfaya dönün.</p>
+            </div>
+        </div>
+
+        <!-- Siparişlerim Bölümü -->
+        <div id="my-orders-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
+            <h3 class="text-lg font-semibold mb-4 text-primary">Siparişlerim</h3>
+            <p class="text-gray-600">Geçmiş siparişlerinizin listesi burada görüntülenecek.</p>
+            <!-- Buraya kullanıcı sipariş geçmişi listesi eklenebilir -->
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg text-blue-700">
+                <p>Bu bölüm henüz geliştirme aşamasındadır. Lütfen ana sayfaya dönün.</p>
+            </div>
+        </div>
+
         <!-- Admin Paneli Bölümü -->
         <div id="admin-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
             <h3 class="text-lg font-semibold mb-4 text-primary">Admin Paneli</h3>
@@ -658,7 +678,9 @@
     const calculateBtn = document.getElementById('calculate-btn');
     const calculatorSection = document.getElementById('calculator-section');
     const orderBtn = document.getElementById('order-btn');
+    const orderSection = document.getElementById('order-section'); // Yeni eklendi
     const myOrdersBtn = document.getElementById('my-orders-btn');
+    const myOrdersSection = document.getElementById('my-orders-section'); // Yeni eklendi
     const trackBtn = document.getElementById('track-btn');
     const trackSection = document.getElementById('track-section');
 
@@ -708,7 +730,7 @@
      */
     function showSection(sectionToShow, title) {
         // Tüm ana bölümleri gizle
-        [homeSection, calculatorSection, trackSection, adminSection].forEach(section => {
+        [homeSection, calculatorSection, trackSection, adminSection, orderSection, myOrdersSection].forEach(section => {
             section.classList.add('hidden');
         });
 
@@ -944,18 +966,23 @@
     };
 
     // Korunan butonlar için olay dinleyicileri (giriş yoksa modal aç)
-    [orderBtn, myOrdersBtn].forEach(function (btn) {
-        if (btn) {
-            btn.addEventListener('click', function (e) {
-                if (!currentUser) {
-                    e.preventDefault(); // Varsayılan link davranışını engelle
-                    showModal(authRequiredModal);
-                } else {
-                    // Kullanıcı giriş yapmışsa, ilgili sayfaya yönlendir
-                    if (btn.id === 'order-btn') window.location.href = 'https://getirkibris.com/siparisver';
-                    if (btn.id === 'my-orders-btn') window.location.href = 'https://getirkibris.com/siparislerim';
-                }
-            });
+    // Sipariş Ver butonu
+    orderBtn.addEventListener('click', function (e) {
+        if (!currentUser) {
+            e.preventDefault();
+            showModal(authRequiredModal);
+        } else {
+            showSection(orderSection, 'Sipariş Ver'); // İç bölümü göster
+        }
+    });
+
+    // Siparişlerim butonu
+    myOrdersBtn.addEventListener('click', function (e) {
+        if (!currentUser) {
+            e.preventDefault();
+            showModal(authRequiredModal);
+        } else {
+            showSection(myOrdersSection, 'Siparişlerim'); // İç bölümü göster
         }
     });
 
