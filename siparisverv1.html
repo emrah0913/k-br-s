@@ -715,7 +715,7 @@ calculatorForm.addEventListener('submit', function(e) {
 
         // --- FIREBASE: Siparişi Firestore'a kaydet ---
         if (typeof firebase !== "undefined" && firebase.firestore) {
-            db.collection('orders').add({
+            db.collection('siparisler').add({
                 fullName: fullName,
                 phone: phone,
                 productLink: productLink,
