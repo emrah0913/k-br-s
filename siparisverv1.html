@@ -181,7 +181,7 @@ transform: scale(0.95);
 </div>
 </div>
 </div>
-<!-- BUTON DEĞİŞİKLİĞİ: -->
+<!-- Siparişi Onayla Akışlı Buton -->
 <button type="button" id="calculate-or-order-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
 Hesapla
 </button>
@@ -363,7 +363,6 @@ const orderCodeInput = document.getElementById('order-code-input');
 const citySelect = document.getElementById('city');
 const deliveryAddressInput = document.getElementById('delivery-address-input');
 
-// YENİ: Sipariş akışı için state
 let calculationState = "calculate";
 let lastOrderData = null;
 
@@ -415,7 +414,7 @@ if (defaultRadio) {
 handleDeliveryTypeChange(defaultRadio);
 }
 
-// YENİ: Sipariş butonu ile iki adımlı akış (Hesapla/Siparişi Onayla)
+// Sipariş butonu ile iki adımlı akış (Hesapla/Siparişi Onayla)
 const calculateOrOrderBtn = document.getElementById('calculate-or-order-btn');
 calculateOrOrderBtn.addEventListener('click', function() {
   if (calculationState === "calculate") {
@@ -491,8 +490,8 @@ calculateOrOrderBtn.addEventListener('click', function() {
       db.collection('orders').add(lastOrderData).then(() => {
         showToast("Siparişiniz kaydedildi!");
         // Formu ve state'i sıfırla
-        calculationResult.classList.add('hidden');
         calculatorForm.reset();
+        calculationResult.classList.add('hidden');
         calculateOrOrderBtn.textContent = "Hesapla";
         calculationState = "calculate";
       }).catch(err => {
@@ -503,7 +502,6 @@ calculateOrOrderBtn.addEventListener('click', function() {
     }
   }
 });
-// Eski submit eventini iptal et
 calculatorForm.addEventListener('submit', function(e) { e.preventDefault(); });
 });
 </script>
