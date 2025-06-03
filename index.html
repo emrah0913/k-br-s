@@ -1,548 +1,555 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Getir Kıbrıs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <style>
-    :root {
-      --primary: #0094da;
-      --accent: #ffcb05;
-      --dark: #232323;
-      --light-bg: #f7fafc;
-      --white: #fff;
-      --gray: #ececec;
-      --radius: 16px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.07);
-    }
-    body {
-      font-family: 'Montserrat', Arial, sans-serif;
-      margin: 0;
-      background: var(--light-bg);
-      color: var(--dark);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .container {
-      width: 100%;
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 24px 16px 0 16px;
-      box-sizing: border-box;
-      flex: 1;
-    }
-    .header-bar {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 12px 16px 0 16px;
-      gap: 16px;
-    }
-    .profile-img {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--primary);
-      background: var(--gray);
-    }
-    .btn {
-      padding: 8px 18px;
-      border-radius: var(--radius);
-      border: none;
-      font-weight: 600;
-      background: var(--primary);
-      color: var(--white);
-      font-size: 1rem;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: background .15s;
-    }
-    .btn:hover { background: #007dc1; }
-    .btn:disabled { opacity: .6; cursor: not-allowed; }
-    .logo-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 0;
-      margin-bottom: 12px;
-    }
-    .logo {
-      max-width: 90px;
-      width: 18vw;
-      min-width: 56px;
-      height: auto;
-      display: block;
-    }
-    .hero-img-wrap {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .hero-img {
-      width: 100%;
-      max-height: 260px;
-      object-fit: cover;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .hero-slogan {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--white);
-      text-shadow: 0 2px 16px rgba(0,0,0,0.18);
-      letter-spacing: 1px;
-      background: none;
-      padding: 0 12px;
-      user-select: none;
-    }
-    .nav-btn-row {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      margin: 24px 0 12px 0;
-      flex-wrap: wrap;
-    }
-    .nav-btn {
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: var(--radius);
-      background: var(--accent);
-      color: var(--dark);
-      padding: 13px 28px;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: background .17s;
-      min-width: 128px;
-    }
-    .nav-btn:hover { background: #ffe780; }
-    .nav-btn:disabled { opacity: .5; cursor: not-allowed; }
-    .calc-module {
-      margin: 0 auto 24px auto;
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      max-width: 480px;
-      padding: 28px 24px 18px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .calc-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 12px;
-      color: var(--primary);
-    }
-    .form-row {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .form-row label {
-      font-size: .95rem;
-      font-weight: 500;
-      margin-bottom: 1px;
-    }
-    .form-row input, .form-row select {
-      padding: 8px;
-      border-radius: 8px;
-      border: 1.2px solid var(--gray);
-      font-size: 1rem;
-      background: var(--light-bg);
-    }
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-      align-items: center;
-      justify-content: flex-end;
-    }
-    .result-info {
-      background: #eafdff;
-      border-radius: 7px;
-      margin-top: 10px;
-      padding: 12px;
-      color: #1880a7;
-      font-weight: 600;
-      text-align: center;
-      font-size: 1.1rem;
-    }
-    .info-area {
-      background: var(--gray);
-      border-radius: var(--radius);
-      padding: 18px 16px;
-      margin: 22px auto 16px auto;
-      font-size: 1.01rem;
-      max-width: 650px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    }
-    .info-area ol {
-      margin: 0 0 0 20px;
-      padding: 0;
-    }
-    .info-area li {
-      margin-bottom: 6px;
-    }
-    .depo-banka-area {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      justify-content: center;
-      margin-bottom: 32px;
-    }
-    .copy-box {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px 20px;
-      min-width: 260px;
-      max-width: 350px;
-      flex: 1 1 260px;
-      position: relative;
-      margin-bottom: 8px;
-    }
-    .copy-title {
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 7px;
-      font-size: 1.08rem;
-    }
-    .copy-content {
-      font-family: 'Courier New', monospace;
-      font-size: .98rem;
-      margin-bottom: 8px;
-      background: #eafdff;
-      padding: 6px 8px;
-      border-radius: 5px;
-      word-break: break-word;
-      white-space: pre-line;
-    }
-    .copy-btn {
-      position: absolute;
-      top: 16px;
-      right: 18px;
-      background: var(--accent);
-      color: var(--dark);
-      border: none;
-      border-radius: 7px;
-      padding: 4px 10px;
-      font-size: .96rem;
-      cursor: pointer;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: background .15s;
-    }
-    .copy-btn:hover { background: #ffe780; }
-    .footer {
-      background: var(--white);
-      border-top: 1.5px solid var(--gray);
-      padding: 18px 8px 8px 8px;
-      text-align: center;
-      font-size: .98rem;
-      margin-top: auto;
-    }
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 22px;
-      margin-bottom: 7px;
-      flex-wrap: wrap;
-    }
-    .footer-links a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1.01rem;
-      transition: color .15s;
-    }
-    .footer-links a:hover {
-      color: #007dc1;
-      text-decoration: underline;
-    }
-    @media (max-width: 700px) {
-      .hero-slogan { font-size: 1.14rem; }
-      .hero-img-wrap { max-width: 100vw; }
-      .nav-btn-row { gap: 7px; }
-      .calc-module { padding: 22px 6vw 12px 6vw; }
-      .info-area { padding: 12px 6vw; }
-      .depo-banka-area { flex-direction: column; gap: 14px; }
-      .copy-box { max-width: 100%; min-width: 0; }
-    }
-    @media (max-width: 470px) {
-      .header-bar { padding: 10px 4px 0 4px; }
-      .logo-wrap { margin-bottom: 5px; }
-      .nav-btn { font-size: .94rem; min-width: 0; padding: 9px 8px; }
-      .calc-module { padding: 12px 2vw 8px 2vw; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0">
+<title>Getir Kıbrıs</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{primary:'#5d3ebc',secondary:'#ffd300'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<!-- Firebase v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
+.copy-btn:active { transform: scale(0.95); }
+</style>
 </head>
-<body>
-  <div class="header-bar">
-    <button id="loginBtn" class="btn" style="display:none;">Google ile Giriş Yap</button>
-    <img id="profileImg" class="profile-img" alt="Profil" style="display:none;">
-    <button id="logoutBtn" class="btn" style="display:none;background:#e74c3c;">Çıkış Yap</button>
+<body class="bg-gray-50">
+<div class="w-[375px] mx-auto relative min-h-screen pb-16">
+<!-- Header -->
+<header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex justify-between items-center">
+<div class="w-8"></div>
+<div class="flex flex-col items-center">
+<img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-12">
+<span class="text-sm font-medium text-primary mt-1">Ana Sayfa</span>
+</div>
+<div id="auth-button" class="w-8 h-8 flex items-center justify-center">
+  <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
+    <i class="ri-google-fill ri-lg"></i>
+  </button>
+  <div id="profile-container" class="hidden">
+    <img id="profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer">
   </div>
-  <div class="logo-wrap">
-    <img src="https://getirkibris.com/logo.png" alt="Getir Kıbrıs Logo" class="logo">
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-16 pb-20">
+<!-- Video Section -->
+<div class="relative w-full h-64 overflow-hidden mb-6">
+<video class="w-full h-full object-cover" controls poster="https://readdy.ai/api/search-image?query=online%20shopping%20and%20delivery%20service%2C%20modern%20lifestyle%2C%20soft%20lighting%2C%20clean%20background%2C%20banner%20image&width=800&height=400&seq=1&orientation=landscape">
+<source src="https://public.readdy.ai/assets/sample.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
+</div>
+<!-- Main Action Buttons -->
+<div class="grid grid-cols-2 gap-4 px-4 mb-8">
+<button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+  <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+    <i class="ri-calculator-line ri-xl text-primary"></i>
   </div>
-  <div class="container">
-    <div class="hero-img-wrap">
-      <img class="hero-img" src="https://cdn.pixabay.com/photo/2021/09/16/21/27/container-ship-6631117_1280.jpg" alt="Gemi Görseli">
-      <div class="hero-slogan">Türkiye’den Kıbrıs’a getiriyoruz</div>
+  <span class="text-sm font-medium">Hesapla</span>
+</button>
+<button id="order-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+  <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+    <i class="ri-shopping-cart-line ri-xl text-primary"></i>
+  </div>
+  <span class="text-sm font-medium">Sipariş Ver</span>
+</button>
+<button id="my-orders-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+  <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+    <i class="ri-file-list-3-line ri-xl text-primary"></i>
+  </div>
+  <span class="text-sm font-medium">Siparişlerim</span>
+</button>
+<button id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+  <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+    <i class="ri-truck-line ri-xl text-primary"></i>
+  </div>
+  <span class="text-sm font-medium">Kargo Takip</span>
+ <script>
+  document.getElementById('order-btn').addEventListener('click', function() {
+    window.location.href = 'https://getirkibris.com/siparisverv1';
+  });
+  document.getElementById('track-btn').addEventListener('click', function() {
+    window.location.href = 'https://getirkibris.com/kargotakipv1';
+  });
+  document.getElementById('my-orders-btn').addEventListener('click', function() {
+    window.location.href = 'https://getirkibris.com/siparislerimv1';
+  });
+</script>
+</button>
+</div>
+<!-- Calculator Section -->
+<div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
+<h3 class="text-lg font-semibold mb-4 text-primary">Ürün Maliyeti Hesapla</h3>
+<form id="calculator-form" class="space-y-4">
+<div>
+<label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
+<div class="relative mb-4">
+<i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<select id="order-method" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+<option value="" disabled selected>Sipariş yöntemi seçin</option>
+<option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
+<option value="service">Ürünü benim yerime siz sipariş edin, size ödeme yapacağım</option>
+</select>
+<i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+</div>
+<div>
+<label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
+<div class="relative">
+<i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<input type="url" id="product-link" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="https://www.example.com/urun">
+</div>
+</div>
+</div>
+<div>
+<label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
+<div class="relative">
+<i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00">
+</div>
+</div>
+<div>
+<label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+<div class="relative">
+<i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<select id="product-category" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+<option value="" disabled selected>Kategori seçin</option>
+<option value="furniture">Mobilya</option>
+<option value="electronics">Elektronik</option>
+<option value="clothing">Giyim</option>
+<option value="cosmetics">Kozmetik</option>
+<option value="stationery">Kırtasiye</option>
+</select>
+<i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+</div>
+</div>
+<div>
+<span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi</span>
+<div class="flex space-x-4">
+<label class="flex items-center cursor-pointer">
+<input type="radio" name="delivery-type" value="warehouse" class="sr-only" checked>
+<div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
+<div class="w-3 h-3 bg-primary rounded-full hidden"></div>
+</div>
+<span class="text-sm">Depodan teslim</span>
+</label>
+<label class="flex items-center cursor-pointer">
+<input type="radio" name="delivery-type" value="home" class="sr-only">
+<div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
+<div class="w-3 h-3 bg-primary rounded-full hidden"></div>
+</div>
+<span class="text-sm">Eve teslim</span>
+</label>
+</div>
+</div>
+<div id="city-selection" class="hidden">
+<label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+<div class="relative">
+<i class="ri-map-pin-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<select id="city" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+<option value="" disabled selected>Şehir seçin</option>
+<option value="lefkosa">Lefkoşa</option>
+<option value="girne">Girne</option>
+<option value="magusa">Gazimağusa</option>
+<option value="guzelyurt">Güzelyurt</option>
+<option value="iskele">İskele</option>
+</select>
+<i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+</div>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
+Hesapla
+</button>
+</form>
+<div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+<h4 class="font-medium text-gray-800 mb-2">Hesaplama Sonucu</h4>
+<div class="space-y-2 text-sm">
+<div class="flex justify-between">
+<span>Ürün Fiyatı:</span>
+<span id="result-price">0 ₺</span>
+</div>
+<div class="flex justify-between">
+<span>Kategori Ücreti:</span>
+<span id="result-category-fee">0 ₺</span>
+</div>
+<div class="flex justify-between" id="result-city-row">
+<span>Teslimat Ücreti:</span>
+<span id="result-delivery-fee">0 ₺</span>
+</div>
+<div class="flex justify-between font-medium text-primary pt-2 border-t border-gray-200">
+<span>Toplam:</span>
+<span id="result-total">0 ₺</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Popüler Alışveriş Siteleri ve Nasıl Çalışır -->
+<!-- ... (Aynen bırak) ... -->
+
+<!-- EK: İletişim Bilgileri, Harita, Alışveriş İşlemleri, Teslimat ve Takip, Müşteri Hizmetleri -->
+<div class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8">
+  <h4 class="text-lg font-semibold mb-4 text-primary">İletişim Bilgileri</h4>
+  <div class="space-y-4">
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 flex items-center justify-center text-primary">
+        <i class="ri-map-pin-2-line"></i>
+      </div>
+      <div>
+        <h5 class="font-medium text-gray-800">Adres</h5>
+        <p class="text-sm text-gray-600">Şehit Mustafa Ruso Caddesi, No:86, Lefkoşa, KKTC</p>
+      </div>
     </div>
-    <div class="nav-btn-row">
-      <button class="nav-btn" id="btnHesapla" onclick="scrollToCalc()">Hesapla</button>
-      <button class="nav-btn" id="btnSiparisVer" onclick="goPageOrWarn('siparisver.html')">Sipariş Ver</button>
-      <button class="nav-btn" id="btnSiparislerim" onclick="goPageOrWarn('siparislerim.html')">Siparişlerim</button>
-      <button class="nav-btn" id="btnKargoTakip" onclick="goPageOrWarn('kargotakip.html')">Kargo Takip</button>
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 flex items-center justify-center text-primary">
+        <i class="ri-phone-line"></i>
+      </div>
+      <div>
+        <h5 class="font-medium text-gray-800">Telefon</h5>
+        <p class="text-sm text-gray-600">+90 392 123 45 67</p>
+      </div>
     </div>
-    <form class="calc-module" id="calcForm" autocomplete="off">
-      <div class="calc-title" id="calcTitle">Hesaplama Modülü</div>
-      <div class="form-row">
-        <label for="urunLinki">Ürün Linki</label>
-        <input type="url" id="urunLinki" placeholder="https://www.trendyol.com/..." required>
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 flex items-center justify-center text-primary">
+        <i class="ri-mail-line"></i>
       </div>
-      <div class="form-row">
-        <label for="urunFiyati">Ürün Fiyatı (TL)</label>
-        <input type="number" id="urunFiyati" min="1" placeholder="örn: 1000" required>
+      <div>
+        <h5 class="font-medium text-gray-800">E-posta</h5>
+        <p class="text-sm text-gray-600">info@getirkibris.com</p>
       </div>
-      <div class="form-row">
-        <label for="kategori">Kategori</label>
-        <select id="kategori" required>
-          <option value="">Seçiniz</option>
-          <option value="Mobilya">Mobilya</option>
-          <option value="Giyim">Giyim</option>
-          <option value="Elektronik">Elektronik</option>
-          <option value="Kırtasiye">Kırtasiye</option>
-          <option value="Kozmetik">Kozmetik</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="teslimatTipi">Teslimat Tipi</label>
-        <select id="teslimatTipi" required>
-          <option value="">Seçiniz</option>
-          <option value="Depodan Teslim">Depodan Teslim</option>
-          <option value="Eve Teslim">Eve Teslim</option>
-        </select>
-      </div>
-      <div class="form-row" id="adresRow" style="display:none;">
-        <label for="adresSecimi">Teslimat Adresi</label>
-        <select id="adresSecimi">
-          <option value="">Seçiniz</option>
-          <option value="Mağusa">Mağusa</option>
-          <option value="Lefkoşa">Lefkoşa</option>
-          <option value="Girne">Girne</option>
-          <option value="İskele">İskele</option>
-          <option value="Güzelyurt">Güzelyurt</option>
-          <option value="Lefke">Lefke</option>
-          <option value="Karpaz">Karpaz</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="btn" id="hesaplaBtn">Hesapla</button>
-      </div>
-      <div id="resultInfo" class="result-info" style="display:none;"></div>
-    </form>
-    <div class="info-area">
-      <b>Sistemi Nasıl Kullanırım?</b>
-      <ol>
-        <li>Türkiye’deki alışveriş sitelerinden (ör: Trendyol) istediğiniz ürünü seçin.</li>
-        <li>Ürün linkini kopyalayın.</li>
-        <li>Yukarıdaki hesaplama modülüne ürün linki ve fiyatını, kategori ve teslimat tipini girin.</li>
-        <li>Hesapla butonuna basarak toplam maliyeti öğrenin.</li>
-        <li>Giriş yaptıktan sonra siparişinizi kolayca oluşturun.</li>
-        <li>Ödemenizi aşağıdaki banka hesabına yapın.</li>
-        <li>Siparişlerim ve Kargo Takip ile süreci takip edin.</li>
-      </ol>
     </div>
-    <div class="depo-banka-area">
-      <div class="copy-box">
-        <div class="copy-title">Türkiye Depo Adresi</div>
-        <div class="copy-content" id="depoAdres">
-Esentepe Mah. 3075. Sk. No:2, 34510 Esenyurt/İstanbul
-Açıklama: <b>Adınız Soyadınız + Getir Kıbrıs</b>
-Telefon: <b>+90 539 109 08 79</b>
+  </div>
+  <div class="mt-6">
+    <h5 class="font-medium text-gray-800 mb-1">Kıbrıs Adresimiz</h5>
+    <div class="w-full h-64 rounded-lg overflow-hidden relative bg-gray-100 flex items-center justify-center group">
+      <!-- Embed Harita -->
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3356.564237011065!2d33.46120507707925!3d35.22650137269345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14de3f74e0864075%3A0x5fa8b6333def3eb!2sPufemo!5e0!3m2!1str!2str!4v1717419783683!5m2!1str!2str"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        class="absolute inset-0 w-full h-full border-0">
+      </iframe>
+      <!-- Tıklanabilir Şeffaf Link -->
+      <a
+        href="https://www.google.com/maps/place/Pufemo/@35.2265014,33.4637806,17z/data=!3m1!4b1!4m6!3m5!1s0x14de3f74e0864075:0x5fa8b6333def3eb!8m2!3d35.2265014!4d33.4637806!16s%2Fg%2F11x5__k07t?entry=ttu"
+        target="_blank"
+        rel="noopener"
+        class="absolute inset-0 w-full h-full z-10"
+        style="background:rgba(0,0,0,0);"
+        title="Google Harita'da aç">
+        <span class="sr-only">Haritayı Google'da aç</span>
+      </a>
+      <!-- Hoverda ufak bir bilgi etiketi -->
+      <div class="absolute bottom-2 right-2 bg-white/80 text-xs text-primary rounded px-3 py-1 z-20 shadow group-hover:opacity-100 opacity-0 transition-opacity pointer-events-none">
+        Haritayı büyütmek için tıkla
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mx-4 mb-8 space-y-6">
+  <div>
+    <h4 class="text-lg font-semibold mb-4 text-primary">Alışveriş İşlemleri</h4>
+    <div class="grid grid-cols-1 gap-4">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="ri-shopping-cart-line text-primary"></i>
+          </div>
+          <div>
+            <h5 class="font-medium text-gray-800">Sipariş Verme</h5>
+            <p class="text-sm text-gray-600 mt-1">Türkiye'deki herhangi bir e-ticaret sitesinden ürün seçin, sipariş formunu doldurun ve ödemenizi yapın.</p>
+          </div>
         </div>
-        <button class="copy-btn" onclick="copyText('depoAdres', this)">Kopyala</button>
       </div>
-      <div class="copy-box">
-        <div class="copy-title">Banka Bilgileri</div>
-        <div class="copy-content">
-Banka: Ziraat Bankası<br>
-IBAN: <b>TR00 0000 0000 0000 0000 0000 00</b><br>
-Hesap Adı: <b>Getir Kıbrıs Lojistik Ltd.</b>
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="ri-calculator-line text-primary"></i>
+          </div>
+          <div>
+            <h5 class="font-medium text-gray-800">Maliyet Hesaplama</h5>
+            <p class="text-sm text-gray-600 mt-1">Ürün fiyatı ve kategorisine göre toplam maliyeti hesaplayın, ek ücretleri önceden öğrenin.</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="footer">
-    <div class="footer-links">
-      <a href="#">Gizlilik Politikası</a>
-      <a href="#">Kullanım Şartları</a>
-      <a href="#">İletişim</a>
-      <a href="Tel:0539 109 08 79" style="font-weight:700;color:var(--primary);text-decoration:none;">0539 109 08 79</a>
+  <div>
+    <h4 class="text-lg font-semibold mb-4 text-primary">Teslimat ve Takip</h4>
+    <div class="grid grid-cols-1 gap-4">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="ri-truck-line text-primary"></i>
+          </div>
+          <div>
+            <h5 class="font-medium text-gray-800">Kargo Takibi</h5>
+            <p class="text-sm text-gray-600 mt-1">Siparişinizin durumunu anlık olarak takip edin, teslimat sürecini kontrol edin.</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="ri-map-pin-line text-primary"></i>
+          </div>
+          <div>
+            <h5 class="font-medium text-gray-800">Teslimat Seçenekleri</h5>
+            <p class="text-sm text-gray-600 mt-1">Depodan teslim veya adrese teslimat seçeneklerinden size uygun olanı seçin.</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div>© 2025 Getir Kıbrıs. Tüm hakları saklıdır.</div>
   </div>
-  <script>
-    // FIREBASE CONFIG - ENTEGRE EDİLDİ!
-    const firebaseConfig = {
-      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-      authDomain: "kibris-6b4f7.firebaseapp.com",
-      projectId: "kibris-6b4f7",
-      storageBucket: "kibris-6b4f7.firebasestorage.app",
-      messagingSenderId: "141262926171",
-      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-      measurementId: "G-JL9P6BRZTD"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const profileImg = document.getElementById('profileImg');
-    const btnSiparisVer = document.getElementById('btnSiparisVer');
-    const btnSiparislerim = document.getElementById('btnSiparislerim');
-    const btnKargoTakip = document.getElementById('btnKargoTakip');
-    const hesaplaBtn = document.getElementById('hesaplaBtn');
-    const calcForm = document.getElementById('calcForm');
-    const resultInfo = document.getElementById('resultInfo');
-    let user = null;
+  <div>
+    <h4 class="text-lg font-semibold mb-4 text-primary">Müşteri Hizmetleri</h4>
+    <div class="grid grid-cols-1 gap-4">
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="ri-customer-service-line text-primary"></i>
+          </div>
+          <div>
+            <h5 class="font-medium text-gray-800">7/24 Destek</h5>
+            <p class="text-sm text-gray-600 mt-1">WhatsApp üzerinden bize ulaşın, sorularınızı yanıtlayalım, sorunlarınıza çözüm bulalım.</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <i class="ri-file-list-3-line text-primary"></i>
+          </div>
+          <div>
+            <h5 class="font-medium text-gray-800">Sipariş Geçmişi</h5>
+            <p class="text-sm text-gray-600 mt-1">Tüm siparişlerinizi görüntüleyin, geçmiş alışverişlerinizi kontrol edin.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    function updateAuthUI(currentUser) {
-      user = currentUser;
-      if (user) {
-        loginBtn.style.display = 'none';
-        profileImg.src = user.photoURL || '';
-        profileImg.style.display = '';
-        logoutBtn.style.display = '';
-        [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = false);
-        if (hesaplaBtn.innerText === 'Sipariş Ver') hesaplaBtn.disabled = false;
-      } else {
-        loginBtn.style.display = '';
-        profileImg.style.display = 'none';
-        logoutBtn.style.display = 'none';
-        [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = true);
-        if (hesaplaBtn.innerText === 'Sipariş Ver') hesaplaBtn.disabled = true;
+<!-- WhatsApp Button -->
+<a href="https://wa.me/903921234567" target="_blank" class="fixed bottom-20 right-4 z-50 bg-[#25D366] w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors">
+<i class="ri-whatsapp-line ri-xl text-white"></i>
+</a>
+<!-- Footer Links -->
+<div class="mt-8 px-4 pb-20 text-center">
+<div class="space-x-4">
+<a href="#" class="text-xs text-gray-600 hover:text-primary">Gizlilik Politikası</a>
+<a href="#" class="text-xs text-gray-600 hover:text-primary">Kullanım Şartları</a>
+<a href="#" class="text-xs text-gray-600 hover:text-primary">S.S.S.</a>
+</div>
+</div>
+<!-- Login Modal -->
+<div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+<div class="bg-white rounded-lg p-6 w-[320px] relative">
+<button id="close-login-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
+<i class="ri-close-line ri-lg"></i>
+</button>
+<div class="text-center mb-6">
+<h3 class="text-xl font-semibold text-gray-800">Giriş Yap</h3>
+<p class="text-sm text-gray-600 mt-1">Hizmetlerimizi kullanmak için giriş yapın</p>
+</div>
+<button id="google-login-btn" class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-button py-3 font-medium hover:bg-gray-50 transition-colors cursor-pointer">
+<i class="ri-google-fill ri-lg text-primary"></i>
+<span>Google ile Giriş Yap</span>
+</button>
+</div>
+</div>
+<!-- Auth Required Modal -->
+<div id="auth-required-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+<div class="bg-white rounded-lg p-6 w-[320px]">
+<div class="text-center mb-6">
+<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-lock-line ri-2x text-red-500"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-800">Giriş Gerekli</h3>
+<p class="text-sm text-gray-600 mt-2">Bu özelliği kullanmak için lütfen giriş yapın.</p>
+</div>
+<button id="auth-login-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
+Giriş Yap
+</button>
+<button id="close-auth-modal" class="w-full text-gray-600 py-2 mt-2 font-medium hover:text-gray-800 transition-colors cursor-pointer">
+Kapat
+</button>
+</div>
+</div>
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 z-50">
+<span id="toast-message">Kopyalandı!</span>
+</div>
+<script>
+// === Firebase v8 Auth Integration ===
+var firebaseConfig = {
+  // Kendi Firebase projenizin bilgilerini girin
+  apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+  authDomain: "kibris-6b4f7.firebaseapp.com",
+  projectId: "kibris-6b4f7",
+  storageBucket: "kibris-6b4f7.appspot.com",
+  messagingSenderId: "141262926171",
+  appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+  measurementId: "G-JL9P6BRZTD"
+};
+firebase.initializeApp(firebaseConfig);
+var auth = firebase.auth();
+var currentUser = null;
+
+const loginBtn = document.getElementById('login-btn');
+const profileContainer = document.getElementById('profile-container');
+const profileImg = document.getElementById('profile-img');
+const loginModal = document.getElementById('login-modal');
+const closeLoginModal = document.getElementById('close-login-modal');
+const googleLoginBtn = document.getElementById('google-login-btn');
+const authRequiredModal = document.getElementById('auth-required-modal');
+const authLoginBtn = document.getElementById('auth-login-btn');
+const closeAuthModal = document.getElementById('close-auth-modal');
+const orderBtn = document.getElementById('order-btn');
+const myOrdersBtn = document.getElementById('my-orders-btn');
+const trackBtn = document.getElementById('track-btn');
+
+// Auth UI update
+function updateAuthUI(user) {
+  currentUser = user;
+  if (user) {
+    loginBtn.classList.add('hidden');
+    profileContainer.classList.remove('hidden');
+    profileImg.src = user.photoURL || "";
+    profileImg.alt = user.displayName || "Profil";
+  } else {
+    loginBtn.classList.remove('hidden');
+    profileContainer.classList.add('hidden');
+  }
+}
+auth.onAuthStateChanged(updateAuthUI);
+
+loginBtn.onclick = function () {
+  loginModal.classList.remove('hidden');
+};
+closeLoginModal.onclick = () => loginModal.classList.add('hidden');
+
+googleLoginBtn.onclick = function () {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(function() {
+      loginModal.classList.add('hidden');
+      showToast('Giriş başarılı!');
+    })
+    .catch(function(e){ showToast('Giriş başarısız: ' + e.message); });
+};
+profileContainer.onclick = function () {
+  if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+    auth.signOut().then(function(){ showToast('Çıkış yapıldı'); });
+  }
+};
+// Auth required modal aç/kapa
+function showAuthRequiredModal() {
+  authRequiredModal.classList.remove('hidden');
+}
+closeAuthModal.onclick = () => authRequiredModal.classList.add('hidden');
+authLoginBtn.onclick = function () {
+  authRequiredModal.classList.add('hidden');
+  loginModal.classList.remove('hidden');
+};
+// Protected butonlar (giriş yoksa modal aç)
+[orderBtn, myOrdersBtn, trackBtn].forEach(function(btn){
+  if (btn) {
+    btn.addEventListener('click', function (e) {
+      if (!currentUser) {
+        e.preventDefault();
+        showAuthRequiredModal();
       }
-    }
-
-    auth.onAuthStateChanged(function(currentUser) {
-      updateAuthUI(currentUser);
     });
+  }
+});
+// Calculator button
+const calculateBtn = document.getElementById('calculate-btn');
+if (calculateBtn) {
+  calculateBtn.addEventListener('click', function () {
+    toggleCalculatorSection();
+  });
+}
 
-    loginBtn.onclick = function() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(e=>alert('Giriş başarısız! '+e.message));
-    };
-    logoutBtn.onclick = function() {
-      auth.signOut().then(()=>location.reload());
-    };
-
-    function goPageOrWarn(page) {
-      if (user) {
-        window.location.href = page;
-      } else {
-        alert("Lütfen giriş yapınız.");
-      }
-    }
-    function scrollToCalc() {
-      document.getElementById('calcForm').scrollIntoView({behavior: 'smooth'});
-    }
-
-    document.getElementById('teslimatTipi').addEventListener('change', function() {
-      const show = this.value === 'Eve Teslim';
-      document.getElementById('adresRow').style.display = show ? '' : 'none';
-      if (!show) document.getElementById('adresSecimi').value = '';
+// === Hesaplama Modülü ===
+const calculatorSection = document.getElementById('calculator-section');
+const calculatorForm = document.getElementById('calculator-form');
+const citySelection = document.getElementById('city-selection');
+const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
+const calculationResult = document.getElementById('calculation-result');
+const resultCityRow = document.getElementById('result-city-row');
+window.toggleCalculatorSection = function () {
+  calculatorSection.classList.toggle('hidden');
+  if (!calculatorSection.classList.contains('hidden')) {
+    calculatorSection.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+deliveryRadios.forEach(function(radio) {
+  radio.addEventListener('change', function () {
+    document.querySelectorAll('.delivery-radio div').forEach(function(dot){
+      dot.classList.add('hidden');
     });
-
-    const kategoriYuzdeleri = {
-      'Mobilya': 0.7,
-      'Giyim': 0.45,
-      'Elektronik': 0.7,
-      'Kırtasiye': 0.4,
-      'Kozmetik': 0.7
-    };
-    const kargoUcretleri = {
-      'Mağusa': 500,
-      'Lefkoşa': 200,
-      'Girne': 350,
-      'İskele': 550,
-      'Güzelyurt': 350,
-      'Lefke': 450,
-      'Karpaz': 750
-    };
-
-    calcForm.onsubmit = function(e) {
-      e.preventDefault();
-      const link = document.getElementById('urunLinki').value.trim();
-      const fiyat = parseFloat(document.getElementById('urunFiyati').value.trim());
-      const kategori = document.getElementById('kategori').value;
-      const teslimat = document.getElementById('teslimatTipi').value;
-      const adres = document.getElementById('adresSecimi').value;
-      if (!link || !fiyat || !kategori || !teslimat) {
-        alert('Lütfen tüm alanları doldurunuz.');
-        return;
-      }
-      if (teslimat === 'Eve Teslim' && !adres) {
-        alert('Teslimat adresini seçiniz.');
-        return;
-      }
-      let ekYuzde = kategoriYuzdeleri[kategori] || 0;
-      let araFiyat = fiyat + (fiyat * ekYuzde);
-      let kargo = 0;
-      if (teslimat === 'Eve Teslim') {
-        kargo = kargoUcretleri[adres] || 0;
-      }
-      let toplam = Math.round(araFiyat + kargo);
-      resultInfo.innerHTML = `Toplam Tutar: <b>${toplam} TL</b> <br> (${kategori} için +%${(ekYuzde*100).toFixed(0)}, ${teslimat === 'Eve Teslim' ? adres+' '+kargo+' TL kargo dahil' : 'kargo ücreti yok'})`;
-      resultInfo.style.display = '';
-      hesaplaBtn.innerText = 'Sipariş Ver';
-      hesaplaBtn.type = 'button';
-      hesaplaBtn.onclick = function() {
-        if (!user) {
-          alert('Lütfen giriş yapınız.');
-        } else {
-          window.location.href = 'siparisver.html';
-        }
-      };
-      hesaplaBtn.disabled = !user;
-    };
-
-    Array.from(calcForm.elements).forEach(el=>{
-      el.addEventListener('input', function() {
-        if (hesaplaBtn.innerText !== 'Hesapla') {
-          hesaplaBtn.innerText = 'Hesapla';
-          hesaplaBtn.type = 'submit';
-          hesaplaBtn.disabled = false;
-          resultInfo.style.display = 'none';
-        }
-      });
-    });
-
-    function copyText(elemId, btn) {
-      const text = document.getElementById(elemId).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        btn.innerText = "Kopyalandı!";
-        setTimeout(() => btn.innerText = "Kopyala", 1500);
-      });
+    this.parentElement.querySelector('.delivery-radio div').classList.remove('hidden');
+    if (this.value === 'home') {
+      citySelection.classList.remove('hidden');
+    } else {
+      citySelection.classList.add('hidden');
     }
-
-    loginBtn.style.display = '';
-    [btnSiparisVer, btnSiparislerim, btnKargoTakip].forEach(btn => btn.disabled = true);
-  </script>
+  });
+});
+calculatorForm.addEventListener('submit', function (e) {
+  e.preventDefault();
+  var orderMethod = document.getElementById('order-method').value;
+  var price = parseFloat(document.getElementById('product-price').value) || 0;
+  var category = document.getElementById('product-category').value;
+  var deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+  var city = document.getElementById('city').value;
+  if (!orderMethod) { showToast('Lütfen sipariş yöntemi seçin'); return; }
+  if (price <= 0) { showToast('Lütfen geçerli bir fiyat girin'); return; }
+  if (!category) { showToast('Lütfen bir kategori seçin'); return; }
+  if (deliveryType === 'home' && !city) { showToast('Lütfen bir şehir seçin'); return; }
+  var categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
+  var cityFees = { 'lefkosa': 200, 'girne': 350, 'magusa': 300, 'guzelyurt': 400, 'iskele': 450 };
+  var categoryFee = price * categoryRates[category];
+  var deliveryFee = (deliveryType === 'home') ? (cityFees[city] || 0) : 0;
+  var total = price + categoryFee + deliveryFee;
+  document.getElementById('result-price').textContent = price.toFixed(2) + " ₺";
+  document.getElementById('result-category-fee').textContent = categoryFee.toFixed(2) + " ₺";
+  document.getElementById('result-delivery-fee').textContent = deliveryFee.toFixed(2) + " ₺";
+  document.getElementById('result-total').textContent = total.toFixed(2) + " ₺";
+  if (deliveryType === 'home') { resultCityRow.classList.remove('hidden'); }
+  else { resultCityRow.classList.add('hidden'); }
+  calculationResult.classList.remove('hidden');
+  calculationResult.scrollIntoView({ behavior: 'smooth' });
+});
+// Kopyala ve Toast
+document.querySelectorAll('.copy-btn').forEach(function(btn){
+  btn.addEventListener('click', function () {
+    var targetId = this.getAttribute('data-copy');
+    var textToCopy = document.getElementById(targetId).textContent;
+    navigator.clipboard.writeText(textToCopy)
+      .then(function(){ showToast('Kopyalandı!'); })
+      .catch(function(err){ showToast('Kopyalama başarısız'); });
+  });
+});
+function showToast(message) {
+  var toast = document.getElementById('toast');
+  var toastMessage = document.getElementById('toast-message');
+  toastMessage.textContent = message;
+  toast.classList.remove('opacity-0');
+  setTimeout(function(){
+    toast.classList.add('opacity-0');
+  }, 3000);
+}
+</script>
 </body>
 </html>
