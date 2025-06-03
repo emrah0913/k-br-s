@@ -218,8 +218,29 @@ Hesapla
   </div>
   <div class="mt-6">
     <h5 class="font-medium text-gray-800 mb-1">Kıbrıs Adresimiz</h5>
-    <div class="w-full h-64 rounded-lg overflow-hidden relative bg-gray-100 flex items-center justify-center">
-      <span class="text-gray-400">https://tr.ee/vamlCJQIFH</span>
+    <div class="w-full h-64 rounded-lg overflow-hidden relative bg-gray-100 flex items-center justify-center group">
+      <!-- Embed Harita -->
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3356.564237011065!2d33.46120507707925!3d35.22650137269345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14de3f74e0864075%3A0x5fa8b6333def3eb!2sPufemo!5e0!3m2!1str!2str!4v1717419783683!5m2!1str!2str"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        class="absolute inset-0 w-full h-full border-0">
+      </iframe>
+      <!-- Tıklanabilir Şeffaf Link -->
+      <a
+        href="https://www.google.com/maps/place/Pufemo/@35.2265014,33.4637806,17z/data=!3m1!4b1!4m6!3m5!1s0x14de3f74e0864075:0x5fa8b6333def3eb!8m2!3d35.2265014!4d33.4637806!16s%2Fg%2F11x5__k07t?entry=ttu"
+        target="_blank"
+        rel="noopener"
+        class="absolute inset-0 w-full h-full z-10"
+        style="background:rgba(0,0,0,0);"
+        title="Google Harita'da aç">
+        <span class="sr-only">Haritayı Google'da aç</span>
+      </a>
+      <!-- Hoverda ufak bir bilgi etiketi -->
+      <div class="absolute bottom-2 right-2 bg-white/80 text-xs text-primary rounded px-3 py-1 z-20 shadow group-hover:opacity-100 opacity-0 transition-opacity pointer-events-none">
+        Haritayı büyütmek için tıkla
+      </div>
     </div>
   </div>
 </div>
