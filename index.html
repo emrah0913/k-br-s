@@ -1,480 +1,277 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Getir Kıbrıs</title>
-<script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<script>tailwind.config={theme:{extend:{colors:{primary:'#5d3ebc',secondary:'#ffd300'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
-<style>
-:where([class^="ri-"])::before { content: "\f3c2"; } /* Kullanıcının eklediği CSS */
-body {
-font-family: 'Inter', sans-serif;
-background-color: #f9f9f9;
-}
-.copy-btn:active {
-transform: scale(0.95);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getir Kıbrıs</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#5d3ebc',secondary:'#ffd300'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
+        .copy-btn:active { transform: scale(0.95); }
+        /* Profil adı için ek stil, küçük ekranlarda gizlemek için */
+        @media (max-width: 640px) { #profile-name-header { display: none; } }
+    </style>
 </head>
 <body class="bg-gray-50">
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-<header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
-    <div class="flex-1"></div>
-    <div class="flex flex-col items-center">
-        <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-24">
-        <a href="index.html" data-readdy="true" class="text-sm font-medium text-primary mt-1">Ana Sayfa</a>
-    </div>
-    <div class="flex-1 flex justify-end">
-        <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
-            <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
-                <i class="ri-google-fill ri-lg"></i>
+    <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+        <div class="flex-1">
+            </div>
+        <div class="flex flex-col items-center">
+            <a href="index.html">
+                <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-12"> </a>
+            <a href="index.html" data-readdy="true" class="text-sm font-medium text-primary mt-1">Ana Sayfa</a>
+        </div>
+        <div class="flex-1 flex justify-end">
+            <div id="auth-status-container" class="w-auto h-8 flex items-center justify-center">
+                <button id="login-btn-header" class="hidden text-xs text-primary font-medium cursor-pointer py-2 px-3 border border-primary rounded-button hover:bg-primary/10 transition-colors">
+                    <i class="ri-google-fill ri-lg mr-1 align-middle"></i>
+                    <span class="align-middle">Google ile Giriş</span>
+                </button>
+                <div id="profile-container-header" class="hidden items-center space-x-2 cursor-pointer group">
+                    <img id="profile-img-header" src="https://via.placeholder.com/40" alt="Profil" class="w-8 h-8 rounded-full">
+                    <span id="profile-name-header" class="text-sm text-gray-700 group-hover:text-primary">Profil Adı</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20"> <div class="relative w-full h-64 sm:h-80 lg:h-[450px] overflow-hidden mb-6">
+            <video class="w-full h-full object-cover" controls poster="https://readdy.ai/api/search-image?query=online%20shopping%20and%20delivery%20service%2C%20modern%20lifestyle%2C%20soft%20lighting%2C%20clean%20background%2C%20banner%20image&width=800&height=400&seq=1&orientation=landscape">
+            <source src="https://public.readdy.ai/assets/sample.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 mb-8">
+            <button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2"><i class="ri-calculator-line ri-xl text-primary"></i></div>
+                <span class="text-sm font-medium">Hesapla</span>
             </button>
-            <div id="profile-container" class="hidden">
-                <img id="profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer">
-            </div>
-        </div>
-    </div>
-</header>
-
-<main class="pt-20 pb-20"> <div class="relative w-full h-64 sm:h-80 lg:h-[450px] overflow-hidden mb-6">
-<video class="w-full h-full object-cover" controls poster="https://readdy.ai/api/search-image?query=online%20shopping%20and%20delivery%20service%2C%20modern%20lifestyle%2C%20soft%20lighting%2C%20clean%20background%2C%20banner%20image&width=800&height=400&seq=1&orientation=landscape">
-<source src="https://public.readdy.ai/assets/sample.mp4" type="video/mp4">
-Your browser does not support the video tag.
-</video>
-<div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
-</div>
-
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 mb-8">
-<button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-calculator-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Hesapla</span>
-</button>
-<a href="https://getirkibris.com/siparisver" data-readdy="true" id="order-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-shopping-cart-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Sipariş Ver</span>
-</a>
-<a href="https://getirkibris.com/siparislerim" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-file-list-3-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Siparişlerim</span>
-</a>
-<a href="https://getirkibris.com/kargotakip" data-readdy="true" id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-truck-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Kargo Takip</span>
-</a>
-</div>
-
-<div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
-<h3 class="text-lg font-semibold mb-4 text-primary">Ürün Maliyeti Hesapla</h3>
-<form id="calculator-form" class="space-y-4">
-    <div>
-        <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
-        <div class="relative mb-4">
-            <i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <select id="order-method" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
-                <option value="" disabled selected>Sipariş yöntemi seçin</option>
-                <option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
-                <option value="service">Ürünü benim yerime siz sipariş edin, size ödeme yapacağım</option>
-            </select>
-            <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-        </div>
-        <div>
-            <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
-            <div class="relative">
-                <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="url" id="product-link" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="https://www.example.com/urun">
-            </div>
-        </div>
-    </div>
-    <div>
-        <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
-        <div class="relative">
-            <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00">
-        </div>
-    </div>
-    <div>
-        <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-        <div class="relative">
-            <i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <select id="product-category" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
-                <option value="" disabled selected>Kategori seçin</option>
-                <option value="furniture">Mobilya</option>
-                <option value="electronics">Elektronik</option>
-                <option value="clothing">Giyim</option>
-                <option value="cosmetics">Kozmetik</option>
-                <option value="stationery">Kırtasiye</option>
-            </select>
-            <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-        </div>
-    </div>
-    <div>
-        <span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi</span>
-        <div class="flex space-x-4">
-            <label class="flex items-center cursor-pointer">
-                <input type="radio" name="delivery-type" value="warehouse" class="sr-only" checked>
-                <div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
-                    <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
-                </div>
-                <span class="text-sm">Depodan teslim</span>
-            </label>
-            <label class="flex items-center cursor-pointer">
-                <input type="radio" name="delivery-type" value="home" class="sr-only">
-                <div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
-                    <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
-                </div>
-                <span class="text-sm">Eve teslim</span>
-            </label>
-        </div>
-    </div>
-    <div id="city-selection" class="hidden">
-        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
-        <div class="relative">
-            <i class="ri-map-pin-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-            <select id="city" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
-                <option value="" disabled selected>Şehir seçin</option>
-                <option value="lefkosa">Lefkoşa</option>
-                <option value="girne">Girne</option>
-                <option value="magusa">Gazimağusa</option>
-                <option value="guzelyurt">Güzelyurt</option>
-                <option value="iskele">İskele</option>
-            </select>
-            <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-        </div>
-    </div>
-    <button type="submit" id="form-calculate-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-        Hesapla
-    </button>
-</form>
-<div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-    <h4 class="font-medium text-gray-800 mb-2">Hesaplama Sonucu</h4>
-    <div class="space-y-2 text-sm">
-        <div class="flex justify-between"><span>Ürün Fiyatı:</span><span id="result-price">0 ₺</span></div>
-        <div class="flex justify-between"><span>Kategori Ücreti:</span><span id="result-category-fee">0 ₺</span></div>
-        <div class="flex justify-between" id="result-city-row"><span>Teslimat Ücreti:</span><span id="result-delivery-fee">0 ₺</span></div>
-        <div class="flex justify-between font-medium text-primary pt-2 border-t border-gray-200"><span>Toplam:</span><span id="result-total">0 ₺</span></div>
-    </div>
-    </div>
-</div>
-
-<div class="px-4 mb-8">
-<h3 class="text-lg font-semibold mb-4">Popüler Alışveriş Siteleri</h3>
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-    <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-<img src="https://readdy.ai/api/search-image?query=trendyol%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition&width=100&height=100&seq=2&orientation=squarish" alt="Trendyol" class="w-16 h-16 object-contain">
-</a>
-<a href="https://www.hepsiburada.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-<img src="https://readdy.ai/api/search-image?query=hepsiburada%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition&width=100&height=100&seq=3&orientation=squarish" alt="Hepsiburada" class="w-16 h-16 object-contain">
-</a>
-<a href="https://www.n11.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-<img src="https://readdy.ai/api/search-image?query=n11%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition&width=100&height=100&seq=4&orientation=squarish" alt="N11" class="w-16 h-16 object-contain">
-</a>
-<a href="https://www.amazon.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-<img src="https://readdy.ai/api/search-image?query=amazon%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition&width=100&height=100&seq=5&orientation=squarish" alt="Amazon" class="w-16 h-16 object-contain">
-</a>
-<a href="https://www.ciceksepeti.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-<img src="https://readdy.ai/api/search-image?query=ciceksepeti%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition&width=100&height=100&seq=6&orientation=squarish" alt="ÇiçekSepeti" class="w-16 h-16 object-contain">
-</a>
-<a href="https://www.gittigidiyor.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-<img src="https://readdy.ai/api/search-image?query=gittigidiyor%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition&width=100&height=100&seq=7&orientation=squarish" alt="GittiGidiyor" class="w-16 h-16 object-contain">
-</a>
-</div>
-</div>
-
-<div class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8">
-    <h3 class="text-lg font-semibold mb-4">Nasıl Çalışır?</h3>
-    <ol class="list-decimal pl-5 space-y-3 text-sm text-gray-700">
-    <li>Türkiye'deki herhangi bir siteden ürün seçin ve fiyatını hesaplayın.</li>
-    <li>Sipariş formunu doldurun ve ödemenizi yapın.</li>
-    <li>Ürünü kendi adınıza sipariş edin ve aşağıdaki teslimat adresini kullanın.</li>
-    </ol>
-    <div class="mt-4 p-3 bg-gray-50 rounded-lg relative">
-    <h4 class="text-sm font-medium mb-1">Teslimat Adresi</h4>
-    <p id="delivery-address" class="text-sm text-gray-700 pr-8">Getir Kıbrıs Depo, Mersin 10, Türkiye</p>
-    <button class="copy-btn absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-primary cursor-pointer" data-copy="delivery-address">
-    <i class="ri-file-copy-line ri-lg"></i>
-    </button>
-    </div>
-    <div class="mt-3 p-3 bg-gray-50 rounded-lg relative">
-    <h4 class="text-sm font-medium mb-1">IBAN Bilgisi</h4>
-    <p id="iban-info" class="text-sm text-gray-700 pr-8">TR12 3456 7890 1234 5678 9012 34</p>
-    <button class="copy-btn absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-primary cursor-pointer" data-copy="iban-info">
-    <i class="ri-file-copy-line ri-lg"></i>
-    </button>
-    </div>
-    <div class="mt-6">
-        <h4 class="text-lg font-semibold mb-4">İletişim Bilgileri</h4>
-        <div class="space-y-4">
-        <div class="flex items-start gap-3">
-        <div class="w-6 h-6 flex items-center justify-center text-primary">
-        <i class="ri-map-pin-2-line"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">Adres</h5>
-        <p class="text-sm text-gray-600">Şehit Mustafa Ruso Caddesi, No:86, Lefkoşa, KKTC</p>
-        </div>
-        </div>
-        <div class="flex items-start gap-3">
-        <div class="w-6 h-6 flex items-center justify-center text-primary">
-        <i class="ri-phone-line"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">Telefon</h5>
-        <p class="text-sm text-gray-600">+90 392 123 45 67</p>
-        </div>
-        </div>
-        <div class="flex items-start gap-3">
-        <div class="w-6 h-6 flex items-center justify-center text-primary">
-        <i class="ri-mail-line"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">E-posta</h5>
-        <p class="text-sm text-gray-600">info@getirkibris.com</p>
-        </div>
-        </div>
-        </div>
-    </div>
-    <div class="mt-6 relative">
-        <div class="absolute top-4 left-4 z-10 bg-white px-4 py-2 rounded-lg shadow-md">
-            <h5 class="font-medium text-gray-800">Kıbrıs Adresimiz</h5>
-        </div>
-        <div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
-            <a href="https://www.google.com/maps/place/Pufemo/@35.2265014,33.4637806,17z/data=!3m1!4b1!4m6!3m5!1s0x14de3f74e0864075:0x5fa8b6333def3eb!8m2!3d35.2265014!4d33.4637806!16s%2Fg%2F11x5__k07t?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D" data-readdy="true" target="_blank">
-                <img src="https://public.readdy.ai/gen_page/map_placeholder_1280x720.png" alt="Harita" class="w-full h-full object-cover">
+            <a href="https://getirkibris.com/siparisverr" data-readdy="true" id="order-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2"><i class="ri-shopping-cart-line ri-xl text-primary"></i></div>
+                <span class="text-sm font-medium">Sipariş Ver</span>
+            </a>
+            <a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/3af37ec5-1c9d-4306-b2c2-90c1bdb926e2" data-readdy="true" id="my-orders-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2"><i class="ri-file-list-3-line ri-xl text-primary"></i></div>
+                <span class="text-sm font-medium">Siparişlerim</span>
+            </a>
+            <a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/263e9a58-8e36-4b2d-89bb-7927a220fb76" data-readdy="true" id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2"><i class="ri-truck-line ri-xl text-primary"></i></div>
+                <span class="text-sm font-medium">Kargo Takip</span>
             </a>
         </div>
-    </div>
-    <div class="mt-8 space-y-6">
-        <div>
-        <h4 class="text-lg font-semibold mb-4">Alışveriş İşlemleri</h4>
-        <div class="grid grid-cols-1 gap-4">
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-        <i class="ri-shopping-cart-line text-primary"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">Sipariş Verme</h5>
-        <p class="text-sm text-gray-600 mt-1">Türkiye'deki herhangi bir e-ticaret sitesinden ürün seçin, sipariş formunu doldurun ve ödemenizi yapın.</p>
-        </div>
-        </div>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-        <i class="ri-calculator-line text-primary"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">Maliyet Hesaplama</h5>
-        <p class="text-sm text-gray-600 mt-1">Ürün fiyatı ve kategorisine göre toplam maliyeti hesaplayın, ek ücretleri önceden öğrenin.</p>
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div>
-        <h4 class="text-lg font-semibold mb-4">Teslimat ve Takip</h4>
-        <div class="grid grid-cols-1 gap-4">
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-        <i class="ri-truck-line text-primary"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">Kargo Takibi</h5>
-        <p class="text-sm text-gray-600 mt-1">Siparişinizin durumunu anlık olarak takip edin, teslimat sürecini kontrol edin.</p>
-        </div>
-        </div>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-        <i class="ri-map-pin-line text-primary"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">Teslimat Seçenekleri</h5>
-        <p class="text-sm text-gray-600 mt-1">Depodan teslim veya adrese teslimat seçeneklerinden size uygun olanı seçin.</p>
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div>
-        <h4 class="text-lg font-semibold mb-4">Müşteri Hizmetleri</h4>
-        <div class="grid grid-cols-1 gap-4">
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-        <i class="ri-customer-service-line text-primary"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">7/24 Destek</h5>
-        <p class="text-sm text-gray-600 mt-1">WhatsApp üzerinden bize ulaşın, sorularınızı yanıtlayalım, sorunlarınıza çözüm bulalım.</p>
-        </div>
-        </div>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-        <i class="ri-file-list-3-line text-primary"></i>
-        </div>
-        <div>
-        <h5 class="font-medium text-gray-800">Sipariş Geçmişi</h5>
-        <p class="text-sm text-gray-600 mt-1">Tüm siparişlerinizi görüntüleyin, geçmiş alışverişlerinizi kontrol edin.</p>
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
-    </div>
-</div>
-</main>
-</div> <a href="https://wa.me/905391090879" target="_blank" data-readdy="true" class="fixed bottom-20 right-4 z-50 bg-[#25D366] w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors">
-<i class="ri-whatsapp-line ri-xl text-white"></i>
-</a>
-<div class="mt-8 px-4 pb-20 text-center">
-<div class="space-x-4">
-<a href="#" class="text-xs text-gray-600 hover:text-primary">Gizlilik Politikası</a>
-<a href="#" class="text-xs text-gray-600 hover:text-primary">Kullanım Şartları</a>
-<a href="#" class="text-xs text-gray-600 hover:text-primary">S.S.S.</a>
-</div>
-</div>
-<div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg p-6 w-[320px] relative">
-    <button id="close-login-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
-    <i class="ri-close-line ri-lg"></i>
-    </button>
-    <div class="text-center mb-6">
-    <h3 class="text-xl font-semibold text-gray-800">Giriş Yap</h3>
-    <p class="text-sm text-gray-600 mt-1">Hizmetlerimizi kullanmak için giriş yapın</p>
-    </div>
-    <button id="google-login-btn" class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-button py-3 font-medium hover:bg-gray-50 transition-colors cursor-pointer">
-    <i class="ri-google-fill ri-lg text-primary"></i>
-    <span>Google ile Giriş Yap</span>
-    </button>
-    </div>
-</div>
-<div id="auth-required-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg p-6 w-[320px]">
-    <div class="text-center mb-6">
-    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-    <i class="ri-lock-line ri-2x text-red-500"></i>
-    </div>
-    <h3 class="text-xl font-semibold text-gray-800">Giriş Gerekli</h3>
-    <p class="text-sm text-gray-600 mt-2">Bu özelliği kullanmak için lütfen giriş yapın.</p>
-    </div>
-    <button id="auth-login-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-    Giriş Yap
-    </button>
-    <button id="close-auth-modal" class="w-full text-gray-600 py-2 mt-2 font-medium hover:text-gray-800 transition-colors cursor-pointer">
-    Kapat
-    </button>
-    </div>
-</div>
-<div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 z-[100]">
-<span id="toast-message"></span>
-</div>
 
-<script id="auth-script">
-document.addEventListener('DOMContentLoaded', function() {
-    let isLoggedIn = false;
-    let userProfile = null;
-    const loginBtn = document.getElementById('login-btn');
-    const profileContainer = document.getElementById('profile-container');
-    const profileImg = document.getElementById('profile-img');
-    const loginModal = document.getElementById('login-modal');
-    const closeLoginModal = document.getElementById('close-login-modal');
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    const authRequiredModal = document.getElementById('auth-required-modal');
-    const authLoginBtn = document.getElementById('auth-login-btn');
-    const closeAuthModal = document.getElementById('close-auth-modal');
+        <div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
+            <h3 class="text-lg font-semibold mb-4 text-primary">Ürün Maliyeti Hesapla</h3>
+            <form id="calculator-form" class="space-y-4">
+                <div>
+                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
+                    <div class="relative mb-4">
+                        <i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <select id="order-method" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+                            <option value="" disabled selected>Sipariş yöntemi seçin</option>
+                            <option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
+                            <option value="service">Ürünü benim yerime siz sipariş edin, size ödeme yapacağım</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                    <div>
+                        <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
+                        <div class="relative">
+                            <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="url" id="product-link" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="https://www.example.com/urun">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
+                    <div class="relative">
+                        <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00">
+                    </div>
+                </div>
+                <div>
+                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                    <div class="relative">
+                        <i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <select id="product-category" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+                            <option value="" disabled selected>Kategori seçin</option>
+                            <option value="furniture">Mobilya</option><option value="electronics">Elektronik</option><option value="clothing">Giyim</option><option value="cosmetics">Kozmetik</option><option value="stationery">Kırtasiye</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div>
+                    <span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi</span>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="delivery-type" value="warehouse" class="sr-only" checked>
+                            <div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio"><div class="w-3 h-3 bg-primary rounded-full hidden"></div></div>
+                            <span class="text-sm">Depodan teslim</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="delivery-type" value="home" class="sr-only">
+                            <div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio"><div class="w-3 h-3 bg-primary rounded-full hidden"></div></div>
+                            <span class="text-sm">Eve teslim</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="city-selection" class="hidden">
+                    <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+                    <div class="relative">
+                        <i class="ri-map-pin-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <select id="city" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+                            <option value="" disabled selected>Şehir seçin</option>
+                            <option value="lefkosa">Lefkoşa</option><option value="girne">Girne</option><option value="magusa">Gazimağusa</option><option value="guzelyurt">Güzelyurt</option><option value="iskele">İskele</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <button type="submit" id="form-calculate-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">Hesapla</button>
+            </form>
+            <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+                <h4 class="font-medium text-gray-800 mb-2">Hesaplama Sonucu</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span>Ürün Fiyatı:</span><span id="result-price">0 ₺</span></div>
+                    <div class="flex justify-between"><span>Kategori Ücreti:</span><span id="result-category-fee">0 ₺</span></div>
+                    <div class="flex justify-between" id="result-city-row"><span>Teslimat Ücreti:</span><span id="result-delivery-fee">0 ₺</span></div>
+                    <div class="flex justify-between font-medium text-primary pt-2 border-t border-gray-200"><span>Toplam:</span><span id="result-total">0 ₺</span></div>
+                </div>
+            </div>
+        </div>
+        </main>
 
-    // Global helper functions for other scripts to check auth status and trigger modals
-    window.isUserLoggedIn = function() {
-        // For mock auth, rely on the visibility of the login button
-        return loginBtn ? loginBtn.classList.contains('hidden') : false;
-    };
-    window.triggerAuthModal = function() {
-        if (authRequiredModal) authRequiredModal.classList.remove('hidden');
-        // Auth modal's own button will handle opening the actual login modal
-    };
-
-    loginBtn.addEventListener('click', function() { loginModal.classList.remove('hidden'); });
-    closeLoginModal.addEventListener('click', function() { loginModal.classList.add('hidden'); });
-
-    googleLoginBtn.addEventListener('click', function() {
-        isLoggedIn = true;
-        userProfile = {
-            name: 'Kullanıcı Adı',
-            photoUrl: 'https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20Turkish%20man%2C%20neutral%20expression%2C%20high%20quality%20portrait%20photo&width=100&height=100&seq=7&orientation=squarish'
-        };
-        updateAuthUI();
-        loginModal.classList.add('hidden');
-        window.showToast && window.showToast('Giriş başarılı!');
-    });
-
-    function updateAuthUI() {
-        if (isLoggedIn && userProfile) {
-            loginBtn.classList.add('hidden');
-            profileContainer.classList.remove('hidden');
-            profileImg.src = userProfile.photoUrl;
-            profileImg.alt = userProfile.name;
-        } else {
-            loginBtn.classList.remove('hidden');
-            profileContainer.classList.add('hidden');
-        }
-    }
-
-    profileContainer.addEventListener('click', function() {
-        if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-            isLoggedIn = false; userProfile = null;
-            updateAuthUI();
-            window.showToast && window.showToast('Çıkış yapıldı');
-        }
-    });
+    <div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] hidden">
+        <div class="bg-white rounded-lg p-6 w-[320px] relative">
+            <button id="close-login-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer"><i class="ri-close-line ri-lg"></i></button>
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">Giriş Yap</h3>
+                <p class="text-sm text-gray-600 mt-1">Hizmetlerimizi kullanmak için giriş yapın</p>
+            </div>
+            <button id="google-login-btn" class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-button py-3 font-medium hover:bg-gray-50 transition-colors cursor-pointer">
+                <i class="ri-google-fill ri-lg text-primary"></i>
+                <span>Google ile Giriş Yap</span>
+            </button>
+        </div>
+    </div>
+    <div id="auth-required-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] hidden">
+        <div class="bg-white rounded-lg p-6 w-[320px]">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="ri-lock-line ri-2x text-red-500"></i></div>
+                <h3 class="text-xl font-semibold text-gray-800">Giriş Gerekli</h3>
+                <p class="text-sm text-gray-600 mt-2">Bu özelliği kullanmak için lütfen giriş yapın.</p>
+            </div>
+            <button id="auth-login-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">Giriş Yap</button>
+            <button id="close-auth-modal" class="w-full text-gray-600 py-2 mt-2 font-medium hover:text-gray-800 transition-colors cursor-pointer">Kapat</button>
+        </div>
+    </div>
+    <div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 z-[100]"><span id="toast-message"></span></div>
     
-    closeAuthModal.addEventListener('click', function() { authRequiredModal.classList.add('hidden'); });
-    authLoginBtn.addEventListener('click', function() {
-        authRequiredModal.classList.add('hidden');
-        loginModal.classList.remove('hidden');
+    </div> <script type="module" id="auth-manager-script">
+    // <--- Adım 1'deki Merkezi Kimlik Doğrulama Script'inin içeriğini BURAYA YAPIŞTIRIN --->
+    // Firebase SDK importları
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as firebaseSignOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // !! ÖNEMLİ: Kendi Firebase proje konfigürasyonunuzu buraya girin !!
+    const firebaseConfig = {
+        apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        authDomain: "sizin-proje-id.firebaseapp.com",
+        projectId: "sizin-proje-id",
+        storageBucket: "sizin-proje-id.appspot.com",
+        messagingSenderId: "sizin-mesajlasma-id",
+        appId: "sizin-app-id",
+        measurementId: "G-XXXXXXXXXX" 
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginBtnHeader = document.getElementById('login-btn-header');
+    const profileContainerHeader = document.getElementById('profile-container-header');
+    const profileImgHeader = document.getElementById('profile-img-header');
+    const profileNameHeader = document.getElementById('profile-name-header');
+    const loginModal = document.getElementById('login-modal');
+    const googleLoginBtnModal = document.getElementById('google-login-btn');
+    const closeLoginModalBtn = document.getElementById('close-login-modal');
+    const authRequiredModal = document.getElementById('auth-required-modal');
+    const authModalLoginBtn = document.getElementById('auth-login-btn');
+    const authModalCloseBtn = document.getElementById('close-auth-modal');
+
+    let currentFirebaseUser = null; 
+
+    onAuthStateChanged(auth, (user) => {
+        currentFirebaseUser = user;
+        if (user) {
+            if (loginBtnHeader) loginBtnHeader.classList.add('hidden');
+            if (profileContainerHeader) {
+                profileContainerHeader.classList.remove('hidden');
+                profileContainerHeader.classList.add('flex'); 
+                if (profileImgHeader) {
+                    profileImgHeader.src = user.photoURL || 'https://via.placeholder.com/40';
+                    profileImgHeader.alt = user.displayName || 'Profil';
+                }
+                if (profileNameHeader) {
+                    profileNameHeader.textContent = user.displayName ? user.displayName.split(' ')[0] : (user.email ? user.email.split('@')[0] : "Profil");
+                }
+            }
+            if (typeof window.onUserLoggedIn === 'function') window.onUserLoggedIn(user);
+        } else {
+            if (loginBtnHeader) loginBtnHeader.classList.remove('hidden');
+            if (profileContainerHeader) {
+                profileContainerHeader.classList.add('hidden');
+                profileContainerHeader.classList.remove('flex');
+            }
+            if (profileNameHeader) profileNameHeader.textContent = '';
+            if (typeof window.onUserLoggedOutOnProtectedPage === 'function') window.onUserLoggedOutOnProtectedPage();
+        }
     });
 
-    const protectedButtons = [
-        document.getElementById('order-btn'), // Ana sipariş ver butonu (link)
+    async function signInWithGoogle() { /* ... (Adım 1'deki gibi) ... */ }
+    async function signOutUser() { /* ... (Adım 1'deki gibi) ... */ }
+
+    // Event Listeners (Adım 1'deki gibi)
+    if (loginBtnHeader) loginBtnHeader.addEventListener('click', () => loginModal && loginModal.classList.remove('hidden'));
+    if (profileContainerHeader) profileContainerHeader.addEventListener('click', signOutUser);
+    if (googleLoginBtnModal) googleLoginBtnModal.addEventListener('click', signInWithGoogle);
+    if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', () => loginModal && loginModal.classList.add('hidden'));
+    if (authModalLoginBtn) authModalLoginBtn.addEventListener('click', () => { authRequiredModal && authRequiredModal.classList.add('hidden'); loginModal && loginModal.classList.remove('hidden'); });
+    if (authModalCloseBtn) authModalCloseBtn.addEventListener('click', () => authRequiredModal && authRequiredModal.classList.add('hidden'));
+    
+    window.isUserLoggedIn = function() { return !!auth.currentUser; };
+    window.getCurrentUserId = function() { return auth.currentUser ? auth.currentUser.uid : null; };
+    window.triggerAuthModal = function() { /* ... (Adım 1'deki gibi) ... */};
+
+    // Protected Links/Buttons on index.html
+    const protectedActionButtons = [
+        document.getElementById('order-btn'), 
         document.getElementById('my-orders-btn'),
         document.getElementById('track-btn')
     ];
-    protectedButtons.forEach(button => {
-        if (button) {
+    protectedActionButtons.forEach(button => {
+        if (button && button.tagName === 'A') { // Sadece link olanları kontrol et
             button.addEventListener('click', function(e) {
                 if (!window.isUserLoggedIn()) {
-                    e.preventDefault(); // Linkin varsayılan davranışını engelle
+                    e.preventDefault();
                     window.triggerAuthModal();
                 }
             });
         }
     });
-
+    
     // Ana ızgaradaki "Hesapla" butonu (id="calculate-btn")
     const calculateBtnGrid = document.getElementById('calculate-btn');
     if (calculateBtnGrid) {
         calculateBtnGrid.addEventListener('click', function() {
-            // Bu buton sadece hesaplama modülünü açıp kapatır.
-            // window.toggleCalculatorSection calculator-script.js içinde tanımlı olmalı.
             if(typeof window.toggleCalculatorSection === 'function') {
                 window.toggleCalculatorSection();
             } else {
@@ -482,15 +279,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    updateAuthUI(); // Initial UI setup
-});
 </script>
 
 <script id="calculator-script">
-document.addEventListener('DOMContentLoaded', function() {
+    // <--- index.html için bir önceki yanıttaki GÜNCELLENMİŞ calculator-script içeriğini BURAYA YAPIŞTIRIN --->
+    // Bu script, formCalculateBtn'in davranışını, sessionStorage'ı ve toggleCalculatorSection'ı yönetir.
+    // Örnek: document.addEventListener('DOMContentLoaded', function() { ... (bir önceki yanıttaki gibi) ... });
+    document.addEventListener('DOMContentLoaded', function() {
     const calculatorSection = document.getElementById('calculator-section');
     const calculatorForm = document.getElementById('calculator-form');
-    const formCalculateBtn = document.getElementById('form-calculate-btn'); // Form içindeki buton
+    const formCalculateBtn = document.getElementById('form-calculate-btn'); 
     const citySelection = document.getElementById('city-selection');
     const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
     const calculationResultDiv = document.getElementById('calculation-result');
@@ -499,8 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.toggleCalculatorSection = function() {
         const currentlyHidden = calculatorSection.classList.contains('hidden');
         calculatorSection.classList.toggle('hidden');
-
-        if (!currentlyHidden) { // Modül ŞİMDİ GİZLENDİyse (yani daha önce açıktı)
+        if (!currentlyHidden) { 
             if (formCalculateBtn && formCalculateBtn.dataset.action === 'navigateToOrder') {
                 formCalculateBtn.textContent = 'Hesapla';
                 formCalculateBtn.type = 'submit';
@@ -509,12 +306,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 sessionStorage.removeItem('calculatedOrderData');
                 if (calculationResultDiv) calculationResultDiv.classList.add('hidden');
             }
-        } else { // Modül ŞİMDİ GÖRÜNÜR OLDUYSA
-            if (calculationResultDiv && !calculationResultDiv.classList.contains('hidden')) {
+        } else { 
+             if (calculationResultDiv && !calculationResultDiv.classList.contains('hidden')) {
                 calculationResultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            } else {
+             } else {
                 calculatorSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
+             }
         }
     };
 
@@ -528,7 +325,6 @@ document.addEventListener('DOMContentLoaded', function() {
             citySelection.classList.toggle('hidden', this.value !== 'home');
         });
     });
-
     const initiallyCheckedRadio = document.querySelector('input[name="delivery-type"]:checked');
     if (initiallyCheckedRadio) {
         const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
@@ -539,8 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (calculatorForm && formCalculateBtn) {
         calculatorForm.addEventListener('submit', function(e) {
             e.preventDefault(); 
-            // Bu fonksiyon sadece formCalculateBtn type="submit" iken çalışır.
-
+            // ... (Hesaplama mantığı, sessionStorage'a kaydetme ve formCalculateBtn güncelleme - bir önceki yanıttaki gibi)
             const orderMethodElement = document.getElementById('order-method');
             const productLinkElement = document.getElementById('product-link');
             const productPriceElement = document.getElementById('product-price');
@@ -570,22 +365,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
             document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
             document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
-
             resultCityRow.classList.toggle('hidden', deliveryType !== 'home');
-            
             calculationResultDiv.classList.remove('hidden');
             calculationResultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-            const calculatedData = {
-                orderMethod, productLink, price, category, deliveryType, 
-                city: deliveryType === 'home' ? cityVal : null,
-                categoryFee, deliveryFee, total
-            };
-            const formDataForNextPage = {
-                orderMethod: orderMethod, // Sipariş yöntemini de ekleyelim
-                productLink: productLink, productPrice: productPriceElement.value,
-                productCategory: category, deliveryType: deliveryType, city: cityVal
-            };
+            const calculatedData = { orderMethod, productLink, price, category, deliveryType, city: deliveryType === 'home' ? cityVal : null, categoryFee, deliveryFee, total };
+            const formDataForNextPage = { orderMethod, productLink, productPrice: productPriceElement.value, productCategory: category, deliveryType, city: cityVal };
             sessionStorage.setItem('calculatedOrderData', JSON.stringify(calculatedData));
             sessionStorage.setItem('calculatorInputs', JSON.stringify(formDataForNextPage));
 
@@ -597,22 +382,14 @@ document.addEventListener('DOMContentLoaded', function() {
         formCalculateBtn.addEventListener('click', function() {
             if (this.type === 'button' && this.dataset.action === 'navigateToOrder') {
                 if (typeof window.isUserLoggedIn === 'function' && !window.isUserLoggedIn()) {
-                    if (typeof window.triggerAuthModal === 'function') {
-                        window.triggerAuthModal();
-                    } else {
-                        alert("Bu işlem için giriş yapmanız gerekmektedir.");
-                    }
-                } else { // Giriş yapılmış veya giriş kontrol fonksiyonları yoksa
+                    if (typeof window.triggerAuthModal === 'function') window.triggerAuthModal();
+                    else alert("Bu işlem için giriş yapmanız gerekmektedir.");
+                } else {
                     const calculatedDataExists = sessionStorage.getItem('calculatedOrderData');
                     if (!calculatedDataExists) {
                         window.showToast && window.showToast('Lütfen önce bir hesaplama yapın.');
-                        // Butonu ve formu sıfırla
-                        this.textContent = 'Hesapla';
-                        this.type = 'submit';
-                        delete this.dataset.action;
-                        if(document.getElementById('calculator-section').classList.contains('hidden')){
-                           window.toggleCalculatorSection(); // Modül kapalıysa aç
-                        }
+                        this.textContent = 'Hesapla'; this.type = 'submit'; delete this.dataset.action;
+                        if(document.getElementById('calculator-section').classList.contains('hidden')) window.toggleCalculatorSection();
                         return;
                     }
                     window.location.href = 'siparisver.html';
@@ -624,33 +401,19 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script id="utils-script">
-document.addEventListener('DOMContentLoaded', function() {
+    // <--- index.html için utils-script içeriği (showToast, copyButtons) BURAYA YAPIŞTIRIN --->
+    // Örnek: document.addEventListener('DOMContentLoaded', function() { window.showToast = function() { ... }; ... });
+    document.addEventListener('DOMContentLoaded', function() {
     window.showToast = function(message) {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
         if (!toast || !toastMessage) { console.error("Toast elements not found!"); return; }
         toastMessage.textContent = message;
-        toast.classList.remove('opacity-0');
-        toast.classList.add('opacity-100');
-        setTimeout(() => {
-            toast.classList.remove('opacity-100');
-            toast.classList.add('opacity-0');
-        }, 3000);
+        toast.classList.remove('opacity-0'); toast.classList.add('opacity-100');
+        setTimeout(() => { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0'); }, 3000);
     };
-
     const copyButtons = document.querySelectorAll('.copy-btn');
-    copyButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-copy');
-            const textToCopy = document.getElementById(targetId).textContent;
-            navigator.clipboard.writeText(textToCopy)
-            .then(() => { window.showToast('Kopyalandı!'); })
-            .catch(err => {
-                window.showToast('Kopyalama başarısız');
-                console.error('Kopyalama hatası:', err);
-            });
-        });
-    });
+    copyButtons.forEach(button => { /* ... (kopyalama butonu listener'ı) ... */ });
 });
 </script>
 </body>
