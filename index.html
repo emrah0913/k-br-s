@@ -21,7 +21,7 @@ transform: scale(0.95);
 </style>
 </head>
 <body class="bg-gray-50">
-<div class="w-[375px] mx-auto relative min-h-screen pb-16">
+<div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex justify-between items-center">
 <div class="w-8"></div>
 <div class="flex flex-col items-center">
@@ -38,14 +38,14 @@ transform: scale(0.95);
 </div>
 </header>
 <main class="pt-16 pb-20">
-<div class="relative w-full h-64 overflow-hidden mb-6">
+<div class="relative w-full h-64 sm:h-80 lg:h-[450px] overflow-hidden mb-6">
 <video class="w-full h-full object-cover" controls poster="https://readdy.ai/api/search-image?query=online%20shopping%20and%20delivery%20service%2C%20modern%20lifestyle%2C%20soft%20lighting%2C%20clean%20background%2C%20banner%20image&width=800&height=400&seq=1&orientation=landscape">
 <source src="https://public.readdy.ai/assets/sample.mp4" type="video/mp4">
 Your browser does not support the video tag.
 </video>
 <div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
 </div>
-<div class="grid grid-cols-2 gap-4 px-4 mb-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 mb-8">
 <button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
 <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
 <i class="ri-calculator-line ri-xl text-primary"></i>
@@ -177,7 +177,7 @@ Hesapla
 </div>
 <div class="px-4 mb-8">
 <h3 class="text-lg font-semibold mb-4">Popüler Alışveriş Siteleri</h3>
-<div class="grid grid-cols-3 gap-4">
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
 <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
 <img src="https://readdy.ai/api/search-image?query=trendyol%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition&width=100&height=100&seq=2&orientation=squarish" alt="Trendyol" class="w-16 h-16 object-contain">
 </a>
@@ -254,7 +254,7 @@ Hesapla
 <div class="absolute top-4 left-4 z-10 bg-white px-4 py-2 rounded-lg shadow-md">
 <h5 class="font-medium text-gray-800">Kıbrıs Adresimiz</h5>
 </div>
-<div class="w-full h-64 rounded-lg overflow-hidden">
+<div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
 <a href="https://www.google.com/maps/place/Pufemo/@35.2265014,33.4637806,17z/data=!3m1!4b1!4m6!3m5!1s0x14de3f74e0864075:0x5fa8b6333def3eb!8m2!3d35.2265014!4d33.4637806!16s%2Fg%2F11x5__k07t?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D" data-readdy="true" target="_blank">
 <img src="https://public.readdy.ai/gen_page/map_placeholder_1280x720.png" alt="Harita" class="w-full h-full object-cover">
 </a>
@@ -393,132 +393,132 @@ Kapat
 </div>
 
 <script type="module">
-  // Firebase yapılandırmanızı buraya kopyalayın
-  import { initializeApp } from "firebase/app";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
-  import { getAnalytics } from "firebase/analytics";
+  // Firebase yapılandırmanızı buraya kopyalayın
+  import { initializeApp } from "firebase/app";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
+  import { getAnalytics } from "firebase/analytics";
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-    authDomain: "kibris-6b4f7.firebaseapp.com",
-    projectId: "kibris-6b4f7",
-    storageBucket: "kibris-6b4f7.firebasestorage.app",
-    messagingSenderId: "141262926171",
-    appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-    measurementId: "G-JL9P6BRZTD"
-  };
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+    authDomain: "kibris-6b4f7.firebaseapp.com",
+    projectId: "kibris-6b4f7",
+    storageBucket: "kibris-6b4f7.firebasestorage.app",
+    messagingSenderId: "141262926171",
+    appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+    measurementId: "G-JL9P6BRZTD"
+  };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app); // Auth servisini başlat
-  const analytics = getAnalytics(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app); // Auth servisini başlat
+  const analytics = getAnalytics(app);
 
-  // UI elementleri
-  const loginBtn = document.getElementById('login-btn');
-  const profileContainer = document.getElementById('profile-container');
-  const profileImg = document.getElementById('profile-img');
-  const loginModal = document.getElementById('login-modal');
-  const closeLoginModal = document.getElementById('close-login-modal');
-  const googleLoginBtn = document.getElementById('google-login-btn');
-  const authRequiredModal = document.getElementById('auth-required-modal');
-  const authLoginBtn = document.getElementById('auth-login-btn');
-  const closeAuthModal = document.getElementById('close-auth-modal');
+  // UI elementleri
+  const loginBtn = document.getElementById('login-btn');
+  const profileContainer = document.getElementById('profile-container');
+  const profileImg = document.getElementById('profile-img');
+  const loginModal = document.getElementById('login-modal');
+  const closeLoginModal = document.getElementById('close-login-modal');
+  const googleLoginBtn = document.getElementById('google-login-btn');
+  const authRequiredModal = document.getElementById('auth-required-modal');
+  const authLoginBtn = document.getElementById('auth-login-btn');
+  const closeAuthModal = document.getElementById('close-auth-modal');
 
-  // Sipariş Ver, Siparişlerim, Kargo Takip butonları
-  const protectedButtons = [
-    document.getElementById('order-btn'),
-    document.getElementById('my-orders-btn'),
-    document.getElementById('track-btn')
-  ];
+  // Sipariş Ver, Siparişlerim, Kargo Takip butonları
+  const protectedButtons = [
+    document.getElementById('order-btn'),
+    document.getElementById('my-orders-btn'),
+    document.getElementById('track-btn')
+  ];
 
-  // Google ile Giriş İşlemi
-  googleLoginBtn.addEventListener('click', async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      window.showToast('Giriş başarılı!'); // showToast global fonksiyonu kullanılıyor
-      loginModal.classList.add('hidden'); // Modalı kapat
-    } catch (error) {
-      console.error("Google Giriş Hatası:", error);
-      window.showToast('Giriş başarısız oldu.'); // showToast global fonksiyonu kullanılıyor
-    }
-  });
+  // Google ile Giriş İşlemi
+  googleLoginBtn.addEventListener('click', async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      window.showToast('Giriş başarılı!'); // showToast global fonksiyonu kullanılıyor
+      loginModal.classList.add('hidden'); // Modalı kapat
+    } catch (error) {
+      console.error("Google Giriş Hatası:", error);
+      window.showToast('Giriş başarısız oldu.'); // showToast global fonksiyonu kullanılıyor
+    }
+  });
 
-  // Çıkış İşlemi
-  profileContainer.addEventListener('click', async () => {
-    if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-      try {
-        await signOut(auth);
-        window.showToast('Çıkış yapıldı.'); // showToast global fonksiyonu kullanılıyor
-      } catch (error) {
-        console.error("Çıkış Hatası:", error);
-        window.showToast('Çıkış başarısız oldu.'); // showToast global fonksiyonu kullanılıyor
-      }
-    }
-  });
+  // Çıkış İşlemi
+  profileContainer.addEventListener('click', async () => {
+    if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+      try {
+        await signOut(auth);
+        window.showToast('Çıkış yapıldı.'); // showToast global fonksiyonu kullanılıyor
+      } catch (error) {
+        console.error("Çıkış Hatası:", error);
+        window.showToast('Çıkış başarısız oldu.'); // showToast global fonksiyonu kullanılıyor
+      }
+    }
+  });
 
-  // Kullanıcı oturum durumu değiştiğinde UI'yı güncelle
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // Kullanıcı giriş yapmış
-      loginBtn.classList.add('hidden');
-      profileContainer.classList.remove('hidden');
-      profileImg.src = user.photoURL || 'https://via.placeholder.com/100'; // Varsayılan resim
-      profileImg.alt = user.displayName || 'Profil';
-    } else {
-      // Kullanıcı çıkış yapmış
-      loginBtn.classList.remove('hidden');
-      profileContainer.classList.add('hidden');
-    }
-  });
+  // Kullanıcı oturum durumu değiştiğinde UI'yı güncelle
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // Kullanıcı giriş yapmış
+      loginBtn.classList.add('hidden');
+      profileContainer.classList.remove('hidden');
+      profileImg.src = user.photoURL || 'https://via.placeholder.com/100'; // Varsayılan resim
+      profileImg.alt = user.displayName || 'Profil';
+    } else {
+      // Kullanıcı çıkış yapmış
+      loginBtn.classList.remove('hidden');
+      profileContainer.classList.add('hidden');
+    }
+  });
 
-  // Login modalı göster
-  loginBtn.addEventListener('click', () => {
-    loginModal.classList.remove('hidden');
-  });
+  // Login modalı göster
+  loginBtn.addEventListener('click', () => {
+    loginModal.classList.remove('hidden');
+  });
 
-  // Login modalı kapat
-  closeLoginModal.addEventListener('click', () => {
-    loginModal.classList.add('hidden');
-  });
+  // Login modalı kapat
+  closeLoginModal.addEventListener('click', () => {
+    loginModal.classList.add('hidden');
+  });
 
-  // Kimlik doğrulama gerekli modalını göster
-  function showAuthRequiredModal() {
-    authRequiredModal.classList.remove('hidden');
-  }
+  // Kimlik doğrulama gerekli modalını göster
+  function showAuthRequiredModal() {
+    authRequiredModal.classList.remove('hidden');
+  }
 
-  // Kimlik doğrulama gerekli modalını kapat
-  closeAuthModal.addEventListener('click', () => {
-    authRequiredModal.classList.add('hidden');
-  });
+  // Kimlik doğrulama gerekli modalını kapat
+  closeAuthModal.addEventListener('click', () => {
+    authRequiredModal.classList.add('hidden');
+  });
 
-  // Kimlik doğrulama gerekli modalındaki giriş butonuna basınca login modalını aç
-  authLoginBtn.addEventListener('click', () => {
-    authRequiredModal.classList.add('hidden');
-    loginModal.classList.remove('hidden');
-  });
+  // Kimlik doğrulama gerekli modalındaki giriş butonuna basınca login modalını aç
+  authLoginBtn.addEventListener('click', () => {
+    authRequiredModal.classList.add('hidden');
+    loginModal.classList.remove('hidden');
+  });
 
-  // Korunan butonlara tıklama event'leri
-  protectedButtons.forEach(button => {
-    if (button) {
-      button.addEventListener('click', function(e) {
-        // Eğer kullanıcı giriş yapmamışsa, kimlik doğrulama modalını göster ve sayfa geçişini engelle
-        if (!auth.currentUser) {
-          e.preventDefault(); // Varsayılan link davranışını engelle
-          showAuthRequiredModal();
-        }
-      });
-    }
-  });
+  // Korunan butonlara tıklama event'leri
+  protectedButtons.forEach(button => {
+    if (button) {
+      button.addEventListener('click', function(e) {
+        // Eğer kullanıcı giriş yapmamışsa, kimlik doğrulama modalını göster ve sayfa geçişini engelle
+        if (!auth.currentUser) {
+          e.preventDefault(); // Varsayılan link davranışını engelle
+          showAuthRequiredModal();
+        }
+      });
+    }
+  });
 
-  // Calculator button (no auth required)
-  const calculateBtn = document.getElementById('calculate-btn');
-  if (calculateBtn) {
-    calculateBtn.addEventListener('click', function() {
-      toggleCalculatorSection();
-    });
-  }
+  // Calculator button (no auth required)
+  const calculateBtn = document.getElementById('calculate-btn');
+  if (calculateBtn) {
+    calculateBtn.addEventListener('click', function() {
+      toggleCalculatorSection();
+    });
+  }
 </script>
 
 <script id="calculator-script">
@@ -600,7 +600,7 @@ deliveryFee = cityFees[city] || 0;
 }
 const total = price + categoryFee + deliveryFee;
 // Update result
-document.getElementById('result-price').textContent = `${total.toFixed(2)} ₺`; // Ürün fiyatı yerine toplamı göster
+document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
 document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
 document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
 document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
