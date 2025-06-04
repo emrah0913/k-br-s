@@ -178,17 +178,23 @@
     </script>
     
     <script type="module">
+        // Firebase SDK importları (bunlar zaten olmalı)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = { // !! KENDİ BİLGİLERİNİZİ GİRİN !!
+        // !! KENDİ Firebase proje konfigürasyonunuzu buraya girin !!
+        const firebaseConfig = {
             apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 
             authDomain: "sizin-proje-id.firebaseapp.com",
             projectId: "sizin-proje-id",
-            // ... diğer firebase config bilgileriniz
+            storageBucket: "sizin-proje-id.appspot.com",
+            messagingSenderId: "sizin-mesajlasma-id",
+            appId: "sizin-app-id",
+            measurementId: "G-XXXXXXXXXX"
         };
 
+        // Firebase'i Başlat
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -208,16 +214,18 @@
             }
         });
 
+        // DOM Elemanlarını Seçme (Null kontrolü ile)
         const orderForm = document.getElementById('order-form-main');
         const orderMethodEl = document.getElementById('order-method');
         const productLinkEl = document.getElementById('product-link');
         const productPriceEl = document.getElementById('product-price');
         const productCategoryEl = document.getElementById('product-category');
-        const deliveryRadios = document.querySelectorAll('input[name="deliveryType"]');
+        const deliveryRadios = document.querySelectorAll('input[name="deliveryType"]'); // Bu bir NodeList döner, boş olabilir.
         const citySelectionContainer = document.getElementById('city-selection-container');
         const cityEl = document.getElementById('city');
         const deliveryAddressContainer = document.getElementById('delivery-address-container');
         const deliveryAddressInputEl = document.getElementById('delivery-address-input');
+        const notesEl = document.getElementById('notes');
         
         const calculationResultDiv = document.getElementById('calculation-result');
         const resultPriceEl = document.getElementById('result-price');
@@ -225,7 +233,13 @@
         const resultCityRow = document.getElementById('result-city-row');
         const resultDeliveryFeeEl = document.getElementById('result-delivery-fee');
         const resultTotalEl = document.getElementById('result-total');
+        const currentYearEl = document.getElementById('current-year');
 
+        if (!orderForm || !confirmOrderBtn) {
+            console.error("Kritik form elemanları bulunamadı! Script sonlandırılıyor.");
+            return; // Eğer ana form veya onay butonu yoksa script'in devam etmesi anlamsız.
+        }
+        
         function updateCalculationDisplay() {
             if (!productPriceEl || !productCategoryEl || !orderMethodEl) {
                  if(calculationResultDiv) calculationResultDiv.classList.add('hidden');
@@ -237,16 +251,16 @@
             const deliveryType = selectedDeliveryTypeRadio ? selectedDeliveryTypeRadio.value : null;
             const cityVal = cityEl ? cityEl.value : "";
 
-            if ( price === 0 && !category ) { // Sadece fiyat girildi, kategori yoksa veya hiçbiri yoksa gizle
-                 if (calculationResultDiv) {
+            if ( price === 0 && !category ) { 
+                 if (calculationResultDiv && resultPriceEl && resultCategoryFeeEl && resultDeliveryFeeEl && resultTotalEl && resultCityRow) {
                     resultPriceEl.textContent = `${price.toFixed(2)} ₺`;
                     resultCategoryFeeEl.textContent = `0.00 ₺`;
                     resultDeliveryFeeEl.textContent = `0.00 ₺`;
-                    resultTotalEl.textContent = `${price.toFixed(2)} ₺`; // Sadece ürün fiyatı
+                    resultTotalEl.textContent = `${price.toFixed(2)} ₺`;
                     resultCityRow.classList.add('hidden');
-                    calculationResultDiv.classList.remove('hidden'); // Fiyat varsa göster
+                    calculationResultDiv.classList.remove('hidden');
                  }
-                return null; // Tam hesaplama için yeterli değil
+                return null;
             }
              if (price <= 0 || !category || !deliveryType || (deliveryType === 'home' && !cityVal)) {
                 if(calculationResultDiv) calculationResultDiv.classList.add('hidden');
@@ -268,7 +282,9 @@
             if(calculationResultDiv) calculationResultDiv.classList.remove('hidden');
 
             const currentCalculatedData = {
-                orderMethod: orderMethodEl.value, productLink: productLinkEl.value, price, category, deliveryType,
+                orderMethod: orderMethodEl ? orderMethodEl.value : '', 
+                productLink: productLinkEl ? productLinkEl.value : '', 
+                price, category, deliveryType,
                 city: deliveryType === 'home' ? cityVal : null, categoryFee, deliveryFee, total
             };
             sessionStorage.setItem('calculatedOrderData', JSON.stringify(currentCalculatedData));
@@ -277,8 +293,9 @@
 
         function handleDeliveryTypeChange() {
             const selectedRadio = document.querySelector('input[name="deliveryType"]:checked');
+            
             deliveryRadios.forEach(r => {
-                const dot = r.parentElement.querySelector('.delivery-radio div');
+                const dot = r.parentElement?.querySelector('.delivery-radio div'); // parentElement null olabilir mi?
                 if (dot) dot.classList.toggle('hidden', !r.checked);
             });
 
@@ -311,39 +328,48 @@
 
         const fieldsToWatch = [productPriceEl, productCategoryEl, orderMethodEl, cityEl];
         fieldsToWatch.forEach(field => {
-            if (field) field.addEventListener('change', updateCalculationDisplay);
+            if (field) field.addEventListener('change', updateCalculationDisplay); // 'input' yerine 'change' daha stabil olabilir bazı durumlar için
         });
-        deliveryRadios.forEach(radio => radio.addEventListener('change', handleDeliveryTypeChange));
+        if (deliveryRadios.length > 0) {
+            deliveryRadios.forEach(radio => radio.addEventListener('change', handleDeliveryTypeChange));
+        }
         if (cityEl) cityEl.addEventListener('change', handleDeliveryTypeChange);
 
+        // --- Sayfa yüklendiğinde sessionStorage'dan inputları doldur ---
         const calculatorInputsString = sessionStorage.getItem('calculatorInputs');
         if (calculatorInputsString) {
-            const inputs = JSON.parse(calculatorInputsString);
-            if(orderMethodEl && inputs.orderMethod) orderMethodEl.value = inputs.orderMethod;
-            if(productLinkEl && inputs.productLink) productLinkEl.value = inputs.productLink;
-            if(productPriceEl && inputs.productPrice) productPriceEl.value = inputs.productPrice;
-            if(productCategoryEl && inputs.productCategory) productCategoryEl.value = inputs.productCategory;
-            
-            let preSelectedRadio = null;
-            deliveryRadios.forEach(radio => {
-                if (radio.value === inputs.deliveryType) { radio.checked = true; preSelectedRadio = radio; }
-                else { radio.checked = false; }
-            });
-            
-            handleDeliveryTypeChange(); // UI'ı radio ve şehir durumuna göre ayarla
+            try {
+                const inputs = JSON.parse(calculatorInputsString);
+                if(orderMethodEl && inputs.orderMethod) orderMethodEl.value = inputs.orderMethod;
+                if(productLinkEl && inputs.productLink) productLinkEl.value = inputs.productLink;
+                if(productPriceEl && inputs.productPrice) productPriceEl.value = inputs.productPrice;
+                if(productCategoryEl && inputs.productCategory) productCategoryEl.value = inputs.productCategory;
+                
+                let preSelectedRadio = null;
+                if (deliveryRadios.length > 0) {
+                    deliveryRadios.forEach(radio => {
+                        if (radio.value === inputs.deliveryType) { radio.checked = true; preSelectedRadio = radio; }
+                        else { radio.checked = false; }
+                    });
+                }
+                
+                handleDeliveryTypeChange(); 
 
-            if (preSelectedRadio && preSelectedRadio.value === 'home' && inputs.city && cityEl) {
-                cityEl.value = inputs.city;
-                handleDeliveryTypeChange(); // Şehir dolduktan sonra adres kutusunu tekrar kontrol et
-            }
-            // İlk hesaplamayı form dolduktan sonra tetikle
-            if (productPriceEl && productPriceEl.value && productCategoryEl && productCategoryEl.value && preSelectedRadio) {
-                 updateCalculationDisplay();
-            } else if (productPriceEl && productPriceEl.value > 0) { // Sadece fiyat varsa bile göster
-                 updateCalculationDisplay();
-            }
-             else {
-                 if (calculationResultDiv) calculationResultDiv.classList.add('hidden');
+                if (preSelectedRadio && preSelectedRadio.value === 'home' && inputs.city && cityEl) {
+                    cityEl.value = inputs.city;
+                    handleDeliveryTypeChange(); 
+                }
+                
+                if (productPriceEl && productPriceEl.value && productCategoryEl && productCategoryEl.value && preSelectedRadio ) {
+                     updateCalculationDisplay();
+                } else if (productPriceEl && parseFloat(productPriceEl.value) > 0) { 
+                     updateCalculationDisplay();
+                } else {
+                     if (calculationResultDiv) calculationResultDiv.classList.add('hidden');
+                }
+            } catch (e) {
+                console.error("SessionStorage'dan veri okunurken veya işlenirken hata:", e);
+                if (calculationResultDiv) calculationResultDiv.classList.add('hidden');
             }
         } else {
             const defaultRadio = document.querySelector('input[name="deliveryType"][value="warehouse"]');
@@ -352,67 +378,80 @@
             if (calculationResultDiv) calculationResultDiv.classList.add('hidden');
         }
         
-        if(orderForm && confirmOrderBtn) {
-            orderForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                if(confirmOrderBtn.disabled) return;
+        // Form Gönderimi (Siparişi Onayla)
+        orderForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if(confirmOrderBtn.disabled) return;
 
-                if (!currentUserId) { /* ... (giriş kontrolü önceki gibi) ... */ return; }
-                if (!this.checkValidity()) { /* ... (form doğrulama önceki gibi) ... */ return; }
+            if (!currentUserId) {
+                window.showToast && window.showToast("Sipariş vermek için giriş yapmalısınız.");
+                return;
+            }
+            if (!this.checkValidity()) {
+                this.reportValidity();
+                window.showToast && window.showToast("Lütfen tüm zorunlu alanları (*) doldurunuz.");
+                return;
+            }
 
-                const latestCalculation = updateCalculationDisplay();
-                if (!latestCalculation || latestCalculation.price <= 0 || !latestCalculation.category) {
-                     window.showToast && window.showToast("Lütfen ürün bilgilerini doğru girip hesaplamanın yapılmasını sağlayın.");
-                     productPriceEl && productPriceEl.focus();
-                     return;
-                }
+            const latestCalculation = updateCalculationDisplay();
+            if (!latestCalculation || latestCalculation.price <= 0 || !latestCalculation.category) {
+                 window.showToast && window.showToast("Lütfen ürün bilgilerini doğru girip hesaplamanın yapılmasını sağlayın.");
+                 productPriceEl && productPriceEl.focus();
+                 return;
+            }
 
-                confirmOrderBtn.disabled = true;
-                confirmOrderBtn.innerHTML = '<i class="ri-loader-4-line ri-spin ri-lg mr-2"></i> İşleniyor...';
+            confirmOrderBtn.disabled = true;
+            confirmOrderBtn.innerHTML = '<i class="ri-loader-4-line ri-spin ri-lg mr-2"></i> İşleniyor...';
 
+            const formData = new FormData(this);
+            const orderPayload = {
+                userId: currentUserId,
+                customerName: formData.get('fullName'),
+                customerPhone: formData.get('phone'),
+                orderMethod: latestCalculation.orderMethod,
+                productLink: latestCalculation.productLink,
+                productPriceOriginal: latestCalculation.price,
+                productCategory: latestCalculation.category,
+                deliveryType: latestCalculation.deliveryType,
+                deliveryCity: latestCalculation.city,
+                deliveryAddress: latestCalculation.deliveryType === 'home' ? formData.get('deliveryAddress') : null,
+                categoryFee: latestCalculation.categoryFee,
+                shippingFeeToCyprus: latestCalculation.deliveryFee,
+                totalAmount: latestCalculation.total,
+                currency: "TRY",
+                orderNotes: formData.get('notes'),
+                orderStatus: "Yeni Sipariş",
+                orderTimestamp: serverTimestamp()
+            };
 
-                const formData = new FormData(this);
-                const orderPayload = { /* ... (payload oluşturma önceki gibi, serverTimestamp() dahil) ... */
-                    userId: currentUserId,
-                    customerName: formData.get('fullName'),
-                    customerPhone: formData.get('phone'),
-                    orderMethod: latestCalculation.orderMethod,
-                    productLink: latestCalculation.productLink,
-                    productPriceOriginal: latestCalculation.price,
-                    productCategory: latestCalculation.category,
-                    deliveryType: latestCalculation.deliveryType,
-                    deliveryCity: latestCalculation.city,
-                    deliveryAddress: latestCalculation.deliveryType === 'home' ? formData.get('deliveryAddress') : null,
-                    categoryFee: latestCalculation.categoryFee,
-                    shippingFeeToCyprus: latestCalculation.deliveryFee,
-                    totalAmount: latestCalculation.total,
-                    currency: "TRY",
-                    orderNotes: formData.get('notes'),
-                    orderStatus: "Yeni Sipariş",
-                    orderTimestamp: serverTimestamp()
-                };
-
-                try {
-                    const docRef = await addDoc(collection(db, "orders"), orderPayload);
-                    console.log("Sipariş Firestore'a eklendi. ID: ", docRef.id);
-                    window.showToast && window.showToast("Siparişiniz başarıyla alındı!");
-                    sessionStorage.removeItem('calculatedOrderData');
-                    sessionStorage.removeItem('calculatorInputs');
-                    orderForm.reset();
-                    deliveryRadios.forEach(radio => radio.checked = false);
-                    handleDeliveryTypeChange(); // Formu sıfırladıktan sonra UI'ı da sıfırla
-                    if(calculationResultDiv) calculationResultDiv.classList.add('hidden');
-                    setTimeout(() => { window.location.href = 'index.html'; }, 2500);
-                } catch (error) {
-                    console.error("Firestore hatası: ", error);
-                    window.showToast && window.showToast("Sipariş alınırken hata oluştu. Tekrar deneyin.");
-                    confirmOrderBtn.disabled = false;
-                    confirmOrderBtn.textContent = 'Siparişi Onayla';
-                }
-            });
+            try {
+                const docRef = await addDoc(collection(db, "orders"), orderPayload);
+                console.log("Sipariş Firestore'a eklendi. ID: ", docRef.id);
+                window.showToast && window.showToast("Siparişiniz başarıyla alındı!");
+                sessionStorage.removeItem('calculatedOrderData');
+                sessionStorage.removeItem('calculatorInputs');
+                orderForm.reset();
+                if (deliveryRadios.length > 0) deliveryRadios.forEach(radio => radio.checked = false);
+                handleDeliveryTypeChange(); 
+                if(calculationResultDiv) calculationResultDiv.classList.add('hidden');
+                setTimeout(() => { window.location.href = 'index.html'; }, 2500);
+            } catch (error) {
+                console.error("Firestore hatası: ", error);
+                window.showToast && window.showToast("Sipariş alınırken hata oluştu. Tekrar deneyin.");
+                confirmOrderBtn.disabled = false;
+                confirmOrderBtn.textContent = 'Siparişi Onayla';
+            }
+        });
+        
+        if(currentYearEl) {
+            currentYearEl.textContent = new Date().getFullYear();
+        } else {
+            // Eğer currentYearEl bulunamazsa, footer'daki span'i direkt güncelleyebiliriz.
+            // Bu genellikle DOMContentLoaded dışında bir yerde çağrılırsa sorun olur, ama burada güvendeyiz.
+            const footerYearSpan = document.querySelector('footer #current-year');
+            if(footerYearSpan) footerYearSpan.textContent = new Date().getFullYear();
         }
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    });
+    }); // DOMContentLoaded Sonu
     </script>
 </body>
 </html>
