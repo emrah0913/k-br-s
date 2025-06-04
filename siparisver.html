@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sipariş Ver - Getir Kıbrıs</title>
+    <title>Sipariş Formu - Getir Kıbrıs</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>tailwind.config={theme:{extend:{colors:{primary:'#5d3ebc',secondary:'#ffd300'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,55 +12,74 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; } /* Kullanıcının eklediği CSS */
+        :where([class^="ri-"])::before { content: "\f3c2"; }
         body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
         /* Gerekirse ek stiller */
     </style>
 </head>
 <body class="bg-gray-50">
     <div class="w-full max-w-screen-md mx-auto p-4 sm:p-6 md:p-8 min-h-screen">
-        <header class="mb-8 text-center py-6">
-            <a href="index.html"> 
-                <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-12 mx-auto mb-2">
+        <header class="relative py-6 text-center mb-6">
+            <a href="index.html" title="Ana Sayfaya Dön" class="absolute left-0 top-1/2 -translate-y-1/2 text-primary hover:text-primary/80 p-2">
+                <i class="ri-arrow-left-s-line ri-xl"></i>
+                <span class="sr-only">Ana Sayfaya Dön</span>
             </a>
-            <h1 class="text-2xl sm:text-3xl font-semibold text-primary">Siparişinizi Gözden Geçirin</h1>
-        </header>
+            <a href="index.html">
+                <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-12 mx-auto mb-1">
+            </a>
+            </header>
 
         <main class="space-y-8">
-            <div id="calculator-section" class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-                <h3 class="text-xl font-semibold mb-4 text-primary border-b pb-2">Ürün Maliyeti (Gerekirse Güncelleyin)</h3>
-                <form id="calculator-form" class="space-y-4">
+            <form id="order-form-main" class="bg-white rounded-xl shadow-lg p-4 sm:p-6 space-y-6">
+                <h3 class="text-2xl font-semibold text-primary border-b pb-3 mb-6">Sipariş Formu</h3>
+
+                <fieldset class="space-y-4">
+                    <legend class="text-lg font-medium text-gray-800 mb-2">Kişisel Bilgileriniz</legend>
                     <div>
-                        <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
-                        <div class="relative mb-4">
+                        <label for="full-name" class="block text-sm font-medium text-gray-700 mb-1">Adınız Soyadınız <span class="text-red-500">*</span></label>
+                        <input type="text" id="full-name" name="fullName" required class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Adınız Soyadınız">
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefon Numaranız <span class="text-red-500">*</span></label>
+                        <input type="tel" id="phone" name="phone" required class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="05XX XXX XX XX">
+                    </div>
+                </fieldset>
+
+                <hr class="my-6 border-gray-200">
+
+                <fieldset class="space-y-4">
+                    <legend class="text-lg font-medium text-gray-800 mb-2">Ürün ve Sipariş Detayları</legend>
+                    <div>
+                        <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi <span class="text-red-500">*</span></label>
+                        <div class="relative">
                             <i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <select id="order-method" class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm focus:ring-1 focus:ring-primary">
+                            <select id="order-method" name="orderMethod" required class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm focus:ring-1 focus:ring-primary">
                                 <option value="" disabled>Sipariş yöntemi seçin</option>
                                 <option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
                                 <option value="service">Ürünü benim yerime siz sipariş edin, size ödeme yapacağım</option>
                             </select>
                             <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                         </div>
-                        <div>
-                            <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
-                            <div class="relative">
-                                <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="url" id="product-link" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="https://www.example.com/urun">
-                            </div>
+                    </div>
+                    <div>
+                        <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="url" id="product-link" name="productLink" required class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="https://www.example.com/urun">
                         </div>
                     </div>
                     <div>
-                        <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
+                        <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺) <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="number" id="product-price" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="0.00">
+                            <input type="number" id="product-price" name="productPrice" required step="0.01" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="0.00">
                         </div>
                     </div>
                     <div>
-                        <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                        <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <select id="product-category" class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm focus:ring-1 focus:ring-primary">
+                            <select id="product-category" name="productCategory" required class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm focus:ring-1 focus:ring-primary">
                                 <option value="" disabled>Kategori seçin</option>
                                 <option value="furniture">Mobilya</option>
                                 <option value="electronics">Elektronik</option>
@@ -71,18 +90,24 @@
                             <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                         </div>
                     </div>
+                </fieldset>
+                
+                <hr class="my-6 border-gray-200">
+
+                <fieldset class="space-y-4">
+                    <legend class="text-lg font-medium text-gray-800 mb-2">Teslimat Detayları</legend>
                     <div>
-                        <span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi</span>
-                        <div class="flex space-x-4">
+                        <span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi <span class="text-red-500">*</span></span>
+                        <div class="flex space-x-6">
                             <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="delivery-type" value="warehouse" class="sr-only">
+                                <input type="radio" name="deliveryType" value="warehouse" class="sr-only">
                                 <div class="w-5 h-5 border border-gray-400 rounded-full flex items-center justify-center mr-2 delivery-radio">
                                     <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
                                 </div>
                                 <span class="text-sm">Depodan teslim</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="delivery-type" value="home" class="sr-only">
+                                <input type="radio" name="deliveryType" value="home" class="sr-only">
                                 <div class="w-5 h-5 border border-gray-400 rounded-full flex items-center justify-center mr-2 delivery-radio">
                                     <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
                                 </div>
@@ -90,11 +115,11 @@
                             </label>
                         </div>
                     </div>
-                    <div id="city-selection" class="hidden">
-                        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+                    <div id="city-selection-container" class="hidden">
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <i class="ri-map-pin-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <select id="city" class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm focus:ring-1 focus:ring-primary">
+                            <select id="city" name="city" class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm focus:ring-1 focus:ring-primary">
                                 <option value="" disabled>Şehir seçin</option>
                                 <option value="lefkosa">Lefkoşa</option>
                                 <option value="girne">Girne</option>
@@ -105,45 +130,37 @@
                             <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                         </div>
                     </div>
-                    <button type="submit" id="form-calculate-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-                        Hesaplamayı Güncelle
-                    </button>
-                </form>
-                <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-                    <h4 class="font-medium text-gray-800 mb-2">Güncel Hesaplama Sonucu</h4>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between"><span>Ürün Fiyatı:</span><span id="result-price">0 ₺</span></div>
-                        <div class="flex justify-between"><span>Kategori Ücreti:</span><span id="result-category-fee">0 ₺</span></div>
-                        <div class="flex justify-between" id="result-city-row"><span>Teslimat Ücreti:</span><span id="result-delivery-fee">0 ₺</span></div>
-                        <div class="flex justify-between font-medium text-primary pt-2 border-t border-gray-200"><span>Toplam:</span><span id="result-total">0 ₺</span></div>
+                    <div id="delivery-address-container" class="hidden">
+                        <label for="delivery-address-input" class="block text-sm font-medium text-gray-700 mb-1">Açık Teslimat Adresi <span class="text-red-500">*</span></label>
+                        <textarea id="delivery-address-input" name="deliveryAddress" rows="3" class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Mahalle, cadde, sokak, kapı no, daire no..."></textarea>
+                    </div>
+                </fieldset>
+                
+                <hr class="my-6 border-gray-200">
+
+                <div id="calculation-result" class="mt-2 p-4 bg-gray-50 rounded-lg">
+                    <h4 class="text-md font-semibold text-gray-800 mb-3">Hesaplama Özeti</h4>
+                    <div class="space-y-1 text-sm">
+                        <div class="flex justify-between"><span>Ürün Fiyatı:</span><span id="result-price">0.00 ₺</span></div>
+                        <div class="flex justify-between"><span>Kategori Ücreti:</span><span id="result-category-fee">0.00 ₺</span></div>
+                        <div class="flex justify-between" id="result-city-row" class="hidden"><span>Teslimat Ücreti:</span><span id="result-delivery-fee">0.00 ₺</span></div>
+                        <div class="flex justify-between font-semibold text-primary text-lg pt-2 border-t border-gray-300 mt-2"><span>Genel Toplam:</span><span id="result-total">0.00 ₺</span></div>
                     </div>
                 </div>
-            </div>
+                
+                <div class="pt-2">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Notunuz (İsteğe Bağlı)</label>
+                    <textarea id="notes" name="notes" rows="3" class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Eklemek istediğiniz özel bir not varsa buraya yazabilirsiniz..."></textarea>
+                </div>
+                
+                <button type="submit" id="confirm-order-btn" class="w-full bg-secondary text-primary py-3.5 rounded-button font-semibold text-lg hover:bg-yellow-400 transition-colors !rounded-button mt-6">
+                    Siparişi Onayla
+                </button>
+            </form>
 
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6 border-b pb-2">Teslimat Bilgileri</h2>
-                <form id="delivery-form" class="space-y-4">
-                    <div>
-                        <label for="full-name" class="block text-sm font-medium text-gray-700 mb-1">Adınız Soyadınız</label>
-                        <input type="text" id="full-name" name="full-name" required class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Adınız Soyadınız">
-                    </div>
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefon Numaranız</label>
-                        <input type="tel" id="phone" name="phone" required class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="05XX XXX XX XX">
-                    </div>
-                    <div>
-                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Teslimat Adresi (Kıbrıs)</label>
-                        <textarea id="address" name="address" rows="3" required class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Açık adresinizi giriniz..."></textarea>
-                    </div>
-                    <div>
-                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Notu (İsteğe Bağlı)</label>
-                        <textarea id="notes" name="notes" rows="2" class="w-full p-3 border border-gray-300 rounded-button focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Eklemek istediğiniz notlar..."></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-secondary text-primary py-3 mt-6 rounded-button font-semibold hover:bg-yellow-400 transition-colors !rounded-button">
-                        Siparişi Onayla ve Ödemeye Geç
-                    </button>
-                </form>
-            </div>
+            <p class="text-center text-xs sm:text-sm text-gray-500 mt-6 px-2">
+                Lütfen ürün linkini ve fiyatını doğru girdiğinizden emin olunuz. Girdiğiniz bilgilere göre hesaplama yapılmaktadır. Hatalı veya eksik girişlerden kaynaklanan fiyat farklılıkları veya sorunlarda sorumluluk kullanıcıya aittir.
+            </p>
         </main>
 
         <footer class="text-center text-xs text-gray-500 py-8 mt-8">
@@ -156,10 +173,6 @@
     </div>
 
     <script id="utils-script-siparisver">
-        // showToast fonksiyonu, index.html'deki utils-script ile aynı olabilir.
-        // Eğer ayrı bir utils.js dosyanız yoksa buraya kopyalayabilirsiniz veya
-        // global window.showToast olarak index.html'de tanımlandıysa direkt kullanabilirsiniz.
-        // Şimdilik, netlik için buraya ekliyorum:
         window.showToast = function(message) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
@@ -174,149 +187,197 @@
         };
     </script>
 
-    <script id="calculator-script-siparisver">
+    <script id="order-form-script">
     document.addEventListener('DOMContentLoaded', function() {
-        const calculatorForm = document.getElementById('calculator-form');
-        const formCalculateBtnSiparis = document.getElementById('form-calculate-btn'); // Bu sayfadaki buton
-        const citySelection = document.getElementById('city-selection');
-        const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
+        const orderForm = document.getElementById('order-form-main');
+        
+        // Form elemanları
+        const orderMethodEl = document.getElementById('order-method');
+        const productLinkEl = document.getElementById('product-link');
+        const productPriceEl = document.getElementById('product-price');
+        const productCategoryEl = document.getElementById('product-category');
+        const deliveryRadios = document.querySelectorAll('input[name="deliveryType"]'); // name attribute "deliveryType" olmalı
+        const citySelectionContainer = document.getElementById('city-selection-container');
+        const cityEl = document.getElementById('city');
+        const deliveryAddressContainer = document.getElementById('delivery-address-container');
+        const deliveryAddressInputEl = document.getElementById('delivery-address-input');
+
+        // Hesaplama sonucu gösterim elemanları
         const calculationResultDiv = document.getElementById('calculation-result');
+        const resultPriceEl = document.getElementById('result-price');
+        const resultCategoryFeeEl = document.getElementById('result-category-fee');
         const resultCityRow = document.getElementById('result-city-row');
+        const resultDeliveryFeeEl = document.getElementById('result-delivery-fee');
+        const resultTotalEl = document.getElementById('result-total');
+
+        // Dinamik hesaplama ve UI güncelleme için olay dinleyicileri
+        const fieldsToWatch = [productPriceEl, productCategoryEl, orderMethodEl, cityEl];
+        fieldsToWatch.forEach(field => {
+            if (field) field.addEventListener('change', updateCalculationDisplay);
+        });
+        deliveryRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                citySelectionContainer.classList.toggle('hidden', this.value !== 'home');
+                if (this.value !== 'home') {
+                    deliveryAddressContainer.classList.add('hidden');
+                    cityEl.value = ''; // Şehir seçimini sıfırla
+                    cityEl.required = false;
+                    deliveryAddressInputEl.required = false;
+                } else {
+                    cityEl.required = true; // Şehir seçimi zorunlu
+                    // Adres alanı, şehir seçildiğinde gösterilecek
+                }
+                updateDeliveryRadioUI();
+                updateCalculationDisplay();
+            });
+        });
+
+        if (cityEl) {
+            cityEl.addEventListener('change', function() {
+                const selectedDeliveryType = document.querySelector('input[name="deliveryType"]:checked');
+                if (selectedDeliveryType && selectedDeliveryType.value === 'home' && this.value) {
+                    deliveryAddressContainer.classList.remove('hidden');
+                    deliveryAddressInputEl.required = true; // Adres zorunlu
+                } else {
+                    deliveryAddressContainer.classList.add('hidden');
+                    deliveryAddressInputEl.required = false;
+                }
+                updateCalculationDisplay(); // Şehir değişince de hesaplamayı güncelle
+            });
+        }
+
+
+        function updateDeliveryRadioUI() {
+            document.querySelectorAll('.delivery-radio div').forEach(dot => dot.classList.add('hidden'));
+            const checkedRadio = document.querySelector('input[name="deliveryType"]:checked');
+            if (checkedRadio) {
+                const radioDiv = checkedRadio.parentElement.querySelector('.delivery-radio div');
+                if (radioDiv) radioDiv.classList.remove('hidden');
+            }
+        }
+        
+        // Hesaplama fonksiyonu
+        function updateCalculationDisplay() {
+            const price = parseFloat(productPriceEl.value) || 0;
+            const category = productCategoryEl.value;
+            const selectedDeliveryTypeRadio = document.querySelector('input[name="deliveryType"]:checked');
+            const deliveryType = selectedDeliveryTypeRadio ? selectedDeliveryTypeRadio.value : null;
+            const cityVal = cityEl.value;
+
+            if (!category && price > 0) { // Fiyat girilmiş ama kategori henüz seçilmemişse, sadece fiyatı göster
+                resultPriceEl.textContent = `${price.toFixed(2)} ₺`;
+                resultCategoryFeeEl.textContent = `0.00 ₺`;
+                resultDeliveryFeeEl.textContent = `0.00 ₺`;
+                resultTotalEl.textContent = `${price.toFixed(2)} ₺`;
+                resultCityRow.classList.add('hidden');
+                calculationResultDiv.classList.remove('hidden'); // Sonuçları göster
+                return; // Diğer hesaplamaları yapma
+            }
+            
+            if (price <= 0 || !category || !deliveryType || (deliveryType === 'home' && !cityVal)) {
+                calculationResultDiv.classList.add('hidden'); // Gerekli alanlar boşsa sonuçları gizle
+                return;
+            }
+
+            const categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
+            const cityFees = { 'lefkosa': 200, 'girne': 350, 'magusa': 300, 'guzelyurt': 400, 'iskele': 450 };
+            
+            const categoryFee = price * (categoryRates[category] || 0);
+            let deliveryFee = 0;
+            if (deliveryType === 'home' && cityVal) {
+                deliveryFee = cityFees[cityVal] || 0;
+            }
+            const total = price + categoryFee + deliveryFee;
+
+            resultPriceEl.textContent = `${price.toFixed(2)} ₺`;
+            resultCategoryFeeEl.textContent = `${categoryFee.toFixed(2)} ₺`;
+            resultDeliveryFeeEl.textContent = `${deliveryFee.toFixed(2)} ₺`;
+            resultTotalEl.textContent = `${total.toFixed(2)} ₺`;
+            
+            resultCityRow.classList.toggle('hidden', deliveryType !== 'home' || !cityVal);
+            calculationResultDiv.classList.remove('hidden'); // Sonuçları göster
+
+            // Güncel hesaplamayı sessionStorage'a kaydet (opsiyonel, form submit'te de yapılabilir)
+            const currentCalculatedData = {
+                orderMethod: orderMethodEl.value, productLink: productLinkEl.value, price, category, deliveryType,
+                city: deliveryType === 'home' ? cityVal : null,
+                categoryFee, deliveryFee, total
+            };
+            sessionStorage.setItem('calculatedOrderData', JSON.stringify(currentCalculatedData));
+        }
 
         // --- Sayfa yüklendiğinde sessionStorage'dan inputları doldur ---
         const calculatorInputsString = sessionStorage.getItem('calculatorInputs');
         if (calculatorInputsString) {
             const inputs = JSON.parse(calculatorInputsString);
-            
-            // Inputları doldur
-            const orderMethodEl = document.getElementById('order-method');
-            const productLinkEl = document.getElementById('product-link');
-            const productPriceEl = document.getElementById('product-price');
-            const productCategoryEl = document.getElementById('product-category');
-            const cityEl = document.getElementById('city');
-
             if(orderMethodEl && inputs.orderMethod) orderMethodEl.value = inputs.orderMethod;
             if(productLinkEl) productLinkEl.value = inputs.productLink || '';
             if(productPriceEl) productPriceEl.value = inputs.productPrice || '';
             if(productCategoryEl) productCategoryEl.value = inputs.productCategory || '';
             
-            let deliveryTypeSet = false;
+            let deliveryTypeChecked = false;
             deliveryRadios.forEach(radio => {
                 if (radio.value === inputs.deliveryType) {
                     radio.checked = true;
-                    deliveryTypeSet = true;
+                    deliveryTypeChecked = true;
                 } else {
                     radio.checked = false;
                 }
             });
 
-            // Seçili radio butona göre UI güncelle (nokta ve şehir seçimi)
-            const checkedDeliveryRadio = document.querySelector('input[name="delivery-type"]:checked');
-            if (checkedDeliveryRadio) {
-                const radioDiv = checkedDeliveryRadio.parentElement.querySelector('.delivery-radio div');
-                if (radioDiv) radioDiv.classList.remove('hidden');
-                citySelection.classList.toggle('hidden', checkedDeliveryRadio.value !== 'home');
-                if (checkedDeliveryRadio.value === 'home' && inputs.city && cityEl) {
-                    cityEl.value = inputs.city;
+            if (deliveryTypeChecked) {
+                const checkedRadio = document.querySelector('input[name="deliveryType"]:checked');
+                updateDeliveryRadioUI(); // UI'ı güncelle
+                citySelectionContainer.classList.toggle('hidden', checkedRadio.value !== 'home');
+                if (checkedRadio.value === 'home') {
+                    cityEl.required = true;
+                    if (inputs.city && cityEl) {
+                        cityEl.value = inputs.city;
+                        // Şehir seçildiyse adres kutusunu göster
+                        deliveryAddressContainer.classList.remove('hidden');
+                        deliveryAddressInputEl.required = true;
+                    }
                 }
             }
-            
-            // Formu doldurduktan sonra otomatik olarak "Hesaplamayı Güncelle" butonuna tıkla
-            // Bu, sayfa ilk yüklendiğinde sonuçların görünmesini sağlar.
-            if (formCalculateBtnSiparis && inputs.productPrice && inputs.productCategory) { // Gerekli alanlar doluysa
-                 setTimeout(() => { // DOM güncellemelerinin tamamlanması için kısa bir bekleme
-                    formCalculateBtnSiparis.click();
-                 }, 100);
-            } else {
-                if (calculationResultDiv) calculationResultDiv.classList.add('hidden');
-            }
-
+            updateCalculationDisplay(); // Doldurulan verilerle ilk hesaplamayı yap ve göster
         } else {
-            // Eğer sessionStorage'da veri yoksa, hesaplama sonuçlarını gizle
-            if (calculationResultDiv) calculationResultDiv.classList.add('hidden');
-            window.showToast && window.showToast("Hesaplama bilgisi bulunamadı. Lütfen bilgileri girip güncelleyin.");
-        }
-        
-        // Radio buton UI güncelleme ve şehir gösterme/gizleme
-        deliveryRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                document.querySelectorAll('.delivery-radio div').forEach(dot => {
-                    dot.classList.add('hidden');
-                });
-                if (this.checked) {
-                    const radioDiv = this.parentElement.querySelector('.delivery-radio div');
-                    if (radioDiv) radioDiv.classList.remove('hidden');
-                }
-                citySelection.classList.toggle('hidden', this.value !== 'home');
-            });
-        });
-
-        // Form gönderildiğinde (Hesaplamayı Güncelle)
-        if (calculatorForm && formCalculateBtnSiparis) {
-            calculatorForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const orderMethod = document.getElementById('order-method').value;
-                const productLink = document.getElementById('product-link').value;
-                const price = parseFloat(document.getElementById('product-price').value) || 0;
-                const category = document.getElementById('product-category').value;
-                const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-                const cityVal = document.getElementById('city').value;
-
-                if (!orderMethod) { window.showToast('Lütfen sipariş yöntemi seçin'); return; }
-                if (price <= 0) { window.showToast('Lütfen geçerli bir fiyat girin'); return; }
-                if (!category) { window.showToast('Lütfen bir kategori seçin'); return; }
-                if (deliveryType === 'home' && !cityVal) { window.showToast('Lütfen bir şehir seçin'); return; }
-
-                const categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
-                const cityFees = { 'lefkosa': 200, 'girne': 350, 'magusa': 300, 'guzelyurt': 400, 'iskele': 450 };
-                const categoryFee = price * (categoryRates[category] || 0);
-                let deliveryFee = 0;
-                if (deliveryType === 'home') { deliveryFee = cityFees[cityVal] || 0; }
-                const total = price + categoryFee + deliveryFee;
-
-                document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
-                document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
-                document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
-                document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
-                
-                resultCityRow.classList.toggle('hidden', deliveryType !== 'home');
-                calculationResultDiv.classList.remove('hidden');
-                window.showToast('Hesaplama güncellendi!');
-
-                const updatedCalculatedData = {
-                    orderMethod, productLink, price, category, deliveryType, 
-                    city: deliveryType === 'home' ? cityVal : null,
-                    categoryFee, deliveryFee, total
-                };
-                sessionStorage.setItem('calculatedOrderData', JSON.stringify(updatedCalculatedData));
-                
-                const updatedFormData = { // Inputları da güncelle
-                    orderMethod: orderMethod, productLink: productLink, productPrice: document.getElementById('product-price').value,
-                    productCategory: category, deliveryType: deliveryType, city: cityVal
-                };
-                sessionStorage.setItem('calculatorInputs', JSON.stringify(updatedFormData));
-            });
+             if (calculationResultDiv) calculationResultDiv.classList.add('hidden'); // Veri yoksa sonuçları gizle
         }
 
-        // Teslimat formu gönderimi
-        const deliveryForm = document.getElementById('delivery-form');
-        if(deliveryForm) {
-            deliveryForm.addEventListener('submit', function(e) {
+
+        // Form gönderimi (Siparişi Onayla)
+        if(orderForm) {
+            orderForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                // Son bir kez hesaplamayı güncelle (kullanıcı bir şeyi değiştirip direkt onaya basmış olabilir)
+                updateCalculationDisplay(); 
+
                 const currentCalculatedDataString = sessionStorage.getItem('calculatedOrderData');
                 if (!currentCalculatedDataString) {
-                    window.showToast("Lütfen önce ürün maliyetini hesaplayın/güncelleyin.");
-                    document.getElementById('calculator-section')?.scrollIntoView({behavior: 'smooth'});
+                    window.showToast && window.showToast("Lütfen tüm zorunlu alanları doldurup hesaplamanın görünmesini bekleyin.");
+                    calculationResultDiv.scrollIntoView({behavior: 'smooth'});
                     return;
                 }
+                 // Zorunlu alan kontrolü
+                if (this.checkValidity() === false) {
+                    this.reportValidity(); // Tarayıcının kendi doğrulama mesajlarını göster
+                    window.showToast && window.showToast("Lütfen tüm zorunlu alanları (*) doldurunuz.");
+                    return;
+                }
+
+
                 const formData = new FormData(this);
-                const deliveryDetails = Object.fromEntries(formData.entries());
-                const finalOrderData = {
+                const orderDetails = Object.fromEntries(formData.entries());
+                
+                const finalOrderPayload = {
                     calculation: JSON.parse(currentCalculatedDataString),
-                    delivery: deliveryDetails
+                    customerInfo: orderDetails // Bu artık tüm form verilerini içerir
                 };
-                console.log('Nihai Sipariş Bilgileri:', finalOrderData);
+
+                console.log('Nihai Sipariş Bilgileri:', finalOrderPayload);
                 alert('Siparişiniz alındı (simülasyon). Detaylar için konsolu kontrol edin.');
+                
                 // Başarılı sipariş sonrası:
                 // sessionStorage.removeItem('calculatedOrderData');
                 // sessionStorage.removeItem('calculatorInputs');
