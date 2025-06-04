@@ -1,445 +1,234 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getir Kıbrıs - Türkiye'den Kıbrıs'a Teslimat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    /* Temel Stiller */
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #fffefa;
-      color: #2b2b2b;
-      line-height: 1.6;
-    }
-    header {
-      background-color: #ffcb05;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      position: relative; /* Kullanıcı bölümünü konumlandırmak için */
-    }
-    header img {
-      max-width: 200px;
-      display: block; /* Logoyu ortalamak için */
-      margin: 0 auto; /* Logoyu ortalamak için */
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      background-color: #2b2b2b;
-      padding: 15px 0;
-    }
-    nav a {
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.3s ease;
-    }
-    nav a:hover {
-      color: #ffcb05;
-    }
-    section {
-      padding: 40px 20px;
-      max-width: 960px;
-      margin: 20px auto;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    h1, h2 {
-      text-align: center;
-      color: #ffcb05;
-      margin-bottom: 25px;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #555;
-    }
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-    }
-    button {
-      background-color: #2b2b2b;
-      color: #ffffff;
-      padding: 14px 25px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-      display: block; /* Butonu blok seviye yap */
-      width: 100%; /* Tam genişlik */
-      margin-top: 20px;
-    }
-    button:hover {
-      background-color: #ffcb05;
-      color: #2b2b2b;
-    }
-    .result {
-      margin-top: 30px;
-      padding: 20px;
-      background-color: #f9f9f9;
-      border: 1px dashed #ccc;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 800;
-      color: #2b2b2b;
-    }
-    footer {
-      background-color: #2b2b2b;
-      color: #ffffff;
-      text-align: center;
-      padding: 20px;
-      margin-top: 40px;
-      font-size: 14px;
-    }
-
-    /* Kullanıcı Giriş/Çıkış Stilleri */
-    .user-section {
-      position: absolute; /* Header içinde sağ üste konumlandır */
-      top: 15px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      z-index: 10; /* Diğer elementlerin üzerinde görünmesini sağla */
-    }
-    .user-photo {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #eee;
-      cursor: pointer;
-      display: none; /* Varsayılan olarak gizli */
-      border: 2px solid #5d3ebc; /* Getir moru çerçeve */
-      object-fit: cover; /* Fotoğrafın tam oturmasını sağla */
-    }
-    .user-photo.visible {
-        display: block; /* Giriş yapıldığında görünür */
-    }
-    .sign-in-button {
-        background-color: #5d3ebc; /* Getir moru */
-        color: white;
-        padding: 8px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
-        display: block; /* Varsayılan olarak görünür */
-    }
-    .sign-in-button:hover {
-        background-color: #4a329e;
-    }
-    .sign-in-button.hidden {
-        display: none; /* Giriş yapıldığında gizli */
-    }
-    .dropdown-menu {
-      position: absolute;
-      top: 50px; /* Kullanıcı fotoğrafının hemen altına */
-      right: 0; /* user-section'a göre hizala */
-      background-color: #ffffff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      list-style: none;
-      padding: 10px 0;
-      z-index: 1000;
-      display: none; /* Varsayılan olarak gizli */
-      min-width: 150px; /* Menü genişliği */
-      text-align: left;
-    }
-    .dropdown-menu li {
-      padding: 8px 20px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      color: #2b2b2b; /* Metin rengi */
-    }
-    .dropdown-menu li:hover {
-      background-color: #f0f0f0;
-    }
-    .dropdown-menu li:first-child {
-        font-weight: bold;
-        padding-bottom: 5px;
-        border-bottom: 1px solid #eee;
-        margin-bottom: 5px;
-        white-space: nowrap; /* Kullanıcı adı tek satırda kalsın */
-        overflow: hidden; /* Taşmayı gizle */
-        text-overflow: ellipsis; /* Taşmayı ellipsis ile göster */
-        max-width: 150px; /* Kullanıcı adı için maksimum genişlik */
-    }
-
-    /* Duyarlı Tasarım (Mobil Uyum) */
-    @media (max-width: 768px) {
-      header {
-        padding: 15px;
-      }
-      header img {
-        max-width: 150px;
-      }
-      nav {
-        flex-direction: column; /* Menü öğelerini alt alta sırala */
-        gap: 10px;
-        padding: 10px 0;
-      }
-      nav a {
-        padding: 5px 0;
-      }
-      section {
-        padding: 20px 15px;
-        margin: 15px auto;
-      }
-      h1, h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-      }
-      input[type="number"],
-      select,
-      button {
-        padding: 10px;
-        font-size: 15px;
-      }
-      .result {
-        font-size: 18px;
-        padding: 15px;
-      }
-      .user-section {
-        /* Mobil görünümde header içinde sağ üstte kalmaya devam etsin */
-        top: 10px;
-        right: 10px;
-        gap: 10px;
-      }
-      .user-photo {
-          width: 35px;
-          height: 35px;
-      }
-      .sign-in-button {
-          padding: 6px 12px;
-          font-size: 14px;
-      }
-      .dropdown-menu {
-        top: 45px; /* Fotoğrafın altında mobil için ayar */
-        right: 0;
-        min-width: 120px;
-      }
-      .dropdown-menu li {
-        padding: 6px 15px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getir Kıbrıs</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#5d3ebc',secondary:'#ffd300'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f9f9f9;
+}
+.copy-btn:active {
+transform: scale(0.95);
+}
+/* Kullanıcı Giriş/Çıkış Stilleri */
+.user-section {
+display: flex;
+align-items: center;
+gap: 15px;
+position: absolute;
+top: 10px;
+right: 10px;
+z-index: 10;
+}
+.user-photo {
+width: 32px;
+height: 32px;
+border-radius: 50%;
+background-color: #eee;
+cursor: pointer;
+display: none; /* Varsayılan olarak gizli */
+object-fit: cover;
+border: 2px solid #5d3ebc;
+}
+.user-photo.visible {
+display: block; /* Giriş yapıldığında görünür */
+}
+.sign-in-button {
+background-color: #5d3ebc; /* Getir moru */
+color: white;
+padding: 8px 15px;
+border-radius: 5px;
+cursor: pointer;
+font-size: 14px;
+font-weight: 600;
+transition: background-color 0.3s ease;
+display: block; /* Varsayılan olarak görünür */
+}
+.sign-in-button:hover {
+background-color: #4a329e;
+}
+.sign-in-button.hidden {
+display: none; /* Giriş yapıldığında gizli */
+}
+.dropdown-menu {
+position: absolute;
+top: 40px; /* Fotoğrafın hemen altına */
+right: 0;
+background-color: #ffffff;
+border: 1px solid #ddd;
+border-radius: 5px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+list-style: none;
+padding: 10px 0;
+z-index: 1000;
+display: none; /* Varsayılan olarak gizli */
+min-width: 150px;
+text-align: left;
+}
+.dropdown-menu li {
+padding: 8px 20px;
+cursor: pointer;
+transition: background-color 0.2s ease;
+color: #2b2b2b;
+}
+.dropdown-menu li:hover {
+background-color: #f0f0f0;
+}
+.dropdown-menu li:first-child {
+font-weight: bold;
+padding-bottom: 5px;
+border-bottom: 1px solid #eee;
+margin-bottom: 5px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+max-width: 150px;
+}
+</style>
 </head>
-<body>
-  <header>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Getir_Logo.png/800px-Getir_Logo.png" alt="Getir Kıbrıs Logo" />
-    <div class="user-section">
-        <button id="signInButton" class="sign-in-button">Google ile Giriş Yap</button>
-        <img id="userPhoto" class="user-photo" src="" alt="Kullanıcı Fotoğrafı" title="Profil" />
-        <ul id="userDropdown" class="dropdown-menu">
-            <li id="userName"></li>
-            <li id="signOutButton">Çıkış Yap</li>
-        </ul>
-    </div>
-  </header>
-  <nav>
-    <a href="#">Anasayfa</a>
-    <a href="#">Hizmetlerimiz</a>
-    <a href="#">Fiyat Hesapla</a>
-    <a href="#">İletişim</a>
-  </nav>
-
-  <section>
-    <h1>Getir Kıbrıs - Türkiye'den Kıbrıs'a Teslimat Fiyat Hesaplama</h1>
-    <div class="form-group">
-      <label for="price">Ürün Fiyatı (TL):</label>
-      <input type="number" id="price" placeholder="Ürün fiyatını girin" />
-    </div>
-    <div class="form-group">
-      <label for="category">Ürün Kategorisi:</label>
-      <select id="category">
-        <option value="mobilya">Mobilya</option>
-        <option value="giyim">Giyim</option>
-        <option value="elektronik">Elektronik</option>
-        <option value="diger">Diğer</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="delivery">Teslimat Şekli:</label>
-      <select id="delivery">
-        <option value="depo">Depodan Teslim</option>
-        <option value="eve">Eve Teslim</option>
-      </select>
-    </div>
-    <div class="form-group" id="citySelect" style="display: none;">
-      <label for="city">Şehir (Eve Teslim İçin):</label>
-      <select id="city">
-        <option value="lefkoşa">Lefkoşa</option>
-        <option value="girne">Girne</option>
-        <option value="mağusa">Mağusa</option>
-        <option value="güzelyurt">Güzelyurt</option>
-        <option value="iskele">İskele</option>
-        <option value="lefkebike">Lefkebike</option>
-      </select>
-    </div>
-
-    <button onclick="calculate()">Hesapla</button>
-    <div class="result" id="result"></div>
-  </section>
-
-  <footer>
-    &copy; 2025 Getir Kıbrıs. Tüm hakları saklıdır.
-  </footer>
-
-  <script>
-    // Firebase Yapılandırması (Kendi Firebase projenizin bilgilerini buraya girin)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    // Firebase'i başlat
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
-
-    // DOM Elementleri
-    const delivery = document.getElementById("delivery");
-    const citySelect = document.getElementById("citySelect");
-    const signInButton = document.getElementById("signInButton");
-    const userPhoto = document.getElementById("userPhoto");
-    const userDropdown = document.getElementById("userDropdown");
-    const userName = document.getElementById("userName");
-    const signOutButton = document.getElementById("signOutButton");
-
-    // Teslimat Şekli Değişikliğini Dinle
-    delivery.addEventListener("change", () => {
-      if (delivery.value === "eve") {
-        citySelect.style.display = "block";
-      } else {
-        citySelect.style.display = "none";
-      }
-    });
-
-    // Fiyat Hesaplama Fonksiyonu
-    function calculate() {
-      const price = parseFloat(document.getElementById("price").value) || 0;
-      const category = document.getElementById("category").value;
-      const deliveryType = document.getElementById("delivery").value;
-      const city = document.getElementById("city").value;
-      let oran = 0;
-      let cityPrice = 0;
-
-      switch (category) {
-        case "mobilya": oran = 0.7; break;
-        case "giyim": oran = 0.45; break;
-        case "elektronik": oran = 0.7; break;
-        case "diger": oran = 0.6; break; // Diğer kategorisi için varsayılan bir oran
-      }
-
-      if (deliveryType === "eve") {
-        switch (city) {
-          case "lefkoşa": cityPrice = 200; break;
-          case "girne": cityPrice = 300; break;
-          case "mağusa": cityPrice = 250; break;
-          case "güzelyurt": cityPrice = 280; break;
-          case "iskele": cityPrice = 270; break;
-          case "lefkebike": cityPrice = 320; break;
-          default: cityPrice = 0; // Şehir seçilmezse veya tanımsız ise
-        }
-      }
-
-      const totalCost = (price * oran) + cityPrice;
-      document.getElementById("result").textContent = `Toplam Tahmini Teslimat Ücreti: ${totalCost.toFixed(2)} TL`;
-    }
-
-    // Google ile Giriş Fonksiyonu
-    signInButton.addEventListener("click", () => {
-        auth.signInWithPopup(provider)
-            .then((result) => {
-                // Giriş başarılı
-                console.log("Giriş başarılı:", result.user);
-            })
-            .catch((error) => {
-                // Giriş hatası
-                console.error("Giriş hatası:", error);
-                alert("Giriş yapılırken bir hata oluştu: " + error.message);
-            });
-    });
-
-    // Kullanıcı fotoğrafına tıklayınca dropdown menüyü göster/gizle
-    userPhoto.addEventListener("click", (event) => {
-        event.stopPropagation(); // Olayın body'ye yayılmasını engelle
-        userDropdown.style.display = userDropdown.style.display === "block" ? "none" : "block";
-    });
-
-    // Dropdown dışına tıklayınca menüyü gizle
-    document.addEventListener("click", (event) => {
-        if (!userPhoto.contains(event.target) && !userDropdown.contains(event.target)) {
-            userDropdown.style.display = "none";
-        }
-    });
-
-    // Çıkış Yap Fonksiyonu
-    signOutButton.addEventListener("click", () => {
-        auth.signOut()
-            .then(() => {
-                // Çıkış başarılı
-                console.log("Çıkış başarılı.");
-            })
-            .catch((error) => {
-                // Çıkış hatası
-                console.error("Çıkış hatası:", error);
-                alert("Çıkış yapılırken bir hata oluştu: " + error.message);
-            });
-    });
-
-    // Kullanıcı durumu değişikliklerini dinle
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            // Kullanıcı giriş yapmış
-            signInButton.classList.add("hidden");
-            userPhoto.classList.add("visible");
-            userPhoto.src = user.photoURL || 'https://via.placeholder.com/40'; // Kullanıcı fotoğrafı yoksa placeholder
-            userPhoto.alt = user.displayName || 'Kullanıcı';
-            userName.textContent = user.displayName || 'Misafir';
-            userDropdown.style.display = 'none'; // Menüyü başlangıçta gizli tut
-        } else {
-            // Kullanıcı çıkış yapmış
-            signInButton.classList.remove("hidden");
-            userPhoto.classList.remove("visible");
-            userPhoto.src = '';
-            userPhoto.alt = '';
-            userName.textContent = '';
-            userDropdown.style.display = 'none';
-        }
-    });
-
-  </script>
-</body>
-</html>
+<body class="bg-gray-50">
+<div class="w-[375px] mx-auto relative min-h-screen pb-16">
+<header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex justify-between items-center">
+<div class="w-8"></div>
+<div class="flex flex-col items-center">
+<img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-12">
+<a href="https://getirkibris.com/indexr.html" data-readdy="true" class="text-sm font-medium text-primary mt-1">Ana Sayfa</a>
+</div>
+<div id="auth-button" class="w-8 h-8 flex items-center justify-center">
+        <div class="user-section">
+            <button id="signInButton" class="sign-in-button">
+                <i class="ri-google-fill ri-lg"></i>
+            </button>
+            <img id="userPhoto" class="user-photo" src="" alt="Profil" title="Profil" />
+            <ul id="userDropdown" class="dropdown-menu">
+                <li id="userName"></li>
+                <li id="signOutButton">Çıkış Yap</li>
+            </ul>
+        </div>
+</div>
+</header>
+<main class="pt-16 pb-20">
+<div class="relative w-full h-64 overflow-hidden mb-6">
+<video class="w-full h-full object-cover" controls poster="https://readdy.ai/api/search-image?query=online%20shopping%20and%20delivery%20service%2C%20modern%20lifestyle%2C%20soft%20lighting%2C%20clean%20background%2C%20banner%20image&width=800&height=400&seq=1&orientation=landscape">
+<source src="https://public.readdy.ai/assets/sample.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
+</div>
+<div class="grid grid-cols-2 gap-4 px-4 mb-8">
+<button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+<i class="ri-calculator-line ri-xl text-primary"></i>
+</div>
+<span class="text-sm font-medium">Hesapla</span>
+</button>
+<a href="https://getirkibris.com/siparisverr" data-readdy="true" id="order-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+<i class="ri-shopping-cart-line ri-xl text-primary"></i>
+</div>
+<span class="text-sm font-medium">Sipariş Ver</span>
+</a>
+<a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/3af37ec5-1c9d-4306-b2c2-90c1bdb926e2" data-readdy="true" id="my-orders-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+<i class="ri-file-list-3-line ri-xl text-primary"></i>
+</div>
+<span class="text-sm font-medium">Siparişlerim</span>
+</a>
+<a href="https://readdy.ai/home/b800f715-acec-4575-acd1-66571f959c9d/263e9a58-8e36-4b2d-89bb-7927a220fb76" data-readdy="true" id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+<i class="ri-truck-line ri-xl text-primary"></i>
+</div>
+<span class="text-sm font-medium">Kargo Takip</span>
+</a>
+</div>
+<div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
+<h3 class="text-lg font-semibold mb-4 text-primary">Ürün Maliyeti Hesapla</h3>
+<form id="calculator-form" class="space-y-4">
+<div>
+<label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
+<div class="relative mb-4">
+<i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<select id="order-method" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+<option value="" disabled selected>Sipariş yöntemi seçin</option>
+<option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
+<option value="service">Ürünü benim yerime siz sipariş edin, size ödeme yapacağım</option>
+</select>
+<i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+</div>
+<div>
+<label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
+<div class="relative">
+<i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<input type="url" id="product-link" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="https://www.example.com/urun">
+</div>
+</div>
+</div>
+<div>
+<label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
+<div class="relative">
+<i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00">
+</div>
+</div>
+<div>
+<label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+<div class="relative">
+<i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<select id="product-category" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+<option value="" disabled selected>Kategori seçin</option>
+<option value="furniture">Mobilya</option>
+<option value="electronics">Elektronik</option>
+<option value="clothing">Giyim</option>
+<option value="cosmetics">Kozmetik</option>
+<option value="stationery">Kırtasiye</option>
+</select>
+<i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+</div>
+</div>
+<div>
+<span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi</span>
+<div class="flex space-x-4">
+<label class="flex items-center cursor-pointer">
+<input type="radio" name="delivery-type" value="warehouse" class="sr-only" checked>
+<div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
+<div class="w-3 h-3 bg-primary rounded-full hidden"></div>
+</div>
+<span class="text-sm">Depodan teslim</span>
+</label>
+<label class="flex items-center cursor-pointer">
+<input type="radio" name="delivery-type" value="home" class="sr-only">
+<div class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
+<div class="w-3 h-3 bg-primary rounded-full hidden"></div>
+</div>
+<span class="text-sm">Eve teslim</span>
+</label>
+</div>
+</div>
+<div id="city-selection" class="hidden">
+<label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+<div class="relative">
+<i class="ri-map-pin-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<select id="city" class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
+<option value="" disabled selected>Şehir seçin</option>
+<option value="lefkosa">Lefkoşa</option>
+<option value="girne">Girne</option>
+<option value="magusa">Gazimağusa</option>
+<option value="guzelyurt">Güzelyurt</option>
+<option value="iskele">İskele</option>
+</select>
+<i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+</div>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-button
