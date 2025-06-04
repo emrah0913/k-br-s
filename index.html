@@ -25,13 +25,12 @@
       padding: 20px;
       text-align: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex; /* Flexbox ile içerikleri hizala */
-      justify-content: space-between; /* Logo ve kullanıcı kısmını ayır */
-      align-items: center; /* Dikeyde ortala */
-      position: relative; /* Kullanıcı menüsü için */
+      position: relative; /* Kullanıcı bölümünü konumlandırmak için */
     }
     header img {
       max-width: 200px;
+      display: block; /* Logoyu ortalamak için */
+      margin: 0 auto; /* Logoyu ortalamak için */
     }
     nav {
       display: flex;
@@ -120,9 +119,13 @@
 
     /* Kullanıcı Giriş/Çıkış Stilleri */
     .user-section {
+      position: absolute; /* Header içinde sağ üste konumlandır */
+      top: 15px;
+      right: 20px;
       display: flex;
       align-items: center;
       gap: 15px;
+      z-index: 10; /* Diğer elementlerin üzerinde görünmesini sağla */
     }
     .user-photo {
       width: 40px;
@@ -131,6 +134,8 @@
       background-color: #eee;
       cursor: pointer;
       display: none; /* Varsayılan olarak gizli */
+      border: 2px solid #5d3ebc; /* Getir moru çerçeve */
+      object-fit: cover; /* Fotoğrafın tam oturmasını sağla */
     }
     .user-photo.visible {
         display: block; /* Giriş yapıldığında görünür */
@@ -154,8 +159,8 @@
     }
     .dropdown-menu {
       position: absolute;
-      top: 65px; /* Fotoğrafın hemen altına */
-      right: 20px;
+      top: 50px; /* Kullanıcı fotoğrafının hemen altına */
+      right: 0; /* user-section'a göre hizala */
       background-color: #ffffff;
       border: 1px solid #ddd;
       border-radius: 5px;
@@ -164,11 +169,14 @@
       padding: 10px 0;
       z-index: 1000;
       display: none; /* Varsayılan olarak gizli */
+      min-width: 150px; /* Menü genişliği */
+      text-align: left;
     }
     .dropdown-menu li {
       padding: 8px 20px;
       cursor: pointer;
       transition: background-color 0.2s ease;
+      color: #2b2b2b; /* Metin rengi */
     }
     .dropdown-menu li:hover {
       background-color: #f0f0f0;
@@ -178,17 +186,19 @@
         padding-bottom: 5px;
         border-bottom: 1px solid #eee;
         margin-bottom: 5px;
+        white-space: nowrap; /* Kullanıcı adı tek satırda kalsın */
+        overflow: hidden; /* Taşmayı gizle */
+        text-overflow: ellipsis; /* Taşmayı ellipsis ile göster */
+        max-width: 150px; /* Kullanıcı adı için maksimum genişlik */
     }
 
     /* Duyarlı Tasarım (Mobil Uyum) */
     @media (max-width: 768px) {
       header {
-        flex-direction: column; /* Mobil görünümde dikey hizalama */
         padding: 15px;
       }
       header img {
         max-width: 150px;
-        margin-bottom: 15px;
       }
       nav {
         flex-direction: column; /* Menü öğelerini alt alta sırala */
@@ -217,17 +227,26 @@
         padding: 15px;
       }
       .user-section {
-        margin-top: 10px; /* Mobil görünümde biraz boşluk bırak */
-        justify-content: center; /* Ortala */
-        width: 100%;
+        /* Mobil görünümde header içinde sağ üstte kalmaya devam etsin */
+        top: 10px;
+        right: 10px;
+        gap: 10px;
+      }
+      .user-photo {
+          width: 35px;
+          height: 35px;
+      }
+      .sign-in-button {
+          padding: 6px 12px;
+          font-size: 14px;
       }
       .dropdown-menu {
-        top: auto;
-        bottom: 10px; /* Mobil görünümde alta sabitlenebilir */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%; /* Genişlik artırılabilir */
-        max-width: 250px;
+        top: 45px; /* Fotoğrafın altında mobil için ayar */
+        right: 0;
+        min-width: 120px;
+      }
+      .dropdown-menu li {
+        padding: 6px 15px;
       }
     }
   </style>
@@ -374,7 +393,8 @@
     });
 
     // Kullanıcı fotoğrafına tıklayınca dropdown menüyü göster/gizle
-    userPhoto.addEventListener("click", () => {
+    userPhoto.addEventListener("click", (event) => {
+        event.stopPropagation(); // Olayın body'ye yayılmasını engelle
         userDropdown.style.display = userDropdown.style.display === "block" ? "none" : "block";
     });
 
