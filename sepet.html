@@ -131,7 +131,6 @@
                             Giriş Yap
                         </a>`;
                     noOrdersDiv.classList.remove('hidden');
-                    // Bu bağlantıya tıklandığında giriş modalının açılmasını veya index.html'ye yönlendirilmesini sağlayabilirsiniz.
                     document.getElementById('show-login-modal-link-compat').addEventListener('click', (e) => {
                         e.preventDefault();
                         window.location.href = '/'; // Ana sayfaya yönlendiriyoruz, orada kullanıcı giriş yapabilir.
@@ -149,9 +148,7 @@
                         if (querySnapshot.empty) {
                             noOrdersDiv.classList.remove('hidden');
                         } else {
-                            // Eğer 'no-orders' div'i görünürse, onu gizle
                             noOrdersDiv.classList.add('hidden');
-                            // Önceki sipariş kartlarını temizle
                             const existingCards = ordersContainer.querySelectorAll('.order-card-dynamic');
                             existingCards.forEach(card => card.remove());
 
@@ -246,18 +243,25 @@
 
                 // Teslimat tipini Türkçeleştir ve şehir bilgisini ekle
                 let deliveryTypeTR = order.deliveryType || 'Belirtilmemiş';
-                let deliveryLocation = '';
+                let deliveryLocationSummary = '';
                 if (order.deliveryType === 'home') {
                     deliveryTypeTR = 'Eve Teslim';
-                    deliveryLocation = order.deliveryAddress ? `(${order.deliveryAddress}, ${order.city || 'Şehir Yok'})` : `(${order.city || 'Şehir Yok'})`;
+                    if (order.city) {
+                        deliveryLocationSummary = ` (${order.city})`;
+                    }
                 } else if (order.deliveryType === 'warehouse') {
                     deliveryTypeTR = 'Depodan Teslim';
                 }
 
-                // Ürün linkinin başına http:// ekleme (eğer yoksa)
+                // Ürün linkinin başına http:// ekleme (eğer yoksa) ve ürün açıklaması olarak kullanma
                 let productLinkHref = order.productLink || '';
-                if (productLinkHref && !productLinkHref.startsWith('http://') && !productLinkHref.startsWith('https://')) {
-                    productLinkHref = 'http://' + productLinkHref;
+                let productDisplay = 'Ürün Açıklaması Yok'; // Varsayılan
+                if (productLinkHref) {
+                    if (!productLinkHref.startsWith('http://') && !productLinkHref.startsWith('https://')) {
+                        productLinkHref = 'http://' + productLinkHref;
+                    }
+                    // Ürün linkini gösteriyoruz ve tıklanabilir yapıyoruz
+                    productDisplay = `<a href="${productLinkHref}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline break-all">${productLinkHref}</a>`;
                 }
 
                 // Durum metnini ve rengini al
@@ -278,19 +282,10 @@
                         </div>
                     </div>
                     <div class="space-y-3 text-gray-700">
-                        <p><strong>Ad Soyad:</strong> ${order.fullName || 'N/A'}</p>
-                        <p><strong>Telefon:</strong> ${order.phone || 'N/A'}</p>
                         <p><strong>Sipariş Yöntemi:</strong> ${orderMethodTR}</p>
-                        <p><strong>Ürün Linki:</strong>
-                            ${order.productLink ? `<a href="${productLinkHref}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline break-all">${order.productLink}</a>` : 'Belirtilmemiş'}
-                        </p>
+                        <p><strong>Ürün Linki:</strong> ${productDisplay}</p>
                         <p><strong>Kategori:</strong> ${order.productCategory || 'Belirtilmemiş'}</p>
-                        <p><strong>Teslimat Tipi:</strong> ${deliveryTypeTR} ${deliveryLocation}</p>
-                        ${order.deliveryType === 'home' && order.deliveryAddress ? `<p><strong>Teslimat Adresi:</strong> ${order.deliveryAddress}</p>` : ''}
-                        ${order.deliveryType === 'home' && order.city ? `<p><strong>Şehir:</strong> ${order.city}</p>` : ''}
-                        <p><strong>Ürün Fiyatı:</strong> ${typeof order.productPrice === 'number' ? order.productPrice.toFixed(2) + ' ₺' : 'N/A'}</p>
-                        <p><strong>Kategori Ücreti:</strong> ${typeof order.calculatedCategoryFee === 'number' ? order.calculatedCategoryFee.toFixed(2) + ' ₺' : 'N/A'}</p>
-                        <p><strong>Teslimat Ücreti:</strong> ${typeof order.calculatedDeliveryFee === 'number' ? order.calculatedDeliveryFee.toFixed(2) + ' ₺' : 'N/A'}</p>
+                        <p><strong>Teslimat Tipi:</strong> ${deliveryTypeTR} ${deliveryLocationSummary}</p>
                         <p class="text-lg font-semibold"><strong>Toplam Tutar:</strong> ${typeof order.totalAmount === 'number' ? order.totalAmount.toFixed(2) + ' ₺' : 'N/A'}</p>
                     </div>
                 `;
