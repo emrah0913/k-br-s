@@ -470,16 +470,15 @@ document.addEventListener('DOMContentLoaded', function() {
         auth.signInWithPopup(provider)
           .then((result) => {
             loginModal.classList.add('hidden');
-            window.showToast('Google ile giriş başarılı!'); // showToast global olmalı
+            window.showToast('Google ile giriş başarılı!'); 
           })
           .catch((error) => {
             console.error("Google ile giriş hatası:", error.code, error.message);
-            window.showToast('Giriş sırasında bir hata oluştu: ' + error.message); // showToast global olmalı
+            window.showToast('Giriş sırasında bir hata oluştu: ' + error.message); 
           });
     });
 
     // Show auth required modal
-    // Making this function global so other scripts can call it if needed
     window.showAuthRequiredModal = function() {
         authRequiredModal.classList.remove('hidden');
     }
@@ -510,10 +509,10 @@ document.addEventListener('DOMContentLoaded', function() {
     profileContainer.addEventListener('click', function() {
         if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
             auth.signOut().then(() => {
-                window.showToast('Çıkış yapıldı'); // showToast global olmalı
+                window.showToast('Çıkış yapıldı'); 
             }).catch((error) => {
                 console.error('Çıkış hatası:', error);
-                window.showToast('Çıkış sırasında bir hata oluştu.'); // showToast global olmalı
+                window.showToast('Çıkış sırasında bir hata oluştu.'); 
             });
         }
     });
@@ -529,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', function(e) {
                 if (!auth.currentUser) { 
                     e.preventDefault();
-                    window.showAuthRequiredModal(); // Call the global function
+                    window.showAuthRequiredModal(); 
                 }
             });
         }
@@ -588,7 +587,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form inputlarında değişiklik olduğunda buton durumunu resetle
     formInputsToResetButton.forEach(input => {
         input.addEventListener('change', resetButtonToCalculateState);
-        // Metin, numara veya URL inputları için 'input' event'i daha anlık geri bildirim sağlar
         if (input.type === 'text' || input.type === 'number' || input.type === 'url' || input.tagName.toLowerCase() === 'textarea') {
             input.addEventListener('input', resetButtonToCalculateState);
         }
@@ -609,17 +607,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 citySelection.classList.add('hidden');
             }
-            // Teslimat tipi değiştiğinde de buton resetlensin
             resetButtonToCalculateState();
         });
     });
 
-    // Sayfa yüklendiğinde başlangıçta seçili olan radio butonun UI'ını ayarla
     const initiallyCheckedRadio = document.querySelector('input[name="delivery-type"]:checked');
     if (initiallyCheckedRadio) {
         const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
         if (radioDiv) radioDiv.classList.remove('hidden');
-         // Başlangıçta şehir seçimini doğru ayarla
         if (initiallyCheckedRadio.value === 'home') {
             citySelection.classList.remove('hidden');
         } else {
@@ -627,32 +622,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Handle form submission
     calculatorForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Eğer buton "Sipariş Ver" ise ve tıklandıysa, yönlendirme yap
         if (submitButton.textContent === 'Sipariş Ver') {
-            // İPUCU: Sipariş sayfasına yönlendirmeden önce kullanıcının giriş yapıp yapmadığını kontrol etmek iyi bir pratiktir.
-            // Örneğin:
-            // if (firebase.auth().currentUser) { // firebase global olmalı veya auth objesi burada da alınmalı
-            //     window.location.href = 'https://getirkibris.com/order.html';
-            // } else {
-            //     if(window.showAuthRequiredModal) window.showAuthRequiredModal(); 
-            // }
-            window.location.href = 'https://getirkibris.com/order.html';
+            const auth = firebase.auth(); // Firebase Auth örneğini al
+            if (auth.currentUser) {
+                // Kullanıcı giriş yapmış, sipariş sayfasına yönlendir
+                window.location.href = 'https://getirkibris.com/order.html';
+            } else {
+                // Kullanıcı giriş yapmamış, "giriş gerekli" modalını göster
+                if (window.showAuthRequiredModal) {
+                    window.showAuthRequiredModal();
+                } else {
+                    // Fallback (eğer showAuthRequiredModal global değilse)
+                    alert('Bu özelliği kullanmak için lütfen giriş yapın.');
+                    // Alternatif olarak ana giriş modalını tetikleyebilirsiniz:
+                    // const loginModal = document.getElementById('login-modal');
+                    // if(loginModal) loginModal.classList.remove('hidden');
+                }
+            }
             return; // Fonksiyondan çık
         }
 
-        // Eğer buton "Hesapla" ise, hesaplama mantığını çalıştır
         const orderMethod = document.getElementById('order-method').value;
         const productPriceInput = document.getElementById('product-price');
-        const price = parseFloat(productPriceInput.value) || 0; // Boş veya geçersizse 0 olur
+        const price = parseFloat(productPriceInput.value) || 0;
         const category = document.getElementById('product-category').value;
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
         const city = document.getElementById('city').value;
 
-        // --- Doğrulamalar ---
         if (!orderMethod) {
             window.showToast('Lütfen sipariş yöntemi seçin'); 
             return;
@@ -670,20 +669,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // --- Hesaplama Mantığı ---
         const categoryRates = {
-            'furniture': 0.70,
-            'electronics': 0.70,
-            'clothing': 0.45,
-            'cosmetics': 0.70,
-            'stationery': 0.40
+            'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45,
+            'cosmetics': 0.70, 'stationery': 0.40
         };
         const cityFees = {
-            'lefkosa': 200,
-            'girne': 350,
-            'magusa': 300,
-            'guzelyurt': 400,
-            'iskele': 450
+            'lefkosa': 200, 'girne': 350, 'magusa': 300,
+            'guzelyurt': 400, 'iskele': 450
         };
 
         const categoryFee = price * (categoryRates[category] || 0);
@@ -728,10 +720,10 @@ const targetId = this.getAttribute('data-copy');
 const textToCopy = document.getElementById(targetId).textContent;
 navigator.clipboard.writeText(textToCopy)
 .then(() => {
-showToast('Kopyalandı!'); 
+window.showToast('Kopyalandı!'); 
 })
 .catch(err => {
-showToast('Kopyalama başarısız');
+window.showToast('Kopyalama başarısız');
 console.error('Kopyalama hatası:', err);
 });
 });
