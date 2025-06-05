@@ -28,7 +28,7 @@ transform: scale(0.95);
 
 <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
     <div class="flex-1">
-        </div>
+    </div>
     <div class="flex flex-col items-center"> <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-12">
         <a href="https://getirkibris.com/index.html" data-readdy="true" class="text-sm font-medium text-primary mt-1">Ana Sayfa</a>
     </div>
@@ -161,12 +161,8 @@ Hesapla
 </button>
 </form>
 
-<div id="additional-order-info-section" class="space-y-4 mt-6 hidden">
-    <h4 class="text-md font-semibold text-primary border-t pt-4 mt-4">Teslimat Detayları</h4>
-    <div>
-        <label for="delivery-address-input" class="block text-sm font-medium text-gray-700 mb-1">Teslimat Adresi <span class="text-red-500">*</span></label>
-        <textarea id="delivery-address-input" class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Tam adresinizi girin" rows="3"></textarea>
-    </div>
+<div id="common-order-details-section" class="space-y-4 mt-6 hidden">
+    <h4 class="text-md font-semibold text-primary border-t pt-4 mt-4">İletişim Bilgileri</h4>
     <div>
         <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad <span class="text-red-500">*</span></label>
         <input type="text" id="full-name-input" class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Adınız Soyadınız">
@@ -175,11 +171,16 @@ Hesapla
         <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Telefon <span class="text-red-500">*</span></label>
         <input type="tel" id="phone-input" class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Telefon numaranız">
     </div>
+</div>
+
+<div id="home-delivery-address-section" class="space-y-4 mt-4 hidden">
+    <h4 class="text-md font-semibold text-primary border-t pt-4 mt-4">Teslimat Adresi</h4>
     <div>
-        <label for="product-quantity-input" class="block text-sm font-medium text-gray-700 mb-1">Ürün Miktarı <span class="text-red-500">*</span></label>
-        <input type="number" id="product-quantity-input" class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="1" min="1" value="1">
+        <label for="delivery-address-input" class="block text-sm font-medium text-gray-700 mb-1">Teslimat Adresi <span class="text-red-500">*</span></label>
+        <textarea id="delivery-address-input" class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="Tam adresinizi girin" rows="3"></textarea>
     </div>
 </div>
+
 <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
 <h4 class="font-medium text-gray-800 mb-2">Hesaplama Sonucu</h4>
 <div class="space-y-2 text-sm">
@@ -200,9 +201,7 @@ Hesapla
 </div>
 </div>
 </div>
-</div>
-
-<div class="px-4 mb-8">
+</div> <div class="px-4 mb-8">
 <h3 class="text-lg font-semibold mb-4">Popüler Alışveriş Siteleri</h3>
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
 <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
@@ -575,12 +574,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultCityRow = document.getElementById('result-city-row');
     const resultPriceDisplay = document.getElementById('result-price');
 
-    // Yeni eklenen alanlar
-    const additionalInfoSection = document.getElementById('additional-order-info-section');
+    // Yeni HTML yapısına göre güncellenmiş alanlar
+    const commonOrderDetailsSection = document.getElementById('common-order-details-section');
+    const homeDeliveryAddressSection = document.getElementById('home-delivery-address-section');
+    
     const deliveryAddressInput = document.getElementById('delivery-address-input');
     const fullNameInput = document.getElementById('full-name-input');
     const phoneInput = document.getElementById('phone-input');
-    const productQuantityInput = document.getElementById('product-quantity-input');
+    // productQuantityInput kaldırıldı
 
     const submitButton = calculatorForm.querySelector('button[type="submit"]');
 
@@ -591,10 +592,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('product-category'),
         ...calculatorForm.querySelectorAll('input[name="delivery-type"]'),
         document.getElementById('city'),
-        deliveryAddressInput,
-        fullNameInput,
-        phoneInput,
-        productQuantityInput
+        deliveryAddressInput, // Bu hala formun bir parçası, değişince resetlemeli
+        fullNameInput,        // Bu da
+        phoneInput            // Bu da
+        // productQuantityInput buradan kaldırıldı
     ];
 
     window.toggleCalculatorSection = function() {
@@ -610,16 +611,8 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.textContent = 'Hesapla';
         }
         calculationResult.classList.add('hidden');
-        if (additionalInfoSection) {
-            additionalInfoSection.classList.add('hidden');
-        }
-        // İsteğe bağlı: Form alanlarını da temizleyebilirsiniz.
-        // calculatorForm.reset();
-        // deliveryRadios[0].checked = true; // Varsayılan radio butonu ayarla
-        // citySelection.classList.add('hidden');
-        // document.querySelectorAll('.delivery-radio div').forEach(dot => dot.classList.add('hidden'));
-        // const defaultRadioDiv = deliveryRadios[0].parentElement.querySelector('.delivery-radio div');
-        // if(defaultRadioDiv) defaultRadioDiv.classList.remove('hidden');
+        if (commonOrderDetailsSection) commonOrderDetailsSection.classList.add('hidden');
+        if (homeDeliveryAddressSection) homeDeliveryAddressSection.classList.add('hidden');
     }
 
     formInputsToResetButton.forEach(input => {
@@ -640,15 +633,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 const radioDiv = this.parentElement.querySelector('.delivery-radio div');
                 if(radioDiv) radioDiv.classList.remove('hidden');
             }
+            
             if (this.value === 'home') {
                 citySelection.classList.remove('hidden');
-            } else {
+            } else { // 'warehouse'
                 citySelection.classList.add('hidden');
+                // Eğer kullanıcı depoya geçerse ve adres bölümü (homeDeliveryAddressSection) açıksa, kapat.
+                // Bu, resetButtonToCalculateState tarafından zaten halledilecek çünkü radio input değişti.
+                // Ancak yine de burada explicit olarak da yapılabilir, zararı olmaz.
+                if (homeDeliveryAddressSection && !homeDeliveryAddressSection.classList.contains('hidden')) {
+                     homeDeliveryAddressSection.classList.add('hidden');
+                }
             }
-            resetButtonToCalculateState(); // Teslimat tipi değiştiğinde de sıfırla
+            // resetButtonToCalculateState() formInputsToResetButton event listener'ı tarafından çağrılacağı için burada tekrar çağırmaya gerek yok.
         });
     });
 
+    // Sayfa ilk yüklendiğinde radio buton ve şehir seçimi durumu
     const initiallyCheckedRadio = document.querySelector('input[name="delivery-type"]:checked');
     if (initiallyCheckedRadio) {
         const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
@@ -659,31 +660,31 @@ document.addEventListener('DOMContentLoaded', function() {
             citySelection.classList.add('hidden');
         }
     }
+    // commonOrderDetailsSection ve homeDeliveryAddressSection başlangıçta gizli (resetButtonToCalculateState ile veya CSS ile)
 
     calculatorForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const auth = firebase.auth();
 
         if (submitButton.textContent === 'Siparişi Onayla') {
-            const deliveryAddress = deliveryAddressInput.value.trim();
             const fullName = fullNameInput.value.trim();
             const phone = phoneInput.value.trim();
-            const quantity = productQuantityInput.value.trim();
 
-            if (!deliveryAddress) {
-                window.showToast('Lütfen teslimat adresini girin.'); return;
-            }
             if (!fullName) {
                 window.showToast('Lütfen ad soyad girin.'); return;
             }
-            if (!phone) { // Daha detaylı telefon doğrulaması eklenebilir
+            if (!phone) { 
                 window.showToast('Lütfen telefon numarası girin.'); return;
             }
-            if (!quantity || parseInt(quantity) < 1) {
-                window.showToast('Lütfen geçerli bir ürün miktarı girin (en az 1).'); return;
-            }
 
-            // Tüm yeni alanlar geçerli, yönlendir
+            const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+            if (deliveryType === 'home') {
+                const deliveryAddress = deliveryAddressInput.value.trim();
+                if (!deliveryAddress) {
+                    window.showToast('Lütfen teslimat adresini girin.'); return;
+                }
+            }
+            // Ürün miktarı ile ilgili doğrulamalar kaldırıldı.
             window.location.href = 'https://getirkibris.com/sepet.html';
 
         } else if (submitButton.textContent === 'Sipariş Ver') {
@@ -696,13 +697,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Kullanıcı giriş yapmış, ek alanları göster
-            if (additionalInfoSection) {
-                additionalInfoSection.classList.remove('hidden');
-                additionalInfoSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Kullanıcı giriş yapmış. "Ad Soyad" ve "Telefon" alanlarını göster.
+            if (commonOrderDetailsSection) {
+                commonOrderDetailsSection.classList.remove('hidden');
+                commonOrderDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // "Eve Teslim" seçiliyse "Teslimat Adresi" alanını göster.
+            const currentDeliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+            if (currentDeliveryType === 'home') {
+                if (homeDeliveryAddressSection) {
+                    homeDeliveryAddressSection.classList.remove('hidden');
+                }
+            } else {
+                if (homeDeliveryAddressSection) {
+                    homeDeliveryAddressSection.classList.add('hidden');
+                }
             }
             submitButton.textContent = 'Siparişi Onayla';
-            // Hesaplama sonuçları görünür kalsın.
 
         } else { // Buton 'Hesapla' durumunda
             const orderMethod = document.getElementById('order-method').value;
@@ -762,10 +774,8 @@ document.addEventListener('DOMContentLoaded', function() {
             calculationResult.classList.remove('hidden');
             calculationResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             submitButton.textContent = 'Sipariş Ver';
-
-            if (additionalInfoSection) { // Hesaplama yapıldığında ek alanları gizle
-                additionalInfoSection.classList.add('hidden');
-            }
+            
+            // commonOrderDetailsSection ve homeDeliveryAddressSection burada gizli kalır (resetButtonToCalculateState ile).
         }
     });
 });
