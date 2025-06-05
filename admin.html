@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getir Kıbrıs - Yönetici Paneli</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#5d3ebc',
+                    secondary: '#ffd300'
+                },
+                borderRadius: {
+                    'none': '0px',
+                    'sm': '4px',
+                    DEFAULT: '8px',
+                    'md': '12px',
+                    'lg': '16px',
+                    'xl': '20px',
+                    '2xl': '24px',
+                    '3xl': '32px',
+                    'full': '9999px',
+                    'button': '8px'
+                }
+            }
+        }
+    }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9f9f9;
+    }
+    .active-nav-link {
+        background-color: #f0f0f0; /* Aktif linkin arka plan rengi */
+        color: #5d3ebc; /* Aktif linkin metin rengi */
+        font-weight: 600;
+    }
+</style>
+</head>
+<body class="bg-gray-50">
+<div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
+
+    <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+        <div class="flex-1">
+            <h1 class="text-xl font-semibold text-primary">Yönetici Paneli</h1>
+        </div>
+        <div class="flex flex-col items-center">
+            <img src="https://i.imgur.com/V8eKzod.png" alt="Getir Kıbrıs" class="h-12">
+            <a href="https://getirkibris.com/index.html" data-readdy="true" class="text-sm font-medium text-primary mt-1">Ana Siteye Dön</a>
+        </div>
+        <div class="flex-1 flex justify-end">
+            <div id="admin-auth-button" class="w-8 h-8 flex items-center justify-center">
+                <button id="admin-logout-btn" class="text-xs text-primary font-medium cursor-pointer">
+                    <i class="ri-logout-box-r-line ri-lg"></i>
+                </button>
+                 <div id="admin-profile-container" class="hidden">
+                    <img id="admin-profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex mt-16"> <aside class="w-56 bg-white shadow-md p-4 h-[calc(100vh-64px)] fixed top-16 left-0 flex flex-col">
+            <nav class="space-y-2">
+                <a href="#" id="nav-dashboard" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors active-nav-link">
+                    <i class="ri-dashboard-line"></i>
+                    <span>Kontrol Paneli</span>
+                </a>
+                <a href="#" id="nav-orders" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                    <i class="ri-file-list-3-line"></i>
+                    <span>Siparişler</span>
+                </a>
+                <a href="#" id="nav-users" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                    <i class="ri-user-line"></i>
+                    <span>Kullanıcılar</span>
+                </a>
+                <a href="#" id="nav-settings" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                    <i class="ri-settings-3-line"></i>
+                    <span>Ayarlar</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 ml-56 p-4"> <div id="content-dashboard" class="admin-content-section">
+                <h2 class="text-2xl font-bold text-primary mb-6">Kontrol Paneli</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
+                        <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary text-2xl">
+                            <i class="ri-truck-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Bekleyen Siparişler</p>
+                            <p id="pending-orders-count" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
+                        <div class="w-14 h-14 bg-green-500/10 rounded-full flex items-center justify-center text-green-600 text-2xl">
+                            <i class="ri-check-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Tamamlanan Siparişler</p>
+                            <p id="completed-orders-count" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
+                        <div class="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-600 text-2xl">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Toplam Gelir (Bu Ay)</p>
+                            <p id="monthly-revenue" class="text-3xl font-bold text-gray-800">0 ₺</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold text-primary mb-4">Son Siparişler</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody id="latest-orders-table-body" class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-orders" class="admin-content-section hidden">
+                <h2 class="text-2xl font-bold text-primary mb-6">Sipariş Yönetimi</h2>
+                <p class="text-gray-700">Burada tüm siparişlerinizi listeleyecek ve yöneteceksiniz.</p>
+                </div>
+
+            <div id="content-users" class="admin-content-section hidden">
+                <h2 class="text-2xl font-bold text-primary mb-6">Kullanıcı Yönetimi</h2>
+                <p class="text-gray-700">Burada kullanıcı hesaplarını yöneteceksiniz.</p>
+                </div>
+
+            <div id="content-settings" class="admin-content-section hidden">
+                <h2 class="text-2xl font-bold text-primary mb-6">Ayarlar</h2>
+                <p class="text-gray-700">Burada genel ayarlar, kategori ve fiyatlandırma ayarları olacak.</p>
+                </div>
+        </main>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+    // Firebase Config (Kendi anahtarlarınızı kullanın!)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+        authDomain: "kibris-6b4f7.firebaseapp.com",
+        projectId: "kibris-6b4f7",
+        storageBucket: "kibris-6b4f7.firebasestorage.app",
+        messagingSenderId: "141262926171",
+        appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+        measurementId: "G-JL9P6BRZTD"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const adminLogoutBtn = document.getElementById('admin-logout-btn');
+        const adminProfileContainer = document.getElementById('admin-profile-container');
+        const adminProfileImg = document.getElementById('admin-profile-img');
+
+        // Yönetici Paneli Navigasyon İşlemleri
+        const navLinks = document.querySelectorAll('aside nav a');
+        const contentSections = document.querySelectorAll('.admin-content-section');
+
+        function showSection(sectionId) {
+            contentSections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            navLinks.forEach(link => {
+                link.classList.remove('active-nav-link');
+            });
+            document.getElementById(`nav-${sectionId.replace('content-', '')}`).classList.add('active-nav-link');
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = `content-${this.id.replace('nav-', '')}`;
+                showSection(sectionId);
+            });
+        });
+
+        // Firebase Auth Yönetimi
+        auth.onAuthStateChanged(async function(user) {
+            if (user) {
+                // Kullanıcının yönetici olup olmadığını kontrol et
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    adminLogoutBtn.classList.add('hidden');
+                    adminProfileContainer.classList.remove('hidden');
+                    adminProfileImg.src = user.photoURL || 'https://via.placeholder.com/150';
+                    adminProfileImg.alt = user.displayName || user.email || 'Admin';
+                    console.log("Admin giriş yaptı:", user.email);
+
+                    // Dashboard verilerini yükle
+                    loadDashboardData();
+
+                } else {
+                    alert('Yönetici paneline erişim izniniz yok.');
+                    window.location.href = 'index.html'; // Ana siteye yönlendir
+                }
+            } else {
+                // Giriş yapılmadıysa login sayfasına yönlendir veya modal göster
+                alert('Yönetici paneline erişmek için giriş yapmalısınız.');
+                window.location.href = 'index.html'; // Şimdilik ana siteye yönlendir
+            }
+        });
+
+        adminProfileContainer.addEventListener('click', function () {
+            if (confirm('Yönetici panelinden çıkış yapmak istediğinize emin misiniz?')) {
+                auth.signOut().then(() => {
+                    alert('Çıkış yapıldı.');
+                    window.location.href = 'index.html';
+                }).catch((error) => {
+                    console.error('Çıkış hatası:', error);
+                    alert('Çıkış sırasında bir hata oluştu.');
+                });
+            }
+        });
+
+        // Dashboard Verilerini Yükleme Fonksiyonu
+        async function loadDashboardData() {
+            try {
+                // Bekleyen Siparişler
+                const pendingOrdersSnapshot = await db.collection('orders').where('status', '==', 'pending').get();
+                document.getElementById('pending-orders-count').textContent = pendingOrdersSnapshot.size;
+
+                // Tamamlanan Siparişler
+                const completedOrdersSnapshot = await db.collection('orders').where('status', '==', 'delivered').get(); // veya 'completed'
+                document.getElementById('completed-orders-count').textContent = completedOrdersSnapshot.size;
+
+                // Toplam Gelir (Bu Ay)
+                let totalMonthlyRevenue = 0;
+                const now = new Date();
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                
+                const monthlyOrdersSnapshot = await db.collection('orders')
+                    .where('orderDate', '>=', startOfMonth)
+                    .get();
+
+                monthlyOrdersSnapshot.forEach(doc => {
+                    const order = doc.data();
+                    if (order.totalAmount) {
+                        totalMonthlyRevenue += order.totalAmount;
+                    }
+                });
+                document.getElementById('monthly-revenue').textContent = `${totalMonthlyRevenue.toFixed(2)} ₺`;
+
+                // Son Siparişler
+                const latestOrdersSnapshot = await db.collection('orders').orderBy('orderDate', 'desc').limit(5).get();
+                const latestOrdersTableBody = document.getElementById('latest-orders-table-body');
+                latestOrdersTableBody.innerHTML = ''; // Temizle
+
+                if (latestOrdersSnapshot.empty) {
+                    latestOrdersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Henüz sipariş bulunmamaktadır.</td></tr>';
+                } else {
+                    latestOrdersSnapshot.forEach(doc => {
+                        const order = doc.data();
+                        const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
+                        const row = `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${doc.id.substring(0, 8)}...</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.fullName || order.userEmail}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order.status)}">
+                                        ${order.status || 'Bilinmiyor'}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
+                            </tr>
+                        `;
+                        latestOrdersTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+
+            } catch (error) {
+                console.error("Dashboard verileri yüklenirken hata oluştu:", error);
+                alert("Dashboard verileri yüklenemedi. Lütfen konsolu kontrol edin.");
+            }
+        }
+
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'pending':
+                    return 'bg-yellow-100 text-yellow-800';
+                case 'approved':
+                case 'shipped':
+                    return 'bg-blue-100 text-blue-800';
+                case 'delivered':
+                    return 'bg-green-100 text-green-800';
+                case 'cancelled':
+                    return 'bg-red-100 text-red-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Sayfa yüklendiğinde varsayılan olarak kontrol panelini göster
+        showSection('content-dashboard');
+    });
+</script>
+
+</body>
+</html>
