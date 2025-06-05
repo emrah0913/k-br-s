@@ -450,11 +450,18 @@
             if (sectionId === 'content-dashboard') {
                 loadDashboardData();
             } else if (sectionId === 'content-orders') {
-                loadOrders(currentOrderPage); // Siparişleri yükle
+                // Her modüle geçişte sayfayı sıfırla
+                currentOrderPage = 1;
+                lastVisibleOrder = null;
+                firstVisibleOrder = null;
+                loadOrders(currentOrderPage);
             } else if (sectionId === 'content-users') {
-                loadUsers(currentUserPage); // Kullanıcıları yükle
+                currentUserPage = 1;
+                lastVisibleUser = null;
+                firstVisibleUser = null;
+                loadUsers(currentUserPage);
             } else if (sectionId === 'content-settings') {
-                loadSettings(); // Ayarları yükle
+                loadSettings();
             }
         }
 
@@ -472,12 +479,12 @@
                 try {
                     const userDoc = await db.collection('users').doc(user.uid).get();
                     if (userDoc.exists && userDoc.data().role === 'admin') {
-                        adminLogoutBtn.classList.add('hidden'); // Logout butonunu gizle (logout iconu gösteriliyor)
+                        adminLogoutBtn.classList.add('hidden');
                         adminProfileContainer.classList.remove('hidden');
                         adminProfileImg.src = user.photoURL || 'https://via.placeholder.com/150';
                         adminProfileImg.alt = user.displayName || user.email || 'Admin';
                         console.log("Admin giriş yaptı:", user.email);
-                        showSection('content-dashboard'); // Başarılı girişte kontrol panelini göster
+                        showSection('content-dashboard');
                     } else {
                         alert('Yönetici paneline erişim izniniz yok.');
                         window.location.href = 'index.html';
@@ -509,15 +516,12 @@
         // --- Dashboard Modülü Fonksiyonları ---
         async function loadDashboardData() {
             try {
-                // Bekleyen Siparişler: Sadece 'pending' durumundakiler
                 const pendingOrdersSnapshot = await db.collection('orders').where('status', '==', 'pending').get();
                 document.getElementById('pending-orders-count').textContent = pendingOrdersSnapshot.size;
 
-                // Tamamlanan Siparişler: Sadece 'delivered' durumundakiler
                 const completedOrdersSnapshot = await db.collection('orders').where('status', '==', 'delivered').get();
                 document.getElementById('completed-orders-count').textContent = completedOrdersSnapshot.size;
 
-                // Toplam Gelir (Bu Ay): Sadece 'delivered' durumundakiler için hesapla
                 let totalMonthlyRevenue = 0;
                 const now = new Date();
                 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -525,7 +529,7 @@
                 
                 const monthlyOrdersSnapshot = await db.collection('orders')
                     .where('orderDate', '>=', startOfMonthTimestamp)
-                    .where('status', '==', 'delivered') // Sadece teslim edilenleri hesaba kat
+                    .where('status', '==', 'delivered')
                     .get();
 
                 monthlyOrdersSnapshot.forEach(doc => {
@@ -536,7 +540,6 @@
                 });
                 document.getElementById('monthly-revenue').textContent = `${totalMonthlyRevenue.toFixed(2)} ₺`;
 
-                // Son Siparişler: En yeni 5 sipariş
                 const latestOrdersSnapshot = await db.collection('orders').orderBy('orderDate', 'desc').limit(5).get();
                 const latestOrdersTableBody = document.getElementById('latest-orders-table-body');
                 latestOrdersTableBody.innerHTML = '';
@@ -573,7 +576,6 @@
             }
         }
 
-        // Sipariş durumu Türkçe isimlerini döndüren fonksiyon
         function getStatusDisplayName(status) {
             switch (status) {
                 case 'pending': return 'Beklemede';
@@ -642,99 +644,129 @@
 
         async function loadOrders(page = 1, direction = 'none') {
             ordersTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">Siparişler yükleniyor...</td></tr>';
+            
             let query = db.collection('orders');
-
+            
             const searchText = orderSearchInput.value.toLowerCase().trim();
             const statusFilter = orderStatusFilter.value;
 
-            // Sıralama varsayılan olarak orderDate'e göre
-            query = query.orderBy('orderDate', 'desc');
+            // Önce orderBy sonra where (Firestore kuralı)
+            // Eğer status filtresi varsa, bu durum için bir indeksinizin olması gerekir (status asc, orderDate desc)
+            query = query.orderBy('orderDate', 'desc'); // Varsayılan sıralama
 
-            // Durum filtresi ekle
             if (statusFilter !== 'all') {
                 query = query.where('status', '==', statusFilter);
             }
             
-            // Eğer durum filtresi varsa ve orderDate ile sıralama varsa, Firestore indexi zorunludur.
-            // Bu indeksin zaten oluşturulduğunu varsayıyoruz.
-
             try {
                 let snapshot;
-                if (direction === 'next' && lastVisibleOrder) {
-                    snapshot = await query.startAfter(lastVisibleOrder).limit(ordersPerPage).get();
-                } else if (direction === 'prev' && firstVisibleOrder) {
-                    const prevSnapshot = await query.endBefore(firstVisibleOrder).limitToLast(ordersPerPage).get();
-                    snapshot = prevSnapshot;
+                let fetchedOrders = [];
+
+                if (searchText !== '' || statusFilter !== 'all' || direction === 'none') {
+                    // Eğer arama metni veya durum filtresi aktifse, veya ilk yükleme ise:
+                    // Tüm uygun siparişleri çekelim (bu kısım çok sipariş varsa yavaşlayabilir)
+                    const allMatchingQuerySnapshot = await query.get();
+                    allMatchingQuerySnapshot.forEach(doc => {
+                        fetchedOrders.push({ id: doc.id, data: doc.data() });
+                    });
                 } else {
-                    snapshot = await query.limit(ordersPerPage).get();
-                }
-
-                ordersTableBody.innerHTML = '';
-                let displayedOrders = []; // Arama metniyle filtrelenecek siparişler
-
-                if (!snapshot.empty) {
+                    // Arama yok ve tüm durumlar seçiliyse, normal sayfalandırma
+                    if (direction === 'next' && lastVisibleOrder) {
+                        snapshot = await query.startAfter(lastVisibleOrder).limit(ordersPerPage).get();
+                    } else if (direction === 'prev' && firstVisibleOrder) {
+                        snapshot = await query.endBefore(firstVisibleOrder).limitToLast(ordersPerPage).get();
+                    }
                     snapshot.forEach(doc => {
-                        const order = doc.data();
-                        const orderIdShort = doc.id.substring(0, 8).toLowerCase();
-                        const customerInfo = (order.fullName || order.userEmail || '').toLowerCase();
-                        const productLinkInfo = (order.productLink || '').toLowerCase();
-
-                        // İstemci tarafı arama filtrelemesi (Firestore'un tam metin arama kısıtlaması nedeniyle)
-                        if (searchText === '' || 
-                            orderIdShort.includes(searchText) ||
-                            customerInfo.includes(searchText) ||
-                            productLinkInfo.includes(searchText)) {
-                            displayedOrders.push({ id: doc.id, data: order });
-                        }
+                        fetchedOrders.push({ id: doc.id, data: doc.data() });
                     });
                 }
                 
-                if (displayedOrders.length === 0) {
-                    ordersTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Hiç sipariş bulunamadı.</td></tr>';
+                let displayedOrders = []; // Son kullanıcıya gösterilecek siparişler
+
+                if (searchText !== '') {
+                    // İstemci tarafı arama filtrelemesi
+                    fetchedOrders.forEach(item => {
+                        const order = item.data;
+                        const orderIdShort = item.id.substring(0, 8).toLowerCase();
+                        const customerInfo = (order.fullName || order.userEmail || '').toLowerCase();
+                        const productLinkInfo = (order.productLink || '').toLowerCase();
+                        
+                        if (orderIdShort.includes(searchText) ||
+                            customerInfo.includes(searchText) ||
+                            productLinkInfo.includes(searchText)) {
+                            displayedOrders.push(item);
+                        }
+                    });
+                } else {
+                    displayedOrders = fetchedOrders; // Arama yoksa, çekilen tüm siparişler gösterilir
+                }
+
+                // Şimdi sayfalandırmayı displayedOrders dizisi üzerinde yapalım
+                const totalOrdersCount = displayedOrders.length;
+                const totalPages = Math.ceil(totalOrdersCount / ordersPerPage);
+
+                const startIndex = (page - 1) * ordersPerPage;
+                const endIndex = startIndex + ordersPerPage;
+                const paginatedOrders = displayedOrders.slice(startIndex, endIndex);
+
+                renderOrdersTable(paginatedOrders); // Tabloyu render eden yeni fonksiyon
+
+                prevOrdersBtn.disabled = page === 1;
+                nextOrdersBtn.disabled = page >= totalPages;
+                
+                if (totalOrdersCount === 0) {
+                    ordersPageInfo.textContent = 'Sayfa 0 / 0';
+                } else {
+                    ordersPageInfo.textContent = `Sayfa ${page} / ${totalPages}`;
+                }
+
+                // Sayfalandırma butonlarının Firestore cursorlarını güncelle
+                if (paginatedOrders.length > 0 && (searchText === '' && statusFilter === 'all')) {
+                    // Sadece genel listeleme ve sayfalandırma için cursorları güncelle
+                    lastVisibleOrder = fetchedOrders.find(item => item.id === paginatedOrders[paginatedOrders.length - 1].id);
+                    firstVisibleOrder = fetchedOrders.find(item => item.id === paginatedOrders[0].id);
+                } else {
+                    // Arama veya filtreleme yapılıyorsa cursor tabanlı pagination çalışmaz
+                    lastVisibleOrder = null;
+                    firstVisibleOrder = null;
                     prevOrdersBtn.disabled = true;
                     nextOrdersBtn.disabled = true;
-                } else {
-                    displayedOrders.forEach(item => {
-                        const order = item.data;
-                        const docId = item.id;
-                        const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
-                        const row = `
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 80px;">${docId.substring(0, 8)}...</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 150px;">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
-                                    <span class="status-badge ${getStatusBadgeClass(order.status)}">
-                                        ${order.status ? getStatusDisplayName(order.status) : 'Bilinmiyor'}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button data-order-id="${docId}" class="text-primary hover:text-primary/80 view-order-btn">Detay</button>
-                                </td>
-                            </tr>
-                        `;
-                        ordersTableBody.insertAdjacentHTML('beforeend', row);
-                    });
-
-                    // Sayfalandırma butonlarının durumunu güncelle
-                    // Sadece tam metin arama yoksa pagination butonları çalışır
-                    if (searchText === '' && statusFilter !== 'all') { // Sadece durum filtresi varsa
-                        lastVisibleOrder = snapshot.docs[snapshot.docs.length - 1];
-                        firstVisibleOrder = snapshot.docs[0];
-
-                        prevOrdersBtn.disabled = currentOrderPage === 1;
-                        const nextDocSnapshot = await query.startAfter(lastVisibleOrder).limit(1).get();
-                        nextOrdersBtn.disabled = nextDocSnapshot.empty;
-                    } else { // Arama veya tüm durumlar seçiliyse
-                        prevOrdersBtn.disabled = true;
-                        nextOrdersBtn.disabled = true;
-                    }
                 }
-                ordersPageInfo.textContent = `Sayfa ${currentOrderPage}`;
+
             } catch (error) {
                 console.error("Siparişler yüklenirken hata oluştu:", error);
-                ordersTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">Siparişler yüklenirken bir hata oluştu.</td></tr>';
+                ordersTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">Siparişler yüklenirken bir hata oluştu. Lütfen konsolu kontrol edin.</td></tr>';
+            }
+        }
+
+        // Tabloyu render eden fonksiyon
+        function renderOrdersTable(ordersToDisplay) {
+            ordersTableBody.innerHTML = '';
+            if (ordersToDisplay.length === 0) {
+                ordersTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Hiç sipariş bulunamadı.</td></tr>';
+            } else {
+                ordersToDisplay.forEach(item => {
+                    const order = item.data;
+                    const docId = item.id;
+                    const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
+                    const row = `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 80px;">${docId.substring(0, 8)}...</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 150px;">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
+                                <span class="status-badge ${getStatusBadgeClass(order.status)}">
+                                    ${order.status ? getStatusDisplayName(order.status) : 'Bilinmiyor'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button data-order-id="${docId}" class="text-primary hover:text-primary/80 view-order-btn">Detay</button>
+                            </td>
+                        </tr>
+                    `;
+                    ordersTableBody.insertAdjacentHTML('beforeend', row);
+                });
             }
         }
 
