@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siparişlerim - Getir Kıbrıs</title>
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5d3ebc',
+                        secondary: '#ffd300',
+                        'status-pending': '#FFC107', // Ödeme Bekleniyor için (Amber)
+                        'status-approved': '#4CAF50', // Onaylandı için (Yeşil)
+                        'status-processing': '#2196F3', // Hazırlanıyor için (Mavi)
+                        'status-shipped': '#FF9800', // Kargoya Verildi için (Turuncu)
+                        'status-delivered': '#8BC34A', // Teslim Edildi için (Açık Yeşil)
+                        'status-cancelled': '#F44336', // İptal Edildi için (Kırmızı)
+                    },
+                    borderRadius: {
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Tailwind gray-100 */
+        }
+        /* İkonların dikey hizalaması için ek bir stil */
+        .ri-xl {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
+
+        <header class="sticky top-0 w-full bg-primary shadow-sm z-50 px-4 py-3 flex items-center justify-between">
+            <a href="index.html" data-readdy-no-translate="true" class="text-white flex items-center text-lg hover:opacity-80 transition-opacity">
+                <i class="ri-arrow-left-s-line ri-xl mr-1"></i>
+                Geri
+            </a>
+            <h1 class="text-xl font-semibold text-white">Siparişlerim</h1>
+            <div class="w-12"></div> </header>
+
+        <main class="pt-6 px-4">
+            <div id="orders-container" class="space-y-6">
+                <div id="loading-orders" class="text-center py-10">
+                    <p class="text-gray-600 text-lg">Siparişleriniz yükleniyor...</p>
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mt-4"></div>
+                </div>
+                <div id="no-orders" class="text-center py-10 hidden">
+                    <i class="ri-shopping-basket-2-line text-6xl text-gray-300"></i>
+                    <p class="text-gray-500 text-xl mt-4">Henüz siparişiniz bulunmamaktadır.</p>
+                    <a href="index.html" class="mt-6 inline-block bg-primary text-white px-6 py-2 rounded-button hover:bg-primary/90 transition-colors">
+                        Alışverişe Başla
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {/*
+      Firebase SDK'larını doğrudan HTML'e eklemek yerine,
+      eğer bir build sisteminiz (Webpack, Parcel vb.) varsa oradan import etmek daha yaygındır.
+      Ancak, basit bir HTML sayfası için aşağıdaki gibi script type="module" içinde
+      CDN linklerinden import edilebilir veya projenize `npm install firebase` ile ekleyip
+      build aracınızla bundle edebilirsiniz.
+
+      Aşağıdaki örnek, Firebase SDK'larının global scope'a eklendiğini varsayan
+      biraz daha basit bir `script` etiketi kullanır.
+      Eğer `import` anahtar kelimesini script'lerinizde kullanmak isterseniz
+      `<script type="module">` kullanmanız ve Firebase SDK'larını doğru şekilde
+      import etmeniz gerekir.
+
+      Sizin paylaştığınız kod `import` kullandığı için, bu script'i module olarak işaretliyorum.
+      Normalde Firebase SDK'larını bu şekilde import etmek için CDN yerine
+      bir paket yöneticisi (npm/yarn) ve bir build aracı (webpack/vite) kullanılır.
+      Tarayıcıda doğrudan CDN'den ES module import etmek için tam URL'ler gerekebilir
+      ve tüm tarayıcılar bunu sorunsuz desteklemeyebilir veya ek yapılandırma isteyebilir.
+
+      En basit ve yaygın yöntem, Firebase SDK'larını <script src="..."></script> etiketleriyle
+      HTML dosyanıza dahil etmek ve ardından global `firebase` nesnesini kullanmaktır (eski SDK tarzı).
+      Ancak sizin verdiğiniz config v9 olduğu için v9 tarzı JS yazdım.
+      Bu kodun çalışması için Firebase SDK'larının v9 modüler versiyonlarının
+      tarayıcı tarafından erişilebilir olması gerekir.
+    */}
+
+    <script type="module">
+        // Sizin sağladığınız Firebase yapılandırması
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        // import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js"; // Analytics kullanmıyorsak gerekmeyebilir
+
+        // Firestore ve Auth için gerekli importlar
+        import { getFirestore, collection, query, where, orderBy, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+            authDomain: "kibris-6b4f7.firebaseapp.com",
+            projectId: "kibris-6b4f7",
+            storageBucket: "kibris-6b4f7.firebasestorage.app",
+            messagingSenderId: "141262926171",
+            appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+            measurementId: "G-JL9P6BRZTD"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        // const analytics = getAnalytics(app); // Eğer analytics kullanacaksanız bu satırı aktif edin
+
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ordersContainer = document.getElementById('orders-container');
+            const loadingOrdersDiv = document.getElementById('loading-orders');
+            const noOrdersDiv = document.getElementById('no-orders');
+
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    // Kullanıcı giriş yapmış
+                    fetchOrders(user.uid);
+                } else {
+                    // Kullanıcı giriş yapmamış
+                    loadingOrdersDiv.classList.add('hidden');
+                    noOrdersDiv.innerHTML = `
+                        <i class="ri-login-box-line text-6xl text-gray-300"></i>
+                        <p class="text-gray-500 text-xl mt-4">Siparişlerinizi görmek için lütfen giriş yapın.</p>
+                        <a href="#" id="show-login-modal-link" class="mt-6 inline-block bg-primary text-white px-6 py-2 rounded-button hover:bg-primary/90 transition-colors">
+                            Giriş Yap
+                        </a>`; // TODO: Giriş modalını tetikleyecek bağlantıyı veya login sayfasına yönlendirmeyi ekleyin
+                    noOrdersDiv.classList.remove('hidden');
+                    // Örnek: document.getElementById('show-login-modal-link').addEventListener('click', () => { /* login modal'ı göster */ });
+                    // Veya ana sayfanızda login modal'ı açan bir fonksiyon varsa onu çağırın
+                    // Veya: window.location.href = 'login.html'; // Giriş sayfanız varsa
+                }
+            });
+
+            async function fetchOrders(userId) {
+                try {
+                    const ordersRef = collection(db, "orders");
+                    const q = query(ordersRef, where("userId", "==", userId), orderBy("orderDate", "desc"));
+                    
+                    const querySnapshot = await getDocs(q);
+                    
+                    loadingOrdersDiv.classList.add('hidden');
+                    if (querySnapshot.empty) {
+                        noOrdersDiv.classList.remove('hidden');
+                    } else {
+                        // Önceki sipariş kartlarını temizle (eğer varsa, sayfa yeniden yüklenmeden bu fonksiyon çağrılırsa diye)
+                        const existingCards = ordersContainer.querySelectorAll('.order-card-dynamic');
+                        existingCards.forEach(card => card.remove());
+
+                        querySnapshot.forEach((doc) => {
+                            const order = doc.data();
+                            ordersContainer.appendChild(createOrderCard(order));
+                        });
+                    }
+                } catch (error) {
+                    console.error("Siparişler çekilirken hata oluştu: ", error);
+                    loadingOrdersDiv.classList.add('hidden');
+                    ordersContainer.innerHTML = '<p class="text-red-500 text-center">Siparişler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>';
+                }
+            }
+
+            function getStatusColor(status) {
+                if (status === 'Ödeme Bekleniyor') return 'bg-status-pending text-black';
+                if (status === 'Onaylandı') return 'bg-status-approved text-white';
+                if (status === 'Hazırlanıyor') return 'bg-status-processing text-white';
+                if (status === 'Kargoya Verildi') return 'bg-status-shipped text-black';
+                if (status === 'Teslim Edildi') return 'bg-status-delivered text-black';
+                if (status === 'İptal Edildi') return 'bg-status-cancelled text-white';
+                return 'bg-gray-400 text-white';
+            }
+
+            function createOrderCard(order) {
+                const card = document.createElement('div');
+                // Dinamik olarak eklenen kartları daha sonra temizleyebilmek için bir sınıf ekleyelim
+                card.className = 'bg-white shadow-lg rounded-lg p-6 mb-6 order-card-dynamic';
+
+                let orderDateStr = 'Tarih bilgisi yok';
+                if (order.orderDate && order.orderDate.toDate) { // Firestore Timestamp kontrolü
+                    try {
+                        orderDateStr = order.orderDate.toDate().toLocaleDateString('tr-TR', {
+                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                    } catch (e) {
+                        console.warn("Tarih formatlama hatası:", e, order.orderDate);
+                        // Eğer toDate() bir şekilde hata verirse veya tarih null ise
+                        if (order.orderDate instanceof Timestamp) { // Firestore Timestamp ise ama toDate() hata verdiyse
+                             orderDateStr = new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR');
+                        } else if (typeof order.orderDate === 'string') {
+                            orderDateStr = new Date(order.orderDate).toLocaleDateString('tr-TR');
+                        }
+                    }
+                } else if (order.orderDate && typeof order.orderDate === 'string') { // String tarih varsa
+                     try {
+                        orderDateStr = new Date(order.orderDate).toLocaleDateString('tr-TR', {
+                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                     } catch(e) { /* Hata olursa varsayılan kalır */ }
+                }
+
+
+                let deliveryInfo = order.deliveryType || 'Belirtilmemiş';
+                if (order.deliveryType === 'Eve teslim' && order.deliveryCity) {
+                    deliveryInfo += ` (${order.deliveryCity})`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                        <div>
+                            <h2 class="text-xl font-semibold text-primary">Sipariş No: ${order.orderNumber || 'N/A'}</h2>
+                            <p class="text-sm text-gray-500">Tarih: ${orderDateStr}</p>
+                        </div>
+                        <div class="mt-2 sm:mt-0">
+                            <span class="text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(order.status)}">
+                                ${order.status || 'Durum Belirsiz'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-3 text-gray-700">
+                        <p><strong>Sipariş Yöntemi:</strong> ${order.orderMethod || 'Belirtilmemiş'}</p>
+                        <p><strong>Ürün Linki:</strong> 
+                            ${order.productLink ? `<a href="${order.productLink.startsWith('http') ? order.productLink : 'http://' + order.productLink}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline break-all">${order.productLink}</a>` : 'Belirtilmemiş'}
+                        </p>
+                        <p><strong>Kategori:</strong> ${order.category || 'Belirtilmemiş'}</p>
+                        <p><strong>Teslimat Tipi:</strong> ${deliveryInfo}</p>
+                        <p class="text-lg font-semibold"><strong>Toplam Fiyat:</strong> ${typeof order.totalPrice === 'number' ? order.totalPrice.toFixed(2) + ' ₺' : (order.totalPrice || 'N/A')}</p>
+                    </div>
+                `;
+                return card;
+            }
+        });
+    </script>
+</body>
+</html>
