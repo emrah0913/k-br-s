@@ -105,7 +105,7 @@ Your browser does not support the video tag.
 <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
 <div class="relative">
 <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-<input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00">
+<input type="number" id="product-price" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary" placeholder="0.00" step="any">
 </div>
 </div>
 <div>
@@ -171,8 +171,7 @@ Hesapla
 <span>Kategori Ücreti:</span>
 <span id="result-category-fee">0 ₺</span>
 </div>
-<div class="flex justify-between" id="result-city-row">
-<span>Teslimat Ücreti:</span>
+<div class="flex justify-between hidden" id="result-city-row"> <span>Teslimat Ücreti:</span>
 <span id="result-delivery-fee">0 ₺</span>
 </div>
 <div class="flex justify-between font-medium text-primary pt-2 border-t border-gray-200">
@@ -433,10 +432,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get Firebase Auth instance
     const auth = firebase.auth(); // Ensure Firebase is initialized before this script runs
 
-    // Mock authentication state - REMOVE OR COMMENT OUT THESE MOCK VARIABLES
-    // let isLoggedIn = false; // OLD MOCK
-    // let userProfile = null; // OLD MOCK
-
     const loginBtn = document.getElementById('login-btn');
     const profileContainer = document.getElementById('profile-container');
     const profileImg = document.getElementById('profile-img');
@@ -452,15 +447,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (user) {
             // User is signed in.
             console.log("Firebase user signed in:", user);
-            // Update UI based on Firebase user
-            // For example:
-            // profileImg.src = user.photoURL || 'default-avatar.png';
-            // profileImg.alt = user.displayName || 'User';
         } else {
             // User is signed out.
             console.log("Firebase user signed out.");
         }
-        updateAuthUI(user); // Call updateAuthUI with the Firebase user object (or null)
+        updateAuthUI(user); 
     });
 
 
@@ -474,40 +465,22 @@ document.addEventListener('DOMContentLoaded', function() {
         loginModal.classList.add('hidden');
     });
 
-    // Google login simulation - REPLACE WITH FIREBASE GOOGLE LOGIN
     googleLoginBtn.addEventListener('click', function() {
-        // Simulate successful login // OLD MOCK
-        // isLoggedIn = true; // OLD MOCK
-        // userProfile = { // OLD MOCK
-        // name: 'Ahmet Yılmaz', // OLD MOCK
-        // email: 'ahmet.yilmaz@example.com', // OLD MOCK
-        // photoUrl: 'https://readdy.ai/api/search-image?query=professional%20headshot%20of%20a%20Turkish%20man%2C%20neutral%20expression%2C%20high%20quality%20portrait%20photo&width=100&height=100&seq=7&orientation=squarish' // OLD MOCK
-        // }; // OLD MOCK
-        // updateAuthUI(); // OLD MOCK - Will be handled by onAuthStateChanged
-        // loginModal.classList.add('hidden'); // OLD MOCK
-        // showToast('Giriş başarılı!'); // OLD MOCK
-
-        // TODO: Implement Firebase Google Login here
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider)
           .then((result) => {
-            // This gives you a Google Access Token. You can use it to access the Google API.
-            // const credential = result.credential;
-            // const token = credential.accessToken;
-            // The signed-in user info.
-            // const user = result.user;
             loginModal.classList.add('hidden');
-            showToast('Google ile giriş başarılı!');
-            // onAuthStateChanged will handle UI updates
+            window.showToast('Google ile giriş başarılı!'); // showToast global olmalı
           })
           .catch((error) => {
             console.error("Google ile giriş hatası:", error.code, error.message);
-            showToast('Giriş sırasında bir hata oluştu: ' + error.message);
+            window.showToast('Giriş sırasında bir hata oluştu: ' + error.message); // showToast global olmalı
           });
     });
 
     // Show auth required modal
-    function showAuthRequiredModal() {
+    // Making this function global so other scripts can call it if needed
+    window.showAuthRequiredModal = function() {
         authRequiredModal.classList.remove('hidden');
     }
 
@@ -519,42 +492,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auth login button
     authLoginBtn.addEventListener('click', function() {
         authRequiredModal.classList.add('hidden');
-        loginModal.classList.remove('hidden'); // Show the main login modal
+        loginModal.classList.remove('hidden'); 
     });
 
-    // Update UI based on auth state - ADAPT THIS FUNCTION
-    function updateAuthUI(user) { // Pass the Firebase user object here
-        if (user) { // Check if Firebase user exists
+    function updateAuthUI(user) { 
+        if (user) { 
             loginBtn.classList.add('hidden');
             profileContainer.classList.remove('hidden');
-            profileImg.src = user.photoURL || 'https://via.placeholder.com/150'; // Use Firebase user photo or a default
-            profileImg.alt = user.displayName || user.email || 'Profil'; // Use Firebase user display name or email
+            profileImg.src = user.photoURL || 'https://via.placeholder.com/150'; 
+            profileImg.alt = user.displayName || user.email || 'Profil'; 
         } else {
             loginBtn.classList.remove('hidden');
             profileContainer.classList.add('hidden');
         }
     }
 
-    // Profile click - logout - REPLACE WITH FIREBASE LOGOUT
     profileContainer.addEventListener('click', function() {
         if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-            // isLoggedIn = false; // OLD MOCK
-            // userProfile = null; // OLD MOCK
-            // updateAuthUI(); // OLD MOCK - Will be handled by onAuthStateChanged
-            // showToast('Çıkış yapıldı'); // OLD MOCK
-
-            // TODO: Implement Firebase Logout here
             auth.signOut().then(() => {
-                showToast('Çıkış yapıldı');
-                // onAuthStateChanged will handle UI updates
+                window.showToast('Çıkış yapıldı'); // showToast global olmalı
             }).catch((error) => {
                 console.error('Çıkış hatası:', error);
-                showToast('Çıkış sırasında bir hata oluştu.');
+                window.showToast('Çıkış sırasında bir hata oluştu.'); // showToast global olmalı
             });
         }
     });
 
-    // Check auth for protected actions
     const protectedButtons = [
         document.getElementById('order-btn'),
         document.getElementById('my-orders-btn'),
@@ -564,27 +527,22 @@ document.addEventListener('DOMContentLoaded', function() {
     protectedButtons.forEach(button => {
         if (button) {
             button.addEventListener('click', function(e) {
-                if (!auth.currentUser) { // Check Firebase current user
+                if (!auth.currentUser) { 
                     e.preventDefault();
-                    showAuthRequiredModal();
+                    window.showAuthRequiredModal(); // Call the global function
                 }
             });
         }
     });
 
-    // Calculator button (no auth required)
     const calculateBtn = document.getElementById('calculate-btn');
     if (calculateBtn) {
         calculateBtn.addEventListener('click', function() {
-            // Ensure toggleCalculatorSection is globally available or properly scoped
             if (window.toggleCalculatorSection) {
                 window.toggleCalculatorSection();
             }
         });
     }
-
-    // Initialize UI (onAuthStateChanged will manage this initially)
-    // updateAuthUI(auth.currentUser); // Initial call can be useful, or rely purely on onAuthStateChanged
 });
 </script>
 
@@ -596,35 +554,63 @@ document.addEventListener('DOMContentLoaded', function() {
     const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
     const calculationResult = document.getElementById('calculation-result');
     const resultCityRow = document.getElementById('result-city-row');
+    const resultPriceDisplay = document.getElementById('result-price'); // Ürün fiyatının gösterildiği span
+
+    // Hesapla/Sipariş Ver butonu
+    const submitButton = calculatorForm.querySelector('button[type="submit"]');
+
+    // Formdaki input alanları (buton durumunu resetlemek için)
+    const formInputsToResetButton = [
+        document.getElementById('order-method'),
+        document.getElementById('product-link'),
+        document.getElementById('product-price'),
+        document.getElementById('product-category'),
+        ...calculatorForm.querySelectorAll('input[name="delivery-type"]'), // Radio butonlar
+        document.getElementById('city')
+    ];
 
     // Toggle calculator section - window nesnesine eklenerek global yapıldı
     window.toggleCalculatorSection = function() {
         calculatorSection.classList.toggle('hidden');
         if (!calculatorSection.classList.contains('hidden')) {
-            // Scroll to calculator section
             calculatorSection.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
+    // Butonu "Hesapla" durumuna geri döndürür ve sonuçları gizler
+    function resetButtonToCalculateState() {
+        if (submitButton.textContent === 'Sipariş Ver') {
+            submitButton.textContent = 'Hesapla';
+            calculationResult.classList.add('hidden'); // Önceki sonuçları gizle
+        }
+    }
+
+    // Form inputlarında değişiklik olduğunda buton durumunu resetle
+    formInputsToResetButton.forEach(input => {
+        input.addEventListener('change', resetButtonToCalculateState);
+        // Metin, numara veya URL inputları için 'input' event'i daha anlık geri bildirim sağlar
+        if (input.type === 'text' || input.type === 'number' || input.type === 'url' || input.tagName.toLowerCase() === 'textarea') {
+            input.addEventListener('input', resetButtonToCalculateState);
+        }
+    });
+
     // Handle delivery type change
     deliveryRadios.forEach(radio => {
         radio.addEventListener('change', function() {
-            // Update radio button UI
             document.querySelectorAll('.delivery-radio div').forEach(dot => {
                 dot.classList.add('hidden');
             });
-            // Seçili olan radio'nun içindeki div'i görünür yap
             if(this.checked) {
                 const radioDiv = this.parentElement.querySelector('.delivery-radio div');
                 if(radioDiv) radioDiv.classList.remove('hidden');
             }
-
-            // Show/hide city selection
             if (this.value === 'home') {
                 citySelection.classList.remove('hidden');
             } else {
                 citySelection.classList.add('hidden');
             }
+            // Teslimat tipi değiştiğinde de buton resetlensin
+            resetButtonToCalculateState();
         });
     });
 
@@ -633,36 +619,58 @@ document.addEventListener('DOMContentLoaded', function() {
     if (initiallyCheckedRadio) {
         const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
         if (radioDiv) radioDiv.classList.remove('hidden');
+         // Başlangıçta şehir seçimini doğru ayarla
+        if (initiallyCheckedRadio.value === 'home') {
+            citySelection.classList.remove('hidden');
+        } else {
+            citySelection.classList.add('hidden');
+        }
     }
-
 
     // Handle form submission
     calculatorForm.addEventListener('submit', function(e) {
         e.preventDefault();
+
+        // Eğer buton "Sipariş Ver" ise ve tıklandıysa, yönlendirme yap
+        if (submitButton.textContent === 'Sipariş Ver') {
+            // İPUCU: Sipariş sayfasına yönlendirmeden önce kullanıcının giriş yapıp yapmadığını kontrol etmek iyi bir pratiktir.
+            // Örneğin:
+            // if (firebase.auth().currentUser) { // firebase global olmalı veya auth objesi burada da alınmalı
+            //     window.location.href = 'https://getirkibris.com/order.html';
+            // } else {
+            //     if(window.showAuthRequiredModal) window.showAuthRequiredModal(); 
+            // }
+            window.location.href = 'https://getirkibris.com/order.html';
+            return; // Fonksiyondan çık
+        }
+
+        // Eğer buton "Hesapla" ise, hesaplama mantığını çalıştır
         const orderMethod = document.getElementById('order-method').value;
-        const price = parseFloat(document.getElementById('product-price').value) || 0;
+        const productPriceInput = document.getElementById('product-price');
+        const price = parseFloat(productPriceInput.value) || 0; // Boş veya geçersizse 0 olur
         const category = document.getElementById('product-category').value;
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
         const city = document.getElementById('city').value;
 
+        // --- Doğrulamalar ---
         if (!orderMethod) {
-            showToast('Lütfen sipariş yöntemi seçin');
+            window.showToast('Lütfen sipariş yöntemi seçin'); 
             return;
         }
         if (price <= 0) {
-            showToast('Lütfen geçerli bir fiyat girin');
+            window.showToast('Lütfen geçerli bir ürün fiyatı girin (0\'dan büyük).');
             return;
         }
         if (!category) {
-            showToast('Lütfen bir kategori seçin');
+            window.showToast('Lütfen bir kategori seçin');
             return;
         }
         if (deliveryType === 'home' && !city) {
-            showToast('Lütfen bir şehir seçin');
+            window.showToast('Lütfen bir şehir seçin');
             return;
         }
 
-        // Calculate costs
+        // --- Hesaplama Mantığı ---
         const categoryRates = {
             'furniture': 0.70,
             'electronics': 0.70,
@@ -678,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'iskele': 450
         };
 
-        const categoryFee = price * (categoryRates[category] || 0); // Ensure categoryRates[category] is not undefined
+        const categoryFee = price * (categoryRates[category] || 0);
         let deliveryFee = 0;
         if (deliveryType === 'home') {
             deliveryFee = cityFees[city] || 0;
@@ -686,27 +694,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let total;
         if (orderMethod === 'self') {
-            // If user orders themselves, Getir Kıbrıs total is only category fee + delivery fee
             total = categoryFee + deliveryFee;
-        } else { // For 'service' (Getir Kıbrıs orders for the user)
+            resultPriceDisplay.innerHTML = `${price.toFixed(2)} ₺ <span class="text-xs text-gray-500">(ürün bedeli size ait)</span>`;
+        } else { 
             total = price + categoryFee + deliveryFee;
+            resultPriceDisplay.textContent = `${price.toFixed(2)} ₺`;
         }
 
-        // Update result
-        document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`; // Always show product price for user's info
         document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
         document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
-        document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`; // This is what Getir Kıbrıs charges
+        document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`; 
 
-        // Show/hide city fee row
         if (deliveryType === 'home') {
             resultCityRow.classList.remove('hidden');
         } else {
             resultCityRow.classList.add('hidden');
         }
-        // Show result
         calculationResult.classList.remove('hidden');
         calculationResult.scrollIntoView({ behavior: 'smooth' });
+
+        submitButton.textContent = 'Sipariş Ver';
     });
 });
 </script>
@@ -721,7 +728,7 @@ const targetId = this.getAttribute('data-copy');
 const textToCopy = document.getElementById(targetId).textContent;
 navigator.clipboard.writeText(textToCopy)
 .then(() => {
-showToast('Kopyalandı!'); // showToast global olmalı veya window.showToast
+showToast('Kopyalandı!'); 
 })
 .catch(err => {
 showToast('Kopyalama başarısız');
@@ -735,12 +742,12 @@ window.showToast = function(message) {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
     toastMessage.textContent = message;
-    toast.classList.remove('opacity-0'); // Görünür yap
-    toast.classList.add('opacity-100'); // Tam opaklık
+    toast.classList.remove('opacity-0'); 
+    toast.classList.add('opacity-100'); 
 
     setTimeout(() => {
-        toast.classList.remove('opacity-100'); // Opaklığı azalt
-        toast.classList.add('opacity-0'); // Gizle
+        toast.classList.remove('opacity-100'); 
+        toast.classList.add('opacity-0'); 
     }, 3000);
 };
 });
