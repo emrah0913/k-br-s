@@ -43,12 +43,24 @@
         color: #5d3ebc; /* Aktif linkin metin rengi */
         font-weight: 600;
     }
+    /* Fixed header ve sidebar için ekstra stil */
+    .fixed-header {
+        height: 64px; /* Başlık yüksekliği */
+    }
+    .fixed-sidebar {
+        top: 64px; /* Başlık yüksekliği kadar aşağıda başlasın */
+        height: calc(100vh - 64px); /* Ekran yüksekliği - başlık yüksekliği */
+    }
+    .content-area {
+        margin-left: 224px; /* Sidebar genişliği kadar boşluk (56px width + 16px padding * 2 = 224px) */
+        padding-top: 20px; /* İçerik için yukarıdan boşluk */
+    }
 </style>
 </head>
 <body class="bg-gray-50">
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-    <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+    <header class="fixed-header fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
         <div class="flex-1">
             <h1 class="text-xl font-semibold text-primary">Yönetici Paneli</h1>
         </div>
@@ -68,7 +80,7 @@
         </div>
     </header>
 
-    <div class="flex mt-16"> <aside class="w-56 bg-white shadow-md p-4 h-[calc(100vh-64px)] fixed top-16 left-0 flex flex-col">
+    <div class="flex pt-16"> <aside class="fixed-sidebar w-56 bg-white shadow-md p-4 fixed left-0 flex flex-col">
             <nav class="space-y-2">
                 <a href="#" id="nav-dashboard" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors active-nav-link">
                     <i class="ri-dashboard-line"></i>
@@ -89,7 +101,7 @@
             </nav>
         </aside>
 
-        <main class="flex-1 ml-56 p-4"> <div id="content-dashboard" class="admin-content-section">
+        <main class="flex-1 content-area"> <div id="content-dashboard" class="admin-content-section">
                 <h2 class="text-2xl font-bold text-primary mb-6">Kontrol Paneli</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -136,14 +148,7 @@
                                 </tr>
                             </thead>
                             <tbody id="latest-orders-table-body" class="bg-white divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">...</td>
-                                </tr>
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -223,25 +228,33 @@
         auth.onAuthStateChanged(async function(user) {
             if (user) {
                 // Kullanıcının yönetici olup olmadığını kontrol et
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                if (userDoc.exists && userDoc.data().role === 'admin') {
-                    adminLogoutBtn.classList.add('hidden');
-                    adminProfileContainer.classList.remove('hidden');
-                    adminProfileImg.src = user.photoURL || 'https://via.placeholder.com/150';
-                    adminProfileImg.alt = user.displayName || user.email || 'Admin';
-                    console.log("Admin giriş yaptı:", user.email);
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists && userDoc.data().role === 'admin') {
+                        adminLogoutBtn.classList.add('hidden');
+                        adminProfileContainer.classList.remove('hidden');
+                        adminProfileImg.src = user.photoURL || 'https://via.placeholder.com/150';
+                        adminProfileImg.alt = user.displayName || user.email || 'Admin';
+                        console.log("Admin giriş yaptı:", user.email);
 
-                    // Dashboard verilerini yükle
-                    loadDashboardData();
+                        // Dashboard verilerini yükle
+                        loadDashboardData();
 
-                } else {
-                    alert('Yönetici paneline erişim izniniz yok.');
-                    window.location.href = 'index.html'; // Ana siteye yönlendir
+                    } else {
+                        alert('Yönetici paneline erişim izniniz yok.');
+                        window.location.href = 'index.html'; // Ana siteye yönlendir
+                    }
+                } catch (error) {
+                    console.error("Kullanıcı rolü kontrol edilirken hata oluştu:", error);
+                    alert('Giriş kontrolü sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+                    auth.signOut(); // Güvenlik için çıkış yap
+                    window.location.href = 'index.html';
                 }
+
             } else {
-                // Giriş yapılmadıysa login sayfasına yönlendir veya modal göster
+                // Giriş yapılmadıysa veya çıkış yapıldıysa ana siteye yönlendir
                 alert('Yönetici paneline erişmek için giriş yapmalısınız.');
-                window.location.href = 'index.html'; // Şimdilik ana siteye yönlendir
+                window.location.href = 'index.html';
             }
         });
 
@@ -270,11 +283,14 @@
 
                 // Toplam Gelir (Bu Ay)
                 let totalMonthlyRevenue = 0;
+                // Mevcut ayın ilk gününü al
                 const now = new Date();
                 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                // Firebase Timestamp nesnesi oluştur
+                const startOfMonthTimestamp = firebase.firestore.Timestamp.fromDate(startOfMonth);
                 
                 const monthlyOrdersSnapshot = await db.collection('orders')
-                    .where('orderDate', '>=', startOfMonth)
+                    .where('orderDate', '>=', startOfMonthTimestamp)
                     .get();
 
                 monthlyOrdersSnapshot.forEach(doc => {
@@ -288,22 +304,23 @@
                 // Son Siparişler
                 const latestOrdersSnapshot = await db.collection('orders').orderBy('orderDate', 'desc').limit(5).get();
                 const latestOrdersTableBody = document.getElementById('latest-orders-table-body');
-                latestOrdersTableBody.innerHTML = ''; // Temizle
+                latestOrdersTableBody.innerHTML = ''; // Tabloyu temizle
 
                 if (latestOrdersSnapshot.empty) {
                     latestOrdersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Henüz sipariş bulunmamaktadır.</td></tr>';
                 } else {
                     latestOrdersSnapshot.forEach(doc => {
                         const order = doc.data();
+                        // Firebase Timestamp objesinden Date objesine dönüştür
                         const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
                         const row = `
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${doc.id.substring(0, 8)}...</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.fullName || order.userEmail}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(order.status)}">
-                                        ${order.status || 'Bilinmiyor'}
+                                        ${order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Bilinmiyor'}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
@@ -315,7 +332,12 @@
 
             } catch (error) {
                 console.error("Dashboard verileri yüklenirken hata oluştu:", error);
-                alert("Dashboard verileri yüklenemedi. Lütfen konsolu kontrol edin.");
+                // Kullanıcıya bir hata mesajı gösterebiliriz
+                // alert("Dashboard verileri yüklenemedi. Lütfen konsolu kontrol edin.");
+                document.getElementById('pending-orders-count').textContent = 'Hata';
+                document.getElementById('completed-orders-count').textContent = 'Hata';
+                document.getElementById('monthly-revenue').textContent = 'Hata';
+                document.getElementById('latest-orders-table-body').innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">Veriler yüklenirken bir hata oluştu.</td></tr>';
             }
         }
 
@@ -324,8 +346,9 @@
                 case 'pending':
                     return 'bg-yellow-100 text-yellow-800';
                 case 'approved':
-                case 'shipped':
                     return 'bg-blue-100 text-blue-800';
+                case 'shipped':
+                    return 'bg-purple-100 text-purple-800';
                 case 'delivered':
                     return 'bg-green-100 text-green-800';
                 case 'cancelled':
