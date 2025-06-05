@@ -188,6 +188,25 @@
                 }
             }
 
+            // Kategori isimlerini Türkçeleştiren fonksiyon
+            function getTurkishCategoryName(category) {
+                switch (category) {
+                    case 'furniture':
+                        return 'Mobilya';
+                    case 'electronics':
+                        return 'Elektronik';
+                    case 'clothing':
+                        return 'Giyim';
+                    case 'cosmetics':
+                        return 'Kozmetik';
+                    case 'stationery':
+                        return 'Kırtasiye';
+                    default:
+                        return 'Belirtilmemiş';
+                }
+            }
+
+
             // Durum rengini veren fonksiyon (Tailwind'e uygun sınıflar dönecek)
             function getStatusColorClass(status) {
                 switch (status) {
@@ -263,6 +282,9 @@
                     // Ürün linkini gösteriyoruz ve tıklanabilir yapıyoruz
                     productDisplay = `<a href="${productLinkHref}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline break-all">${productLinkHref}</a>`;
                 }
+                
+                // Kategoriyi Türkçeleştir
+                const categoryTR = getTurkishCategoryName(order.productCategory);
 
                 // Durum metnini ve rengini al
                 const statusText = getTurkishOrderStatus(order.status);
@@ -284,7 +306,7 @@
                     <div class="space-y-3 text-gray-700">
                         <p><strong>Sipariş Yöntemi:</strong> ${orderMethodTR}</p>
                         <p><strong>Ürün Linki:</strong> ${productDisplay}</p>
-                        <p><strong>Kategori:</strong> ${order.productCategory || 'Belirtilmemiş'}</p>
+                        <p><strong>Kategori:</strong> ${categoryTR}</p>
                         <p><strong>Teslimat Tipi:</strong> ${deliveryTypeTR} ${deliveryLocationSummary}</p>
                         <p class="text-lg font-semibold"><strong>Toplam Tutar:</strong> ${typeof order.totalAmount === 'number' ? order.totalAmount.toFixed(2) + ' ₺' : 'N/A'}</p>
                     </div>
