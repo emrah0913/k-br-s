@@ -1,4 +1,650 @@
-async function loadOrders(page = 1, direction = 'none') {
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getir Kıbrıs - Yönetici Paneli</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#5d3ebc',
+                    secondary: '#ffd300'
+                },
+                borderRadius: {
+                    'none': '0px',
+                    'sm': '4px',
+                    DEFAULT: '8px',
+                    'md': '12px',
+                    'lg': '16px',
+                    'xl': '20px',
+                    '2xl': '24px',
+                    '3xl': '32px',
+                    'full': '9999px',
+                    'button': '8px'
+                }
+            }
+        }
+    }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9f9f9;
+    }
+    .active-nav-link {
+        background-color: #f0f0f0;
+        color: #5d3ebc;
+        font-weight: 600;
+    }
+    .fixed-header {
+        height: 64px;
+    }
+    .fixed-sidebar {
+        top: 64px;
+        height: calc(100vh - 64px);
+    }
+    .content-area {
+        margin-left: 224px;
+        padding-top: 20px;
+        padding-bottom: 80px; /* Footer için boşluk */
+    }
+    /* Sipariş durumu badge stilleri */
+    .status-badge {
+        display: inline-flex;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px; /* full rounded */
+        font-size: 0.75rem; /* text-xs */
+        line-height: 1.25rem; /* leading-5 */
+        font-weight: 600; /* font-semibold */
+    }
+    .status-pending { background-color: #fef3c7; color: #b45309; } /* bg-yellow-100 text-yellow-700 */
+    .status-approved { background-color: #bfdbfe; color: #1d4ed8; } /* bg-blue-200 text-blue-800 */
+    .status-tr_warehouse { background-color: #fef9c3; color: #a16207; } /* bg-yellow-200 text-yellow-800, maybe lighter */
+    .status-shipped { background-color: #e9d5ff; color: #8b5cf6; } /* bg-purple-200 text-purple-600 */
+    .status-cyprus_warehouse { background-color: #dbeafe; color: #1e40af; } /* bg-blue-100 text-blue-700, maybe lighter */
+    .status-delivered { background-color: #d1fae5; color: #065f46; } /* bg-green-200 text-green-800 */
+    .status-cancelled { background-color: #fee2e2; color: #b91c1c; } /* bg-red-200 text-red-800 */
+    .status-unknown { background-color: #e5e7eb; color: #4b5563; } /* bg-gray-200 text-gray-600 */
+
+    /* Metin taşmasını engellemek için genel kurallar */
+    .break-all {
+        word-break: break-all;
+    }
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px; /* Belirli bir genişlik sınırı koyarak daha iyi kontrol */
+    }
+</style>
+</head>
+<body class="bg-gray-50">
+<div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
+
+    <header class="fixed-header fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+        <div class="flex-1">
+            <h1 class="text-xl font-semibold text-primary">Yönetici Paneli</h1>
+        </div>
+        <div class="flex flex-col items-center">
+            <img src="https://i.imgur.com/V8eKzod.png" alt="Getir Kıbrıs" class="h-12">
+            <a href="https://getirkibris.com/index.html" class="text-sm font-medium text-primary mt-1">Ana Siteye Dön</a>
+        </div>
+        <div class="flex-1 flex justify-end">
+            <div id="admin-auth-button" class="w-8 h-8 flex items-center justify-center">
+                <button id="admin-logout-btn" class="text-xs text-primary font-medium cursor-pointer">
+                    <i class="ri-logout-box-r-line ri-lg"></i>
+                </button>
+                 <div id="admin-profile-container" class="hidden">
+                    <img id="admin-profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex pt-16">
+        <aside class="fixed-sidebar w-56 bg-white shadow-md p-4 fixed left-0 flex flex-col">
+            <nav class="space-y-2">
+                <a href="#" id="nav-dashboard" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors active-nav-link">
+                    <i class="ri-dashboard-line"></i>
+                    <span>Kontrol Paneli</span>
+                </a>
+                <a href="#" id="nav-orders" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                    <i class="ri-file-list-3-line"></i>
+                    <span>Siparişler</span>
+                </a>
+                <a href="#" id="nav-users" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                    <i class="ri-user-line"></i>
+                    <span>Kullanıcılar</span>
+                </a>
+                <a href="#" id="nav-settings" class="flex items-center gap-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                    <i class="ri-settings-3-line"></i>
+                    <span>Ayarlar</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 content-area">
+            <div id="content-dashboard" class="admin-content-section">
+                <h2 class="text-2xl font-bold text-primary mb-6">Kontrol Paneli</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
+                        <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary text-2xl">
+                            <i class="ri-truck-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Bekleyen Siparişler</p>
+                            <p id="pending-orders-count" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
+                        <div class="w-14 h-14 bg-green-500/10 rounded-full flex items-center justify-center text-green-600 text-2xl">
+                            <i class="ri-check-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Tamamlanan Siparişler</p>
+                            <p id="completed-orders-count" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
+                        <div class="w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-600 text-2xl">
+                            <i class="ri-money-dollar-circle-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">Toplam Gelir (Bu Ay)</p>
+                            <p id="monthly-revenue" class="text-3xl font-bold text-gray-800">0 ₺</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold text-primary mb-4">Son Siparişler</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş No</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody id="latest-orders-table-body" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-orders" class="admin-content-section hidden">
+                <h2 class="text-2xl font-bold text-primary mb-6">Sipariş Yönetimi</h2>
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+                    <input type="text" id="order-search-input" placeholder="Sipariş No, müşteri, ürün linki ara..." class="w-full sm:max-w-md p-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary">
+                    <select id="order-status-filter" class="w-full sm:w-auto p-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary">
+                        <option value="all">Tüm Durumlar</option>
+                        <option value="pending">Beklemede</option>
+                        <option value="approved">Onaylandı</option>
+                        <option value="tr_warehouse">TR Depoda</option>
+                        <option value="shipped">Kargolandı</option>
+                        <option value="cyprus_warehouse">Kıbrıs Depoda</option>
+                        <option value="delivered">Teslim Edildi</option>
+                        <option value="cancelled">İptal Edildi</option>
+                    </select>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş No</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+                    <div id="order-pagination" class="mt-4 flex justify-between items-center">
+                        <button id="prev-orders-btn" class="px-4 py-2 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300 disabled:opacity-50" disabled>Önceki</button>
+                        <span id="orders-page-info" class="text-sm text-gray-600">Sayfa 1</span>
+                        <button id="next-orders-btn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50">Sonraki</button>
+                    </div>
+                </div>
+
+                <div id="order-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+                    <div class="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg max-h-[90vh] overflow-y-auto">
+                        <button id="close-order-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
+                            <i class="ri-close-line ri-lg"></i>
+                        </button>
+                        <h3 class="text-xl font-semibold text-primary mb-4" id="modal-order-id">Sipariş Detayı: #...</h3>
+                        <form id="order-detail-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Müşteri:</label>
+                                <p id="modal-customer-name" class="text-gray-900 font-medium"></p>
+                                <p id="modal-customer-email" class="text-gray-600 text-sm"></p>
+                                <p id="modal-customer-phone" class="text-gray-600 text-sm"></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Ürün Linki:</label>
+                                <a id="modal-product-link" href="#" target="_blank" class="text-blue-600 hover:underline break-all text-sm truncate-text-large"></a>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Ürün Fiyatı:</label>
+                                    <p id="modal-product-price" class="text-gray-900"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Kategori:</label>
+                                    <p id="modal-product-category" class="text-gray-900"></p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Teslimat Tipi:</label>
+                                    <p id="modal-delivery-type" class="text-gray-900"></p>
+                                </div>
+                                <div id="modal-city-row" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700">Şehir:</label>
+                                    <p id="modal-city" class="text-gray-900"></p>
+                                </div>
+                            </div>
+                            <div id="modal-address-row" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700">Teslimat Adresi:</label>
+                                <p id="modal-delivery-address" class="text-gray-900"></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Kategori Ücreti:</label>
+                                <p id="modal-category-fee" class="text-gray-900"></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Teslimat Ücreti:</label>
+                                <p id="modal-delivery-fee" class="text-gray-900"></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Toplam Tutar:</label>
+                                <p id="modal-total-amount" class="text-gray-900 font-semibold text-lg"></p>
+                            </div>
+                            <div>
+                                <label for="modal-order-status" class="block text-sm font-medium text-gray-700">Sipariş Durumu:</label>
+                                <select id="modal-order-status" class="w-full p-2 border border-gray-300 rounded-md">
+                                    <option value="pending">Beklemede</option>
+                                    <option value="approved">Onaylandı</option>
+                                    <option value="tr_warehouse">TR Depoda</option>
+                                    <option value="shipped">Kargolandı</option>
+                                    <option value="cyprus_warehouse">Kıbrıs Depoda</option>
+                                    <option value="delivered">Teslim Edildi</option>
+                                    <option value="cancelled">İptal Edildi</option>
+                                </select>
+                            </div>
+                             <div>
+                                <label for="modal-tracking-number" class="block text-sm font-medium text-gray-700">Takip Numarası (İsteğe Bağlı):</label>
+                                <input type="text" id="modal-tracking-number" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Takip numarası girin">
+                            </div>
+                            <div>
+                                <label for="modal-admin-notes" class="block text-sm font-medium text-gray-700">Yönetici Notları (İsteğe Bağlı):</label>
+                                <textarea id="modal-admin-notes" rows="3" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Notlar..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors">Güncelle</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-users" class="admin-content-section hidden">
+                <h2 class="text-2xl font-bold text-primary mb-6">Kullanıcı Yönetimi</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <input type="text" id="user-search-input" placeholder="Kullanıcı adı, e-posta ara..." class="w-full max-w-md p-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary">
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanıcı ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad / E-posta</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kayıt Tarihi</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+                    <div id="user-pagination" class="mt-4 flex justify-between items-center">
+                        <button id="prev-users-btn" class="px-4 py-2 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300 disabled:opacity-50" disabled>Önceki</button>
+                        <span id="users-page-info" class="text-sm text-gray-600">Sayfa 1</span>
+                        <button id="next-users-btn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50">Sonraki</button>
+                    </div>
+                </div>
+
+                <div id="user-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+                    <div class="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg max-h-[90vh] overflow-y-auto">
+                        <button id="close-user-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
+                            <i class="ri-close-line ri-lg"></i>
+                        </button>
+                        <h3 class="text-xl font-semibold text-primary mb-4" id="modal-user-title">Kullanıcı Detayı</h3>
+                        <form id="user-detail-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">UID:</label>
+                                <p id="modal-user-uid" class="text-gray-900 font-mono text-sm break-all"></p>
+                            </div>
+                            <div>
+                                <label for="modal-user-email" class="block text-sm font-medium text-gray-700">E-posta:</label>
+                                <input type="email" id="modal-user-email" class="w-full p-2 border border-gray-300 rounded-md" readonly>
+                            </div>
+                            <div>
+                                <label for="modal-user-display-name" class="block text-sm font-medium text-gray-700">Ad Soyad:</label>
+                                <input type="text" id="modal-user-display-name" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Ad Soyad">
+                            </div>
+                            <div>
+                                <label for="modal-user-phone" class="block text-sm font-medium text-gray-700">Telefon:</label>
+                                <input type="tel" id="modal-user-phone" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Telefon Numarası">
+                            </div>
+                            <div>
+                                <label for="modal-user-role" class="block text-sm font-medium text-gray-700">Rol:</label>
+                                <select id="modal-user-role" class="w-full p-2 border border-gray-300 rounded-md">
+                                    <option value="user">Kullanıcı</option>
+                                    <option value="admin">Yönetici</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors">Güncelle</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-settings" class="admin-content-section hidden">
+                <h2 class="text-2xl font-bold text-primary mb-6">Ayarlar</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h3 class="text-xl font-semibold text-primary mb-4">Kategori Fiyatlandırma Oranları</h3>
+                    <form id="category-rates-form" class="space-y-4">
+                        <div id="category-rates-container" class="space-y-3"></div>
+                        <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors">Oranları Kaydet</button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h3 class="text-xl font-semibold text-primary mb-4">Şehir Teslimat Ücretleri</h3>
+                    <form id="city-fees-form" class="space-y-4">
+                        <div id="city-fees-container" class="space-y-3"></div>
+                        <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors">Ücretleri Kaydet</button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold text-primary mb-4">IBAN Bilgisi</h3>
+                    <form id="iban-settings-form" class="space-y-4">
+                        <div>
+                            <label for="iban-input" class="block text-sm font-medium text-gray-700">IBAN Numarası:</label>
+                            <input type="text" id="iban-input" class="w-full p-2 border border-gray-300 rounded-md" placeholder="TRXX XXXX XXXX XXXX XXXX XXXX XX">
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors">IBAN Kaydet</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="fixed bottom-0 w-full max-w-screen-lg mx-auto bg-white shadow-md p-4 text-center text-sm text-gray-600 border-t border-gray-200">
+        &copy; 2025 Getir Kıbrıs. Tüm hakları saklıdır.
+    </footer>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+    // Firebase Config (Kendi anahtarlarınızı kullanın!)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+        authDomain: "kibris-6b4f7.firebaseapp.com",
+        projectId: "kibris-6b4f7",
+        storageBucket: "kibris-6b4f7.firebasestorage.app",
+        messagingSenderId: "141262926171",
+        appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+        measurementId: "G-JL9P6BRZTD"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const adminLogoutBtn = document.getElementById('admin-logout-btn');
+        const adminProfileContainer = document.getElementById('admin-profile-container');
+        const adminProfileImg = document.getElementById('admin-profile-img');
+
+        // Navigasyon ve Modül Gösterimi
+        const navLinks = document.querySelectorAll('aside nav a');
+        const contentSections = document.querySelectorAll('.admin-content-section');
+
+        function showSection(sectionId) {
+            contentSections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            navLinks.forEach(link => {
+                link.classList.remove('active-nav-link');
+            });
+            document.getElementById(`nav-${sectionId.replace('content-', '')}`).classList.add('active-nav-link');
+
+            // Modüle özel veri yükleme fonksiyonlarını çağır
+            if (sectionId === 'content-dashboard') {
+                loadDashboardData();
+            } else if (sectionId === 'content-orders') {
+                currentOrderPage = 1;
+                lastVisibleOrder = null;
+                firstVisibleOrder = null;
+                orderSearchInput.value = ''; // Arama kutusunu temizle
+                orderStatusFilter.value = 'all'; // Durum filtresini sıfırla
+                loadOrders(currentOrderPage);
+            } else if (sectionId === 'content-users') {
+                currentUserPage = 1;
+                lastVisibleUser = null;
+                firstVisibleUser = null;
+                userSearchInput.value = ''; // Arama kutusunu temizle
+                loadUsers(currentUserPage);
+            } else if (sectionId === 'content-settings') {
+                loadSettings();
+            }
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = `content-${this.id.replace('nav-', '')}`;
+                showSection(sectionId);
+            });
+        });
+
+        // Firebase Auth Yönetimi ve Admin Yetkilendirmesi
+        auth.onAuthStateChanged(async function(user) {
+            if (user) {
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists && userDoc.data().role === 'admin') {
+                        adminLogoutBtn.classList.add('hidden');
+                        adminProfileContainer.classList.remove('hidden');
+                        adminProfileImg.src = user.photoURL || 'https://via.placeholder.com/150';
+                        adminProfileImg.alt = user.displayName || user.email || 'Admin';
+                        console.log("Admin giriş yaptı:", user.email);
+                        showSection('content-dashboard');
+                    } else {
+                        alert('Yönetici paneline erişim izniniz yok.');
+                        window.location.href = 'index.html';
+                    }
+                } catch (error) {
+                    console.error("Kullanıcı rolü kontrol edilirken hata oluştu:", error);
+                    alert('Giriş kontrolü sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+                    auth.signOut();
+                    window.location.href = 'index.html';
+                }
+            } else {
+                alert('Yönetici paneline erişmek için giriş yapmalısınız.');
+                window.location.href = 'index.html';
+            }
+        });
+
+        adminProfileContainer.addEventListener('click', function () {
+            if (confirm('Yönetici panelinden çıkış yapmak istediğinize emin misiniz?')) {
+                auth.signOut().then(() => {
+                    alert('Çıkış yapıldı.');
+                    window.location.href = 'index.html';
+                }).catch((error) => {
+                    console.error('Çıkış hatası:', error);
+                    alert('Çıkış sırasında bir hata oluştu.');
+                });
+            }
+        });
+
+        // --- Dashboard Modülü Fonksiyonları ---
+        async function loadDashboardData() {
+            try {
+                const pendingOrdersSnapshot = await db.collection('orders').where('status', '==', 'pending').get();
+                document.getElementById('pending-orders-count').textContent = pendingOrdersSnapshot.size;
+
+                const completedOrdersSnapshot = await db.collection('orders').where('status', '==', 'delivered').get();
+                document.getElementById('completed-orders-count').textContent = completedOrdersSnapshot.size;
+
+                let totalMonthlyRevenue = 0;
+                const now = new Date();
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                const startOfMonthTimestamp = firebase.firestore.Timestamp.fromDate(startOfMonth);
+                
+                const monthlyOrdersSnapshot = await db.collection('orders')
+                    .where('orderDate', '>=', startOfMonthTimestamp)
+                    .where('status', '==', 'delivered')
+                    .get();
+
+                monthlyOrdersSnapshot.forEach(doc => {
+                    const order = doc.data();
+                    if (order.totalAmount) {
+                        totalMonthlyRevenue += order.totalAmount;
+                    }
+                });
+                document.getElementById('monthly-revenue').textContent = `${totalMonthlyRevenue.toFixed(2)} ₺`;
+
+                const latestOrdersSnapshot = await db.collection('orders').orderBy('orderDate', 'desc').limit(5).get();
+                const latestOrdersTableBody = document.getElementById('latest-orders-table-body');
+                latestOrdersTableBody.innerHTML = '';
+
+                if (latestOrdersSnapshot.empty) {
+                    latestOrdersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Henüz sipariş bulunmamaktadır.</td></tr>';
+                } else {
+                    latestOrdersSnapshot.forEach(doc => {
+                        const order = doc.data();
+                        const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
+                        const row = `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${doc.id.substring(0, 8)}...</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
+                                    <span class="status-badge ${getStatusBadgeClass(order.status)}">
+                                        ${order.status ? getStatusDisplayName(order.status) : 'Bilinmiyor'}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
+                            </tr>
+                        `;
+                        latestOrdersTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+
+            } catch (error) {
+                console.error("Dashboard verileri yüklenirken hata oluştu:", error);
+                document.getElementById('pending-orders-count').textContent = 'Hata';
+                document.getElementById('completed-orders-count').textContent = 'Hata';
+                document.getElementById('monthly-revenue').textContent = 'Hata';
+                document.getElementById('latest-orders-table-body').innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">Veriler yüklenirken bir hata oluştu.</td></tr>';
+            }
+        }
+
+        function getStatusDisplayName(status) {
+            switch (status) {
+                case 'pending': return 'Beklemede';
+                case 'approved': return 'Onaylandı';
+                case 'tr_warehouse': return 'TR Depoda';
+                case 'shipped': return 'Kargolandı';
+                case 'cyprus_warehouse': return 'Kıbrıs Depoda';
+                case 'delivered': return 'Teslim Edildi';
+                case 'cancelled': return 'İptal Edildi';
+                default: return 'Bilinmiyor';
+            }
+        }
+
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'pending': return 'status-pending';
+                case 'approved': return 'status-approved';
+                case 'tr_warehouse': return 'status-tr_warehouse';
+                case 'shipped': return 'status-shipped';
+                case 'cyprus_warehouse': return 'status-cyprus_warehouse';
+                case 'delivered': return 'status-delivered';
+                case 'cancelled': return 'status-cancelled';
+                default: return 'status-unknown';
+            }
+        }
+
+        // --- Sipariş Yönetimi Modülü Fonksiyonları ---
+        let currentOrderPage = 1;
+        const ordersPerPage = 10;
+        let lastVisibleOrder = null;
+        let firstVisibleOrder = null;
+        
+        const orderSearchInput = document.getElementById('order-search-input');
+        const orderStatusFilter = document.getElementById('order-status-filter');
+        const ordersTableBody = document.getElementById('orders-table-body');
+        const prevOrdersBtn = document.getElementById('prev-orders-btn');
+        const nextOrdersBtn = document.getElementById('next-orders-btn');
+        const ordersPageInfo = document.getElementById('orders-page-info');
+        const orderDetailModal = document.getElementById('order-detail-modal');
+        const closeOrderModal = document.getElementById('close-order-modal');
+        const orderDetailForm = document.getElementById('order-detail-form');
+        let currentEditingOrderId = null;
+
+        orderSearchInput.addEventListener('input', () => {
+            currentOrderPage = 1;
+            lastVisibleOrder = null;
+            firstVisibleOrder = null;
+            loadOrders(currentOrderPage);
+        });
+        orderStatusFilter.addEventListener('change', () => {
+            currentOrderPage = 1;
+            lastVisibleOrder = null;
+            firstVisibleOrder = null;
+            loadOrders(currentOrderPage);
+        });
+        prevOrdersBtn.addEventListener('click', () => {
+            if (currentOrderPage > 1) {
+                currentOrderPage--;
+                loadOrders(currentOrderPage, 'prev');
+            }
+        });
+        nextOrdersBtn.addEventListener('click', () => {
+            currentOrderPage++;
+            loadOrders(currentOrderPage, 'next');
+        });
+
+        async function loadOrders(page = 1, direction = 'none') {
             ordersTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">Siparişler yükleniyor...</td></tr>';
             
             let query = db.collection('orders');
@@ -6,6 +652,7 @@ async function loadOrders(page = 1, direction = 'none') {
             const searchText = orderSearchInput.value.toLowerCase().trim();
             const statusFilter = orderStatusFilter.value;
 
+            // Önce orderBy sonra where (Firestore kuralı)
             query = query.orderBy('orderDate', 'desc'); // Varsayılan sıralama
 
             if (statusFilter !== 'all') {
@@ -16,7 +663,7 @@ async function loadOrders(page = 1, direction = 'none') {
                 let snapshot;
                 let fetchedOrders = [];
 
-                // Arama metni veya durum filtresi aktifse veya ilk yükleme ise:
+                // Eğer arama metni veya durum filtresi aktifse, veya ilk yükleme ise:
                 // Tüm uygun siparişleri çekelim (bu kısım çok sipariş varsa yavaşlayabilir)
                 const allMatchingQuerySnapshot = await query.get();
                 allMatchingQuerySnapshot.forEach(doc => {
@@ -26,7 +673,7 @@ async function loadOrders(page = 1, direction = 'none') {
                 let displayedOrders = []; // Son kullanıcıya gösterilecek siparişler
 
                 if (searchText !== '') {
-                    // İstemci tarafı arama filtrelemesi (daha geniş kapsamlı)
+                    // İstemci tarafı arama filtrelemesi
                     fetchedOrders.forEach(item => {
                         const order = item.data;
                         const docId = item.id; // Tam sipariş ID'si
@@ -34,14 +681,13 @@ async function loadOrders(page = 1, direction = 'none') {
                         const customerInfo = (order.fullName || order.userEmail || '').toLowerCase();
                         const productLinkInfo = (order.productLink || '').toLowerCase();
                         
-                        // Arama mantığı iyileştirildi
-                        // Sipariş ID'sinin hem kısaltılmış hem de tam hali aranıyor (eğer numarasal bir arama ise)
-                        // Ürün linki için daha esnek arama
-                        if (orderIdShort.includes(searchText) || // Kısaltılmış ID ile arama
+                        // Arama mantığı iyileştirildi: Sipariş ID'sinin hem kısaltılmış hem de tam hali,
+                        // müşteri bilgileri, ürün linki ve takip numarası ile arama.
+                        if (orderIdShort.includes(searchText) ||
                             docId.toLowerCase().includes(searchText) || // Tam ID ile arama
-                            customerInfo.includes(searchText) || // Müşteri bilgileri ile arama
-                            productLinkInfo.includes(searchText) || // Ürün linki ile arama
-                            (order.trackingNumber && order.trackingNumber.toLowerCase().includes(searchText))) // Takip numarası ile arama
+                            customerInfo.includes(searchText) ||
+                            productLinkInfo.includes(searchText) ||
+                            (order.trackingNumber && order.trackingNumber.toLowerCase().includes(searchText)))
                         {
                             displayedOrders.push(item);
                         }
@@ -69,22 +715,15 @@ async function loadOrders(page = 1, direction = 'none') {
                     ordersPageInfo.textContent = `Sayfa ${page} / ${totalPages}`;
                 }
 
-                // Sayfalandırma butonlarının Firestore cursorlarını güncelle
-                if (searchText === '' && statusFilter === 'all' && totalOrdersCount > 0) {
-                    // Sadece genel listeleme ve sayfalandırma için cursorları güncelle
-                    // Bu kısım Firestore cursor'ını tam olarak simule etmez, çünkü tüm veriyi çekiyoruz.
-                    // Gerçek cursor tabanlı pagination için, sadece ilk sayfa çekildiğinde cursor'ları güncelleyip
-                    // diğer sayfalara geçerken yeni sorgular atmamız gerekir.
-                    // Mevcut implementasyon, tüm veriyi çekip JS'de paginate ettiği için cursorlar aslında çok anlamlı değil.
-                    // Basitlik adına, sadece arama/filtreleme yoksa butonları aktif tutalım.
-                    lastVisibleOrder = fetchedOrders[fetchedOrders.length -1]; // Son çekilen belge
-                    firstVisibleOrder = fetchedOrders[0]; // İlk çekilen belge
+                // Sayfalandırma butonlarının durumunu güncelle (sadece arama/filtreleme yoksa)
+                if (searchText === '' && statusFilter === 'all' && paginatedOrders.length > 0) {
+                    lastVisibleOrder = fetchedOrders[fetchedOrders.length -1];
+                    firstVisibleOrder = fetchedOrders[0];
                     
                     prevOrdersBtn.disabled = page === 1;
                     nextOrdersBtn.disabled = page >= totalPages;
 
                 } else {
-                    // Arama veya filtreleme yapılıyorsa cursor tabanlı pagination çalışmaz
                     lastVisibleOrder = null;
                     firstVisibleOrder = null;
                     prevOrdersBtn.disabled = true;
@@ -96,3 +735,397 @@ async function loadOrders(page = 1, direction = 'none') {
                 ordersTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">Siparişler yüklenirken bir hata oluştu. Lütfen konsolu kontrol edin.</td></tr>';
             }
         }
+
+        // Tabloyu render eden fonksiyon
+        function renderOrdersTable(ordersToDisplay) {
+            ordersTableBody.innerHTML = '';
+            if (ordersToDisplay.length === 0) {
+                ordersTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Hiç sipariş bulunamadı.</td></tr>';
+            } else {
+                ordersToDisplay.forEach(item => {
+                    const order = item.data;
+                    const docId = item.id;
+                    const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
+                    const row = `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 80px;">${docId.substring(0, 8)}...</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 150px;">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
+                                <span class="status-badge ${getStatusBadgeClass(order.status)}">
+                                    ${order.status ? getStatusDisplayName(order.status) : 'Bilinmiyor'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button data-order-id="${docId}" class="text-primary hover:text-primary/80 view-order-btn">Detay</button>
+                            </td>
+                        </tr>
+                    `;
+                    ordersTableBody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+        }
+
+        // Sipariş Detay Modal Açma
+        ordersTableBody.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('view-order-btn')) {
+                const orderId = e.target.dataset.orderId;
+                const orderDoc = await db.collection('orders').doc(orderId).get();
+                if (orderDoc.exists) {
+                    const order = orderDoc.data();
+                    currentEditingOrderId = orderId;
+
+                    document.getElementById('modal-order-id').textContent = `Sipariş Detayı: #${orderId.substring(0, 8)}...`;
+                    document.getElementById('modal-customer-name').textContent = order.fullName || order.userEmail || 'Bilinmiyor';
+                    document.getElementById('modal-customer-email').textContent = order.userEmail || '';
+                    document.getElementById('modal-customer-phone').textContent = order.phone || '';
+                    
+                    document.getElementById('modal-product-link').href = order.productLink || '#';
+                    document.getElementById('modal-product-link').textContent = order.productLink ? (order.productLink.length > 60 ? order.productLink.substring(0, 57) + '...' : order.productLink) : 'Link Yok';
+
+                    document.getElementById('modal-product-price').textContent = (order.productPrice ? order.productPrice.toFixed(2) : '0.00') + ' ₺';
+                    document.getElementById('modal-product-category').textContent = order.productCategory ? getCategoryDisplayName(order.productCategory) : 'Bilinmiyor';
+                    
+                    document.getElementById('modal-delivery-type').textContent = order.deliveryType === 'home' ? 'Eve Teslim' : 'Depodan Teslim';
+
+                    if (order.deliveryType === 'home') {
+                        document.getElementById('modal-city-row').classList.remove('hidden');
+                        document.getElementById('modal-city').textContent = order.city ? getCityDisplayName(order.city) : 'Bilinmiyor';
+                        document.getElementById('modal-address-row').classList.remove('hidden');
+                        document.getElementById('modal-delivery-address').textContent = order.deliveryAddress || 'Adres Yok';
+                    } else {
+                        document.getElementById('modal-city-row').classList.add('hidden');
+                        document.getElementById('modal-address-row').classList.add('hidden');
+                    }
+
+                    document.getElementById('modal-category-fee').textContent = (order.calculatedCategoryFee ? order.calculatedCategoryFee.toFixed(2) : '0.00') + ' ₺';
+                    document.getElementById('modal-delivery-fee').textContent = (order.calculatedDeliveryFee ? order.calculatedDeliveryFee.toFixed(2) : '0.00') + ' ₺';
+                    document.getElementById('modal-total-amount').textContent = (order.totalAmount ? order.totalAmount.toFixed(2) : '0.00') + ' ₺';
+                    
+                    document.getElementById('modal-order-status').value = order.status || 'pending';
+                    document.getElementById('modal-tracking-number').value = order.trackingNumber || '';
+                    document.getElementById('modal-admin-notes').value = order.adminNotes || '';
+
+                    orderDetailModal.classList.remove('hidden');
+                }
+            }
+        });
+
+        // Kategori adlarını Türkçe'ye çevir
+        function getCategoryDisplayName(category) {
+            switch (category) {
+                case 'furniture': return 'Mobilya';
+                case 'electronics': return 'Elektronik';
+                case 'clothing': return 'Giyim';
+                case 'cosmetics': return 'Kozmetik';
+                case 'stationery': return 'Kırtasiye';
+                default: return 'Bilinmiyor';
+            }
+        }
+
+        // Şehir adlarını Türkçe'ye çevir
+        function getCityDisplayName(city) {
+            switch (city) {
+                case 'lefkosa': return 'Lefkoşa';
+                case 'girne': return 'Girne';
+                case 'magusa': return 'Gazimağusa';
+                case 'guzelyurt': return 'Güzelyurt';
+                case 'iskele': return 'İskele';
+                default: return 'Bilinmiyor';
+            }
+        }
+
+
+        // Sipariş Detay Modal Kapatma
+        closeOrderModal.addEventListener('click', () => {
+            orderDetailModal.classList.add('hidden');
+        });
+
+        // Sipariş Güncelleme Formu
+        orderDetailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentEditingOrderId) return;
+
+            const newStatus = document.getElementById('modal-order-status').value;
+            const newTrackingNumber = document.getElementById('modal-tracking-number').value.trim();
+            const newAdminNotes = document.getElementById('modal-admin-notes').value.trim();
+
+            try {
+                await db.collection('orders').doc(currentEditingOrderId).update({
+                    status: newStatus,
+                    trackingNumber: newTrackingNumber,
+                    adminNotes: newAdminNotes,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('Sipariş başarıyla güncellendi!');
+                orderDetailModal.classList.add('hidden');
+                loadOrders(currentOrderPage); // Listeyi yenile
+            } catch (error) {
+                console.error("Sipariş güncellenirken hata oluştu:", error);
+                alert('Sipariş güncellenirken bir hata oluştu.');
+            }
+        });
+
+        // --- Kullanıcı Yönetimi Modülü Fonksiyonları ---
+        let currentUserPage = 1;
+        const usersPerPage = 10;
+        let lastVisibleUser = null;
+        let firstVisibleUser = null;
+        const userSearchInput = document.getElementById('user-search-input');
+        const usersTableBody = document.getElementById('users-table-body');
+        const prevUsersBtn = document.getElementById('prev-users-btn');
+        const nextUsersBtn = document.getElementById('next-users-btn');
+        const usersPageInfo = document.getElementById('users-page-info');
+        const userDetailModal = document.getElementById('user-detail-modal');
+        const closeUserModal = document.getElementById('close-user-modal');
+        const userDetailForm = document.getElementById('user-detail-form');
+        let currentEditingUserUid = null;
+
+        userSearchInput.addEventListener('input', () => {
+            currentUserPage = 1;
+            lastVisibleUser = null;
+            firstVisibleUser = null;
+            loadUsers(currentUserPage);
+        });
+        prevUsersBtn.addEventListener('click', () => {
+            if (currentUserPage > 1) {
+                currentUserPage--;
+                loadUsers(currentUserPage, 'prev');
+            }
+        });
+        nextUsersBtn.addEventListener('click', () => {
+            currentUserPage++;
+            loadUsers(currentUserPage, 'next');
+        });
+
+        async function loadUsers(page = 1, direction = 'none') {
+            usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">Kullanıcılar yükleniyor...</td></tr>';
+            let query = db.collection('users').orderBy('email', 'asc');
+
+            const searchText = userSearchInput.value.toLowerCase().trim();
+
+            try {
+                let snapshot;
+                if (direction === 'next' && lastVisibleUser) {
+                    snapshot = await query.startAfter(lastVisibleUser).limit(usersPerPage).get();
+                } else if (direction === 'prev' && firstVisibleUser) {
+                    const prevSnapshot = await query.endBefore(firstVisibleUser).limitToLast(usersPerPage).get();
+                    snapshot = prevSnapshot;
+                } else {
+                    snapshot = await query.limit(usersPerPage).get();
+                }
+
+                usersTableBody.innerHTML = '';
+                let filteredUsers = [];
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const user = doc.data();
+                        const userInfo = (user.displayName || user.email || '').toLowerCase();
+                        const userUidShort = doc.id.substring(0, 8).toLowerCase();
+
+                        if (searchText === '' || userInfo.includes(searchText) || userUidShort.includes(searchText)) {
+                            filteredUsers.push({ id: doc.id, ...user });
+                        }
+                    });
+                }
+
+                if (filteredUsers.length === 0) {
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Arama kriterinize uygun kullanıcı bulunamadı.</td></tr>';
+                    prevUsersBtn.disabled = true;
+                    nextUsersBtn.disabled = true;
+                } else {
+                    filteredUsers.forEach(user => {
+                        const signupDate = user.createdAt ? new Date(user.createdAt.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
+                        const row = `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 80px;">${user.id.substring(0, 8)}...</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 150px;">${user.displayName || user.email || 'Bilinmiyor'}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">${user.role || 'user'}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${signupDate}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button data-user-uid="${user.id}" class="text-primary hover:text-primary/80 view-user-btn">Detay</button>
+                                </td>
+                            </tr>
+                        `;
+                        usersTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                    
+                    if (searchText !== '') { // Arama yapılıyorsa sayfalandırmayı devre dışı bırak
+                        prevUsersBtn.disabled = true;
+                        nextUsersBtn.disabled = true;
+                    } else { // Normal sayfalandırma
+                        lastVisibleUser = snapshot.docs[snapshot.docs.length - 1];
+                        firstVisibleUser = snapshot.docs[0];
+
+                        prevUsersBtn.disabled = currentUserPage === 1;
+                        const nextDocSnapshot = await query.startAfter(lastVisibleUser).limit(1).get();
+                        nextUsersBtn.disabled = nextDocSnapshot.empty;
+                    }
+                }
+                usersPageInfo.textContent = `Sayfa ${currentUserPage}`;
+            } catch (error) {
+                console.error("Kullanıcılar yüklenirken hata oluştu:", error);
+                usersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">Kullanıcılar yüklenirken bir hata oluştu.</td></tr>';
+            }
+        }
+
+        // Kullanıcı Detay Modal Açma
+        usersTableBody.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('view-user-btn')) {
+                const userUid = e.target.dataset.userUid;
+                const userDoc = await db.collection('users').doc(userUid).get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    currentEditingUserUid = userUid;
+
+                    document.getElementById('modal-user-title').textContent = `Kullanıcı Detayı: ${userData.displayName || userData.email || 'Bilinmiyor'}`;
+                    document.getElementById('modal-user-uid').textContent = userUid;
+                    document.getElementById('modal-user-email').value = userData.email || '';
+                    document.getElementById('modal-user-display-name').value = userData.displayName || '';
+                    document.getElementById('modal-user-phone').value = userData.phone || '';
+                    document.getElementById('modal-user-role').value = userData.role || 'user';
+
+                    userDetailModal.classList.remove('hidden');
+                }
+            }
+        });
+
+        // Kullanıcı Detay Modal Kapatma
+        closeUserModal.addEventListener('click', () => {
+            userDetailModal.classList.add('hidden');
+        });
+
+        // Kullanıcı Güncelleme Formu
+        userDetailForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentEditingUserUid) return;
+
+            const newDisplayName = document.getElementById('modal-user-display-name').value.trim();
+            const newPhone = document.getElementById('modal-user-phone').value.trim();
+            const newRole = document.getElementById('modal-user-role').value;
+
+            try {
+                await db.collection('users').doc(currentEditingUserUid).update({
+                    displayName: newDisplayName,
+                    phone: newPhone,
+                    role: newRole,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('Kullanıcı bilgileri başarıyla güncellendi!');
+                userDetailModal.classList.add('hidden');
+                loadUsers(currentUserPage); // Listeyi yenile
+            } catch (error) {
+                console.error("Kullanıcı güncellenirken hata oluştu:", error);
+                alert('Kullanıcı bilgileri güncellenirken bir hata oluştu.');
+            }
+        });
+
+        // --- Ayarlar Modülü Fonksiyonları ---
+        const categoryRatesForm = document.getElementById('category-rates-form');
+        const categoryRatesContainer = document.getElementById('category-rates-container');
+        const cityFeesForm = document.getElementById('city-fees-form');
+        const cityFeesContainer = document.getElementById('city-fees-container');
+        const ibanSettingsForm = document.getElementById('iban-settings-form');
+        const ibanInput = document.getElementById('iban-input');
+
+        // Varsayılan oranlar (Firestore'da yoksa veya ilk yüklemede kullanılır)
+        const DEFAULT_CATEGORY_RATES = {
+            'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45,
+            'cosmetics': 0.70, 'stationery': 0.40
+        };
+        const DEFAULT_CITY_FEES = {
+            'lefkosa': 200, 'girne': 350, 'magusa': 300,
+            'guzelyurt': 400, 'iskele': 450
+        };
+
+        async function loadSettings() {
+            try {
+                // Kategori Oranlarını Yükle
+                const settingsDoc = await db.collection('settings').doc('pricing').get();
+                const currentRates = settingsDoc.exists && settingsDoc.data().categoryRates ? settingsDoc.data().categoryRates : DEFAULT_CATEGORY_RATES;
+                categoryRatesContainer.innerHTML = '';
+                for (const category in currentRates) {
+                    const div = document.createElement('div');
+                    div.classList.add('flex', 'flex-col', 'sm:flex-row', 'items-start', 'sm:items-center', 'gap-1', 'sm:gap-2'); // Responsive tasarım için
+                    div.innerHTML = `
+                        <label for="rate-${category}" class="block text-sm font-medium text-gray-700 w-24 capitalize">${getCategoryDisplayName(category)}:</label>
+                        <input type="number" id="rate-${category}" name="${category}" value="${currentRates[category]}" step="0.01" min="0" class="w-24 p-2 border border-gray-300 rounded-md">
+                        <span class="text-gray-600">%</span>
+                    `;
+                    categoryRatesContainer.appendChild(div);
+                }
+
+                // Şehir Ücretlerini Yükle
+                const currentCityFees = settingsDoc.exists && settingsDoc.data().cityFees ? settingsDoc.data().cityFees : DEFAULT_CITY_FEES;
+                cityFeesContainer.innerHTML = '';
+                for (const city in currentCityFees) {
+                    const div = document.createElement('div');
+                    div.classList.add('flex', 'flex-col', 'sm:flex-row', 'items-start', 'sm:items-center', 'gap-1', 'sm:gap-2'); // Responsive tasarım için
+                    div.innerHTML = `
+                        <label for="fee-${city}" class="block text-sm font-medium text-gray-700 w-24 capitalize">${getCityDisplayName(city)}:</label>
+                        <input type="number" id="fee-${city}" name="${city}" value="${currentCityFees[city]}" step="1" min="0" class="w-24 p-2 border border-gray-300 rounded-md">
+                        <span class="text-gray-600">₺</span>
+                    `;
+                    cityFeesContainer.appendChild(div);
+                }
+
+                // IBAN Bilgisini Yükle
+                const ibanDoc = await db.collection('settings').doc('iban').get();
+                ibanInput.value = ibanDoc.exists && ibanDoc.data().value ? ibanDoc.data().value : '';
+
+            } catch (error) {
+                console.error("Ayarlar yüklenirken hata oluştu:", error);
+                alert('Ayarlar yüklenirken bir hata oluştu.');
+            }
+        }
+
+        // Kategori Oranlarını Kaydetme
+        categoryRatesForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newRates = {};
+            categoryRatesContainer.querySelectorAll('input').forEach(input => {
+                newRates[input.name] = parseFloat(input.value);
+            });
+            try {
+                await db.collection('settings').doc('pricing').set({ categoryRates: newRates }, { merge: true });
+                alert('Kategori oranları başarıyla kaydedildi!');
+            } catch (error) {
+                console.error("Kategori oranları kaydedilirken hata oluştu:", error);
+                alert('Kategori oranları kaydedilirken bir hata oluştu.');
+            }
+        });
+
+        // Şehir Ücretlerini Kaydetme
+        cityFeesForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newFees = {};
+            cityFeesContainer.querySelectorAll('input').forEach(input => {
+                newFees[input.name] = parseInt(input.value);
+            });
+            try {
+                await db.collection('settings').doc('pricing').set({ cityFees: newFees }, { merge: true });
+                alert('Şehir teslimat ücretleri başarıyla kaydedildi!');
+            } catch (error) {
+                console.error("Şehir ücretleri kaydedilirken hata oluştu:", error);
+                alert('Şehir ücretleri kaydedilirken bir hata oluştu.');
+            }
+        });
+
+        // IBAN Bilgisini Kaydetme
+        ibanSettingsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newIban = ibanInput.value.trim();
+            try {
+                await db.collection('settings').doc('iban').set({ value: newIban }, { merge: true });
+                alert('IBAN bilgisi başarıyla kaydedildi!');
+            } catch (error) {
+                console.error("IBAN bilgisi kaydedilirken hata oluştu:", error);
+                alert('IBAN bilgisi kaydedilirken bir hata oluştu.');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
