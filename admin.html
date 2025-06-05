@@ -70,6 +70,17 @@
     .status-delivered { background-color: #d1fae5; color: #065f46; } /* bg-green-200 text-green-800 */
     .status-cancelled { background-color: #fee2e2; color: #b91c1c; } /* bg-red-200 text-red-800 */
     .status-unknown { background-color: #e5e7eb; color: #4b5563; } /* bg-gray-200 text-gray-600 */
+
+    /* Metin taşmasını engellemek için genel kurallar */
+    .break-all {
+        word-break: break-all;
+    }
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px; /* Belirli bir genişlik sınırı koyarak daha iyi kontrol */
+    }
 </style>
 </head>
 <body class="bg-gray-50">
@@ -157,7 +168,7 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş No</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
@@ -173,9 +184,9 @@
 
             <div id="content-orders" class="admin-content-section hidden">
                 <h2 class="text-2xl font-bold text-primary mb-6">Sipariş Yönetimi</h2>
-                <div class="flex justify-between items-center mb-4">
-                    <input type="text" id="order-search-input" placeholder="Sipariş ID, müşteri, ürün linki ara..." class="w-full max-w-md p-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary">
-                    <select id="order-status-filter" class="ml-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+                    <input type="text" id="order-search-input" placeholder="Sipariş No, müşteri, ürün linki ara..." class="w-full sm:max-w-md p-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary">
+                    <select id="order-status-filter" class="w-full sm:w-auto p-2 border border-gray-300 rounded-md focus:outline-none focus:border-primary">
                         <option value="all">Tüm Durumlar</option>
                         <option value="pending">Beklemede</option>
                         <option value="approved">Onaylandı</option>
@@ -189,12 +200,12 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sipariş No</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Müşteri</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Toplam</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksiyon</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
                                 </tr>
                             </thead>
                             <tbody id="orders-table-body" class="bg-white divide-y divide-gray-200">
@@ -208,8 +219,8 @@
                     </div>
                 </div>
 
-                <div id="order-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg">
+                <div id="order-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+                    <div class="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg max-h-[90vh] overflow-y-auto">
                         <button id="close-order-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
                             <i class="ri-close-line ri-lg"></i>
                         </button>
@@ -223,9 +234,9 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Ürün Linki:</label>
-                                <a id="modal-product-link" href="#" target="_blank" class="text-blue-600 hover:underline break-all text-sm"></a>
+                                <a id="modal-product-link" href="#" target="_blank" class="text-blue-600 hover:underline break-all text-sm truncate-text-large"></a>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Ürün Fiyatı:</label>
                                     <p id="modal-product-price" class="text-gray-900"></p>
@@ -235,7 +246,7 @@
                                     <p id="modal-product-category" class="text-gray-900"></p>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Teslimat Tipi:</label>
                                     <p id="modal-delivery-type" class="text-gray-900"></p>
@@ -295,11 +306,11 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanıcı ID</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad / E-posta</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kayıt Tarihi</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksiyon</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlem</th>
                                 </tr>
                             </thead>
                             <tbody id="users-table-body" class="bg-white divide-y divide-gray-200">
@@ -313,8 +324,8 @@
                     </div>
                 </div>
 
-                <div id="user-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg">
+                <div id="user-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+                    <div class="bg-white rounded-lg p-6 w-full max-w-lg relative shadow-lg max-h-[90vh] overflow-y-auto">
                         <button id="close-user-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
                             <i class="ri-close-line ri-lg"></i>
                         </button>
@@ -322,7 +333,7 @@
                         <form id="user-detail-form" class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">UID:</label>
-                                <p id="modal-user-uid" class="text-gray-900 font-mono text-sm"></p>
+                                <p id="modal-user-uid" class="text-gray-900 font-mono text-sm break-all"></p>
                             </div>
                             <div>
                                 <label for="modal-user-email" class="block text-sm font-medium text-gray-700">E-posta:</label>
@@ -531,8 +542,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
-                                    <span class="status-badge status-${order.status || 'unknown'}">
-                                        ${order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Bilinmiyor'}
+                                    <span class="status-badge ${getStatusBadgeClass(order.status)}">
+                                        ${order.status ? getStatusDisplayName(order.status) : 'Bilinmiyor'}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
@@ -551,6 +562,18 @@
             }
         }
 
+        // Sipariş durumu Türkçe isimlerini döndüren fonksiyon
+        function getStatusDisplayName(status) {
+            switch (status) {
+                case 'pending': return 'Beklemede';
+                case 'approved': return 'Onaylandı';
+                case 'shipped': return 'Kargolandı';
+                case 'delivered': return 'Teslim Edildi';
+                case 'cancelled': return 'İptal Edildi';
+                default: return 'Bilinmiyor';
+            }
+        }
+
         function getStatusBadgeClass(status) { // Bu fonksiyon CSS'e taşındı ama yine de JS'de kullanılabilir.
             switch (status) {
                 case 'pending': return 'status-pending';
@@ -564,11 +587,10 @@
 
         // --- Sipariş Yönetimi Modülü Fonksiyonları ---
         let currentOrderPage = 1;
-        const ordersPerPage = 10; // Sayfa başına sipariş sayısı
+        const ordersPerPage = 10;
         let lastVisibleOrder = null;
         let firstVisibleOrder = null;
-        let orderQueryCache = []; // Filtreleme ve arama için tüm siparişleri tutar
-
+        
         const orderSearchInput = document.getElementById('order-search-input');
         const orderStatusFilter = document.getElementById('order-status-filter');
         const ordersTableBody = document.getElementById('orders-table-body');
@@ -610,68 +632,81 @@
             const searchText = orderSearchInput.value.toLowerCase().trim();
             const statusFilter = orderStatusFilter.value;
 
-            // Filtreleme ve arama mantığı
             if (statusFilter !== 'all') {
                 query = query.where('status', '==', statusFilter);
             }
-            // Arama metni için tam eşleşme veya başlangıç eşleşmesi (Firestore kısıtlamaları nedeniyle)
-            // Detaylı arama için tüm veriyi çekip JS'de filtrelemek gerekebilir, şimdilik sadece durum filtresiyle devam edelim.
-            // veya firebase functions kullanılarak daha karmaşık aramalar yapılabilir.
+            // Firestore arama kısıtlaması nedeniyle, tam metin arama yapmak için ek önlemler gerekir.
+            // Şimdilik, arama metniyle filtreleme istemci tarafında yapılır (performans sorunları yaratabilir).
 
             try {
                 let snapshot;
                 if (direction === 'next' && lastVisibleOrder) {
                     snapshot = await query.startAfter(lastVisibleOrder).limit(ordersPerPage).get();
                 } else if (direction === 'prev' && firstVisibleOrder) {
-                    // Sayfalandırma için biraz karmaşık: Bir önceki setin sonundan geriye doğru gelir
-                    // Firestore tersine startAt/endAt desteklemediği için bunu düzeltmemiz lazım
-                    // Şimdilik basit pagination, gerçek uygulamada daha gelişmiş bir çözüm gerekebilir
+                    // Firestore'da tersine sayfalandırma karmaşıktır. Bu basit bir yaklaşımdır.
                     const prevSnapshot = await query.endBefore(firstVisibleOrder).limitToLast(ordersPerPage).get();
                     snapshot = prevSnapshot;
                 } else {
                     snapshot = await query.limit(ordersPerPage).get();
                 }
 
-                ordersTableBody.innerHTML = ''; // Tabloyu temizle
-                orderQueryCache = []; // Önbelleği temizle
+                ordersTableBody.innerHTML = '';
+                let filteredOrders = []; // Arama metniyle filtrelenecek siparişler
 
-                if (snapshot.empty) {
+                snapshot.forEach(doc => {
+                    const order = doc.data();
+                    const orderIdShort = doc.id.substring(0, 8);
+                    const customerInfo = (order.fullName || order.userEmail || '').toLowerCase();
+                    const productLinkInfo = (order.productLink || '').toLowerCase();
+
+                    if (searchText === '' || 
+                        orderIdShort.includes(searchText) ||
+                        customerInfo.includes(searchText) ||
+                        productLinkInfo.includes(searchText)) {
+                        filteredOrders.push({ id: doc.id, data: order });
+                    }
+                });
+
+                if (filteredOrders.length === 0) {
                     ordersTableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Hiç sipariş bulunamadı.</td></tr>';
-                    lastVisibleOrder = null;
-                    firstVisibleOrder = null;
                     prevOrdersBtn.disabled = true;
                     nextOrdersBtn.disabled = true;
                 } else {
-                    snapshot.forEach(doc => {
-                        orderQueryCache.push(doc); // Her belgeyi önbelleğe al
-                        const order = doc.data();
+                    filteredOrders.forEach(item => {
+                        const order = item.data;
+                        const docId = item.id;
                         const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
                         const row = `
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${doc.id.substring(0, 8)}...</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 80px;">${docId.substring(0, 8)}...</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 150px;">${order.fullName || order.userEmail || 'Bilinmiyor'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${order.totalAmount ? order.totalAmount.toFixed(2) : '0.00'} ₺</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">
                                     <span class="status-badge ${getStatusBadgeClass(order.status)}">
-                                        ${order.status ? order.status.charAt(0).toUpperCase() + order.status.slice(1) : 'Bilinmiyor'}
+                                        ${order.status ? getStatusDisplayName(order.status) : 'Bilinmiyor'}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${orderDate}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button data-order-id="${doc.id}" class="text-primary hover:text-primary/80 view-order-btn">Detay</button>
+                                    <button data-order-id="${docId}" class="text-primary hover:text-primary/80 view-order-btn">Detay</button>
                                 </td>
                             </tr>
                         `;
                         ordersTableBody.insertAdjacentHTML('beforeend', row);
                     });
 
-                    lastVisibleOrder = snapshot.docs[snapshot.docs.length - 1];
-                    firstVisibleOrder = snapshot.docs[0];
+                    // Pagingsiz arama durumunda next/prev butonlarını ayarla
+                    if (searchText !== '' || statusFilter !== 'all') {
+                         prevOrdersBtn.disabled = true;
+                         nextOrdersBtn.disabled = true;
+                    } else {
+                        lastVisibleOrder = snapshot.docs[snapshot.docs.length - 1];
+                        firstVisibleOrder = snapshot.docs[0];
 
-                    prevOrdersBtn.disabled = currentOrderPage === 1;
-                    // Bir sonraki sayfa var mı kontrolü (küçük bir ek sorgu ile)
-                    const nextDocSnapshot = await query.startAfter(lastVisibleOrder).limit(1).get();
-                    nextOrdersBtn.disabled = nextDocSnapshot.empty;
+                        prevOrdersBtn.disabled = currentOrderPage === 1;
+                        const nextDocSnapshot = await query.startAfter(lastVisibleOrder).limit(1).get();
+                        nextOrdersBtn.disabled = nextDocSnapshot.empty;
+                    }
                 }
                 ordersPageInfo.textContent = `Sayfa ${currentOrderPage}`;
             } catch (error) {
@@ -687,7 +722,7 @@
                 const orderDoc = await db.collection('orders').doc(orderId).get();
                 if (orderDoc.exists) {
                     const order = orderDoc.data();
-                    currentEditingOrderId = orderId; // Düzenlenen siparişin ID'sini sakla
+                    currentEditingOrderId = orderId;
 
                     document.getElementById('modal-order-id').textContent = `Sipariş Detayı: #${orderId.substring(0, 8)}...`;
                     document.getElementById('modal-customer-name').textContent = order.fullName || order.userEmail || 'Bilinmiyor';
@@ -695,16 +730,16 @@
                     document.getElementById('modal-customer-phone').textContent = order.phone || '';
                     
                     document.getElementById('modal-product-link').href = order.productLink || '#';
-                    document.getElementById('modal-product-link').textContent = order.productLink ? (order.productLink.length > 50 ? order.productLink.substring(0, 50) + '...' : order.productLink) : 'Link Yok';
+                    document.getElementById('modal-product-link').textContent = order.productLink ? (order.productLink.length > 60 ? order.productLink.substring(0, 57) + '...' : order.productLink) : 'Link Yok';
 
                     document.getElementById('modal-product-price').textContent = (order.productPrice ? order.productPrice.toFixed(2) : '0.00') + ' ₺';
-                    document.getElementById('modal-product-category').textContent = order.productCategory ? order.productCategory.charAt(0).toUpperCase() + order.productCategory.slice(1) : 'Bilinmiyor';
+                    document.getElementById('modal-product-category').textContent = order.productCategory ? getCategoryDisplayName(order.productCategory) : 'Bilinmiyor';
                     
                     document.getElementById('modal-delivery-type').textContent = order.deliveryType === 'home' ? 'Eve Teslim' : 'Depodan Teslim';
 
                     if (order.deliveryType === 'home') {
                         document.getElementById('modal-city-row').classList.remove('hidden');
-                        document.getElementById('modal-city').textContent = order.city ? order.city.charAt(0).toUpperCase() + order.city.slice(1) : 'Bilinmiyor';
+                        document.getElementById('modal-city').textContent = order.city ? getCityDisplayName(order.city) : 'Bilinmiyor';
                         document.getElementById('modal-address-row').classList.remove('hidden');
                         document.getElementById('modal-delivery-address').textContent = order.deliveryAddress || 'Adres Yok';
                     } else {
@@ -724,6 +759,31 @@
                 }
             }
         });
+
+        // Kategori adlarını Türkçe'ye çevir
+        function getCategoryDisplayName(category) {
+            switch (category) {
+                case 'furniture': return 'Mobilya';
+                case 'electronics': return 'Elektronik';
+                case 'clothing': return 'Giyim';
+                case 'cosmetics': return 'Kozmetik';
+                case 'stationery': return 'Kırtasiye';
+                default: return 'Bilinmiyor';
+            }
+        }
+
+        // Şehir adlarını Türkçe'ye çevir
+        function getCityDisplayName(city) {
+            switch (city) {
+                case 'lefkosa': return 'Lefkoşa';
+                case 'girne': return 'Girne';
+                case 'magusa': return 'Gazimağusa';
+                case 'guzelyurt': return 'Güzelyurt';
+                case 'iskele': return 'İskele';
+                default: return 'Bilinmiyor';
+            }
+        }
+
 
         // Sipariş Detay Modal Kapatma
         closeOrderModal.addEventListener('click', () => {
@@ -789,7 +849,7 @@
 
         async function loadUsers(page = 1, direction = 'none') {
             usersTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">Kullanıcılar yükleniyor...</td></tr>';
-            let query = db.collection('users').orderBy('email', 'asc'); // Email'e göre sırala
+            let query = db.collection('users').orderBy('email', 'asc');
 
             const searchText = userSearchInput.value.toLowerCase().trim();
 
@@ -805,51 +865,46 @@
                 }
 
                 usersTableBody.innerHTML = '';
-                if (snapshot.empty) {
-                    usersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Hiç kullanıcı bulunamadı.</td></tr>';
-                    lastVisibleUser = null;
-                    firstVisibleUser = null;
+                let filteredUsers = [];
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    const userInfo = (user.displayName || user.email || '').toLowerCase();
+                    const userUidShort = doc.id.substring(0, 8).toLowerCase();
+
+                    if (searchText === '' || userInfo.includes(searchText) || userUidShort.includes(searchText)) {
+                         filteredUsers.push({ id: doc.id, ...user });
+                    }
+                });
+
+                if (filteredUsers.length === 0) {
+                    usersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Arama kriterinize uygun kullanıcı bulunamadı.</td></tr>';
                     prevUsersBtn.disabled = true;
                     nextUsersBtn.disabled = true;
                 } else {
-                    let usersData = [];
-                    snapshot.forEach(doc => {
-                        const user = doc.data();
-                        // Arama metni filtrelemesi (Firestore'da direk full text search olmadığı için)
-                        if (searchText === '' || (user.email && user.email.toLowerCase().includes(searchText)) || (user.displayName && user.displayName.toLowerCase().includes(searchText))) {
-                             usersData.push({ id: doc.id, ...user });
-                        }
+                    filteredUsers.forEach(user => {
+                        const signupDate = user.createdAt ? new Date(user.createdAt.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
+                        const row = `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 80px;">${user.id.substring(0, 8)}...</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate-text" style="max-width: 150px;">${user.displayName || user.email || 'Bilinmiyor'}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">${user.role || 'user'}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${signupDate}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button data-user-uid="${user.id}" class="text-primary hover:text-primary/80 view-user-btn">Detay</button>
+                                </td>
+                            </tr>
+                        `;
+                        usersTableBody.insertAdjacentHTML('beforeend', row);
                     });
-
-                    // Eğer arama yapılıyorsa ve sonuçlar çok azsa, firebase pagination mantığı değişebilir
-                    // Şimdilik sadece çekilen 10 kullanıcı içinde filtreleme yapılıyor.
-                    // Büyük veritabanları için bu kısım cloud function gerektirebilir.
-
-                    if (usersData.length === 0) {
-                        usersTableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Arama kriterinize uygun kullanıcı bulunamadı.</td></tr>';
+                    
+                    if (searchText !== '') { // Arama yapılıyorsa sayfalandırmayı devre dışı bırak
                         prevUsersBtn.disabled = true;
                         nextUsersBtn.disabled = true;
-                    } else {
-                        usersData.forEach(user => {
-                            const signupDate = user.createdAt ? new Date(user.createdAt.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
-                            const row = `
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.id.substring(0, 8)}...</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.displayName || user.email || 'Bilinmiyor'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">${user.role || 'user'}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${signupDate}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button data-user-uid="${user.id}" class="text-primary hover:text-primary/80 view-user-btn">Detay</button>
-                                    </td>
-                                </tr>
-                            `;
-                            usersTableBody.insertAdjacentHTML('beforeend', row);
-                        });
-
+                    } else { // Normal sayfalandırma
                         lastVisibleUser = snapshot.docs[snapshot.docs.length - 1];
                         firstVisibleUser = snapshot.docs[0];
 
-                        prevUsersBtn.disabled = currentOrderPage === 1; // Kullanıcı sayfası da 1 ise devre dışı
+                        prevUsersBtn.disabled = currentUserPage === 1;
                         const nextDocSnapshot = await query.startAfter(lastVisibleUser).limit(1).get();
                         nextUsersBtn.disabled = nextDocSnapshot.empty;
                     }
@@ -920,6 +975,7 @@
         const ibanSettingsForm = document.getElementById('iban-settings-form');
         const ibanInput = document.getElementById('iban-input');
 
+        // Varsayılan oranlar (Firestore'da yoksa veya ilk yüklemede kullanılır)
         const DEFAULT_CATEGORY_RATES = {
             'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45,
             'cosmetics': 0.70, 'stationery': 0.40
@@ -937,9 +993,9 @@
                 categoryRatesContainer.innerHTML = '';
                 for (const category in currentRates) {
                     const div = document.createElement('div');
-                    div.classList.add('flex', 'items-center', 'gap-2');
+                    div.classList.add('flex', 'flex-col', 'sm:flex-row', 'items-start', 'sm:items-center', 'gap-1', 'sm:gap-2'); // Responsive tasarım için
                     div.innerHTML = `
-                        <label for="rate-${category}" class="block text-sm font-medium text-gray-700 w-32 capitalize">${category}:</label>
+                        <label for="rate-${category}" class="block text-sm font-medium text-gray-700 w-24 capitalize">${getCategoryDisplayName(category)}:</label>
                         <input type="number" id="rate-${category}" name="${category}" value="${currentRates[category]}" step="0.01" min="0" class="w-24 p-2 border border-gray-300 rounded-md">
                         <span class="text-gray-600">%</span>
                     `;
@@ -951,9 +1007,9 @@
                 cityFeesContainer.innerHTML = '';
                 for (const city in currentCityFees) {
                     const div = document.createElement('div');
-                    div.classList.add('flex', 'items-center', 'gap-2');
+                    div.classList.add('flex', 'flex-col', 'sm:flex-row', 'items-start', 'sm:items-center', 'gap-1', 'sm:gap-2'); // Responsive tasarım için
                     div.innerHTML = `
-                        <label for="fee-${city}" class="block text-sm font-medium text-gray-700 w-32 capitalize">${city}:</label>
+                        <label for="fee-${city}" class="block text-sm font-medium text-gray-700 w-24 capitalize">${getCityDisplayName(city)}:</label>
                         <input type="number" id="fee-${city}" name="${city}" value="${currentCityFees[city]}" step="1" min="0" class="w-24 p-2 border border-gray-300 rounded-md">
                         <span class="text-gray-600">₺</span>
                     `;
@@ -1014,15 +1070,6 @@
                 alert('IBAN bilgisi kaydedilirken bir hata oluştu.');
             }
         });
-
-        // Sayfa yüklendiğinde varsayılan olarak kontrol panelini göster (Auth kontrolünden sonra)
-        // Bu artık auth.onAuthStateChanged içinde çağrılıyor.
-
-        // Initial settings data for main site to fetch:
-        // You'll need to fetch these from Firestore in your main site (index.html) as well.
-        // For example, in index.html, load 'settings/pricing' and 'settings/iban' to use their values.
-        // The calculator in index.html currently uses hardcoded values. You should update it
-        // to fetch from Firestore when you have a chance.
     });
 </script>
 
