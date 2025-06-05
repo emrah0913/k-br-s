@@ -615,16 +615,96 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     calculatorForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const auth = firebase.auth();
+  <!-- Firestore destekli siparis kaydetme entegre edildi -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getir Kıbrıs</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+      authDomain: "kibris-6b4f7.firebaseapp.com",
+      projectId: "kibris-6b4f7",
+      storageBucket: "kibris-6b4f7.firebasestorage.app",
+      messagingSenderId: "141262926171",
+      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+      measurementId: "G-JL9P6BRZTD"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+</head>
+<body>
+  <!-- Siparis formu ve butonlar burada olacak -->
+  <form id="calculator-form">
+    <!-- Gerekli inputlar burada olacak (kısaltıldı) -->
+    <input type="text" id="full-name-input" placeholder="Ad Soyad" />
+    <input type="tel" id="phone-input" placeholder="Telefon" />
+    <input type="url" id="product-link" placeholder="Ürün Linki" />
+    <input type="number" id="product-price" placeholder="Fiyat" />
+    <select id="product-category">
+      <option value="furniture">Mobilya</option>
+    </select>
+    <input type="radio" name="delivery-type" value="warehouse" checked /> Depodan teslim
+    <input type="radio" name="delivery-type" value="home" /> Eve teslim
+    <select id="city">
+      <option value="lefkosa">Lefkoşa</option>
+    </select>
+    <textarea id="delivery-address-input" placeholder="Adres"></textarea>
+    <select id="order-method">
+      <option value="self">Kendi sipariş edeceğim</option>
+      <option value="service">Siz sipariş edin</option>
+    </select>
+    <button type="submit">Siparişi Onayla</button>
+  </form>
 
-        if (submitButton.textContent === 'Siparişi Onayla') {
-            const fullName = fullNameInput.value.trim();
-            const phone = phoneInput.value.trim();
+  <script>
+    document.getElementById('calculator-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert('Lütfen önce giriş yapın');
+        return;
+      }
+      const fullName = document.getElementById('full-name-input').value.trim();
+      const phone = document.getElementById('phone-input').value.trim();
+      const productLink = document.getElementById('product-link').value.trim();
+      const productPrice = parseFloat(document.getElementById('product-price').value);
+      const category = document.getElementById('product-category').value;
+      const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+      const city = document.getElementById('city').value;
+      const deliveryAddress = document.getElementById('delivery-address-input').value.trim();
+      const orderMethod = document.getElementById('order-method').value;
 
-            if (!fullName) {
-                window.showToast('Lütfen ad soyad girin.'); return;
-            }
+      db.collection('orders').add({
+        userId: user.uid,
+        fullName,
+        phone,
+        productLink,
+        productPrice,
+        category,
+        deliveryType,
+        city,
+        deliveryAddress,
+        orderMethod,
+        createdAt: new Date()
+      }).then(() => {
+        alert('Sipariş başarıyla kaydedildi');
+        window.location.href = 'https://getirkibris.com/sepet.html';
+      }).catch((err) => {
+        console.error('Sipariş kaydedilemedi:', err);
+        alert('Sipariş kaydedilirken hata oluştu.');
+      });
+    });
+  </script>
+</body>
+</html>
+ }
             if (!phone) { 
                 window.showToast('Lütfen telefon numarası girin.'); return;
             }
