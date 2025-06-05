@@ -590,114 +590,124 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script id="calculator-script">
 document.addEventListener('DOMContentLoaded', function() {
-const calculatorSection = document.getElementById('calculator-section');
-const calculatorForm = document.getElementById('calculator-form');
-const citySelection = document.getElementById('city-selection');
-const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
-const calculationResult = document.getElementById('calculation-result');
-const resultCityRow = document.getElementById('result-city-row');
+    const calculatorSection = document.getElementById('calculator-section');
+    const calculatorForm = document.getElementById('calculator-form');
+    const citySelection = document.getElementById('city-selection');
+    const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
+    const calculationResult = document.getElementById('calculation-result');
+    const resultCityRow = document.getElementById('result-city-row');
 
-// Toggle calculator section - window nesnesine eklenerek global yapıldı
-window.toggleCalculatorSection = function() {
-    calculatorSection.classList.toggle('hidden');
-    if (!calculatorSection.classList.contains('hidden')) {
-        // Scroll to calculator section
-        calculatorSection.scrollIntoView({ behavior: 'smooth' });
-    }
-};
+    // Toggle calculator section - window nesnesine eklenerek global yapıldı
+    window.toggleCalculatorSection = function() {
+        calculatorSection.classList.toggle('hidden');
+        if (!calculatorSection.classList.contains('hidden')) {
+            // Scroll to calculator section
+            calculatorSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
-// Handle delivery type change
-deliveryRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-        // Update radio button UI
-        document.querySelectorAll('.delivery-radio div').forEach(dot => {
-            dot.classList.add('hidden');
+    // Handle delivery type change
+    deliveryRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Update radio button UI
+            document.querySelectorAll('.delivery-radio div').forEach(dot => {
+                dot.classList.add('hidden');
+            });
+            // Seçili olan radio'nun içindeki div'i görünür yap
+            if(this.checked) {
+                const radioDiv = this.parentElement.querySelector('.delivery-radio div');
+                if(radioDiv) radioDiv.classList.remove('hidden');
+            }
+
+            // Show/hide city selection
+            if (this.value === 'home') {
+                citySelection.classList.remove('hidden');
+            } else {
+                citySelection.classList.add('hidden');
+            }
         });
-        // Seçili olan radio'nun içindeki div'i görünür yap
-        if(this.checked) { // Kontrol eklendi
-            const radioDiv = this.parentElement.querySelector('.delivery-radio div');
-            if(radioDiv) radioDiv.classList.remove('hidden');
-        }
-
-        // Show/hide city selection
-        if (this.value === 'home') {
-            citySelection.classList.remove('hidden');
-        } else {
-            citySelection.classList.add('hidden');
-        }
     });
-});
 
-// Sayfa yüklendiğinde başlangıçta seçili olan radio butonun UI'ını ayarla
-const initiallyCheckedRadio = document.querySelector('input[name="delivery-type"]:checked');
-if (initiallyCheckedRadio) {
-    const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
-    if (radioDiv) radioDiv.classList.remove('hidden');
-}
+    // Sayfa yüklendiğinde başlangıçta seçili olan radio butonun UI'ını ayarla
+    const initiallyCheckedRadio = document.querySelector('input[name="delivery-type"]:checked');
+    if (initiallyCheckedRadio) {
+        const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
+        if (radioDiv) radioDiv.classList.remove('hidden');
+    }
 
 
-// Handle form submission
-calculatorForm.addEventListener('submit', function(e) {
-e.preventDefault();
-const orderMethod = document.getElementById('order-method').value;
-const price = parseFloat(document.getElementById('product-price').value) || 0;
-const category = document.getElementById('product-category').value;
-const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-const city = document.getElementById('city').value;
+    // Handle form submission
+    calculatorForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const orderMethod = document.getElementById('order-method').value;
+        const price = parseFloat(document.getElementById('product-price').value) || 0;
+        const category = document.getElementById('product-category').value;
+        const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+        const city = document.getElementById('city').value;
 
-if (!orderMethod) {
-showToast('Lütfen sipariş yöntemi seçin'); // showToast utils-script'ten geliyor olmalı
-return;
-}
-// Validate inputs
-if (price <= 0) {
-showToast('Lütfen geçerli bir fiyat girin');
-return;
-}
-if (!category) {
-showToast('Lütfen bir kategori seçin');
-return;
-}
-if (deliveryType === 'home' && !city) {
-showToast('Lütfen bir şehir seçin');
-return;
-}
-// Calculate costs
-const categoryRates = {
-'furniture': 0.70,
-'electronics': 0.70,
-'clothing': 0.45,
-'cosmetics': 0.70,
-'stationery': 0.40
-};
-const cityFees = {
-'lefkosa': 200,
-'girne': 350,
-'magusa': 300,
-'guzelyurt': 400,
-'iskele': 450
-};
-const categoryFee = price * categoryRates[category];
-let deliveryFee = 0;
-if (deliveryType === 'home') {
-deliveryFee = cityFees[city] || 0;
-}
-const total = price + categoryFee + deliveryFee;
-// Update result
-document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
-document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
-document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
-document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
-// Show/hide city fee row
-if (deliveryType === 'home') {
-resultCityRow.classList.remove('hidden');
-} else {
-resultCityRow.classList.add('hidden');
-}
-// Show result
-calculationResult.classList.remove('hidden');
-calculationResult.scrollIntoView({ behavior: 'smooth' });
-});
+        if (!orderMethod) {
+            showToast('Lütfen sipariş yöntemi seçin');
+            return;
+        }
+        if (price <= 0) {
+            showToast('Lütfen geçerli bir fiyat girin');
+            return;
+        }
+        if (!category) {
+            showToast('Lütfen bir kategori seçin');
+            return;
+        }
+        if (deliveryType === 'home' && !city) {
+            showToast('Lütfen bir şehir seçin');
+            return;
+        }
+
+        // Calculate costs
+        const categoryRates = {
+            'furniture': 0.70,
+            'electronics': 0.70,
+            'clothing': 0.45,
+            'cosmetics': 0.70,
+            'stationery': 0.40
+        };
+        const cityFees = {
+            'lefkosa': 200,
+            'girne': 350,
+            'magusa': 300,
+            'guzelyurt': 400,
+            'iskele': 450
+        };
+
+        const categoryFee = price * (categoryRates[category] || 0); // Ensure categoryRates[category] is not undefined
+        let deliveryFee = 0;
+        if (deliveryType === 'home') {
+            deliveryFee = cityFees[city] || 0;
+        }
+
+        let total;
+        if (orderMethod === 'self') {
+            // If user orders themselves, Getir Kıbrıs total is only category fee + delivery fee
+            total = categoryFee + deliveryFee;
+        } else { // For 'service' (Getir Kıbrıs orders for the user)
+            total = price + categoryFee + deliveryFee;
+        }
+
+        // Update result
+        document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`; // Always show product price for user's info
+        document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
+        document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
+        document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`; // This is what Getir Kıbrıs charges
+
+        // Show/hide city fee row
+        if (deliveryType === 'home') {
+            resultCityRow.classList.remove('hidden');
+        } else {
+            resultCityRow.classList.add('hidden');
+        }
+        // Show result
+        calculationResult.classList.remove('hidden');
+        calculationResult.scrollIntoView({ behavior: 'smooth' });
+    });
 });
 </script>
 
