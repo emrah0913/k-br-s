@@ -103,14 +103,14 @@
                 <span class="text-sm font-medium">Siparişlerim</span>
             </a>
 
-            <a href="https://getirkibris.com/sepet.html" data-readdy="true" id="track-btn"
+            <button id="order-now-btn"
                 class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                 <div
                     class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-                    <i class="ri-truck-line ri-xl text-primary"></i>
+                    <i class="ri-shopping-bag-line ri-xl text-primary"></i>
                 </div>
-                <span class="text-sm font-medium">Kargo Takip</span>
-            </a>
+                <span class="text-sm font-medium">Sipariş Ver</span>
+            </button>
         </div>
 
         <div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
@@ -118,10 +118,10 @@
             <form id="calculator-form" class="space-y-4">
                 <div>
                     <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş
-                        Yöntemi</label>
+                        Yöntemi<span class="text-red-500">*</span></label>
                     <div class="relative mb-4">
                         <i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <select id="order-method"
+                        <select id="order-method" required
                             class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
                             <option value="" disabled selected>Sipariş yöntemi seçin</option>
                             <option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
@@ -133,10 +133,10 @@
                     </div>
                     <div>
                         <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün
-                            Linki</label>
+                            Linki<span class="text-red-500">*</span></label>
                         <div class="relative">
                             <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="url" id="product-link"
+                            <input type="url" id="product-link" required
                                 class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
                                 placeholder="https://www.example.com/urun">
                         </div>
@@ -144,19 +144,19 @@
                 </div>
                 <div>
                     <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı
-                        (₺)</label>
+                        (₺)<span class="text-red-500">*</span></label>
                     <div class="relative">
                         <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="number" id="product-price"
+                        <input type="number" id="product-price" required
                             class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                            placeholder="0.00" step="any">
+                            placeholder="0.00" step="any" min="0.01">
                     </div>
                 </div>
                 <div>
-                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori<span class="text-red-500">*</span></label>
                     <div class="relative">
                         <i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <select id="product-category"
+                        <select id="product-category" required
                             class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
                             <option value="" disabled selected>Kategori seçin</option>
                             <option value="furniture">Mobilya</option>
@@ -170,10 +170,10 @@
                     </div>
                 </div>
                 <div>
-                    <span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi</span>
+                    <span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi<span class="text-red-500">*</span></span>
                     <div class="flex space-x-4">
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="delivery-type" value="warehouse" class="sr-only" checked>
+                            <input type="radio" name="delivery-type" value="warehouse" class="sr-only" checked required>
                             <div
                                 class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
                                 <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
@@ -181,7 +181,7 @@
                             <span class="text-sm">Depodan teslim</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="delivery-type" value="home" class="sr-only">
+                            <input type="radio" name="delivery-type" value="home" class="sr-only" required>
                             <div
                                 class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
                                 <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
@@ -191,7 +191,7 @@
                     </div>
                 </div>
                 <div id="city-selection" class="hidden">
-                    <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+                    <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir<span class="text-red-500">*</span></label>
                     <div class="relative">
                         <i class="ri-map-pin-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         <select id="city"
@@ -217,15 +217,15 @@
                 <h4 class="text-md font-semibold text-primary border-t pt-4 mt-4">İletişim Bilgileri</h4>
                 <div>
                     <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad <span
-                            class="text-red-500">*</span></label>
-                    <input type="text" id="full-name-input"
+                                class="text-red-500">*</span></label>
+                    <input type="text" id="full-name-input" required
                         class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
                         placeholder="Adınız Soyadınız">
                 </div>
                 <div>
                     <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Telefon <span
-                            class="text-red-500">*</span></label>
-                    <input type="tel" id="phone-input"
+                                class="text-red-500">*</span></label>
+                    <input type="tel" id="phone-input" required
                         class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
                         placeholder="Telefon numaranız">
                 </div>
@@ -522,7 +522,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // Please use your own Firebase API key
+        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // Lütfen kendi Firebase API anahtarınızı kullanın
         authDomain: "kibris-6b4f7.firebaseapp.com",
         projectId: "kibris-6b4f7",
         storageBucket: "kibris-6b4f7.firebasestorage.app",
@@ -607,8 +607,7 @@
         });
 
         const protectedButtons = [
-            document.getElementById('my-orders-btn'),
-            document.getElementById('track-btn')
+            document.getElementById('my-orders-btn')
         ];
         protectedButtons.forEach(button => {
             if (button) {
@@ -626,6 +625,16 @@
             calculateBtn.addEventListener('click', function () {
                 if (window.toggleCalculatorSection) {
                     window.toggleCalculatorSection();
+                }
+            });
+        }
+
+        // Yeni "Sipariş Ver" butonuna tıklama olayı ekleme
+        const orderNowBtn = document.getElementById('order-now-btn');
+        if (orderNowBtn) {
+            orderNowBtn.addEventListener('click', function() {
+                if (window.toggleCalculatorSection) {
+                    window.toggleCalculatorSection(); // Hesaplama modülünü aç
                 }
             });
         }
@@ -675,6 +684,11 @@
             calculationResult.classList.add('hidden');
             if (commonOrderDetailsSection) commonOrderDetailsSection.classList.add('hidden');
             if (homeDeliveryAddressSection) homeDeliveryAddressSection.classList.add('hidden');
+            // Zorunlu alanların required özelliğini başlangıç durumuna döndür
+            document.getElementById('full-name-input').removeAttribute('required');
+            document.getElementById('phone-input').removeAttribute('required');
+            document.getElementById('delivery-address-input').removeAttribute('required');
+            document.getElementById('city').removeAttribute('required');
         }
 
         formInputsToResetButton.forEach(input => {
@@ -699,8 +713,12 @@
 
                 if (this.value === 'home') {
                     citySelection.classList.remove('hidden');
+                    document.getElementById('city').setAttribute('required', 'required'); // Şehir zorunlu
+                    document.getElementById('delivery-address-input').setAttribute('required', 'required'); // Teslimat adresi zorunlu
                 } else {
                     citySelection.classList.add('hidden');
+                    document.getElementById('city').removeAttribute('required');
+                    document.getElementById('delivery-address-input').removeAttribute('required');
                 }
             });
         });
@@ -711,8 +729,12 @@
             if (radioDiv) radioDiv.classList.remove('hidden');
             if (initiallyCheckedRadio.value === 'home') {
                 citySelection.classList.remove('hidden');
+                document.getElementById('city').setAttribute('required', 'required'); // Şehir zorunlu
+                document.getElementById('delivery-address-input').setAttribute('required', 'required'); // Teslimat adresi zorunlu
             } else {
                 citySelection.classList.add('hidden');
+                document.getElementById('city').removeAttribute('required');
+                document.getElementById('delivery-address-input').removeAttribute('required');
             }
         }
 
@@ -802,12 +824,8 @@
                 const fullName = fullNameInput.value.trim();
                 const phone = phoneInput.value.trim();
 
-                if (!fullName) {
-                    window.showToast('Lütfen ad soyad girin.');
-                    return;
-                }
-                if (!phone) {
-                    window.showToast('Lütfen telefon numarası girin.');
+                if (!fullName || !phone) {
+                    window.showToast('Lütfen tüm iletişim bilgilerini doldurun.');
                     return;
                 }
 
@@ -833,6 +851,10 @@
                     return;
                 }
 
+                // İletişim bilgilerini zorunlu yap
+                fullNameInput.setAttribute('required', 'required');
+                phoneInput.setAttribute('required', 'required');
+
                 if (commonOrderDetailsSection) {
                     commonOrderDetailsSection.classList.remove('hidden');
                     commonOrderDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -842,36 +864,28 @@
                 if (currentDeliveryType === 'home') {
                     if (homeDeliveryAddressSection) {
                         homeDeliveryAddressSection.classList.remove('hidden');
+                        deliveryAddressInput.setAttribute('required', 'required'); // Teslimat adresi zorunlu
                     }
                 } else {
                     if (homeDeliveryAddressSection) {
                         homeDeliveryAddressSection.classList.add('hidden');
+                        deliveryAddressInput.removeAttribute('required');
                     }
                 }
                 submitButton.textContent = 'Siparişi Onayla';
 
             } else { // Buton 'Hesapla' durumunda
                 const orderMethod = document.getElementById('order-method').value;
+                const productLink = document.getElementById('product-link').value.trim();
                 const productPriceInput = document.getElementById('product-price');
-                const price = parseFloat(productPriceInput.value) || 0;
+                const price = parseFloat(productPriceInput.value);
                 const category = document.getElementById('product-category').value;
                 const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
                 const city = document.getElementById('city').value;
 
-                if (!orderMethod) {
-                    window.showToast('Lütfen sipariş yöntemi seçin');
-                    return;
-                }
-                if (price <= 0) {
-                    window.showToast('Lütfen geçerli bir ürün fiyatı girin (0\'dan büyük).');
-                    return;
-                }
-                if (!category) {
-                    window.showToast('Lütfen bir kategori seçin');
-                    return;
-                }
-                if (deliveryType === 'home' && !city) {
-                    window.showToast('Lütfen bir şehir seçin');
+                // Tüm zorunlu alanların kontrolü
+                if (!orderMethod || !productLink || isNaN(price) || price <= 0 || !category || !deliveryType || (deliveryType === 'home' && !city)) {
+                    window.showToast('Lütfen hesaplama için tüm zorunlu alanları doldurun.');
                     return;
                 }
 
