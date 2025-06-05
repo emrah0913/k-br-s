@@ -424,10 +424,10 @@ Kapat
 <script>
   // Your web app's Firebase configuration (from your latest message)
   const firebaseConfig = {
-    apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+    apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // Lütfen kendi Firebase API anahtarınızı kullanın
     authDomain: "kibris-6b4f7.firebaseapp.com",
     projectId: "kibris-6b4f7",
-    storageBucket: "kibris-6b4f7.firebasestorage.app", // Note: Typically .appspot.com but using as provided
+    storageBucket: "kibris-6b4f7.firebasestorage.app", 
     messagingSenderId: "141262926171",
     appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
     measurementId: "G-JL9P6BRZTD"
@@ -435,22 +435,12 @@ Kapat
 
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
-
-  // Initialize Analytics (often auto-initialized with compat if measurementId is in config)
   const analytics = firebase.analytics();
-  // You can log events like this:
-  // analytics.logEvent('page_view', { page_title: document.title });
-
-  // Make auth service easily accessible for other scripts if needed,
-  // though it's globally available via firebase.auth() after SDK load.
-  // const auth = firebase.auth(); // Can be defined here or within auth-script
 </script>
 
 <script id="auth-script">
 document.addEventListener('DOMContentLoaded', function() {
-    // Get Firebase Auth instance
-    const auth = firebase.auth(); // Ensure Firebase is initialized before this script runs
-
+    const auth = firebase.auth(); 
     const loginBtn = document.getElementById('login-btn');
     const profileContainer = document.getElementById('profile-container');
     const profileImg = document.getElementById('profile-img');
@@ -461,25 +451,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const authLoginBtn = document.getElementById('auth-login-btn');
     const closeAuthModal = document.getElementById('close-auth-modal');
 
-    // Firebase: Listen for auth state changes
     auth.onAuthStateChanged(function(user) {
-        if (user) {
-            // User is signed in.
-            console.log("Firebase user signed in:", user);
-        } else {
-            // User is signed out.
-            console.log("Firebase user signed out.");
-        }
         updateAuthUI(user);
     });
 
-
-    // Show login modal
     loginBtn.addEventListener('click', function() {
         loginModal.classList.remove('hidden');
     });
-
-    // Close login modal
     closeLoginModal.addEventListener('click', function() {
         loginModal.classList.add('hidden');
     });
@@ -497,17 +475,12 @@ document.addEventListener('DOMContentLoaded', function() {
           });
     });
 
-    // Show auth required modal
     window.showAuthRequiredModal = function() {
         authRequiredModal.classList.remove('hidden');
     }
-
-    // Close auth required modal
     closeAuthModal.addEventListener('click', function() {
         authRequiredModal.classList.add('hidden');
     });
-
-    // Auth login button
     authLoginBtn.addEventListener('click', function() {
         authRequiredModal.classList.add('hidden');
         loginModal.classList.remove('hidden');
@@ -541,7 +514,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('my-orders-btn'),
         document.getElementById('track-btn')
     ];
-
     protectedButtons.forEach(button => {
         if (button) {
             button.addEventListener('click', function(e) {
@@ -574,35 +546,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultCityRow = document.getElementById('result-city-row');
     const resultPriceDisplay = document.getElementById('result-price');
 
-    // Yeni HTML yapısına göre güncellenmiş alanlar
     const commonOrderDetailsSection = document.getElementById('common-order-details-section');
     const homeDeliveryAddressSection = document.getElementById('home-delivery-address-section');
     
     const deliveryAddressInput = document.getElementById('delivery-address-input');
     const fullNameInput = document.getElementById('full-name-input');
     const phoneInput = document.getElementById('phone-input');
-    // productQuantityInput kaldırıldı
 
     const submitButton = calculatorForm.querySelector('button[type="submit"]');
 
+    // DİKKAT: deliveryAddressInput, fullNameInput, phoneInput bu diziden çıkarıldı.
     const formInputsToResetButton = [
         document.getElementById('order-method'),
         document.getElementById('product-link'),
         document.getElementById('product-price'),
         document.getElementById('product-category'),
         ...calculatorForm.querySelectorAll('input[name="delivery-type"]'),
-        document.getElementById('city'),
-        deliveryAddressInput, // Bu hala formun bir parçası, değişince resetlemeli
-        fullNameInput,        // Bu da
-        phoneInput            // Bu da
-        // productQuantityInput buradan kaldırıldı
+        document.getElementById('city')
     ];
 
     window.toggleCalculatorSection = function() {
         calculatorSection.classList.toggle('hidden');
         if (!calculatorSection.classList.contains('hidden')) {
             calculatorSection.scrollIntoView({ behavior: 'smooth' });
-            resetButtonToCalculateState(); // Hesaplama bölümü açıldığında formu sıfırla
+            resetButtonToCalculateState(); 
         }
     };
 
@@ -619,7 +586,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (input) {
             input.addEventListener('change', resetButtonToCalculateState);
             if (input.type === 'text' || input.type === 'number' || input.type === 'url' || input.tagName.toLowerCase() === 'textarea' || input.type === 'tel') {
-                input.addEventListener('input', resetButtonToCalculateState);
+                // 'input' event sadece hesaplama ile ilgili alanlar için olmalı.
+                // Bu genel döngüde 'input' eventini kullanmak yerine, 
+                // spesifik hesaplama alanlarına (örn: product-price) 'input' listener'ı eklemek daha iyi olabilir.
+                // Şimdilik 'change' event'i çoğu durumda yeterli olacaktır.
+                // Eğer ürün fiyatı gibi alanlarda anlık reset isteniyorsa, onlara özel 'input' listener eklenebilir.
+                 input.addEventListener('input', resetButtonToCalculateState); // Bu satır, fiyat gibi alanlarda anlık reset için kalabilir.
             }
         }
     });
@@ -636,20 +608,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (this.value === 'home') {
                 citySelection.classList.remove('hidden');
-            } else { // 'warehouse'
+            } else { 
                 citySelection.classList.add('hidden');
                 // Eğer kullanıcı depoya geçerse ve adres bölümü (homeDeliveryAddressSection) açıksa, kapat.
-                // Bu, resetButtonToCalculateState tarafından zaten halledilecek çünkü radio input değişti.
-                // Ancak yine de burada explicit olarak da yapılabilir, zararı olmaz.
-                if (homeDeliveryAddressSection && !homeDeliveryAddressSection.classList.contains('hidden')) {
-                     homeDeliveryAddressSection.classList.add('hidden');
-                }
+                // Bu, radio 'change' eventi formInputsToResetButton'daki listener'ı tetikleyeceği için
+                // resetButtonToCalculateState() çağrıldığında zaten gizlenecektir.
+                // if (homeDeliveryAddressSection && !homeDeliveryAddressSection.classList.contains('hidden')) {
+                //      homeDeliveryAddressSection.classList.add('hidden');
+                // }
             }
-            // resetButtonToCalculateState() formInputsToResetButton event listener'ı tarafından çağrılacağı için burada tekrar çağırmaya gerek yok.
         });
     });
 
-    // Sayfa ilk yüklendiğinde radio buton ve şehir seçimi durumu
     const initiallyCheckedRadio = document.querySelector('input[name="delivery-type"]:checked');
     if (initiallyCheckedRadio) {
         const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
@@ -660,7 +630,6 @@ document.addEventListener('DOMContentLoaded', function() {
             citySelection.classList.add('hidden');
         }
     }
-    // commonOrderDetailsSection ve homeDeliveryAddressSection başlangıçta gizli (resetButtonToCalculateState ile veya CSS ile)
 
     calculatorForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -684,7 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.showToast('Lütfen teslimat adresini girin.'); return;
                 }
             }
-            // Ürün miktarı ile ilgili doğrulamalar kaldırıldı.
             window.location.href = 'https://getirkibris.com/sepet.html';
 
         } else if (submitButton.textContent === 'Sipariş Ver') {
@@ -697,13 +665,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Kullanıcı giriş yapmış. "Ad Soyad" ve "Telefon" alanlarını göster.
             if (commonOrderDetailsSection) {
                 commonOrderDetailsSection.classList.remove('hidden');
                 commonOrderDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            // "Eve Teslim" seçiliyse "Teslimat Adresi" alanını göster.
             const currentDeliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
             if (currentDeliveryType === 'home') {
                 if (homeDeliveryAddressSection) {
@@ -774,8 +740,6 @@ document.addEventListener('DOMContentLoaded', function() {
             calculationResult.classList.remove('hidden');
             calculationResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             submitButton.textContent = 'Sipariş Ver';
-            
-            // commonOrderDetailsSection ve homeDeliveryAddressSection burada gizli kalır (resetButtonToCalculateState ile).
         }
     });
 });
@@ -783,7 +747,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script id="utils-script">
 document.addEventListener('DOMContentLoaded', function() {
-// Copy to clipboard functionality
 const copyButtons = document.querySelectorAll('.copy-btn');
 copyButtons.forEach(button => {
 button.addEventListener('click', function() {
@@ -800,7 +763,6 @@ console.error('Kopyalama hatası:', err);
 });
 });
 
-// Toast notification - window nesnesine eklenerek global yapıldı
 window.showToast = function(message) {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
