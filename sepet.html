@@ -12,12 +12,12 @@
                     colors: {
                         primary: '#5d3ebc',
                         secondary: '#ffd300',
-                        'status-pending': '#FFC107', // Ödeme Bekleniyor için (Amber)
-                        'status-approved': '#4CAF50', // Onaylandı için (Yeşil)
-                        'status-processing': '#2196F3', // Hazırlanıyor için (Mavi)
-                        'status-shipped': '#FF9800', // Kargoya Verildi için (Turuncu)
-                        'status-delivered': '#8BC34A', // Teslim Edildi için (Açık Yeşil)
-                        'status-cancelled': '#F44336', // İptal Edildi için (Kırmızı)
+                        'status-pending': '#FFC107',
+                        'status-approved': '#4CAF50',
+                        'status-processing': '#2196F3',
+                        'status-shipped': '#FF9800',
+                        'status-delivered': '#8BC34A',
+                        'status-cancelled': '#F44336',
                     },
                     borderRadius: {
                         'button': '8px'
@@ -35,8 +35,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #f7fafc; /* Tailwind gray-100 */
         }
-        /* İkonların dikey hizalaması için ek bir stil */
-        .ri-xl {
+        .ri-xl { /* İkonların dikey hizalaması için */
             vertical-align: middle;
         }
     </style>
@@ -50,7 +49,8 @@
                 Geri
             </a>
             <h1 class="text-xl font-semibold text-white">Siparişlerim</h1>
-            <div class="w-12"></div> </header>
+            <div class="w-12"></div>
+        </header>
 
         <main class="pt-6 px-4">
             <div id="orders-container" class="space-y-6">
@@ -65,114 +65,81 @@
                         Alışverişe Başla
                     </a>
                 </div>
-            </div>
+                </div>
         </main>
     </div>
 
-    {/*
-      Firebase SDK'larını doğrudan HTML'e eklemek yerine,
-      eğer bir build sisteminiz (Webpack, Parcel vb.) varsa oradan import etmek daha yaygındır.
-      Ancak, basit bir HTML sayfası için aşağıdaki gibi script type="module" içinde
-      CDN linklerinden import edilebilir veya projenize `npm install firebase` ile ekleyip
-      build aracınızla bundle edebilirsiniz.
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-      Aşağıdaki örnek, Firebase SDK'larının global scope'a eklendiğini varsayan
-      biraz daha basit bir `script` etiketi kullanır.
-      Eğer `import` anahtar kelimesini script'lerinizde kullanmak isterseniz
-      `<script type="module">` kullanmanız ve Firebase SDK'larını doğru şekilde
-      import etmeniz gerekir.
-
-      Sizin paylaştığınız kod `import` kullandığı için, bu script'i module olarak işaretliyorum.
-      Normalde Firebase SDK'larını bu şekilde import etmek için CDN yerine
-      bir paket yöneticisi (npm/yarn) ve bir build aracı (webpack/vite) kullanılır.
-      Tarayıcıda doğrudan CDN'den ES module import etmek için tam URL'ler gerekebilir
-      ve tüm tarayıcılar bunu sorunsuz desteklemeyebilir veya ek yapılandırma isteyebilir.
-
-      En basit ve yaygın yöntem, Firebase SDK'larını <script src="..."></script> etiketleriyle
-      HTML dosyanıza dahil etmek ve ardından global `firebase` nesnesini kullanmaktır (eski SDK tarzı).
-      Ancak sizin verdiğiniz config v9 olduğu için v9 tarzı JS yazdım.
-      Bu kodun çalışması için Firebase SDK'larının v9 modüler versiyonlarının
-      tarayıcı tarafından erişilebilir olması gerekir.
-    */}
-
-    <script type="module">
-        // Sizin sağladığınız Firebase yapılandırması
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        // import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js"; // Analytics kullanmıyorsak gerekmeyebilir
-
-        // Firestore ve Auth için gerekli importlar
-        import { getFirestore, collection, query, where, orderBy, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-        // Your web app's Firebase configuration
+    <script>
+        // Lütfen kendi Firebase projenizin yapılandırma bilgilerini buraya girin
         const firebaseConfig = {
-            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-            authDomain: "kibris-6b4f7.firebaseapp.com",
-            projectId: "kibris-6b4f7",
-            storageBucket: "kibris-6b4f7.firebasestorage.app",
-            messagingSenderId: "141262926171",
-            appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-            measurementId: "G-JL9P6BRZTD"
+            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // SİZİN API KEY'İNİZ
+            authDomain: "kibris-6b4f7.firebaseapp.com",      // SİZİN AUTH DOMAIN'İNİZ
+            projectId: "kibris-6b4f7",                       // SİZİN PROJECT ID'NİZ
+            storageBucket: "kibris-6b4f7.firebasestorage.app",// SİZİN STORAGE BUCKET'INIZ
+            messagingSenderId: "141262926171",               // SİZİN MESSAGING SENDER ID'NİZ
+            appId: "1:141262926171:web:07226845e51d4bbc0dea7e" // SİZİN APP ID'NİZ
+            // measurementId: "G-JL9P6BRZTD" // Analytics kullanmıyorsanız bu isteğe bağlıdır
         };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        // const analytics = getAnalytics(app); // Eğer analytics kullanacaksanız bu satırı aktif edin
-
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Firebase'i v8 compat tarzında başlat
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
         document.addEventListener('DOMContentLoaded', () => {
             const ordersContainer = document.getElementById('orders-container');
             const loadingOrdersDiv = document.getElementById('loading-orders');
             const noOrdersDiv = document.getElementById('no-orders');
 
-            onAuthStateChanged(auth, user => {
+            auth.onAuthStateChanged(user => {
                 if (user) {
-                    // Kullanıcı giriş yapmış
                     fetchOrders(user.uid);
                 } else {
-                    // Kullanıcı giriş yapmamış
                     loadingOrdersDiv.classList.add('hidden');
                     noOrdersDiv.innerHTML = `
                         <i class="ri-login-box-line text-6xl text-gray-300"></i>
                         <p class="text-gray-500 text-xl mt-4">Siparişlerinizi görmek için lütfen giriş yapın.</p>
-                        <a href="#" id="show-login-modal-link" class="mt-6 inline-block bg-primary text-white px-6 py-2 rounded-button hover:bg-primary/90 transition-colors">
+                        <a href="#" id="show-login-modal-link-compat" class="mt-6 inline-block bg-primary text-white px-6 py-2 rounded-button hover:bg-primary/90 transition-colors">
                             Giriş Yap
-                        </a>`; // TODO: Giriş modalını tetikleyecek bağlantıyı veya login sayfasına yönlendirmeyi ekleyin
+                        </a>`;
                     noOrdersDiv.classList.remove('hidden');
-                    // Örnek: document.getElementById('show-login-modal-link').addEventListener('click', () => { /* login modal'ı göster */ });
-                    // Veya ana sayfanızda login modal'ı açan bir fonksiyon varsa onu çağırın
-                    // Veya: window.location.href = 'login.html'; // Giriş sayfanız varsa
+                    // Giriş modalını açma veya yönlendirme mantığınızı buraya ekleyebilirsiniz.
+                    // Örn: document.getElementById('show-login-modal-link-compat').addEventListener('click', () => { window.location.href = 'login.html'; });
                 }
             });
 
-            async function fetchOrders(userId) {
-                try {
-                    const ordersRef = collection(db, "orders");
-                    const q = query(ordersRef, where("userId", "==", userId), orderBy("orderDate", "desc"));
-                    
-                    const querySnapshot = await getDocs(q);
-                    
-                    loadingOrdersDiv.classList.add('hidden');
-                    if (querySnapshot.empty) {
-                        noOrdersDiv.classList.remove('hidden');
-                    } else {
-                        // Önceki sipariş kartlarını temizle (eğer varsa, sayfa yeniden yüklenmeden bu fonksiyon çağrılırsa diye)
-                        const existingCards = ordersContainer.querySelectorAll('.order-card-dynamic');
-                        existingCards.forEach(card => card.remove());
+            function fetchOrders(userId) {
+                db.collection("orders")
+                    .where("userId", "==", userId)
+                    .orderBy("orderDate", "desc")
+                    .get()
+                    .then((querySnapshot) => {
+                        loadingOrdersDiv.classList.add('hidden');
+                        if (querySnapshot.empty) {
+                            noOrdersDiv.classList.remove('hidden');
+                        } else {
+                             // Önceki sipariş kartlarını temizle
+                            const existingCards = ordersContainer.querySelectorAll('.order-card-dynamic');
+                            existingCards.forEach(card => card.remove());
 
-                        querySnapshot.forEach((doc) => {
-                            const order = doc.data();
-                            ordersContainer.appendChild(createOrderCard(order));
-                        });
-                    }
-                } catch (error) {
-                    console.error("Siparişler çekilirken hata oluştu: ", error);
-                    loadingOrdersDiv.classList.add('hidden');
-                    ordersContainer.innerHTML = '<p class="text-red-500 text-center">Siparişler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>';
-                }
+                            querySnapshot.forEach((doc) => {
+                                const order = doc.data();
+                                ordersContainer.appendChild(createOrderCard(order));
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Siparişler çekilirken hata oluştu (compat): ", error);
+                        loadingOrdersDiv.classList.add('hidden');
+                        ordersContainer.innerHTML = '<p class="text-red-500 text-center">Siparişler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>';
+                    });
             }
 
             function getStatusColor(status) {
@@ -187,25 +154,21 @@
 
             function createOrderCard(order) {
                 const card = document.createElement('div');
-                // Dinamik olarak eklenen kartları daha sonra temizleyebilmek için bir sınıf ekleyelim
                 card.className = 'bg-white shadow-lg rounded-lg p-6 mb-6 order-card-dynamic';
 
                 let orderDateStr = 'Tarih bilgisi yok';
-                if (order.orderDate && order.orderDate.toDate) { // Firestore Timestamp kontrolü
+                if (order.orderDate && typeof order.orderDate.toDate === 'function') { // Firestore Timestamp kontrolü
                     try {
                         orderDateStr = order.orderDate.toDate().toLocaleDateString('tr-TR', {
                             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                         });
                     } catch (e) {
                         console.warn("Tarih formatlama hatası:", e, order.orderDate);
-                        // Eğer toDate() bir şekilde hata verirse veya tarih null ise
-                        if (order.orderDate instanceof Timestamp) { // Firestore Timestamp ise ama toDate() hata verdiyse
+                         if (order.orderDate.seconds) { // Fallback for timestamp like object
                              orderDateStr = new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR');
-                        } else if (typeof order.orderDate === 'string') {
-                            orderDateStr = new Date(order.orderDate).toLocaleDateString('tr-TR');
                         }
                     }
-                } else if (order.orderDate && typeof order.orderDate === 'string') { // String tarih varsa
+                } else if (order.orderDate && (typeof order.orderDate === 'string' || typeof order.orderDate === 'number')) { // String veya number tarih varsa
                      try {
                         orderDateStr = new Date(order.orderDate).toLocaleDateString('tr-TR', {
                             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -217,6 +180,12 @@
                 let deliveryInfo = order.deliveryType || 'Belirtilmemiş';
                 if (order.deliveryType === 'Eve teslim' && order.deliveryCity) {
                     deliveryInfo += ` (${order.deliveryCity})`;
+                }
+                
+                // Ürün linkinin başına http:// ekleme (eğer yoksa)
+                let productLinkHref = order.productLink || '';
+                if (productLinkHref && !productLinkHref.startsWith('http://') && !productLinkHref.startsWith('https://')) {
+                    productLinkHref = 'http://' + productLinkHref;
                 }
 
                 card.innerHTML = `
@@ -234,7 +203,7 @@
                     <div class="space-y-3 text-gray-700">
                         <p><strong>Sipariş Yöntemi:</strong> ${order.orderMethod || 'Belirtilmemiş'}</p>
                         <p><strong>Ürün Linki:</strong> 
-                            ${order.productLink ? `<a href="${order.productLink.startsWith('http') ? order.productLink : 'http://' + order.productLink}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline break-all">${order.productLink}</a>` : 'Belirtilmemiş'}
+                            ${order.productLink ? `<a href="${productLinkHref}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline break-all">${order.productLink}</a>` : 'Belirtilmemiş'}
                         </p>
                         <p><strong>Kategori:</strong> ${order.category || 'Belirtilmemiş'}</p>
                         <p><strong>Teslimat Tipi:</strong> ${deliveryInfo}</p>
