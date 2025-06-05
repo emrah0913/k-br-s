@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sipariş Ver - Getir Kıbrıs</title> <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#5d3ebc',secondary:'#ffd300'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+/* Kullanıcının eklediği CSS kuralı */
+:where([class^="ri-"])::before { content: "\f3c2"; } /* Bu genel bir kural, ikonları etkileyebilir. Özel bir ikon içinse f3c2'nin ne olduğunu kontrol etmek gerekebilir. */
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f9f9f9; /* index.html'deki body bg-gray-50 idi, #f9f9f9 benzer bir açık gri */
+}
+.copy-btn:active {
+transform: scale(0.95);
+}
+/* Sipariş form elemanları için ek stiller eklenebilir */
+input[type="text"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--primary-color, #5d3ebc); /* Tailwind primary rengi */
+    box-shadow: 0 0 0 2px rgba(93, 62, 188, 0.2); /* Tailwind primary rengi ile uyumlu focus shadow */
+}
+</style>
+</head>
+<body class="bg-gray-50"> <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
+
+<header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+    <div class="flex-1">
+        </div>
+    <div class="flex flex-col items-center"> <img src="https://static.readdy.ai/image/d4cf8783f5bb2724d5eb1b66ee82374b/8de9178d5e8d147b21dbfa093538290a.png" alt="Getir Kıbrıs" class="h-12">
+        <a href="index.html" data-readdy="true" class="text-sm font-medium text-primary mt-1">Ana Sayfa</a>
+    </div>
+    <div class="flex-1 flex justify-end"> <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
+            <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
+                <i class="ri-google-fill ri-lg"></i>
+            </button>
+            <div id="profile-container" class="hidden">
+                <img id="profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer">
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="pt-24 pb-20 px-4"> <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-primary mb-6 sm:mb-8 text-center">Sipariş Bilgileri</h2>
+        
+        <form id="order-form" class="space-y-6">
+            
+            <div>
+                <label for="product-link-order" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
+                <div class="relative">
+                    <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="url" id="product-link-order" name="productLink" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary text-sm" placeholder="https://www.example.com/urun" required>
+                </div>
+            </div>
+
+            <div>
+                <label for="product-name-order" class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı / Açıklaması</label>
+                <div class="relative">
+                    <i class="ri-pencil-line ri-lg absolute left-3 top-3 text-gray-400"></i>
+                    <textarea id="product-name-order" name="productName" rows="3" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary text-sm" placeholder="Örn: Kırmızı Elbise, M Beden veya iPhone 15 Pro Max 256GB Mavi Titanyum" required></textarea>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="product-quantity-order" class="block text-sm font-medium text-gray-700 mb-1">Adet</label>
+                    <div class="relative">
+                        <i class="ri-numbers-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="number" id="product-quantity-order" name="productQuantity" value="1" min="1" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary text-sm" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="product-price-order" class="block text-sm font-medium text-gray-700 mb-1">Ürün Birim Fiyatı (₺)</label>
+                    <div class="relative">
+                        <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="number" id="product-price-order" name="productPrice" step="any" min="0" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary text-sm" placeholder="0.00" required>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-6">
+
+            <h3 class="text-lg font-medium text-gray-800 mb-3">Teslimat Bilgileri</h3>
+            
+            <div>
+                <label for="delivery-address-order" class="block text-sm font-medium text-gray-700 mb-1">Teslimat Adresi (Kıbrıs)</label>
+                 <div class="relative">
+                    <i class="ri-map-pin-user-line ri-lg absolute left-3 top-3 text-gray-400"></i>
+                    <textarea id="delivery-address-order" name="deliveryAddress" rows="3" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary text-sm" placeholder="Açık adresinizi giriniz (Mahalle, Cadde/Sokak, Kapı No, Daire No)" required></textarea>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="delivery-city-order" class="block text-sm font-medium text-gray-700 mb-1">Şehir (Kıbrıs)</label>
+                    <div class="relative">
+                         <i class="ri-building-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <select id="delivery-city-order" name="deliveryCity" class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm" required>
+                            <option value="" disabled selected>Şehir seçin</option>
+                            <option value="lefkosa">Lefkoşa</option>
+                            <option value="girne">Girne</option>
+                            <option value="magusa">Gazimağusa</option>
+                            <option value="guzelyurt">Güzelyurt</option>
+                            <option value="iskele">İskele</option>
+                        </select>
+                        <i class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div>
+                    <label for="phone-number-order" class="block text-sm font-medium text-gray-700 mb-1">Telefon Numarası</label>
+                    <div class="relative">
+                        <i class="ri-phone-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="phone-number-order" name="phoneNumber" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary text-sm" placeholder="+90 XXX XXX XX XX" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <label for="order-notes" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Notu (Opsiyonel)</label>
+                <div class="relative">
+                    <i class="ri-chat-1-line ri-lg absolute left-3 top-3 text-gray-400"></i>
+                    <textarea id="order-notes" name="orderNotes" rows="2" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-button focus:outline-none focus:border-primary text-sm" placeholder="Eklemek istediğiniz özel bir not varsa buraya yazabilirsiniz..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" id="submit-order-btn" class="w-full mt-8 bg-primary text-white py-3.5 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button text-base">
+                Siparişi Gönder
+            </button>
+        </form>
+        </div>
+</main>
+
+</div> <a href="https://wa.me/905391090879" target="_blank" data-readdy="true" class="fixed bottom-20 right-4 z-50 bg-[#25D366] w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors">
+<i class="ri-whatsapp-line ri-xl text-white"></i>
+</a>
+<div class="mt-8 px-4 pb-20 text-center">
+<div class="space-x-4">
+<a href="#" class="text-xs text-gray-600 hover:text-primary">Gizlilik Politikası</a>
+<a href="#" class="text-xs text-gray-600 hover:text-primary">Kullanım Şartları</a>
+<a href="#" class="text-xs text-gray-600 hover:text-primary">S.S.S.</a>
+</div>
+</div>
+
+<div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] hidden"> <div class="bg-white rounded-lg p-6 w-[320px] relative">
+<button id="close-login-modal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
+<i class="ri-close-line ri-lg"></i>
+</button>
+<div class="text-center mb-6">
+<h3 class="text-xl font-semibold text-gray-800">Giriş Yap</h3>
+<p class="text-sm text-gray-600 mt-1">Hizmetlerimizi kullanmak için giriş yapın</p>
+</div>
+<button id="google-login-btn" class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-button py-3 font-medium hover:bg-gray-50 transition-colors cursor-pointer">
+<i class="ri-google-fill ri-lg text-primary"></i>
+<span>Google ile Giriş Yap</span>
+</button>
+</div>
+</div>
+
+<div id="auth-required-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] hidden"> <div class="bg-white rounded-lg p-6 w-[320px]">
+<div class="text-center mb-6">
+<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-lock-line ri-2x text-red-500"></i>
+</div>
+<h3 class="text-xl font-semibold text-gray-800">Giriş Gerekli</h3>
+<p class="text-sm text-gray-600 mt-2">Bu özelliği kullanmak için lütfen giriş yapın.</p>
+</div>
+<button id="auth-login-btn" class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
+Giriş Yap
+</button>
+<button id="close-auth-modal" class="w-full text-gray-600 py-2 mt-2 font-medium hover:text-gray-800 transition-colors cursor-pointer">
+Kapat
+</button>
+</div>
+</div>
+
+<div id="toast" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 z-[70]"> <span id="toast-message">Kopyalandı!</span>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // API anahtarınızı buraya girin
+    authDomain: "kibris-6b4f7.firebaseapp.com",
+    projectId: "kibris-6b4f7",
+    storageBucket: "kibris-6b4f7.appspot.com", // .appspot.com genellikle daha yaygındır
+    messagingSenderId: "141262926171",
+    appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+    measurementId: "G-JL9P6BRZTD"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const analytics = firebase.analytics();
+  // const auth = firebase.auth(); // auth-script içinde tanımlanıyor
+</script>
+
+<script id="auth-script">
+document.addEventListener('DOMContentLoaded', function() {
+    const auth = firebase.auth();
+    const loginBtn = document.getElementById('login-btn');
+    const profileContainer = document.getElementById('profile-container');
+    const profileImg = document.getElementById('profile-img');
+    const loginModal = document.getElementById('login-modal');
+    const closeLoginModal = document.getElementById('close-login-modal');
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const authRequiredModal = document.getElementById('auth-required-modal');
+    const authLoginBtn = document.getElementById('auth-login-btn');
+    const closeAuthModal = document.getElementById('close-auth-modal');
+
+    auth.onAuthStateChanged(function(user) {
+        updateAuthUI(user);
+        // Sipariş sayfasındaysak ve kullanıcı giriş yapmamışsa, giriş modalını direkt göster
+        // Bu, sayfanın tamamının koruma altında olması gerektiği durumlarda kullanılabilir.
+        // Ancak şimdilik sadece form gönderimini koruyacağız.
+        // if (user && window.location.pathname.includes('order.html')) {
+        //     // Kullanıcı bilgilerini forma doldurma (örneğin telefon, adres)
+        //     // populateOrderFormWithUserData(user); 
+        // } else if (!user && window.location.pathname.includes('order.html')) {
+        //     // Kullanıcı giriş yapmamışsa ve order.html'deyse ne yapılacağına karar verin.
+        //     // Belki direkt giriş modalı gösterilebilir veya formun bazı kısımları kilitlenebilir.
+        //     // Şimdilik sadece header UI'ı güncelleniyor.
+        // }
+    });
+
+    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+    closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
+
+    googleLoginBtn.addEventListener('click', function() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+          .then(() => {
+            loginModal.classList.add('hidden');
+            if(window.showToast) window.showToast('Google ile giriş başarılı!');
+          })
+          .catch((error) => {
+            console.error("Google ile giriş hatası:", error.code, error.message);
+            if(window.showToast) window.showToast('Giriş sırasında bir hata oluştu: ' + error.message);
+          });
+    });
+
+    window.showAuthRequiredModal = function() { // Global yapıldı
+        authRequiredModal.classList.remove('hidden');
+    };
+    closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
+    authLoginBtn.addEventListener('click', () => {
+        authRequiredModal.classList.add('hidden');
+        loginModal.classList.remove('hidden');
+    });
+
+    function updateAuthUI(user) {
+        if (user) {
+            loginBtn.classList.add('hidden');
+            profileContainer.classList.remove('hidden');
+            profileImg.src = user.photoURL || 'https://via.placeholder.com/150';
+            profileImg.alt = user.displayName || user.email || 'Profil';
+        } else {
+            loginBtn.classList.remove('hidden');
+            profileContainer.classList.add('hidden');
+        }
+    }
+
+    profileContainer.addEventListener('click', function() {
+        if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+            auth.signOut().then(() => {
+                if(window.showToast) window.showToast('Çıkış yapıldı');
+                 // Eğer order.html'de çıkış yapılırsa ana sayfaya yönlendirme düşünülebilir.
+                // if (window.location.pathname.includes('order.html')) {
+                //    window.location.href = 'index.html';
+                // }
+            }).catch((error) => {
+                console.error('Çıkış hatası:', error);
+                if(window.showToast) window.showToast('Çıkış sırasında bir hata oluştu.');
+            });
+        }
+    });
+    
+    // Bu kısımlar index.html'deki butonlar içindi, order.html'de bu ID'li butonlar yoksa kaldırılabilir
+    // veya order.html'e özel korumalar eklenebilir (örn: form submit butonu)
+    // const protectedButtons = [ 
+    //     document.getElementById('order-btn'), // index.html'de
+    //     document.getElementById('my-orders-btn'), // index.html'de
+    //     document.getElementById('track-btn') // index.html'de
+    // ];
+    // protectedButtons.forEach(button => {
+    //     if (button) {
+    //         button.addEventListener('click', function(e) {
+    //             if (!auth.currentUser) {
+    //                 e.preventDefault();
+    //                 window.showAuthRequiredModal();
+    //             }
+    //         });
+    //     }
+    // });
+});
+</script>
+
+<script id="utils-script">
+document.addEventListener('DOMContentLoaded', function() {
+    window.showToast = function(message) { // Global yapıldı
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        if (!toast || !toastMessage) return; // Elementler yoksa hata vermesin
+        toastMessage.textContent = message;
+        toast.classList.remove('opacity-0');
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            toast.classList.add('opacity-0');
+        }, 3000);
+    };
+
+    const copyButtons = document.querySelectorAll('.copy-btn'); // Bu sayfada copy-btn yoksa sorun değil
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-copy');
+            const textToCopy = document.getElementById(targetId).textContent;
+            navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                if(window.showToast) window.showToast('Kopyalandı!');
+            })
+            .catch(err => {
+                if(window.showToast) window.showToast('Kopyalama başarısız');
+                console.error('Kopyalama hatası:', err);
+            });
+        });
+    });
+});
+</script>
+
+<script id="order-page-script">
+document.addEventListener('DOMContentLoaded', function() {
+    const orderForm = document.getElementById('order-form');
+    const submitOrderBtn = document.getElementById('submit-order-btn');
+
+    // Kullanıcı giriş yaptığında teslimat bilgilerini forma önceden doldurma fonksiyonu (opsiyonel)
+    // function populateOrderFormWithUserData(user) {
+    //     if (!user) return;
+    //     const deliveryAddressField = document.getElementById('delivery-address-order');
+    //     const phoneNumberField = document.getElementById('phone-number-order');
+    //     // Firestore'dan veya başka bir yerden kullanıcı profili alınıp doldurulabilir.
+    //     // Örnek: if(user.displayName) { }
+    //     // if(user.phoneNumber && phoneNumberField) phoneNumberField.value = user.phoneNumber;
+    //     // Kullanıcının kayıtlı adresi varsa:
+    //     // if(userProfileData.address && deliveryAddressField) deliveryAddressField.value = userProfileData.address;
+    //     // if(userProfileData.city && document.getElementById('delivery-city-order')) document.getElementById('delivery-city-order').value = userProfileData.city;
+    // }
+    
+    // auth-script.js içindeki onAuthStateChanged içinde çağrılabilir.
+    // firebase.auth().onAuthStateChanged(user => {
+    //     if (user) {
+    //         populateOrderFormWithUserData(user);
+    //     }
+    // });
+
+
+    if (orderForm) {
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const auth = firebase.auth();
+
+            if (!auth.currentUser) {
+                if (window.showAuthRequiredModal) {
+                    window.showAuthRequiredModal();
+                } else {
+                    alert('Sipariş vermek için lütfen giriş yapın.');
+                }
+                return;
+            }
+
+            // Form verilerini topla
+            const formData = new FormData(orderForm);
+            const orderData = {};
+            formData.forEach((value, key) => {
+                orderData[key] = value;
+            });
+            
+            // Kullanıcı bilgilerini ekle
+            orderData.userId = auth.currentUser.uid;
+            orderData.userEmail = auth.currentUser.email;
+            orderData.orderTimestamp = firebase.firestore.FieldValue.serverTimestamp(); // Firestore için
+            // orderData.orderTimestamp = new Date().toISOString(); // Genel kullanım için
+
+            // TODO: Bu noktada orderData'yı Firebase Firestore'a veya başka bir backend'e gönderebilirsiniz.
+            // Örneğin Firestore için:
+            // firebase.firestore().collection('orders').add(orderData)
+            //   .then((docRef) => {
+            //       if(window.showToast) window.showToast('Siparişiniz başarıyla alındı! Sipariş ID: ' + docRef.id);
+            //       orderForm.reset();
+            //       // Kullanıcıyı bir "Teşekkürler" sayfasına veya "Siparişlerim" sayfasına yönlendirebilirsiniz.
+            //       // window.location.href = 'thankyou.html'; 
+            //   })
+            //   .catch((error) => {
+            //       console.error("Sipariş kaydetme hatası: ", error);
+            //       if(window.showToast) window.showToast('Sipariş gönderilirken bir hata oluştu: ' + error.message);
+            //   });
+
+            console.log('Sipariş Verileri:', orderData); // Test için konsola yazdır
+            if(window.showToast) window.showToast('Siparişiniz gönderiliyor... (Test Modu)');
+            
+            // Geçici olarak formu sıfırla ve başarı mesajı göster (backend entegrasyonu yapılana kadar)
+            setTimeout(() => {
+                 if(window.showToast) window.showToast('Siparişiniz başarıyla alındı! (Test Modu)');
+                 orderForm.reset();
+                 // Gerekirse kullanıcıyı başka bir sayfaya yönlendir
+                 // window.location.href = 'index.html'; // Ana sayfaya dön
+            }, 1500);
+
+        });
+    }
+});
+</script>
+
+</body>
+</html>
