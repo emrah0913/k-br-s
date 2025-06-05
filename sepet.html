@@ -12,12 +12,15 @@
                     colors: {
                         primary: '#5d3ebc',
                         secondary: '#ffd300',
-                        'status-pending': '#FFC107',
-                        'status-approved': '#4CAF50',
-                        'status-processing': '#2196F3',
-                        'status-shipped': '#FF9800',
-                        'status-delivered': '#8BC34A',
-                        'status-cancelled': '#F44336',
+                        // Önemli: Bu renk isimleri, Firebase'deki 'status' alanının değerleriyle eşleşmelidir.
+                        // Örn: status: 'pending' -> bg-status-pending
+                        'status-pending': '#FFC107',        /* Beklemede */
+                        'status-approved': '#4CAF50',       /* Onaylandı */
+                        'status-tr_warehouse': '#2196F3',   /* TR Depoda */
+                        'status-shipped': '#FF9800',        /* Yüklendi */
+                        'status-cy_warehouse': '#9E9E9E',   /* Kıbrıs Depoda (Gri) */
+                        'status-delivered': '#8BC34A',      /* Teslim Edildi */
+                        'status-cancelled': '#F44336',      /* İptal Edildi */
                     },
                     borderRadius: {
                         'button': '8px'
@@ -38,6 +41,24 @@
         .ri-xl { /* İkonların dikey hizalaması için */
             vertical-align: middle;
         }
+        /* Durum etiketleri için metin rengi ayarı */
+        .status-badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px; /* Tam yuvarlak */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 500; /* font-medium */
+            white-space: nowrap; /* Metni tek satırda tut */
+        }
+        /* Tailwind renklerini kullanan sınıfların üzerine metin rengi tanımları */
+        .bg-status-pending { color: #000; } /* Turuncu üzerinde siyah */
+        .bg-status-approved { color: #fff; }
+        .bg-status-tr_warehouse { color: #fff; }
+        .bg-status-shipped { color: #000; } /* Turuncu üzerinde siyah */
+        .bg-status-cy_warehouse { color: #fff; }
+        .bg-status-delivered { color: #000; } /* Açık yeşil üzerinde siyah */
+        .bg-status-cancelled { color: #fff; }
+        .bg-gray-400 { color: #fff; } /* Bilinmeyen durumlar için varsayılan gri */
+
     </style>
 </head>
 <body class="bg-gray-50">
@@ -65,7 +86,7 @@
                         Alışverişe Başla
                     </a>
                 </div>
-                </div>
+            </div>
         </main>
     </div>
 
@@ -76,7 +97,7 @@
     <script>
         // Lütfen kendi Firebase projenizin yapılandırma bilgilerini buraya girin
         const firebaseConfig = {
-            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // SİZİN API KEY'İNİZ
+            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // SİZİN API KEY'İNİZİ BURAYA GİRİN
             authDomain: "kibris-6b4f7.firebaseapp.com",      // SİZİN AUTH DOMAIN'İNİZ
             projectId: "kibris-6b4f7",                       // SİZİN PROJECT ID'NİZ
             storageBucket: "kibris-6b4f7.firebasestorage.app",// SİZİN STORAGE BUCKET'INIZ
@@ -89,7 +110,7 @@
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-        
+
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -110,8 +131,11 @@
                             Giriş Yap
                         </a>`;
                     noOrdersDiv.classList.remove('hidden');
-                    // Giriş modalını açma veya yönlendirme mantığınızı buraya ekleyebilirsiniz.
-                    // Örn: document.getElementById('show-login-modal-link-compat').addEventListener('click', () => { window.location.href = 'login.html'; });
+                    // Bu bağlantıya tıklandığında giriş modalının açılmasını veya index.html'ye yönlendirilmesini sağlayabilirsiniz.
+                    document.getElementById('show-login-modal-link-compat').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = '/'; // Ana sayfaya yönlendiriyoruz, orada kullanıcı giriş yapabilir.
+                    });
                 }
             });
 
@@ -125,34 +149,72 @@
                         if (querySnapshot.empty) {
                             noOrdersDiv.classList.remove('hidden');
                         } else {
-                             // Önceki sipariş kartlarını temizle
+                            // Eğer 'no-orders' div'i görünürse, onu gizle
+                            noOrdersDiv.classList.add('hidden');
+                            // Önceki sipariş kartlarını temizle
                             const existingCards = ordersContainer.querySelectorAll('.order-card-dynamic');
                             existingCards.forEach(card => card.remove());
 
                             querySnapshot.forEach((doc) => {
                                 const order = doc.data();
-                                ordersContainer.appendChild(createOrderCard(order));
+                                const orderId = doc.id; // Firestore belge ID'sini sipariş numarası olarak kullan
+                                ordersContainer.appendChild(createOrderCard(order, orderId)); // orderId'yi de gönder
                             });
                         }
                     })
                     .catch((error) => {
-                        console.error("Siparişler çekilirken hata oluştu (compat): ", error);
+                        console.error("Siparişler çekilirken hata oluştu: ", error);
                         loadingOrdersDiv.classList.add('hidden');
                         ordersContainer.innerHTML = '<p class="text-red-500 text-center">Siparişler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>';
                     });
             }
 
-            function getStatusColor(status) {
-                if (status === 'Ödeme Bekleniyor') return 'bg-status-pending text-black';
-                if (status === 'Onaylandı') return 'bg-status-approved text-white';
-                if (status === 'Hazırlanıyor') return 'bg-status-processing text-white';
-                if (status === 'Kargoya Verildi') return 'bg-status-shipped text-black';
-                if (status === 'Teslim Edildi') return 'bg-status-delivered text-black';
-                if (status === 'İptal Edildi') return 'bg-status-cancelled text-white';
-                return 'bg-gray-400 text-white';
+            // Durumları Türkçeleştiren fonksiyon
+            function getTurkishOrderStatus(status) {
+                switch (status) {
+                    case 'pending':
+                        return 'Beklemede';
+                    case 'approved':
+                        return 'Onaylandı';
+                    case 'tr_warehouse':
+                        return 'TR Depoda';
+                    case 'shipped':
+                        return 'Yüklendi';
+                    case 'cy_warehouse':
+                        return 'Kıbrıs Depoda';
+                    case 'delivered':
+                        return 'Teslim Edildi';
+                    case 'cancelled':
+                        return 'İptal Edildi';
+                    default:
+                        return 'Durum Belirsiz';
+                }
             }
 
-            function createOrderCard(order) {
+            // Durum rengini veren fonksiyon (Tailwind'e uygun sınıflar dönecek)
+            function getStatusColorClass(status) {
+                switch (status) {
+                    case 'pending':
+                        return 'bg-status-pending';
+                    case 'approved':
+                        return 'bg-status-approved';
+                    case 'tr_warehouse':
+                        return 'bg-status-tr_warehouse';
+                    case 'shipped':
+                        return 'bg-status-shipped';
+                    case 'cy_warehouse':
+                        return 'bg-status-cy_warehouse';
+                    case 'delivered':
+                        return 'bg-status-delivered';
+                    case 'cancelled':
+                        return 'bg-status-cancelled';
+                    default:
+                        return 'bg-gray-400'; // Bilinmeyen durum
+                }
+            }
+
+            // Sipariş kartı oluşturan fonksiyon
+            function createOrderCard(order, orderId) {
                 const card = document.createElement('div');
                 card.className = 'bg-white shadow-lg rounded-lg p-6 mb-6 order-card-dynamic';
 
@@ -164,50 +226,72 @@
                         });
                     } catch (e) {
                         console.warn("Tarih formatlama hatası:", e, order.orderDate);
-                         if (order.orderDate.seconds) { // Fallback for timestamp like object
-                             orderDateStr = new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR');
+                        if (order.orderDate.seconds) { // Fallback for timestamp like object
+                            orderDateStr = new Date(order.orderDate.seconds * 1000).toLocaleDateString('tr-TR');
                         }
                     }
-                } else if (order.orderDate && (typeof order.orderDate === 'string' || typeof order.orderDate === 'number')) { // String veya number tarih varsa
-                     try {
+                } else if (order.orderDate) { // Diğer tarih formatları (string, number)
+                    try {
                         orderDateStr = new Date(order.orderDate).toLocaleDateString('tr-TR', {
                             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                         });
-                     } catch(e) { /* Hata olursa varsayılan kalır */ }
+                    } catch (e) {
+                        /* Hata olursa varsayılan kalır */
+                    }
                 }
 
+                // Sipariş yöntemini Türkçeleştir
+                const orderMethodTR = order.orderMethod === 'self' ? 'Kendim Sipariş Ettim' :
+                                      (order.orderMethod === 'service' ? 'Siz Sipariş Edin' : 'Belirtilmemiş');
 
-                let deliveryInfo = order.deliveryType || 'Belirtilmemiş';
-                if (order.deliveryType === 'Eve teslim' && order.deliveryCity) {
-                    deliveryInfo += ` (${order.deliveryCity})`;
+                // Teslimat tipini Türkçeleştir ve şehir bilgisini ekle
+                let deliveryTypeTR = order.deliveryType || 'Belirtilmemiş';
+                let deliveryLocation = '';
+                if (order.deliveryType === 'home') {
+                    deliveryTypeTR = 'Eve Teslim';
+                    deliveryLocation = order.deliveryAddress ? `(${order.deliveryAddress}, ${order.city || 'Şehir Yok'})` : `(${order.city || 'Şehir Yok'})`;
+                } else if (order.deliveryType === 'warehouse') {
+                    deliveryTypeTR = 'Depodan Teslim';
                 }
-                
+
                 // Ürün linkinin başına http:// ekleme (eğer yoksa)
                 let productLinkHref = order.productLink || '';
                 if (productLinkHref && !productLinkHref.startsWith('http://') && !productLinkHref.startsWith('https://')) {
                     productLinkHref = 'http://' + productLinkHref;
                 }
 
+                // Durum metnini ve rengini al
+                const statusText = getTurkishOrderStatus(order.status);
+                const statusColorClass = getStatusColorClass(order.status);
+
+
                 card.innerHTML = `
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
                         <div>
-                            <h2 class="text-xl font-semibold text-primary">Sipariş No: ${order.orderNumber || 'N/A'}</h2>
+                            <h2 class="text-xl font-semibold text-primary">Sipariş No: ${orderId || 'N/A'}</h2>
                             <p class="text-sm text-gray-500">Tarih: ${orderDateStr}</p>
                         </div>
                         <div class="mt-2 sm:mt-0">
-                            <span class="text-sm font-medium px-3 py-1 rounded-full ${getStatusColor(order.status)}">
-                                ${order.status || 'Durum Belirsiz'}
+                            <span class="status-badge ${statusColorClass}">
+                                ${statusText}
                             </span>
                         </div>
                     </div>
                     <div class="space-y-3 text-gray-700">
-                        <p><strong>Sipariş Yöntemi:</strong> ${order.orderMethod || 'Belirtilmemiş'}</p>
-                        <p><strong>Ürün Linki:</strong> 
+                        <p><strong>Ad Soyad:</strong> ${order.fullName || 'N/A'}</p>
+                        <p><strong>Telefon:</strong> ${order.phone || 'N/A'}</p>
+                        <p><strong>Sipariş Yöntemi:</strong> ${orderMethodTR}</p>
+                        <p><strong>Ürün Linki:</strong>
                             ${order.productLink ? `<a href="${productLinkHref}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline break-all">${order.productLink}</a>` : 'Belirtilmemiş'}
                         </p>
-                        <p><strong>Kategori:</strong> ${order.category || 'Belirtilmemiş'}</p>
-                        <p><strong>Teslimat Tipi:</strong> ${deliveryInfo}</p>
-                        <p class="text-lg font-semibold"><strong>Toplam Fiyat:</strong> ${typeof order.totalPrice === 'number' ? order.totalPrice.toFixed(2) + ' ₺' : (order.totalPrice || 'N/A')}</p>
+                        <p><strong>Kategori:</strong> ${order.productCategory || 'Belirtilmemiş'}</p>
+                        <p><strong>Teslimat Tipi:</strong> ${deliveryTypeTR} ${deliveryLocation}</p>
+                        ${order.deliveryType === 'home' && order.deliveryAddress ? `<p><strong>Teslimat Adresi:</strong> ${order.deliveryAddress}</p>` : ''}
+                        ${order.deliveryType === 'home' && order.city ? `<p><strong>Şehir:</strong> ${order.city}</p>` : ''}
+                        <p><strong>Ürün Fiyatı:</strong> ${typeof order.productPrice === 'number' ? order.productPrice.toFixed(2) + ' ₺' : 'N/A'}</p>
+                        <p><strong>Kategori Ücreti:</strong> ${typeof order.calculatedCategoryFee === 'number' ? order.calculatedCategoryFee.toFixed(2) + ' ₺' : 'N/A'}</p>
+                        <p><strong>Teslimat Ücreti:</strong> ${typeof order.calculatedDeliveryFee === 'number' ? order.calculatedDeliveryFee.toFixed(2) + ' ₺' : 'N/A'}</p>
+                        <p class="text-lg font-semibold"><strong>Toplam Tutar:</strong> ${typeof order.totalAmount === 'number' ? order.totalAmount.toFixed(2) + ' ₺' : 'N/A'}</p>
                     </div>
                 `;
                 return card;
