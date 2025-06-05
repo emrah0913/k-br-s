@@ -52,31 +52,27 @@ Your browser does not support the video tag.
 <div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
 </div>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 mb-8">
-<button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-calculator-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Hesapla</span>
-</button>
-<a href="https://getirkibris.com/order.html" data-readdy="true" id="order-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-shopping-cart-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Sipariş Ver</span>
-</a>
-<a href="https://getirkibris.com/sepet.html" data-readdy="true" id="my-orders-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-file-list-3-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Siparişlerim</span>
-</a>
-<a href="https://getirkibris.com/takip.html" data-readdy="true" id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-<i class="ri-truck-line ri-xl text-primary"></i>
-</div>
-<span class="text-sm font-medium">Kargo Takip</span>
-</a>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 mb-8">
+    <button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <i class="ri-calculator-line ri-xl text-primary"></i>
+        </div>
+        <span class="text-sm font-medium">Hesapla</span>
+    </button>
+    
+    <a href="https://getirkibris.com/sepet.html" data-readdy="true" id="my-orders-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <i class="ri-file-list-3-line ri-xl text-primary"></i>
+        </div>
+        <span class="text-sm font-medium">Siparişlerim</span>
+    </a>
+
+    <a href="https://getirkibris.com/takip.html" data-readdy="true" id="track-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <i class="ri-truck-line ri-xl text-primary"></i>
+        </div>
+        <span class="text-sm font-medium">Kargo Takip</span>
+    </a>
 </div>
 
 <div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
@@ -422,7 +418,6 @@ Kapat
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
 <script>
-  // Your web app's Firebase configuration (from your latest message)
   const firebaseConfig = {
     apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", // Lütfen kendi Firebase API anahtarınızı kullanın
     authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -432,8 +427,6 @@ Kapat
     appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
     measurementId: "G-JL9P6BRZTD"
   };
-
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const analytics = firebase.analytics();
 </script>
@@ -509,8 +502,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // "order-btn" referansı kaldırıldı
     const protectedButtons = [
-        document.getElementById('order-btn'),
         document.getElementById('my-orders-btn'),
         document.getElementById('track-btn')
     ];
@@ -586,12 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (input) {
             input.addEventListener('change', resetButtonToCalculateState);
             if (input.type === 'text' || input.type === 'number' || input.type === 'url' || input.tagName.toLowerCase() === 'textarea' || input.type === 'tel') {
-                // 'input' event sadece hesaplama ile ilgili alanlar için olmalı.
-                // Bu genel döngüde 'input' eventini kullanmak yerine, 
-                // spesifik hesaplama alanlarına (örn: product-price) 'input' listener'ı eklemek daha iyi olabilir.
-                // Şimdilik 'change' event'i çoğu durumda yeterli olacaktır.
-                // Eğer ürün fiyatı gibi alanlarda anlık reset isteniyorsa, onlara özel 'input' listener eklenebilir.
-                 input.addEventListener('input', resetButtonToCalculateState); // Bu satır, fiyat gibi alanlarda anlık reset için kalabilir.
+                 input.addEventListener('input', resetButtonToCalculateState);
             }
         }
     });
@@ -610,13 +598,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 citySelection.classList.remove('hidden');
             } else { 
                 citySelection.classList.add('hidden');
-                // Eğer kullanıcı depoya geçerse ve adres bölümü (homeDeliveryAddressSection) açıksa, kapat.
-                // Bu, radio 'change' eventi formInputsToResetButton'daki listener'ı tetikleyeceği için
-                // resetButtonToCalculateState() çağrıldığında zaten gizlenecektir.
-                // if (homeDeliveryAddressSection && !homeDeliveryAddressSection.classList.contains('hidden')) {
-                //      homeDeliveryAddressSection.classList.add('hidden');
-                // }
             }
+            // resetButtonToCalculateState() zaten formInputsToResetButton içindeki 'change' listener'ı 
+            // (bu radio butonlar için) tarafından tetikleneceği için burada explicit çağrıya gerek yok.
         });
     });
 
@@ -667,7 +651,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (commonOrderDetailsSection) {
                 commonOrderDetailsSection.classList.remove('hidden');
-                commonOrderDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // Ad Soyad ve Telefon bölümleri açıldığında en üste değil, bu bölümün başına scroll etmesi daha iyi olabilir.
+                // Ya da tüm hesaplayıcı bölümünün görünür kalmasını sağlamak. Şimdilik en yakın bloğa scroll ediyor.
+                commonOrderDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); 
             }
 
             const currentDeliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
