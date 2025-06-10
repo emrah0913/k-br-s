@@ -68,11 +68,11 @@
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen">
     <!-- HEADER -->
     <header class="sticky top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center justify-between">
-        <a href="/index.html" class="flex items-center gap-2">
+        <a href="index.html" class="flex items-center gap-2">
             <img src="https://placehold.co/100x40/5d3ebc/ffffff?text=GetirKıbrıs&font=inter" alt="Getir Kıbrıs Logo" class="h-10">
         </a>
         <div class="flex items-center gap-4">
-            <a href="/index.html" class="text-gray-600 hover:text-primary transition-colors">
+            <a href="index.html" class="text-gray-600 hover:text-primary transition-colors">
                 <i class="ri-home-4-line ri-lg"></i>
             </a>
             <div id="auth-button-container" class="w-8 h-8 flex items-center justify-center">
@@ -161,7 +161,7 @@
              <div id="no-orders-message" class="text-center py-10 bg-white rounded-lg shadow-md hidden">
                 <i class="ri-file-list-3-line text-6xl text-gray-300"></i>
                 <p class="mt-4 text-gray-500">Henüz hiç sipariş vermediniz.</p>
-                 <a href="/index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
+                 <a href="index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
             </div>
              <div id="orders-list" class="space-y-4"></div>
         </div>
@@ -169,7 +169,7 @@
         <div id="no-content-message" class="text-center py-16 hidden">
             <i class="ri-shopping-bag-3-line text-6xl text-gray-300"></i>
             <p class="mt-4 text-gray-500">Görüntülenecek sepet veya sipariş bilgisi yok.</p>
-            <a href="/index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
+            <a href="index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
         </div>
     </main>
 
@@ -228,7 +228,8 @@
                 loader.innerHTML = `<p class="text-red-500">Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>`;
             }
         } else {
-            window.location.href = '/index.html';
+            // HATA DÜZELTME: '/index.html' yerine 'index.html' kullanıldı.
+            window.location.href = 'index.html';
         }
     });
 
@@ -377,7 +378,7 @@
             const currentStatus = statusStyles[order.status] || { text: order.status, bg: 'bg-gray-400', text_color: 'text-white' };
             const orderDate = order.orderDate ? order.orderDate.toDate().toLocaleDateString('tr-TR') : 'Bilinmiyor';
             
-            const itemsHtml = order.items.map(item => {
+            const itemsHtml = order.items && Array.isArray(order.items) ? order.items.map(item => {
                 const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
                 const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
                 return `
@@ -391,9 +392,8 @@
                             <p class="font-medium">${(itemFinalPrice * item.quantity).toFixed(2)} ₺</p>
                         </div>
                     </div>`;
-            }).join('');
+            }).join('') : '<div class="text-xs text-gray-500 py-2">Bu siparişe ait ürün detayı bulunamadı.</div>';
             
-            // HATA DÜZELTME: order.totals'ın var olup olmadığını kontrol et
             const grandTotalDisplay = order.totals && typeof order.totals.grandTotal !== 'undefined' 
                 ? `${order.totals.grandTotal.toFixed(2)} ₺`
                 : 'Hesaplanamadı';
