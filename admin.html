@@ -167,7 +167,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, query, where, orderBy, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, query, where, orderBy, updateDoc, setDoc, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -195,16 +195,16 @@
                     showSection('content-dashboard');
                 } else {
                     alert('Yönetici paneline erişim izniniz yok.');
-                    window.location.href = '/'; // Hata düzeltme
+                    window.location.href = '/'; 
                 }
             } catch (error) {
                  console.error("Admin check error:", error);
                  alert("Giriş kontrolü sırasında bir hata oluştu.");
-                 window.location.href = '/'; // Hata düzeltme
+                 window.location.href = '/'; 
             }
         } else {
             alert('Yönetici paneline erişmek için giriş yapmalısınız.');
-            window.location.href = '/'; // Hata düzeltme
+            window.location.href = '/';
         }
     });
     
