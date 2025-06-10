@@ -53,14 +53,13 @@
         white-space: nowrap;
     }
     
-    /* --- 1. DEĞİŞİKLİK: CSS RENK STİLLERİ GÜNCELLENDİ --- */
-    .status-pending { background-color: #fef3c7; color: #b45309; }          /* Beklemede */
-    .status-processing { background-color: #bfdbfe; color: #1d4ed8; }       /* Onaylandı */
-    .status-tr_warehouse { background-color: #cffafe; color: #0e7490; }      /* TR Depoda (YENİ) */
-    .status-shipped { background-color: #e9d5ff; color: #8b5cf6; }          /* Yüklendi */
-    .status-cyprus_warehouse { background-color: #e0e7ff; color: #3730a3; }  /* Kıbrıs Depoda (YENİ) */
-    .status-delivered { background-color: #d1fae5; color: #065f46; }        /* Teslim Edildi */
-    .status-cancelled { background-color: #fee2e2; color: #b91c1c; }        /* İptal Edildi */
+    .status-pending { background-color: #fef3c7; color: #b45309; }
+    .status-processing { background-color: #bfdbfe; color: #1d4ed8; }
+    .status-tr_warehouse { background-color: #cffafe; color: #0e7490; }
+    .status-shipped { background-color: #e9d5ff; color: #8b5cf6; }
+    .status-cyprus_warehouse { background-color: #e0e7ff; color: #3730a3; }
+    .status-delivered { background-color: #d1fae5; color: #065f46; }
+    .status-cancelled { background-color: #fee2e2; color: #b91c1c; }
     .status-unknown { background-color: #e5e7eb; color: #4b5563; }
     
     @media (max-width: 768px) {
@@ -188,7 +187,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- Auth & Navigation (Değişiklik yok)---
     const navLinks = document.querySelectorAll('aside nav a');
     const contentSections = document.querySelectorAll('.admin-content-section');
     const adminLogoutBtn = document.getElementById('admin-logout-btn');
@@ -238,7 +236,6 @@
         if (sectionId === 'content-settings') loadSettings();
     }
 
-    // --- 2. DEĞİŞİKLİK: STATUS_MAP NESNESİ GÜNCELLENDİ ---
     const STATUS_MAP = {
         pending_payment:  { text: 'Beklemede', style: 'status-pending' },
         pending:          { text: 'Beklemede', style: 'status-pending' },
@@ -250,7 +247,6 @@
         cancelled:        { text: 'İptal Edildi', style: 'status-cancelled' }
     };
     
-    // --- Dashboard ---
     async function loadDashboardData() {
         const statsContainer = document.getElementById('stats-cards-container');
         statsContainer.innerHTML = '<p>Veriler yükleniyor...</p>';
@@ -276,8 +272,8 @@
             
             statsContainer.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-4 rounded-lg shadow-md"><p class="text-gray-600">Bekleyen Siparişler</p><p class="text-2xl font-bold"><span class="math-inline">\{pendingCount\}</p\></div\>
-<div class\="bg\-white p\-4 rounded\-lg shadow\-md"\><p class\="text\-gray\-600"\>Tamamlanan Siparişler</p\><p class\="text\-2xl font\-bold"\></span>{deliveredCount}</p></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md"><p class="text-gray-600">Bekleyen Siparişler</p><p class="text-2xl font-bold">${pendingCount}</p></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md"><p class="text-gray-600">Tamamlanan Siparişler</p><p class="text-2xl font-bold">${deliveredCount}</p></div>
                     <div class="bg-white p-4 rounded-lg shadow-md"><p class="text-gray-600">Aylık Gelir</p><p class="text-2xl font-bold">${monthlyRevenue.toFixed(2)} ₺</p></div>
                 </div>
             `;
@@ -300,9 +296,9 @@
                     const statusInfo = STATUS_MAP[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
                     tableBody.innerHTML += `
                         <tr class="border-t">
-                            <td class="px-4 py-2 text-sm"><span class="math-inline">\{order\.userFullName \|\| 'İsimsiz'\}</td\>
-<td class\="px\-4 py\-2 text\-sm font\-semibold"\></span>{order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</td>
-                            <td class="px-4 py-2 text-sm"><span class="status-badge <span class="math-inline">\{statusInfo\.style\}"\></span>{statusInfo.text}</span></td>
+                            <td class="px-4 py-2 text-sm">${order.userFullName || 'İsimsiz'}</td>
+                            <td class="px-4 py-2 text-sm font-semibold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</td>
+                            <td class="px-4 py-2 text-sm"><span class="status-badge ${statusInfo.style}">${statusInfo.text}</span></td>
                         </tr>
                     `;
                 });
@@ -313,7 +309,6 @@
         }
     }
 
-    // --- Orders ---
     let allOrders = [];
     const orderSearchInput = document.getElementById('order-search-input');
     const orderStatusFilter = document.getElementById('order-status-filter');
@@ -336,12 +331,10 @@
 
     function populateStatusFilter() {
         orderStatusFilter.innerHTML = '<option value="all">Tüm Durumlar</option>';
-        // Filtre menüsünü STATUS_MAP'e göre oluştur
         for(const key in STATUS_MAP) {
             const statusInfo = STATUS_MAP[key];
-             // Aynı metne sahip durumları (örn: Beklemede) tekrar ekleme
             if (!Array.from(orderStatusFilter.options).some(opt => opt.text === statusInfo.text)) {
-               orderStatusFilter.innerHTML += `<option value="<span class="math-inline">\{key\}"\></span>{statusInfo.text}</option>`;
+               orderStatusFilter.innerHTML += `<option value="${key}">${statusInfo.text}</option>`;
             }
         }
     }
@@ -353,7 +346,6 @@
 
         const filteredOrders = allOrders.filter(order => {
             let statusToFilter = [statusFilter];
-            // Eğer "Beklemede" seçilirse hem pending hem de pending_payment'i filtrele
             if (statusFilter === 'pending' || statusFilter === 'pending_payment') {
                 statusToFilter = ['pending', 'pending_payment'];
             }
@@ -382,10 +374,10 @@
                 const statusInfo = STATUS_MAP[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
                 tableBody.innerHTML += `
                     <tr class="border-t">
-                        <td class="px-4 py-2 text-sm"><span class="math-inline">\{order\.userFullName \|\| 'İsimsiz'\}</td\>
-<td class\="px\-4 py\-2 text\-sm"\></span>{order.orderDate?.toDate().toLocaleDateString('tr-TR') || 'N/A'}</td>
+                        <td class="px-4 py-2 text-sm">${order.userFullName || 'İsimsiz'}</td>
+                        <td class="px-4 py-2 text-sm">${order.orderDate?.toDate().toLocaleDateString('tr-TR') || 'N/A'}</td>
                         <td class="px-4 py-2 text-sm font-semibold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</td>
-                        <td class="px-4 py-2 text-sm"><span class="status-badge <span class="math-inline">\{statusInfo\.style\}"\></span>{statusInfo.text}</span></td>
+                        <td class="px-4 py-2 text-sm"><span class="status-badge ${statusInfo.style}">${statusInfo.text}</span></td>
                         <td class="px-4 py-2 text-right"><button data-id="${order.id}" class="view-order-btn text-primary hover:underline">Detay</button></td>
                     </tr>
                 `;
@@ -408,7 +400,7 @@
         
         const itemsHtml = (order.items || []).map(item => `
             <div class="border-t pt-2 mt-2">
-                <a href="<span class="math-inline">\{item\.productLink\}" target\="\_blank" class\="text\-blue\-600 text\-sm hover\:underline truncate block"\></span>{item.productLink}</a>
+                <a href="${item.productLink}" target="_blank" class="text-blue-600 text-sm hover:underline truncate block">${item.productLink}</a>
                 <p class="text-xs text-gray-500">${item.quantity} adet x ${item.productPrice.toFixed(2)} ₺</p>
             </div>
         `).join('');
@@ -418,11 +410,11 @@
                 <div><strong>Müşteri:</strong> ${order.userFullName || 'N/A'}</div>
                 <div><strong>Telefon:</strong> ${order.userPhone || 'N/A'}</div>
                 <div><strong>Adres:</strong> ${order.deliveryAddress || 'N/A'}</div>
-                <div><strong>Sipariş Tarihi:</strong> <span class="math-inline">\{order\.orderDate?\.toDate\(\)\.toLocaleString\('tr\-TR'\) \|\| 'N/A'\}</div\>
-</div\>
-<div class\="mt\-4"\>
-<h4 class\="font\-semibold mb\-2"\>Ürünler</h4\>
-<div class\="space\-y\-2"\></span>{itemsHtml}</div>
+                <div><strong>Sipariş Tarihi:</strong> ${order.orderDate?.toDate().toLocaleString('tr-TR') || 'N/A'}</div>
+            </div>
+            <div class="mt-4">
+                <h4 class="font-semibold mb-2">Ürünler</h4>
+                <div class="space-y-2">${itemsHtml}</div>
             </div>
             <div class="mt-4 border-t pt-2 text-right">
                 <p><strong>Genel Toplam:</strong> <span class="text-lg font-bold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</span></p>
@@ -431,7 +423,6 @@
                 <label for="modal-status-select" class="block text-sm font-medium text-gray-700">Durumu Güncelle</label>
                 <select id="modal-status-select" class="w-full mt-1 p-2 border rounded-lg">
                     ${Object.entries(STATUS_MAP).map(([key, value]) => {
-                        // "Beklemede" durumunu menüde sadece bir kez göster
                         if(key === 'pending_payment') return '';
                         return `<option value="${key}" ${order.status === key ? 'selected' : ''}>${value.text}</option>`
                     }).join('')}
@@ -449,7 +440,7 @@
                 await updateDoc(doc(db, "orders", orderId), { status: newStatus });
                 alert('Sipariş durumu güncellendi.');
                 orderDetailModal.classList.add('hidden');
-                loadAllOrders(); // Re-render table
+                loadAllOrders();
             } catch(error) {
                 alert('Durum güncellenirken hata oluştu.');
                 console.error("Status update error:", error);
@@ -457,7 +448,6 @@
         });
     }
 
-    // --- Users (Simplified) ---
     async function loadAllUsers() {
         const tableBody = document.getElementById('users-table-body');
         tableBody.innerHTML = `
@@ -477,8 +467,8 @@
                 const user = doc.data();
                 tableBody.innerHTML += `
                     <tr class="border-t">
-                        <td class="px-4 py-2 text-sm"><span class="math-inline">\{user\.fullName \|\| 'Belirtilmemiş'\}</td\>
-<td class\="px\-4 py\-2 text\-sm"\></span>{user.email || 'N/A'}</td>
+                        <td class="px-4 py-2 text-sm">${user.fullName || 'Belirtilmemiş'}</td>
+                        <td class="px-4 py-2 text-sm">${user.email || 'N/A'}</td>
                         <td class="px-4 py-2 text-sm capitalize">${user.role || 'user'}</td>
                     </tr>
                 `;
@@ -489,7 +479,6 @@
         }
     }
 
-    // --- Settings ---
     async function loadSettings() {
         const categoryForm = document.getElementById('category-rates-form');
         const cityForm = document.getElementById('city-fees-form');
@@ -501,15 +490,15 @@
 
             categoryForm.innerHTML = Object.entries(categoryRates).map(([key, value]) => `
                 <div class="flex items-center gap-2">
-                    <label class="w-32 capitalize"><span class="math-inline">\{key\.replace\('\_', ' '\)\}\:</label\>
-<input type\="number" name\="</span>{key}" value="${value}" class="w-24 p-1 border rounded" step="0.01">
+                    <label class="w-32 capitalize">${key.replace('_', ' ')}:</label>
+                    <input type="number" name="${key}" value="${value}" class="w-24 p-1 border rounded" step="0.01">
                 </div>
             `).join('') + '<button type="submit" class="w-full mt-4 bg-primary text-white py-2 rounded-lg">Kategori Oranlarını Kaydet</button>';
 
             cityForm.innerHTML = Object.entries(cityFees).map(([key, value]) => `
                 <div class="flex items-center gap-2">
-                    <label class="w-32 capitalize"><span class="math-inline">\{key\}\:</label\>
-<input type\="number" name\="</span>{key}" value="${value}" class="w-24 p-1 border rounded">
+                    <label class="w-32 capitalize">${key}:</label>
+                    <input type="number" name="${key}" value="${value}" class="w-24 p-1 border rounded">
                 </div>
             `).join('') + '<button type="submit" class="w-full mt-4 bg-primary text-white py-2 rounded-lg">Şehir Ücretlerini Kaydet</button>';
             
