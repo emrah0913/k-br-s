@@ -185,17 +185,14 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, onSnapshot, query, where, orderBy, updateDoc, deleteDoc, writeBatch, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    const firebaseConfig = typeof __firebase_config !== 'undefined' 
-        ? JSON.parse(__firebase_config)
-        : {
-            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-            authDomain: "kibris-6b4f7.firebaseapp.com",
-            projectId: "kibris-6b4f7",
-            storageBucket: "kibris-6b4f7.firebasestorage.app",
-            messagingSenderId: "141262926171",
-            appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-            measurementId: "G-JL9P6BRZTD"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+        authDomain: "kibris-6b4f7.firebaseapp.com",
+        projectId: "kibris-6b4f7",
+        storageBucket: "kibris-6b4f7.firebasestorage.app",
+        messagingSenderId: "141262926171",
+        appId: "1:141262926171:web:07226845e51d4bbc0dea7e"
+    };
     
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -211,7 +208,30 @@
     let pastOrders = [];
     let currentUser = null;
     let userProfile = null;
-    const categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
+    
+    // --- GLOBAL SETTINGS ---
+    let pricingSettings = {};
+    const DEFAULT_SETTINGS = {
+        categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
+        cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
+    };
+    
+    // ---- SETTINGS LOADER ----
+    async function loadPricingSettings() {
+        try {
+            const docRef = doc(db, "settings", "pricing");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().categoryRates) {
+                pricingSettings = docSnap.data();
+            } else {
+                pricingSettings = DEFAULT_SETTINGS;
+            }
+        } catch (error) {
+            console.error("Fiyat ayarları yüklenirken hata oluştu:", error);
+            pricingSettings = DEFAULT_SETTINGS;
+        }
+        populateCities();
+    }
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -220,6 +240,7 @@
             profileContainer.classList.remove('hidden');
 
             try {
+                await loadPricingSettings(); // Ayarları yükle
                 await fetchUserProfile(user.uid);
                 listenToCart(user.uid);
                 listenToOrders(user.uid);
@@ -228,7 +249,6 @@
                 loader.innerHTML = `<p class="text-red-500">Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>`;
             }
         } else {
-            // HATA DÜZELTME: '/index.html' yerine 'index.html' kullanıldı.
             window.location.href = 'index.html';
         }
     });
@@ -292,6 +312,7 @@
         cartItemsList.innerHTML = '';
 
         cartItems.forEach(item => {
+            const categoryRates = pricingSettings.categoryRates || {};
             const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
             const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
             const lineTotal = itemFinalPrice * item.quantity;
@@ -378,7 +399,8 @@
             const currentStatus = statusStyles[order.status] || { text: order.status, bg: 'bg-gray-400', text_color: 'text-white' };
             const orderDate = order.orderDate ? order.orderDate.toDate().toLocaleDateString('tr-TR') : 'Bilinmiyor';
             
-            const itemsHtml = order.items && Array.isArray(order.items) ? order.items.map(item => {
+            const categoryRates = pricingSettings.categoryRates || {};
+            const itemsHtml = (order.items ?? []).map(item => {
                 const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
                 const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
                 return `
@@ -392,7 +414,7 @@
                             <p class="font-medium">${(itemFinalPrice * item.quantity).toFixed(2)} ₺</p>
                         </div>
                     </div>`;
-            }).join('') : '<div class="text-xs text-gray-500 py-2">Bu siparişe ait ürün detayı bulunamadı.</div>';
+            }).join('');
             
             const grandTotalDisplay = order.totals && typeof order.totals.grandTotal !== 'undefined' 
                 ? `${order.totals.grandTotal.toFixed(2)} ₺`
@@ -432,10 +454,10 @@
     const citySelectionSection = document.getElementById('city-selection-section');
     const deliveryAddressSection = document.getElementById('delivery-address-section');
     const deliveryAddressInput = document.getElementById('delivery-address');
-    const cityListContainer = document.getElementById('city-list');
-    const cityFees = { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 };
     
     function populateCities() {
+        const cityListContainer = document.getElementById('city-list');
+        const cityFees = pricingSettings.cityFees || {};
         cityListContainer.innerHTML = '';
         for (const city in cityFees) {
             const fee = cityFees[city];
@@ -448,7 +470,6 @@
             cityListContainer.appendChild(cityElement);
         }
     }
-    populateCities();
     
     document.body.addEventListener('change', (e) => {
         if (e.target.name === 'delivery-type' || e.target.name === 'city') {
@@ -467,6 +488,7 @@
 
     function updateSummary() {
         if (cartItems.length === 0) return;
+        const categoryRates = pricingSettings.categoryRates || {};
         const subtotal = cartItems.reduce((acc, item) => {
             const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
             const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
@@ -475,6 +497,7 @@
         let deliveryFee = 0;
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
         const deliveryFeeRow = document.getElementById('delivery-fee-row');
+        const cityFees = pricingSettings.cityFees || {};
         if (deliveryType === 'home') {
             const selectedCityRadio = document.querySelector('input[name="city"]:checked');
             if(selectedCityRadio) deliveryFee = cityFees[selectedCityRadio.value] || 0;
