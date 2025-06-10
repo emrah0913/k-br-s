@@ -16,7 +16,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 
     <script>
-        // Tailwind CSS Konfigürasyonu
+        // Tailwind CSS Konfigürasyonu (index (22).html'deki borderRadius ile birleştirildi)
         tailwind.config = {
             theme: {
                 extend: {
@@ -47,12 +47,12 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9f9f9;
+            background-color: #f9f9f9; /* index (22).html'deki daha açık gri tonu tercih edildi */
         }
         .copy-btn:active, .auth-button:active {
             transform: scale(0.95);
         }
-        /* Animasyonlar */
+        /* Animasyonlar (eski index.html'den korunmuştur) */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -63,8 +63,7 @@
         .hidden {
             display: none;
         }
-
-        /* Kullanıcının index (22).html'den eklediği CSS kuralı */
+        /* index (22).html'den gelen özel Remixicon kuralı */
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
@@ -78,8 +77,7 @@
         <div class="flex-1">
         </div>
         <div class="flex flex-col items-center">
-            <img src="logom.png" alt="Getir Kıbrıs" class="h-12">
-            <a href="https://getirkibris.com/index.html" data-readdy="true"
+            <img src="logom.png" alt="Getir Kıbrıs" class="h-12"> <a href="https://getirkibris.com/index.html" data-readdy="true"
                 class="text-sm font-medium text-primary mt-1">Ana Sayfa</a>
         </div>
         <div class="flex-1 flex justify-end">
@@ -115,7 +113,7 @@
             </button>
 
             <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
-                class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+                class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                 <div
                     class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                     <i class="ri-shopping-cart-line ri-xl text-primary"></i>
@@ -126,7 +124,7 @@
         </div>
 
         <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
-            <h2 class="text-xl font-semibold mb-4 text-primary">Ürün Maliyeti Hesapla</h2>
+            <h2 class="text-xl font-semibold mb-4 text-primary">1. Ürün Bilgilerini Girin</h2>
             <form id="calculator-form" class="space-y-4">
                 <div>
                     <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi<span class="text-red-500">*</span></label>
@@ -395,56 +393,67 @@
         </div>
     </div>
 
-    <div id="login-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg p-6 w-[320px] relative">
-            <button id="close-login-modal"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-pointer">
-                <i class="ri-close-line ri-lg"></i>
-            </button>
+    <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+            <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
             <div class="text-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-800">Giriş Yap</h3>
-                <p class="text-sm text-gray-600 mt-1">Hizmetlerimizi kullanmak için giriş yapın</p>
+                <h3 class="text-2xl font-bold text-gray-800">Hoş Geldiniz!</h3>
+                <p class="text-sm text-gray-600 mt-1">Hizmetlerimizi kullanmak için giriş yapın.</p>
             </div>
-            <button id="google-login-btn"
-                class="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-button py-3 font-medium hover:bg-gray-50 transition-colors cursor-pointer">
-                <i class="ri-google-fill ri-lg text-primary"></i>
+            <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-button py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                <i class="ri-google-fill ri-lg text-red-500"></i>
                 <span>Google ile Giriş Yap</span>
             </button>
         </div>
     </div>
-    
-    <div id="auth-required-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg p-6 w-[320px]">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ri-lock-line ri-2x text-red-500"></i>
+
+    <div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-2">Profilinizi Tamamlayın</h3>
+            <p class="text-sm text-gray-600 mt-1 text-center mb-6">Size daha iyi hizmet verebilmemiz için bu bilgilere ihtiyacımız var.</p>
+            <form id="profile-form" class="space-y-4">
+                <div>
+                    <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad <span class="text-red-500">*</span></label>
+                    <input type="text" id="full-name-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800">Giriş Gerekli</h3>
-                <p class="text-sm text-gray-600 mt-2">Bu özelliği kullanmak için lütfen giriş yapın.</p>
-            </div>
-            <button id="auth-login-btn"
-                class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-                Giriş Yap
-            </button>
-            <button id="close-auth-modal"
-                class="w-full text-gray-600 py-2 mt-2 font-medium hover:bg-gray-100 rounded-button transition-colors">
-                Kapat
-            </button>
+                <div>
+                    <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Telefon Numarası <span class="text-red-500">*</span></label>
+                    <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="+90 5XX XXX XX XX">
+                </div>
+                <div>
+                    <label for="address-input" class="block text-sm font-medium text-gray-700 mb-1">Varsayılan Teslimat Adresi <span class="text-red-500">*</span></label>
+                    <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Tam adresinizi girin (örn: Cadde, No, Daire, Şehir)"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors">Profili Kaydet</button>
+            </form>
         </div>
     </div>
 
-    <div id="toast"
-        class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 z-50">
-        <span id="toast-message">Kopyalandı!</span>
+    <div id="auth-required-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 text-center fade-in">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ri-lock-line ri-2x text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Giriş Gerekli</h3>
+            <p class="text-sm text-gray-600 mt-2 mb-6">Bu özelliği kullanmak için lütfen giriş yapın.</p>
+            <div class="space-y-2">
+                <button id="auth-modal-login-btn" class="w-full bg-primary text-white py-2 rounded-button font-medium hover:bg-primary/90 transition-colors">Giriş Yap</button>
+                <button id="close-auth-modal" class="w-full text-gray-600 py-2 font-medium hover:bg-gray-100 rounded-button transition-colors">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4">
+        <span id="toast-message"></span>
     </div>
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -454,19 +463,17 @@
         appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
         measurementId: "G-JL9P6BRZTD"
     };
-    firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
-    const db = firebase.firestore(); // Firestore'u başlat
-
-    const auth = firebase.auth(); // Auth servisi de uyumlu API ile alınmalı
     
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
     let cartUnsubscribe = null;
 
     // --- GLOBAL SETTINGS ---
     let pricingSettings = {};
     const DEFAULT_SETTINGS = {
         categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
-        cityFees: { 'Lefkoşa': 0, 'Girne': 0, 'Gazimağusa': 0, 'Güzelyurt': 0, 'İskele': 0 } // Bu kısım kullanılmıyor ama ayarlar yapısında kalabilir
+        cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
     };
 
     // --- DOM Elements ---
@@ -478,15 +485,17 @@
     const googleLoginBtn = document.getElementById('google-login-btn');
     const authRequiredModal = document.getElementById('auth-required-modal');
     const closeAuthModal = document.getElementById('close-auth-modal');
-    const authLoginBtn = document.getElementById('auth-login-btn');
+    const authModalLoginBtn = document.getElementById('auth-modal-login-btn');
+    const profileModal = document.getElementById('profile-modal');
+    const profileForm = document.getElementById('profile-form');
     const cartBadge = document.getElementById('cart-badge');
 
     // ---- SETTINGS LOADER ----
     async function loadPricingSettings() {
         try {
-            const docRef = db.collection("settings").doc("pricing"); // Uyumlu API
-            const docSnap = await docRef.get(); // Uyumlu API
-            if (docSnap.exists && docSnap.data().categoryRates) {
+            const docRef = doc(db, "settings", "pricing");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().categoryRates) {
                 pricingSettings = docSnap.data();
                 console.log("Fiyat ayarları başarıyla yüklendi.");
             } else {
@@ -524,9 +533,10 @@
 
 
     // ---- AUTHENTICATION ---- //
-    auth.onAuthStateChanged(user => { // Uyumlu API
+    onAuthStateChanged(auth, user => {
         updateAuthUI(user);
         if (user) {
+            checkUserProfile(user);
             listenToCart(user.uid);
         } else {
             if (cartUnsubscribe) cartUnsubscribe();
@@ -550,30 +560,63 @@
     closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
     profileContainer.addEventListener('click', async () => {
         if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-            await auth.signOut(); // Uyumlu API
-            window.showToast('Başarıyla çıkış yapıldı.');
+            await signOut(auth);
+            showToast('Başarıyla çıkış yapıldı.');
         }
     });
     
     googleLoginBtn.addEventListener('click', async () => {
-        const provider = new firebase.auth.GoogleAuthProvider(); // Uyumlu API
+        const provider = new GoogleAuthProvider();
         try {
-            await auth.signInWithPopup(provider); // Uyumlu API
+            await signInWithPopup(auth, provider);
             loginModal.classList.add('hidden');
-            window.showToast('Giriş başarılı!');
+            showToast('Giriş başarılı!');
         } catch (error) {
             console.error("Google ile giriş hatası:", error);
-            window.showToast('Giriş sırasında bir hata oluştu: ' + error.message, 'error');
+            showToast('Giriş sırasında bir hata oluştu.', 'error');
         }
     });
 
     window.showAuthRequiredModal = () => authRequiredModal.classList.remove('hidden');
     closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
-    authLoginBtn.addEventListener('click', () => {
+    authModalLoginBtn.addEventListener('click', () => {
         authRequiredModal.classList.add('hidden');
         loginModal.classList.remove('hidden');
     });
 
+    // ---- USER PROFILE ---- //
+    async function checkUserProfile(user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (!userDocSnap.exists() || !userDocSnap.data().isProfileComplete) {
+            profileModal.classList.remove('hidden');
+            document.getElementById('full-name-input').value = user.displayName || '';
+        }
+    }
+    
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+        const userData = {
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            fullName: document.getElementById('full-name-input').value,
+            phone: document.getElementById('phone-input').value,
+            address: document.getElementById('address-input').value,
+            isProfileComplete: true,
+        };
+        try {
+            await setDoc(doc(db, "users", user.uid), userData, { merge: true });
+            profileModal.classList.add('hidden');
+            showToast('Profiliniz başarıyla güncellendi!');
+        } catch (error) {
+            console.error("Profil kaydetme hatası:", error);
+            showToast('Profil kaydedilirken bir hata oluştu.', 'error');
+        }
+    });
+    
     // ---- CALCULATOR & CART ---- //
     const calculatorSection = document.getElementById('calculator-section');
     const calculatorForm = document.getElementById('calculator-form');
@@ -584,8 +627,8 @@
     formInputs.forEach(input => input.addEventListener('input', resetCalculatorState));
 
     // Calculate butonu tıklandığında hesaplama bölümünü görünür yap
-    const calculateBtnMain = document.getElementById('calculate-btn');
-    calculateBtnMain.addEventListener('click', () => {
+    const calculateBtn = document.getElementById('calculate-btn'); // ID düzeltildi
+    calculateBtn.addEventListener('click', () => {
         calculatorSection.classList.remove('hidden');
         calculatorSection.scrollIntoView({ behavior: 'smooth' });
         calculatorForm.reset(); // Formu sıfırla
@@ -616,7 +659,7 @@
         const productLink = document.getElementById('product-link').value.trim();
 
         if (isNaN(price) || price <= 0 || !category || !productLink) {
-            window.showToast('Lütfen tüm zorunlu alanları doğru doldurun.', 'error');
+            showToast('Lütfen tüm zorunlu alanları doğru doldurun.', 'error');
             return;
         }
 
@@ -640,77 +683,54 @@
             return;
         }
 
-        // Sepete eklenecek verileri doğrudan formdan al
         const productData = {
             productLink: document.getElementById('product-link').value,
             productPrice: parseFloat(document.getElementById('product-price').value),
             category: document.getElementById('product-category').value,
             orderMethod: document.getElementById('order-method').value,
             quantity: 1,
-            addedAt: firebase.firestore.FieldValue.serverTimestamp() // Firestore Timestamp için uyumlu API
+            addedAt: new Date() // Date objesi olarak eklendi, Firebase'e gönderirken otomatik Timestamp'a çevrilir
         };
 
         try {
-            await db.collection('users').doc(user.uid).collection('cart').add(productData); // Uyumlu API
-            window.showToast('Ürün başarıyla sepete eklendi!');
+            await addDoc(collection(db, 'users', user.uid, 'cart'), productData);
+            showToast('Ürün başarıyla sepete eklendi!');
             calculatorForm.reset();
             resetCalculatorState();
             window.location.href = 'https://getirkibris.com/sepet.html'; 
         } catch (error) {
             console.error("Sepete ekleme hatası:", error);
-            window.showToast('Ürün sepete eklenirken bir hata oluştu: ' + error.message, 'error');
+            showToast('Ürün sepete eklenirken bir hata oluştu: ' + error.message, 'error');
         }
     }
     
     function listenToCart(userId) {
         if (cartUnsubscribe) cartUnsubscribe();
-        const cartRef = db.collection('users').doc(userId).collection('cart'); // Uyumlu API
-        cartUnsubscribe = cartRef.onSnapshot(snapshot => { // Uyumlu API
+        const cartRef = collection(db, 'users', userId, 'cart');
+        cartUnsubscribe = onSnapshot(cartRef, (snapshot) => {
             const itemCount = snapshot.size;
             cartBadge.textContent = itemCount;
             cartBadge.classList.toggle('hidden', itemCount === 0);
         });
     }
 
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        toastMessage.textContent = message;
+        toast.className = 'fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl transition-all duration-300 z-[110] transform';
+        toast.classList.add(type === 'error' ? 'bg-red-500' : 'bg-gray-800');
+        toast.classList.remove('opacity-0', 'translate-y-4');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-4');
+        }, 3000);
+    }
+    
     // Sayfa yüklendiğinde ayarları çek
     loadPricingSettings();
 
-</script>
-
-<script id="utils-script">
-    document.addEventListener('DOMContentLoaded', function () {
-        const copyButtons = document.querySelectorAll('.copy-btn');
-        copyButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const targetId = this.getAttribute('data-copy');
-                const textToCopy =
-                    document.getElementById(targetId).textContent;
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        window.showToast('Kopyalandı!');
-                    })
-                    .catch(err => {
-                        window.showToast('Kopyalama başarısız');
-                        console.error('Kopyalama hatası:', err);
-                    });
-            });
-        });
-
-        window.showToast = function (message) {
-            const toast =
-                document.getElementById('toast');
-            const toastMessage =
-                document.getElementById('toast-message');
-            toastMessage.textContent = message;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
-            }, 3000);
-        };
-    });
 </script>
 
 </body>
