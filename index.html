@@ -8,10 +8,8 @@
     <link rel="canonical" href="https://getirkibris.com" />
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts & Remix Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -45,7 +43,6 @@
         .copy-btn:active, .auth-button:active {
             transform: scale(0.95);
         }
-        /* Animasyonlar */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -62,20 +59,17 @@
 
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-    <!-- HEADER -->
     <header class="sticky top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center justify-between">
-        <!-- Logo -->
         <a href="index.html" class="flex items-center gap-2">
             <img src="https://placehold.co/100x40/5d3ebc/ffffff?text=GetirKıbrıs&font=inter" alt="Getir Kıbrıs Logo" class="h-10">
         </a>
         
-        <!-- Navigation & Auth -->
         <div class="flex items-center gap-4">
-             <a href="sepet.html" id="cart-btn" class="relative flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
-                <i class="ri-shopping-cart-line ri-lg"></i>
-                <span class="hidden md:block text-sm font-medium">Sepetim</span>
-                <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
-            </a>
+              <a href="sepet.html" id="cart-btn" class="relative flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
+                  <i class="ri-shopping-cart-line ri-lg"></i>
+                  <span class="hidden md:block text-sm font-medium">Sepetim</span>
+                  <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+              </a>
             <div id="auth-button-container" class="w-8 h-8 flex items-center justify-center">
                 <button id="login-btn" class="text-primary font-medium cursor-pointer" aria-label="Giriş Yap">
                     <i class="ri-user-line ri-lg"></i>
@@ -87,20 +81,16 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main class="pt-8 pb-20 px-4">
         
-        <!-- Hero Section -->
         <section class="text-center mb-12">
             <h1 class="text-3xl md:text-4xl font-bold text-primary mb-2">Türkiye'den Kıbrıs'a Alışverişin En Kolay Yolu</h1>
             <p class="text-md md:text-lg text-gray-600 max-w-2xl mx-auto">Trendyol, Hepsiburada ve dilediğiniz siteden beğendiğiniz ürünleri sizin için Kıbrıs'a getirelim.</p>
         </section>
 
-        <!-- Calculator Section -->
         <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in">
             <h2 class="text-xl font-semibold mb-4 text-primary">1. Ürün Bilgilerini Girin</h2>
             <form id="calculator-form" class="space-y-4">
-                <!-- Sipariş Yöntemi -->
                 <div>
                     <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi<span class="text-red-500">*</span></label>
                     <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
@@ -108,12 +98,10 @@
                         <option value="self">Ürünü ben alacağım, sadece kargo hizmeti istiyorum</option>
                     </select>
                 </div>
-                <!-- Ürün Linki -->
                 <div>
                     <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki<span class="text-red-500">*</span></label>
                     <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/urun">
                 </div>
-                <!-- Fiyat ve Kategori -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)<span class="text-red-500">*</span></label>
@@ -127,7 +115,6 @@
                     </div>
                 </div>
                 
-                <!-- Calculation Result & Action Button -->
                 <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
                     <h3 class="font-medium text-gray-800 mb-2">Ürün Getirme Maliyeti</h3>
                     <div class="space-y-2 text-sm">
@@ -153,7 +140,6 @@
             </form>
         </section>
 
-        <!-- How it Works -->
         <section class="bg-white rounded-lg shadow-md mx-auto p-6 max-w-2xl">
             <h2 class="text-xl font-semibold mb-4 text-primary">Nasıl Çalışır?</h2>
             <ol class="space-y-4">
@@ -175,13 +161,10 @@
     </main>
 </div>
 
-<!-- FLOATING WHATSAPP BUTTON -->
 <a href="https://wa.me/905391090879" target="_blank" class="fixed bottom-6 right-6 z-50 bg-[#25D366] w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors">
     <i class="ri-whatsapp-line ri-xl text-white"></i>
 </a>
 
-<!-- MODALS -->
-<!-- Login Modal -->
 <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
     <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
         <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
@@ -196,7 +179,6 @@
     </div>
 </div>
 
-<!-- Profile Completion Modal -->
 <div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
     <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
         <h3 class="text-2xl font-bold text-gray-800 text-center mb-2">Profilinizi Tamamlayın</h3>
@@ -210,9 +192,16 @@
                 <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Telefon Numarası <span class="text-red-500">*</span></label>
                 <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="+90 5XX XXX XX XX">
             </div>
+
             <div>
-                <label for="address-input" class="block text-sm font-medium text-gray-700 mb-1">Varsayılan Teslimat Adresi <span class="text-red-500">*</span></label>
-                <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Tam adresinizi girin (örn: Cadde, No, Daire, Şehir)"></textarea>
+                <label for="city-input" class="block text-sm font-medium text-gray-700 mb-1">Varsayılan Teslimat Şehri <span class="text-red-500">*</span></label>
+                <select id="city-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                    <option value="" disabled selected>Şehirler Yükleniyor...</option>
+                </select>
+            </div>
+            <div>
+                <label for="address-detail-input" class="block text-sm font-medium text-gray-700 mb-1">Açık Adres <span class="text-red-500">*</span></label>
+                <textarea id="address-detail-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Cadde, No, Daire vb."></textarea>
             </div>
             <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors">Profili Kaydet</button>
         </form>
@@ -220,7 +209,6 @@
 </div>
 
 
-<!-- Auth Required Modal -->
 <div id="auth-required-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
     <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 text-center fade-in">
         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -235,12 +223,10 @@
     </div>
 </div>
 
-<!-- TOAST NOTIFICATION -->
 <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4">
     <span id="toast-message"></span>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -261,14 +247,12 @@
     const db = getFirestore(app);
     let cartUnsubscribe = null;
 
-    // --- GLOBAL SETTINGS ---
     let pricingSettings = {};
     const DEFAULT_SETTINGS = {
         categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
         cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
     };
 
-    // --- DOM Elements ---
     const loginBtn = document.getElementById('login-btn');
     const profileContainer = document.getElementById('profile-container');
     const profileImg = document.getElementById('profile-img');
@@ -282,7 +266,6 @@
     const profileForm = document.getElementById('profile-form');
     const cartBadge = document.getElementById('cart-badge');
 
-    // ---- SETTINGS LOADER ----
     async function loadPricingSettings() {
         try {
             const docRef = doc(db, "settings", "pricing");
@@ -299,6 +282,8 @@
             pricingSettings = DEFAULT_SETTINGS;
         }
         populateCategoryDropdown();
+        // ===== 2. DEĞİŞİKLİK: YENİ FONKSİYON ÇAĞIRILDI =====
+        populateCityDropdownInProfile();
     }
 
     function populateCategoryDropdown() {
@@ -323,8 +308,23 @@
         }
     }
 
+    // ===== 3. DEĞİŞİKLİK: YENİ FONKSİYON EKLENDİ =====
+    function populateCityDropdownInProfile() {
+        const citySelect = document.getElementById('city-input');
+        if (!citySelect || !pricingSettings.cityFees) return;
+        
+        citySelect.innerHTML = '<option value="" disabled selected>Teslimat şehri seçin</option>';
+        
+        for (const cityName in pricingSettings.cityFees) {
+            const option = document.createElement('option');
+            option.value = cityName;
+            option.textContent = cityName;
+            citySelect.appendChild(option);
+        }
+    }
+    // ===== YENİ FONKSİYON SONU =====
 
-    // ---- AUTHENTICATION ---- //
+
     onAuthStateChanged(auth, user => {
         updateAuthUI(user);
         if (user) {
@@ -376,7 +376,6 @@
         loginModal.classList.remove('hidden');
     });
 
-    // ---- USER PROFILE ---- //
     async function checkUserProfile(user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
@@ -390,15 +389,23 @@
         e.preventDefault();
         const user = auth.currentUser;
         if (!user) return;
+
+        // ===== 4. DEĞİŞİKLİK: ADRES BİLGİSİNİN KAYDEDİLME ŞEKLİ GÜNCELLENDİ =====
         const userData = {
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
             fullName: document.getElementById('full-name-input').value,
             phone: document.getElementById('phone-input').value,
-            address: document.getElementById('address-input').value,
+            // Adresi obje olarak kaydet
+            address: {
+                city: document.getElementById('city-input').value,
+                details: document.getElementById('address-detail-input').value
+            },
             isProfileComplete: true,
         };
+        // ===== KAYDETME DEĞİŞİKLİĞİ SONU =====
+
         try {
             await setDoc(doc(db, "users", user.uid), userData, { merge: true });
             profileModal.classList.add('hidden');
@@ -409,7 +416,6 @@
         }
     });
     
-    // ---- CALCULATOR & CART ---- //
     const calculatorForm = document.getElementById('calculator-form');
     const mainActionBtn = document.getElementById('main-action-btn');
     const calculationResult = document.getElementById('calculation-result');
