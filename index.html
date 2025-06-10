@@ -52,7 +52,7 @@
         .copy-btn:active, .auth-button:active {
             transform: scale(0.95);
         }
-        /* Animasyonlar (mevcut index.html'den) */
+        /* Animasyonlar */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -114,167 +114,67 @@
                 <span class="text-sm font-medium">Hesapla</span>
             </button>
 
-            <a href="https://getirkibris.com/sepet.html" data-readdy="true" id="my-orders-btn"
+            <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
                 class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                 <div
                     class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-                    <i class="ri-file-list-3-line ri-xl text-primary"></i>
+                    <i class="ri-shopping-cart-line ri-xl text-primary"></i>
                 </div>
                 <span class="text-sm font-medium">Sepetim</span>
+                <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
             </a>
         </div>
 
-        <div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
-            <h3 class="text-lg font-semibold mb-4 text-primary">Ürün Maliyeti Hesapla</h3>
+        <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
+            <h2 class="text-xl font-semibold mb-4 text-primary">Ürün Maliyeti Hesapla</h2>
             <form id="calculator-form" class="space-y-4">
                 <div>
-                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş
-                        Yöntemi<span class="text-red-500">*</span></label>
-                    <div class="relative mb-4">
-                        <i class="ri-shopping-bag-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <select id="order-method" required
-                            class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
-                            <option value="" disabled selected>Sipariş yöntemi seçin</option>
-                            <option value="self">Ürünü ben sipariş edeceğim, sadece kargo hizmeti istiyorum</option>
-                            <option value="service">Ürünü benim yerime siz sipariş edin, size ödeme yapacağım
-                            </option>
-                        </select>
-                        <i
-                            class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                    </div>
-                    <div>
-                        <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün
-                            Linki<span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <i class="ri-link ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="url" id="product-link" required
-                                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                                placeholder="https://www.example.com/urun">
-                        </div>
-                    </div>
+                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi<span class="text-red-500">*</span></label>
+                    <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                        <option value="service" selected>Ürünü benim yerime siz sipariş edin</option>
+                        <option value="self">Ürünü ben alacağım, sadece kargo hizmeti istiyorum</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı
-                        (₺)<span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <i class="ri-money-lira-circle-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="number" id="product-price" required
-                            class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                            placeholder="0.00" step="any" min="0.01">
-                    </div>
+                    <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki<span class="text-red-500">*</span></label>
+                    <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/urun">
+                </div>
+                <div>
+                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)<span class="text-red-500">*</span></label>
+                    <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
                 </div>
                 <div>
                     <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori<span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <i class="ri-price-tag-3-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <select id="product-category" required
-                            class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
-                            <option value="" disabled selected>Kategori seçin</option>
-                            <option value="furniture">Mobilya</option>
-                            <option value="electronics">Elektronik</option>
-                            <option value="clothing">Giyim</option>
-                            <option value="cosmetics">Kozmetik</option>
-                            <option value="stationery">Kırtasiye</option>
-                        </select>
-                        <i
-                            class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                        <option value="" disabled selected>Kategoriler Yükleniyor...</option>
+                    </select>
+                </div>
+                
+                <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+                    <h3 class="font-medium text-gray-800 mb-2">Ürün Getirme Maliyeti</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span id="result-price-label">Ürün Fiyatı:</span>
+                            <span id="result-price">0 ₺</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Kategori Hizmet Bedeli:</span>
+                            <span id="result-category-fee">0 ₺</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
+                            <span>Getirme Dahil Toplam:</span>
+                            <span id="result-total">0 ₺</span>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <span class="block text-sm font-medium text-gray-700 mb-2">Teslimat Tipi<span class="text-red-500">*</span></span>
-                    <div class="flex space-x-4">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="delivery-type" value="warehouse" class="sr-only" checked required>
-                            <div
-                                class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
-                                <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
-                            </div>
-                            <span class="text-sm">Depodan teslim</span>
-                        </label>
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="delivery-type" value="home" class="sr-only" required>
-                            <div
-                                class="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center mr-2 delivery-radio">
-                                <div class="w-3 h-3 bg-primary rounded-full hidden"></div>
-                            </div>
-                            <span class="text-sm">Eve teslim</span>
-                        </label>
-                    </div>
-                </div>
-                <div id="city-selection" class="hidden">
-                    <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Şehir<span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <i class="ri-map-pin-line ri-lg absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <select id="city"
-                            class="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary appearance-none bg-white text-sm">
-                            <option value="" disabled selected>Şehir seçin</option>
-                            <option value="lefkosa">Lefkoşa</option>
-                            <option value="girne">Girne</option>
-                            <option value="magusa">Gazimağusa</option>
-                            <option value="guzelyurt">Güzelyurt</option>
-                            <option value="iskele">İskele</option>
-                        </select>
-                        <i
-                            class="ri-arrow-down-s-line ri-lg absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                    </div>
-                </div>
-                <button type="submit"
-                    class="w-full bg-primary text-white py-3 rounded-button font-medium hover:bg-primary/90 transition-colors cursor-pointer !rounded-button">
-                    Hesapla
+
+                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
+                    <i class="ri-calculator-line"></i>
+                    <span>Maliyeti Hesapla</span>
                 </button>
             </form>
+        </section>
 
-            <div id="common-order-details-section" class="space-y-4 mt-6 hidden">
-                <h4 class="text-md font-semibold text-primary border-t pt-4 mt-4">İletişim Bilgileri</h4>
-                <div>
-                    <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad <span
-                                class="text-red-500">*</span></label>
-                    <input type="text" id="full-name-input" required
-                        class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                        placeholder="Adınız Soyadınız">
-                </div>
-                <div>
-                    <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Telefon <span
-                                class="text-red-500">*</span></label>
-                    <input type="tel" id="phone-input" required
-                        class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                        placeholder="Telefon numaranız">
-                </div>
-            </div>
-
-            <div id="home-delivery-address-section" class="space-y-4 mt-4 hidden">
-                <h4 class="text-md font-semibold text-primary border-t pt-4 mt-4">Teslimat Adresi</h4>
-                <div>
-                    <label for="delivery-address-input" class="block text-sm font-medium text-gray-700 mb-1">Teslimat
-                        Adresi <span class="text-red-500">*</span></label>
-                    <textarea id="delivery-address-input"
-                        class="w-full pl-4 pr-4 py-2 border border-gray-200 rounded-button focus:outline-none focus:border-primary"
-                        placeholder="Tam adresinizi girin" rows="3"></textarea>
-                </div>
-            </div>
-
-            <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-                <h4 class="font-medium text-gray-800 mb-2">Hesaplama Sonucu</h4>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                        <span>Ürün Fiyatı:</span>
-                        <span id="result-price">0 ₺</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>Kategori Ücreti:</span>
-                        <span id="result-category-fee">0 ₺</span>
-                    </div>
-                    <div class="flex justify-between hidden" id="result-city-row">
-                        <span>Teslimat Ücreti:</span>
-                        <span id="result-delivery-fee">0 ₺</span>
-                    </div>
-                    <div class="flex justify-between font-medium text-primary pt-2 border-t border-gray-200">
-                        <span>Toplam:</span>
-                        <span id="result-total">0 ₺</span>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="px-4 mb-8">
             <h3 class="text-lg font-semibold mb-4">Popüler Alışveriş Siteleri</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -544,414 +444,261 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-        authDomain: "kibris-6b4f7.firebaseapp.com",
-        projectId: "kibris-6b4f7",
-        storageBucket: "kibris-6b4f7.firebasestorage.app",
-        messagingSenderId: "141262926171",
-        appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-        measurementId: "G-JL9P6BRZTD"
+<script type="module"> // Firestore için module import gerekiyor, ancak compat versiyonları da kullanılıyor
+    import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    // Firebase App zaten global olarak başlatıldı (firebase.initializeApp)
+    // Firestore ve Auth servislerini uyumlu API'lerle alın
+    const auth = firebase.auth(); 
+    const db = firebase.firestore();
+
+    let cartUnsubscribe = null;
+
+    // --- GLOBAL SETTINGS ---
+    let pricingSettings = {};
+    const DEFAULT_SETTINGS = {
+        categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
+        // cityFees bu versiyonda kullanılmayacak, ancak ayarlar yapısında kalsın
+        cityFees: { 'Lefkoşa': 0, 'Girne': 0, 'Gazimağusa': 0, 'Güzelyurt': 0, 'İskele': 0 }
     };
-    firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
-    const db = firebase.firestore(); // Firestore'u başlat
-</script>
 
-<script id="auth-script">
-    document.addEventListener('DOMContentLoaded', function () {
-        const auth = firebase.auth();
-        const loginBtn = document.getElementById('login-btn');
-        const profileContainer = document.getElementById('profile-container');
-        const profileImg = document.getElementById('profile-img');
-        const loginModal = document.getElementById('login-modal');
-        const closeLoginModal = document.getElementById('close-login-modal');
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        const authRequiredModal = document.getElementById('auth-required-modal');
-        const authLoginBtn = document.getElementById('auth-login-btn');
-        const closeAuthModal = document.getElementById('close-auth-modal');
+    // --- DOM Elements ---
+    const loginBtn = document.getElementById('login-btn');
+    const profileContainer = document.getElementById('profile-container');
+    const profileImg = document.getElementById('profile-img');
+    const loginModal = document.getElementById('login-modal');
+    const closeLoginModal = document.getElementById('close-login-modal');
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const authRequiredModal = document.getElementById('auth-required-modal');
+    const closeAuthModal = document.getElementById('close-auth-modal');
+    const authLoginBtn = document.getElementById('auth-login-btn'); // Daha önce authModalLoginBtn idi
+    // const profileModal kaldırıldı
+    // const profileForm kaldırıldı
+    const cartBadge = document.getElementById('cart-badge');
 
-        auth.onAuthStateChanged(function (user) {
-            updateAuthUI(user);
-        });
-
-        loginBtn.addEventListener('click', function () {
-            loginModal.classList.remove('hidden');
-        });
-        closeLoginModal.addEventListener('click', function () {
-            loginModal.classList.add('hidden');
-        });
-
-        googleLoginBtn.addEventListener('click', function () {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    loginModal.classList.add('hidden');
-                    window.showToast('Google ile giriş başarılı!');
-                })
-                .catch((error) => {
-                    console.error("Google ile giriş hatası:", error.code, error.message);
-                    window.showToast('Giriş sırasında bir hata oluştu: ' + error.message);
-                });
-        });
-
-        window.showAuthRequiredModal = function () {
-            authRequiredModal.classList.remove('hidden');
-        }
-        closeAuthModal.addEventListener('click', function () {
-            authRequiredModal.classList.add('hidden');
-        });
-        authLoginBtn.addEventListener('click', function () {
-            authRequiredModal.classList.add('hidden');
-            loginModal.classList.remove('hidden');
-        });
-
-        function updateAuthUI(user) {
-            if (user) {
-                loginBtn.classList.add('hidden');
-                profileContainer.classList.remove('hidden');
-                profileImg.src = user.photoURL || 'https://via.placeholder.com/150';
-                profileImg.alt = user.displayName || user.email || 'Profil';
+    // ---- SETTINGS LOADER ----
+    async function loadPricingSettings() {
+        try {
+            const docRef = doc(db, "settings", "pricing");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().categoryRates) {
+                pricingSettings = docSnap.data();
+                console.log("Fiyat ayarları başarıyla yüklendi.");
             } else {
-                loginBtn.classList.remove('hidden');
-                profileContainer.classList.add('hidden');
+                pricingSettings = DEFAULT_SETTINGS;
+                console.log("Fiyat ayarları bulunamadı, varsayılanlar kullanılıyor.");
             }
+        } catch (error) {
+            console.error("Fiyat ayarları yüklenirken hata oluştu:", error);
+            pricingSettings = DEFAULT_SETTINGS;
         }
+        populateCategoryDropdown();
+    }
 
-        profileContainer.addEventListener('click', function () {
-            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-                auth.signOut().then(() => {
-                    window.showToast('Çıkış yapıldı');
-                }).catch((error) => {
-                    console.error('Çıkış hatası:', error);
-                    window.showToast('Çıkış sırasında bir hata oluştu.');
-                });
-            }
-        });
-
-        const protectedButtons = [
-            document.getElementById('my-orders-btn')
-        ];
-        protectedButtons.forEach(button => {
-            if (button) {
-                button.addEventListener('click', function (e) {
-                    if (!auth.currentUser) {
-                        e.preventDefault();
-                        window.showAuthRequiredModal();
-                    }
-                });
-            }
-        });
-
-        const calculateBtn = document.getElementById('calculate-btn');
-        if (calculateBtn) {
-            calculateBtn.addEventListener('click', function () {
-                if (window.toggleCalculatorSection) {
-                    window.toggleCalculatorSection();
-                }
-            });
-        }
-        // Sipariş Ver butonu kaldırıldığı için ilgili event listener da kaldırıldı.
-        // const orderNowBtn = document.getElementById('order-now-btn');
-        // if (orderNowBtn) {
-        //     orderNowBtn.addEventListener('click', function() {
-        //         if (window.toggleCalculatorSection) {
-        //             window.toggleCalculatorSection(); // Hesaplama modülünü aç
-        //         }
-        //     });
-        // }
-    });
-</script>
-
-<script id="calculator-script">
-    document.addEventListener('DOMContentLoaded', function () {
-        const calculatorSection = document.getElementById('calculator-section');
-        const calculatorForm = document.getElementById('calculator-form');
-        const citySelection = document.getElementById('city-selection');
-        const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
-        const calculationResult = document.getElementById('calculation-result');
-        const resultCityRow = document.getElementById('result-city-row');
-        const resultPriceDisplay = document.getElementById('result-price');
-
-        const commonOrderDetailsSection = document.getElementById('common-order-details-section');
-        const homeDeliveryAddressSection = document.getElementById('home-delivery-address-section');
-
-        const deliveryAddressInput = document.getElementById('delivery-address-input');
-        const fullNameInput = document.getElementById('full-name-input');
-        const phoneInput = document.getElementById('phone-input');
-
-        const submitButton = calculatorForm.querySelector('button[type="submit"]');
-
-        const formInputsToResetButton = [
-            document.getElementById('order-method'),
-            document.getElementById('product-link'),
-            document.getElementById('product-price'),
-            document.getElementById('product-category'),
-            ...calculatorForm.querySelectorAll('input[name="delivery-type"]'),
-            document.getElementById('city')
-        ];
-
-        window.toggleCalculatorSection = function () {
-            calculatorSection.classList.toggle('hidden');
-            if (!calculatorSection.classList.contains('hidden')) {
-                calculatorSection.scrollIntoView({ behavior: 'smooth' });
-                resetButtonToCalculateState();
-            }
+    function populateCategoryDropdown() {
+        const categorySelect = document.getElementById('product-category');
+        if (!categorySelect || !pricingSettings.categoryRates) return;
+        
+        categorySelect.innerHTML = '<option value="" disabled selected>Kategori seçin</option>';
+        
+        const categoryDisplayNames = {
+            furniture: "Mobilya & Ev Eşyası",
+            electronics: "Elektronik",
+            clothing: "Giyim & Ayakkabı",
+            cosmetics: "Kozmetik",
+            stationery: "Kırtasiye & Kitap"
         };
 
-        function resetButtonToCalculateState() {
-            if (submitButton.textContent === 'Sipariş Ver' || submitButton.textContent === 'Siparişi Onayla') {
-                submitButton.textContent = 'Hesapla';
-            }
-            calculationResult.classList.add('hidden');
-            if (commonOrderDetailsSection) commonOrderDetailsSection.classList.add('hidden');
-            if (homeDeliveryAddressSection) homeDeliveryAddressSection.classList.add('hidden');
-            // Zorunlu alanların required özelliğini başlangıç durumuna döndür
-            document.getElementById('full-name-input').removeAttribute('required');
-            document.getElementById('phone-input').removeAttribute('required');
-            document.getElementById('delivery-address-input').removeAttribute('required');
-            document.getElementById('city').removeAttribute('required');
+        for (const categoryKey in pricingSettings.categoryRates) {
+            const option = document.createElement('option');
+            option.value = categoryKey;
+            option.textContent = categoryDisplayNames[categoryKey] || categoryKey;
+            categorySelect.appendChild(option);
         }
+    }
 
-        formInputsToResetButton.forEach(input => {
-            if (input) {
-                input.addEventListener('change', resetButtonToCalculateState);
-                if (input.type === 'text' || input.type === 'number' || input.type === 'url' ||
-                    input.tagName.toLowerCase() === 'textarea' || input.type === 'tel') {
-                    input.addEventListener('input', resetButtonToCalculateState);
-                }
-            }
-        });
 
-        deliveryRadios.forEach(radio => {
-            radio.addEventListener('change', function () {
-                document.querySelectorAll('.delivery-radio div').forEach(dot => {
-                    dot.classList.add('hidden');
-                });
-                if (this.checked) {
-                    const radioDiv = this.parentElement.querySelector('.delivery-radio div');
-                    if (radioDiv) radioDiv.classList.remove('hidden');
-                }
-
-                if (this.value === 'home') {
-                    citySelection.classList.remove('hidden');
-                    document.getElementById('city').setAttribute('required', 'required'); // Şehir zorunlu
-                    document.getElementById('delivery-address-input').setAttribute('required', 'required'); // Teslimat adresi zorunlu
-                } else {
-                    citySelection.classList.add('hidden');
-                    document.getElementById('city').removeAttribute('required');
-                    document.getElementById('delivery-address-input').removeAttribute('required');
-                }
-            });
-        });
-
-        const initiallyCheckedRadio = document.querySelector('input[name="delivery-type"]:checked');
-        if (initiallyCheckedRadio) {
-            const radioDiv = initiallyCheckedRadio.parentElement.querySelector('.delivery-radio div');
-            if (radioDiv) radioDiv.classList.remove('hidden');
-            if (initiallyCheckedRadio.value === 'home') {
-                citySelection.classList.remove('hidden');
-                document.getElementById('city').setAttribute('required', 'required'); // Şehir zorunlu
-                document.getElementById('delivery-address-input').setAttribute('required', 'required'); // Teslimat adresi zorunlu
-            } else {
-                citySelection.classList.add('hidden');
-                document.getElementById('city').removeAttribute('required');
-                document.getElementById('delivery-address-input').removeAttribute('required');
-            }
+    // ---- AUTHENTICATION ---- //
+    onAuthStateChanged(auth, user => {
+        updateAuthUI(user);
+        if (user) {
+            // checkUserProfile(user); // Artık profile completion modal yok
+            listenToCart(user.uid);
+        } else {
+            if (cartUnsubscribe) cartUnsubscribe();
+            cartBadge.classList.add('hidden');
         }
-
-        // Yeni sendOrderToFirebase fonksiyonu
-        async function sendOrderToFirebase() {
-            const auth = firebase.auth();
-            const user = auth.currentUser;
-
-            if (!user) {
-                window.showToast('Sipariş oluşturmak için lütfen giriş yapın.');
-                window.showAuthRequiredModal();
-                return;
-            }
-
-            // Hesaplama verilerini al
-            const orderMethod = document.getElementById('order-method').value;
-            const productLink = document.getElementById('product-link').value.trim();
-            const productPrice = parseFloat(document.getElementById('product-price').value) || 0;
-            const productCategory = document.getElementById('product-category').value;
-            const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-            const city = document.getElementById('city').value;
-
-            // İletişim bilgilerini al
-            const fullName = fullNameInput.value.trim();
-            const phone = phoneInput.value.trim();
-            const deliveryAddress = deliveryAddressInput.value.trim();
-
-            const categoryRates = {
-                'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45,
-                'cosmetics': 0.70, 'stationery': 0.40
-            };
-            const cityFees = {
-                'lefkosa': 200, 'girne': 350, 'magusa': 300,
-                'guzelyurt': 400, 'iskele': 450
-            };
-
-            const categoryFee = productPrice * (categoryRates[productCategory] || 0);
-            let deliveryFee = 0;
-            if (deliveryType === 'home') {
-                deliveryFee = cityFees[city] || 0;
-            }
-
-            let totalAmount;
-            if (orderMethod === 'self') {
-                totalAmount = categoryFee + deliveryFee;
-            } else {
-                totalAmount = productPrice + categoryFee + deliveryFee;
-            }
-
-            const orderData = {
-                userId: user.uid,
-                userEmail: user.email,
-                fullName: fullName,
-                phone: phone,
-                orderMethod: orderMethod,
-                productLink: productLink,
-                productPrice: productPrice,
-                productCategory: productCategory,
-                deliveryType: deliveryType,
-                city: deliveryType === 'home' ? city : null,
-                deliveryAddress: deliveryType === 'home' ? deliveryAddress : "Depodan Teslim",
-                calculatedCategoryFee: categoryFee,
-                calculatedDeliveryFee: deliveryFee,
-                totalAmount: totalAmount,
-                orderDate: firebase.firestore.FieldValue.serverTimestamp(),
-                status: 'pending' // Başlangıç sipariş durumu
-            };
-
-            try {
-                // Firebase Firestore'a sipariş verisini ekle
-                const docRef = await db.collection('orders').add(orderData);
-                window.showToast('Siparişiniz başarıyla oluşturuldu!');
-                console.log("Sipariş Firebase'e eklendi, belge ID:", docRef.id);
-                // Sepet sayfasına yönlendir (veya sipariş geçmişi sayfasına)
-                window.location.href = 'https://getirkibris.com/sepet.html';
-            } catch (error) {
-                console.error("Firebase'e sipariş gönderirken hata oluştu:", error);
-                window.showToast('Sipariş oluşturulurken bir hata oluştu: ' + error.message);
-            }
-        }
-
-        calculatorForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const auth = firebase.auth();
-
-            if (submitButton.textContent === 'Siparişi Onayla') {
-                const fullName = fullNameInput.value.trim();
-                const phone = phoneInput.value.trim();
-
-                if (!fullName || !phone) {
-                    window.showToast('Lütfen tüm iletişim bilgilerini doldurun.');
-                    return;
-                }
-
-                const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-                if (deliveryType === 'home') {
-                    const deliveryAddress = deliveryAddressInput.value.trim();
-                    if (!deliveryAddress) {
-                        window.showToast('Lütfen teslimat adresini girin.');
-                        return;
-                    }
-                }
-
-                // Sipariş onaylandığında Firebase'e gönder
-                await sendOrderToFirebase();
-
-            } else if (submitButton.textContent === 'Sipariş Ver') {
-                if (!auth.currentUser) {
-                    if (window.showAuthRequiredModal) {
-                        window.showAuthRequiredModal();
-                    } else {
-                        alert('Bu özelliği kullanmak için lütfen giriş yapın.');
-                    }
-                    return;
-                }
-
-                // İletişim bilgilerini zorunlu yap
-                fullNameInput.setAttribute('required', 'required');
-                phoneInput.setAttribute('required', 'required');
-
-                if (commonOrderDetailsSection) {
-                    commonOrderDetailsSection.classList.remove('hidden');
-                    commonOrderDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-
-                const currentDeliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-                if (currentDeliveryType === 'home') {
-                    if (homeDeliveryAddressSection) {
-                        homeDeliveryAddressSection.classList.remove('hidden');
-                        deliveryAddressInput.setAttribute('required', 'required'); // Teslimat adresi zorunlu
-                    }
-                } else {
-                    if (homeDeliveryAddressSection) {
-                        homeDeliveryAddressSection.classList.add('hidden');
-                        deliveryAddressInput.removeAttribute('required');
-                    }
-                }
-                submitButton.textContent = 'Siparişi Onayla';
-
-            } else { // Buton 'Hesapla' durumunda
-                const orderMethod = document.getElementById('order-method').value;
-                const productLink = document.getElementById('product-link').value.trim();
-                const productPriceInput = document.getElementById('product-price');
-                const price = parseFloat(productPriceInput.value);
-                const category = document.getElementById('product-category').value;
-                const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
-                const city = document.getElementById('city').value;
-
-                // Tüm zorunlu alanların kontrolü
-                if (!orderMethod || !productLink || isNaN(price) || price <= 0 || !category || !deliveryType || (deliveryType === 'home' && !city)) {
-                    window.showToast('Lütfen hesaplama için tüm zorunlu alanları doldurun.');
-                    return;
-                }
-
-                const categoryRates = {
-                    'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45,
-                    'cosmetics': 0.70, 'stationery': 0.40
-                };
-                const cityFees = {
-                    'lefkosa': 200, 'girne': 350, 'magusa': 300,
-                    'guzelyurt': 400, 'iskele': 450
-                };
-
-                const categoryFee = price * (categoryRates[category] || 0);
-                let deliveryFee = 0;
-                if (deliveryType === 'home') {
-                    deliveryFee = cityFees[city] || 0;
-                }
-
-                let total;
-                if (orderMethod === 'self') {
-                    total = categoryFee + deliveryFee;
-                    resultPriceDisplay.innerHTML = `${price.toFixed(2)} ₺ <span class="text-xs text-gray-500">(ürün bedeli size ait)</span>`;
-                } else {
-                    total = price + categoryFee + deliveryFee;
-                    resultPriceDisplay.textContent = `${price.toFixed(2)} ₺`;
-                }
-
-                document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
-                document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
-                document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
-
-                if (deliveryType === 'home') {
-                    resultCityRow.classList.remove('hidden');
-                } else {
-                    resultCityRow.classList.add('hidden');
-                }
-
-                calculationResult.classList.remove('hidden');
-                calculationResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                submitButton.textContent = 'Sipariş Ver';
-            }
-        });
     });
+
+    function updateAuthUI(user) {
+        if (user) {
+            loginBtn.classList.add('hidden');
+            profileContainer.classList.remove('hidden');
+            profileImg.src = user.photoURL || 'https://placehold.co/40x40/cccccc/000000?text=P';
+            profileImg.alt = user.displayName || 'Profil';
+        } else {
+            loginBtn.classList.remove('hidden');
+            profileContainer.classList.add('hidden');
+        }
+    }
+    
+    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+    closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
+    profileContainer.addEventListener('click', async () => {
+        if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+            await auth.signOut(); // Firebase 9 SDK signOut
+            window.showToast('Başarıyla çıkış yapıldı.'); // window.showToast'u kullan
+        }
+    });
+    
+    googleLoginBtn.addEventListener('click', async () => {
+        const provider = new firebase.auth.GoogleAuthProvider(); // Uyumlu API
+        try {
+            await auth.signInWithPopup(provider); // Uyumlu API
+            loginModal.classList.add('hidden');
+            window.showToast('Giriş başarılı!');
+        } catch (error) {
+            console.error("Google ile giriş hatası:", error);
+            window.showToast('Giriş sırasında bir hata oluştu: ' + error.message, 'error');
+        }
+    });
+
+    window.showAuthRequiredModal = () => authRequiredModal.classList.remove('hidden');
+    closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
+    authLoginBtn.addEventListener('click', () => {
+        authRequiredModal.classList.add('hidden');
+        loginModal.classList.remove('hidden');
+    });
+
+    // ---- CALCULATOR & CART ---- //
+    const calculatorSection = document.getElementById('calculator-section'); // Yeni eklenen kısım
+    const calculatorForm = document.getElementById('calculator-form');
+    const mainActionBtn = document.getElementById('main-action-btn');
+    const calculationResult = document.getElementById('calculation-result');
+
+    // Gizli olan inputlar kaldırıldığı için bu elemanlar da kaldırıldı
+    // const citySelection = document.getElementById('city-selection');
+    // const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
+    // const resultCityRow = document.getElementById('result-city-row');
+    // const commonOrderDetailsSection = document.getElementById('common-order-details-section');
+    // const homeDeliveryAddressSection = document.getElementById('home-delivery-address-section');
+    // const deliveryAddressInput = document.getElementById('delivery-address-input');
+    // const fullNameInput = document.getElementById('full-name-input');
+    // const phoneInput = document.getElementById('phone-input');
+
+    const formInputs = calculatorForm.querySelectorAll('input, select');
+    formInputs.forEach(input => input.addEventListener('input', resetCalculatorState));
+
+    // Calculate butonu tıklandığında hesaplama bölümünü görünür yap
+    const calculateBtnMain = document.getElementById('calculate-btn');
+    calculateBtnMain.addEventListener('click', () => {
+        calculatorSection.classList.remove('hidden');
+        calculatorSection.scrollIntoView({ behavior: 'smooth' });
+        resetCalculatorState(); // Formu sıfırla ve butonu Hesapla'ya getir
+    });
+
+
+    function resetCalculatorState() {
+        // if (mainActionBtn.textContent.trim() !== 'Maliyeti Hesapla') { // Eski kontroldü, şimdi ikon da var
+            mainActionBtn.innerHTML = `<i class="ri-calculator-line"></i><span>Maliyeti Hesapla</span>`;
+            calculationResult.classList.add('hidden');
+            // İletişim bilgileri ve adres alanları kaldırıldığı için resetleme de kaldırıldı
+            // if (commonOrderDetailsSection) commonOrderDetailsSection.classList.add('hidden');
+            // if (homeDeliveryAddressSection) homeDeliveryAddressSection.classList.add('hidden');
+            // document.getElementById('full-name-input').removeAttribute('required');
+            // document.getElementById('phone-input').removeAttribute('required');
+            // document.getElementById('delivery-address-input').removeAttribute('required');
+            // document.getElementById('city').removeAttribute('required');
+        // }
+    }
+    
+    calculatorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const buttonText = mainActionBtn.textContent.trim(); // Metni doğrudan al
+
+        if (buttonText === 'Maliyeti Hesapla') {
+            handleCalculation();
+        } else if (buttonText === 'Sepete Ekle') {
+            await handleAddToCart();
+        }
+    });
+
+    function handleCalculation() {
+        const price = parseFloat(document.getElementById('product-price').value);
+        const category = document.getElementById('product-category').value;
+        const orderMethod = document.getElementById('order-method').value;
+
+        if (isNaN(price) || price <= 0 || !category || !document.getElementById('product-link').value.trim()) {
+            window.showToast('Lütfen tüm zorunlu alanları doğru doldurun.', 'error');
+            return;
+        }
+
+        const categoryRates = pricingSettings.categoryRates || {};
+        const categoryFee = price * (categoryRates[category] || 0);
+        let total = (orderMethod === 'self') ? categoryFee : price + categoryFee;
+        
+        document.getElementById('result-price-label').textContent = orderMethod === 'self' ? 'Ürün Fiyatı (Size Ait):' : 'Ürün Fiyatı:';
+        document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
+        document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
+        // Teslimat ücreti kaldırıldığı için bu satır da kaldırıldı.
+        // document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
+        document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
+        
+        // Şehir satırı kaldırıldığı için bu kontrol de kaldırıldı.
+        // if (deliveryType === 'home') {
+        //     resultCityRow.classList.remove('hidden');
+        // } else {
+        //     resultCityRow.classList.add('hidden');
+        // }
+
+        calculationResult.classList.remove('hidden');
+        mainActionBtn.innerHTML = `<i class="ri-shopping-cart-add-line"></i><span>Sepete Ekle</span>`;
+    }
+
+    async function handleAddToCart() {
+        const user = auth.currentUser;
+        if (!user) {
+            window.showAuthRequiredModal();
+            return;
+        }
+        const productData = {
+            productLink: document.getElementById('product-link').value,
+            productPrice: parseFloat(document.getElementById('product-price').value),
+            category: document.getElementById('product-category').value,
+            orderMethod: document.getElementById('order-method').value,
+            quantity: 1,
+            addedAt: firebase.firestore.FieldValue.serverTimestamp() // Firebase 9 SDK Timestamp
+        };
+        try {
+            await addDoc(collection(db, 'users', user.uid, 'cart'), productData); // Firebase 9 SDK addDoc, collection
+            window.showToast('Ürün başarıyla sepete eklendi!');
+            calculatorForm.reset();
+            resetCalculatorState();
+            // Sepete ekledikten sonra sepet sayfasına yönlendir
+            window.location.href = 'https://getirkibris.com/sepet.html'; 
+        } catch (error) {
+            console.error("Sepete ekleme hatası:", error);
+            window.showToast('Ürün sepete eklenirken bir hata oluştu: ' + error.message, 'error');
+        }
+    }
+    
+    function listenToCart(userId) {
+        if (cartUnsubscribe) cartUnsubscribe();
+        const cartRef = collection(db, 'users', userId, 'cart'); // Firebase 9 SDK collection
+        cartUnsubscribe = onSnapshot(cartRef, (snapshot) => { // Firebase 9 SDK onSnapshot
+            const itemCount = snapshot.size;
+            cartBadge.textContent = itemCount;
+            cartBadge.classList.toggle('hidden', itemCount === 0);
+        });
+    }
+
+    // `window.showToast` zaten var, bu nedenle çakışma olmaması için mevcut halini korudu
+    // Diğer global utility fonksiyonları (copy-btn) de `window` objesine eklendiğinden sorun olmayacaktır.
+
+    // Sayfa yüklendiğinde ayarları çek
+    loadPricingSettings();
+
 </script>
 
 <script id="utils-script">
