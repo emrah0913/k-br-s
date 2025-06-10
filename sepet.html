@@ -59,7 +59,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* YENİ: Geçiş efekti için animasyon */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -243,34 +242,26 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- ESKİ DOM ELEMENTLERİ (MEVCUT) ---
     const loader = document.getElementById('loader');
     const mainContent = document.getElementById('main-content');
     const profileImg = document.getElementById('profile-img');
     const profileContainer = document.getElementById('profile-container');
     
-    // --- YENİ DOM ELEMENTLERİ ---
     const proceedToPaymentBtn = document.getElementById('proceed-to-payment-btn');
     const paymentSelectionWrapper = document.getElementById('payment-selection-wrapper');
     const confirmOrderBtn = document.getElementById('confirm-order-btn');
     const successModal = document.getElementById('order-success-modal');
     
-    // --- MEVCUT STATE DEĞİŞKENLERİ ---
     let cartItems = [];
     let pastOrders = [];
     let currentUser = null;
     let userProfile = null;
     
-    // --- MEVCUT GLOBAL AYARLAR ---
     let pricingSettings = {};
     const DEFAULT_SETTINGS = {
         categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
         cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
     };
-    
-    //
-    // --- MEVCUT FONKSİYONLARINIZ (HİÇBİR DEĞİŞİKLİK YAPILMADI) ---
-    //
     
     async function loadPricingSettings() {
         try {
@@ -360,7 +351,6 @@
 
         if (cartItems.length === 0) {
             activeCartWrapper.classList.add('hidden');
-             // YENİ: Sepet boşaldığında ödeme bölümünü gizle
             paymentSelectionWrapper.classList.add('hidden');
             proceedToPaymentBtn.classList.remove('hidden');
             return;
@@ -446,11 +436,12 @@
         orders.forEach(order => {
             const orderCard = document.createElement('div');
             orderCard.className = 'bg-white rounded-lg shadow-md p-4 space-y-3';
+            
+            // --- 1. DEĞİŞİKLİK: statusStyles NESNESİNİ GÜNCELLEME ---
             const statusStyles = {
-                // YENİ: Ödeme Bekleniyor durumu eklendi (ADMİN PANELİ İÇİN ÖNEMLİ)
                 pending_payment: { text: 'Ödeme Bekleniyor', bg: 'bg-status-pending', text_color: 'text-white' },
+                processing: { text: 'Onaylandı', bg: 'bg-status-processing', text_color: 'text-white' }, // "Hazırlanıyor" -> "Onaylandı"
                 pending: { text: 'Beklemede', bg: 'bg-status-pending', text_color: 'text-white' },
-                processing: { text: 'Hazırlanıyor', bg: 'bg-status-processing', text_color: 'text-white' },
                 shipped: { text: 'Kargoda', bg: 'bg-status-shipped', text_color: 'text-white' },
                 delivered: { text: 'Teslim Edildi', bg: 'bg-status-delivered', text_color: 'text-white' },
                 cancelled: { text: 'İptal Edildi', bg: 'bg-status-cancelled', text_color: 'text-white' }
@@ -526,7 +517,6 @@
 
     function updateSummary() {
         if (cartItems.length === 0) {
-            // Sepet boşsa butonları devre dışı bırak
             proceedToPaymentBtn.disabled = true;
             return;
         };
@@ -555,14 +545,7 @@
         document.getElementById('grand-total').textContent = `${grandTotal.toFixed(2)} ₺`;
     }
     
-
-    //
-    // --- YENİ VE GÜNCELLENMİŞ SİPARİŞ VERME AKIŞI ---
-    //
-
-    // "Ödeme Adımına Geç" Butonuna Tıklandığında
     proceedToPaymentBtn.addEventListener('click', () => {
-        // Teslimat bilgilerinin dolu olduğunu kontrol et
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
         if (deliveryType === 'home') {
             if (!document.querySelector('input[name="city"]:checked')) {
@@ -575,13 +558,11 @@
             }
         }
         
-        // Mevcut butonu gizle ve ödeme bölümünü göster
         proceedToPaymentBtn.classList.add('hidden');
         paymentSelectionWrapper.classList.remove('hidden');
         paymentSelectionWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    // Ödeme Yöntemi Değiştiğinde (Kredi kartı formunu göster/gizle)
     document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
             const isCard = e.target.value === 'card';
@@ -595,7 +576,6 @@
 
         const selectedMethod = document.querySelector('input[name="payment-method"]:checked').value;
         
-        // Kart seçiliyse basit test kontrolü yap
         if (selectedMethod === 'card') {
             if (!document.getElementById('card-number').value || !document.getElementById('card-expiry').value || !document.getElementById('card-cvc').value) {
                 alert('Lütfen test kart bilgilerini eksiksiz girin.');
@@ -608,18 +588,19 @@
 
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
 
-        // Sipariş verisini oluştur
+        // --- 2. DEĞİŞİKLİK: Sipariş Durumunu Ayarlama ---
         const orderData = {
             userId: currentUser.uid,
             userFullName: userProfile?.fullName || 'Bilinmiyor',
             userPhone: userProfile?.phone || 'Bilinmiyor',
-            status: selectedMethod === 'transfer' ? 'pending_payment' : 'pending',
+            // Kredi kartı ise 'processing' (Onaylandı), havale ise 'pending_payment' (Ödeme Bekleniyor)
+            status: selectedMethod === 'card' ? 'processing' : 'pending_payment',
             paymentMethod: selectedMethod,
             orderDate: serverTimestamp(),
             deliveryType: deliveryType,
             deliveryCity: deliveryType === 'home' ? document.querySelector('input[name="city"]:checked').value : null,
             deliveryAddress: deliveryType === 'home' ? deliveryAddressInput.value.trim() : "Depodan Teslim",
-            items: cartItems.map(item => ({...item})), // Sepetin anlık kopyası
+            items: cartItems.map(item => ({...item})),
             totals: {
                 subtotal: parseFloat(document.getElementById('subtotal').textContent),
                 deliveryFee: parseFloat(document.getElementById('delivery-fee').textContent),
@@ -628,10 +609,8 @@
         };
 
         try {
-            // 1. Siparişi veritabanına ekle
             const orderRef = await addDoc(collection(db, 'orders'), orderData);
             
-            // 2. Sepeti temizle
             const batch = writeBatch(db);
             cartItems.forEach(item => {
                 const itemRef = doc(db, 'users', currentUser.uid, 'cart', item.id);
@@ -639,7 +618,6 @@
             });
             await batch.commit();
 
-            // 3. Başarı modalını göster
             document.getElementById('success-order-id').textContent = orderRef.id.substring(0, 8).toUpperCase();
             const successTransferInfo = document.getElementById('success-transfer-info');
             if (selectedMethod === 'transfer') {
@@ -649,7 +627,6 @@
             }
             successModal.classList.remove('hidden');
 
-            // 4. Aktif sepeti gizle
             document.getElementById('active-cart-wrapper').classList.add('hidden');
 
         } catch (error) {
