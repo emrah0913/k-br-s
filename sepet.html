@@ -140,12 +140,8 @@
                     <h2 class="text-xl font-semibold mb-4 border-b pb-2">Sipariş Özeti</h2>
                     <div class="space-y-2">
                         <div class="flex justify-between text-sm text-gray-600">
-                            <span>Ara Toplam (Ürünler)</span>
+                            <span>Ürünler Toplamı</span>
                             <span id="subtotal">0.00 ₺</span>
-                        </div>
-                        <div class="flex justify-between text-sm text-gray-600">
-                            <span>Hizmet Bedeli</span>
-                            <span id="service-fee">0.00 ₺</span>
                         </div>
                         <div id="delivery-fee-row" class="flex justify-between text-sm text-gray-600 hidden">
                             <span>Teslimat Ücreti</span>
@@ -205,6 +201,8 @@
     let cartItems = [];
     let currentUser = null;
     let userProfile = null;
+    const categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
+
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -264,19 +262,23 @@
         deliveryOptionsWrapper.classList.remove('hidden');
 
         cartItems.forEach(item => {
+            const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
+            const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
+            const lineTotal = itemFinalPrice * item.quantity;
+
             const itemElement = document.createElement('div');
             itemElement.className = 'flex items-start sm:items-center gap-4 border-b pb-4 flex-col sm:flex-row';
             itemElement.innerHTML = `
                 <div class="flex-1 min-w-0">
                     <a href="${item.productLink}" target="_blank" class="font-semibold text-primary hover:underline truncate block text-sm">${item.productLink}</a>
-                    <p class="text-xs text-gray-500">Fiyat: ${item.productPrice.toFixed(2)} ₺</p>
+                    <p class="text-xs text-gray-500">Birim Fiyatı (Hizmet Dahil): ${itemFinalPrice.toFixed(2)} ₺</p>
                 </div>
                 <div class="flex items-center gap-2 border rounded-md p-1 self-start sm:self-center">
                     <button data-id="${item.id}" class="quantity-btn decrease-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-100 rounded">-</button>
                     <span class="w-6 text-center">${item.quantity}</span>
                     <button data-id="${item.id}" class="quantity-btn increase-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-100 rounded">+</button>
                 </div>
-                <p class="font-semibold w-24 text-right">${(item.productPrice * item.quantity).toFixed(2)} ₺</p>
+                <p class="font-semibold w-24 text-right">${lineTotal.toFixed(2)} ₺</p>
                 <button data-id="${item.id}" class="delete-btn text-red-500 hover:text-red-700">
                     <i class="ri-delete-bin-line ri-lg"></i>
                 </button>
@@ -324,7 +326,6 @@
     }
 
     // --- SUMMARY & DELIVERY --- //
-    const deliveryTypeRadios = document.querySelectorAll('input[name="delivery-type"]');
     const citySelectionSection = document.getElementById('city-selection-section');
     const deliveryAddressSection = document.getElementById('delivery-address-section');
     const deliveryAddressInput = document.getElementById('delivery-address');
@@ -369,13 +370,9 @@
         if (cartItems.length === 0) return;
 
         const subtotal = cartItems.reduce((acc, item) => {
-            return item.orderMethod === 'service' ? acc + (item.productPrice * item.quantity) : acc;
-        }, 0);
-        
-        const categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
-        const serviceFee = cartItems.reduce((acc, item) => {
-            const rate = categoryRates[item.category] || 0;
-            return acc + (item.productPrice * item.quantity * rate);
+            const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
+            const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
+            return acc + (itemFinalPrice * item.quantity);
         }, 0);
         
         let deliveryFee = 0;
@@ -392,10 +389,9 @@
             deliveryFeeRow.classList.add('hidden');
         }
         
-        const grandTotal = subtotal + serviceFee + deliveryFee;
+        const grandTotal = subtotal + deliveryFee;
 
         document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} ₺`;
-        document.getElementById('service-fee').textContent = `${serviceFee.toFixed(2)} ₺`;
         document.getElementById('delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
         document.getElementById('grand-total').textContent = `${grandTotal.toFixed(2)} ₺`;
         
@@ -436,7 +432,6 @@
             items: cartItems.map(item => ({...item})), // shallow copy
             totals: {
                 subtotal: parseFloat(document.getElementById('subtotal').textContent),
-                serviceFee: parseFloat(document.getElementById('service-fee').textContent),
                 deliveryFee: parseFloat(document.getElementById('delivery-fee').textContent),
                 grandTotal: parseFloat(document.getElementById('grand-total').textContent)
             }
