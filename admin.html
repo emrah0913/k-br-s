@@ -105,12 +105,11 @@
     <main class="main-content p-6">
         <div id="content-dashboard" class="admin-content-section">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Genel Bakış</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div id="stats-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                  <!-- Stats Cards will be populated by JS -->
-                 <div id="stats-cards-container"></div>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Son Siparişler</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Son Bekleyen Siparişler</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full"><tbody id="latest-orders-table-body"></tbody></table>
                 </div>
@@ -167,7 +166,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot, query, where, orderBy, updateDoc, setDoc, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, updateDoc, setDoc, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
