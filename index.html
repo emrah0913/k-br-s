@@ -427,7 +427,7 @@
                 Giriş Yap
             </button>
             <button id="close-auth-modal"
-                class="w-full text-gray-600 py-2 mt-2 font-medium hover:text-gray-800 transition-colors cursor-pointer">
+                class="w-full text-gray-600 py-2 mt-2 font-medium hover:bg-gray-100 rounded-button transition-colors">
                 Kapat
             </button>
         </div>
@@ -444,23 +444,29 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script type="module"> // Firestore için module import gerekiyor, ancak compat versiyonları da kullanılıyor
-    import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+        authDomain: "kibris-6b4f7.firebaseapp.com",
+        projectId: "kibris-6b4f7",
+        storageBucket: "kibris-6b4f7.firebasestorage.app",
+        messagingSenderId: "141262926171",
+        appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+        measurementId: "G-JL9P6BRZTD"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const db = firebase.firestore(); // Firestore'u başlat
 
-    // Firebase App zaten global olarak başlatıldı (firebase.initializeApp)
-    // Firestore ve Auth servislerini uyumlu API'lerle alın
-    const auth = firebase.auth(); 
-    const db = firebase.firestore();
-
+    const auth = firebase.auth(); // Auth servisi de uyumlu API ile alınmalı
+    
     let cartUnsubscribe = null;
 
     // --- GLOBAL SETTINGS ---
     let pricingSettings = {};
     const DEFAULT_SETTINGS = {
         categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
-        // cityFees bu versiyonda kullanılmayacak, ancak ayarlar yapısında kalsın
-        cityFees: { 'Lefkoşa': 0, 'Girne': 0, 'Gazimağusa': 0, 'Güzelyurt': 0, 'İskele': 0 }
+        cityFees: { 'Lefkoşa': 0, 'Girne': 0, 'Gazimağusa': 0, 'Güzelyurt': 0, 'İskele': 0 } // Bu kısım kullanılmıyor ama ayarlar yapısında kalabilir
     };
 
     // --- DOM Elements ---
@@ -472,17 +478,15 @@
     const googleLoginBtn = document.getElementById('google-login-btn');
     const authRequiredModal = document.getElementById('auth-required-modal');
     const closeAuthModal = document.getElementById('close-auth-modal');
-    const authLoginBtn = document.getElementById('auth-login-btn'); // Daha önce authModalLoginBtn idi
-    // const profileModal kaldırıldı
-    // const profileForm kaldırıldı
+    const authLoginBtn = document.getElementById('auth-login-btn');
     const cartBadge = document.getElementById('cart-badge');
 
     // ---- SETTINGS LOADER ----
     async function loadPricingSettings() {
         try {
-            const docRef = doc(db, "settings", "pricing");
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists() && docSnap.data().categoryRates) {
+            const docRef = db.collection("settings").doc("pricing"); // Uyumlu API
+            const docSnap = await docRef.get(); // Uyumlu API
+            if (docSnap.exists && docSnap.data().categoryRates) {
                 pricingSettings = docSnap.data();
                 console.log("Fiyat ayarları başarıyla yüklendi.");
             } else {
@@ -520,10 +524,9 @@
 
 
     // ---- AUTHENTICATION ---- //
-    onAuthStateChanged(auth, user => {
+    auth.onAuthStateChanged(user => { // Uyumlu API
         updateAuthUI(user);
         if (user) {
-            // checkUserProfile(user); // Artık profile completion modal yok
             listenToCart(user.uid);
         } else {
             if (cartUnsubscribe) cartUnsubscribe();
@@ -547,8 +550,8 @@
     closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
     profileContainer.addEventListener('click', async () => {
         if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-            await auth.signOut(); // Firebase 9 SDK signOut
-            window.showToast('Başarıyla çıkış yapıldı.'); // window.showToast'u kullan
+            await auth.signOut(); // Uyumlu API
+            window.showToast('Başarıyla çıkış yapıldı.');
         }
     });
     
@@ -572,20 +575,10 @@
     });
 
     // ---- CALCULATOR & CART ---- //
-    const calculatorSection = document.getElementById('calculator-section'); // Yeni eklenen kısım
+    const calculatorSection = document.getElementById('calculator-section');
     const calculatorForm = document.getElementById('calculator-form');
     const mainActionBtn = document.getElementById('main-action-btn');
     const calculationResult = document.getElementById('calculation-result');
-
-    // Gizli olan inputlar kaldırıldığı için bu elemanlar da kaldırıldı
-    // const citySelection = document.getElementById('city-selection');
-    // const deliveryRadios = document.querySelectorAll('input[name="delivery-type"]');
-    // const resultCityRow = document.getElementById('result-city-row');
-    // const commonOrderDetailsSection = document.getElementById('common-order-details-section');
-    // const homeDeliveryAddressSection = document.getElementById('home-delivery-address-section');
-    // const deliveryAddressInput = document.getElementById('delivery-address-input');
-    // const fullNameInput = document.getElementById('full-name-input');
-    // const phoneInput = document.getElementById('phone-input');
 
     const formInputs = calculatorForm.querySelectorAll('input, select');
     formInputs.forEach(input => input.addEventListener('input', resetCalculatorState));
@@ -595,27 +588,19 @@
     calculateBtnMain.addEventListener('click', () => {
         calculatorSection.classList.remove('hidden');
         calculatorSection.scrollIntoView({ behavior: 'smooth' });
-        resetCalculatorState(); // Formu sıfırla ve butonu Hesapla'ya getir
+        calculatorForm.reset(); // Formu sıfırla
+        resetCalculatorState(); // Butonu Hesapla'ya getir
     });
 
 
     function resetCalculatorState() {
-        // if (mainActionBtn.textContent.trim() !== 'Maliyeti Hesapla') { // Eski kontroldü, şimdi ikon da var
-            mainActionBtn.innerHTML = `<i class="ri-calculator-line"></i><span>Maliyeti Hesapla</span>`;
-            calculationResult.classList.add('hidden');
-            // İletişim bilgileri ve adres alanları kaldırıldığı için resetleme de kaldırıldı
-            // if (commonOrderDetailsSection) commonOrderDetailsSection.classList.add('hidden');
-            // if (homeDeliveryAddressSection) homeDeliveryAddressSection.classList.add('hidden');
-            // document.getElementById('full-name-input').removeAttribute('required');
-            // document.getElementById('phone-input').removeAttribute('required');
-            // document.getElementById('delivery-address-input').removeAttribute('required');
-            // document.getElementById('city').removeAttribute('required');
-        // }
+        mainActionBtn.innerHTML = `<i class="ri-calculator-line"></i><span>Maliyeti Hesapla</span>`;
+        calculationResult.classList.add('hidden');
     }
     
     calculatorForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const buttonText = mainActionBtn.textContent.trim(); // Metni doğrudan al
+        const buttonText = mainActionBtn.textContent.trim();
 
         if (buttonText === 'Maliyeti Hesapla') {
             handleCalculation();
@@ -628,8 +613,9 @@
         const price = parseFloat(document.getElementById('product-price').value);
         const category = document.getElementById('product-category').value;
         const orderMethod = document.getElementById('order-method').value;
+        const productLink = document.getElementById('product-link').value.trim();
 
-        if (isNaN(price) || price <= 0 || !category || !document.getElementById('product-link').value.trim()) {
+        if (isNaN(price) || price <= 0 || !category || !productLink) {
             window.showToast('Lütfen tüm zorunlu alanları doğru doldurun.', 'error');
             return;
         }
@@ -641,17 +627,8 @@
         document.getElementById('result-price-label').textContent = orderMethod === 'self' ? 'Ürün Fiyatı (Size Ait):' : 'Ürün Fiyatı:';
         document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
         document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
-        // Teslimat ücreti kaldırıldığı için bu satır da kaldırıldı.
-        // document.getElementById('result-delivery-fee').textContent = `${deliveryFee.toFixed(2)} ₺`;
         document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
         
-        // Şehir satırı kaldırıldığı için bu kontrol de kaldırıldı.
-        // if (deliveryType === 'home') {
-        //     resultCityRow.classList.remove('hidden');
-        // } else {
-        //     resultCityRow.classList.add('hidden');
-        // }
-
         calculationResult.classList.remove('hidden');
         mainActionBtn.innerHTML = `<i class="ri-shopping-cart-add-line"></i><span>Sepete Ekle</span>`;
     }
@@ -662,20 +639,22 @@
             window.showAuthRequiredModal();
             return;
         }
+
+        // Sepete eklenecek verileri doğrudan formdan al
         const productData = {
             productLink: document.getElementById('product-link').value,
             productPrice: parseFloat(document.getElementById('product-price').value),
             category: document.getElementById('product-category').value,
             orderMethod: document.getElementById('order-method').value,
             quantity: 1,
-            addedAt: firebase.firestore.FieldValue.serverTimestamp() // Firebase 9 SDK Timestamp
+            addedAt: firebase.firestore.FieldValue.serverTimestamp() // Firestore Timestamp için uyumlu API
         };
+
         try {
-            await addDoc(collection(db, 'users', user.uid, 'cart'), productData); // Firebase 9 SDK addDoc, collection
+            await db.collection('users').doc(user.uid).collection('cart').add(productData); // Uyumlu API
             window.showToast('Ürün başarıyla sepete eklendi!');
             calculatorForm.reset();
             resetCalculatorState();
-            // Sepete ekledikten sonra sepet sayfasına yönlendir
             window.location.href = 'https://getirkibris.com/sepet.html'; 
         } catch (error) {
             console.error("Sepete ekleme hatası:", error);
@@ -685,16 +664,13 @@
     
     function listenToCart(userId) {
         if (cartUnsubscribe) cartUnsubscribe();
-        const cartRef = collection(db, 'users', userId, 'cart'); // Firebase 9 SDK collection
-        cartUnsubscribe = onSnapshot(cartRef, (snapshot) => { // Firebase 9 SDK onSnapshot
+        const cartRef = db.collection('users').doc(userId).collection('cart'); // Uyumlu API
+        cartUnsubscribe = cartRef.onSnapshot(snapshot => { // Uyumlu API
             const itemCount = snapshot.size;
             cartBadge.textContent = itemCount;
             cartBadge.classList.toggle('hidden', itemCount === 0);
         });
     }
-
-    // `window.showToast` zaten var, bu nedenle çakışma olmaması için mevcut halini korudu
-    // Diğer global utility fonksiyonları (copy-btn) de `window` objesine eklendiğinden sorun olmayacaktır.
 
     // Sayfa yüklendiğinde ayarları çek
     loadPricingSettings();
