@@ -228,8 +228,6 @@
                 loader.innerHTML = `<p class="text-red-500">Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>`;
             }
         } else {
-            // Kullanıcı giriş yapmamışsa, ana sayfaya yönlendir.
-            // HATA DÜZELTME: './index.html' yerine '/index.html' kullanıldı.
             window.location.href = '/index.html';
         }
     });
@@ -394,6 +392,11 @@
                         </div>
                     </div>`;
             }).join('');
+            
+            // HATA DÜZELTME: order.totals'ın var olup olmadığını kontrol et
+            const grandTotalDisplay = order.totals && typeof order.totals.grandTotal !== 'undefined' 
+                ? `${order.totals.grandTotal.toFixed(2)} ₺`
+                : 'Hesaplanamadı';
 
             orderCard.innerHTML = `
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 border-b pb-3">
@@ -418,7 +421,7 @@
                 <div class="flex justify-end border-t pt-3 mt-2">
                     <div class="text-right">
                         <p class="text-sm text-gray-500">Genel Toplam</p>
-                        <p class="font-bold text-lg">${order.totals.grandTotal.toFixed(2)} ₺</p>
+                        <p class="font-bold text-lg">${grandTotalDisplay}</p>
                     </div>
                 </div>`;
             ordersList.appendChild(orderCard);
