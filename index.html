@@ -65,7 +65,7 @@
     <!-- HEADER -->
     <header class="sticky top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center justify-between">
         <!-- Logo -->
-        <a href="https://getirkibris.com/index.html" class="flex items-center gap-2">
+        <a href="index.html" class="flex items-center gap-2">
             <img src="https://placehold.co/100x40/5d3ebc/ffffff?text=GetirKıbrıs&font=inter" alt="Getir Kıbrıs Logo" class="h-10">
         </a>
         
@@ -122,12 +122,7 @@
                     <div>
                         <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori<span class="text-red-500">*</span></label>
                         <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                            <option value="" disabled selected>Kategori seçin</option>
-                            <option value="furniture">Mobilya & Ev Eşyası</option>
-                            <option value="electronics">Elektronik</option>
-                            <option value="clothing">Giyim & Ayakkabı</option>
-                            <option value="cosmetics">Kozmetik</option>
-                            <option value="stationery">Kırtasiye & Kitap</option>
+                            <option value="" disabled selected>Kategoriler Yükleniyor...</option>
                         </select>
                     </div>
                 </div>
@@ -247,34 +242,33 @@
 
 <!-- Firebase SDK -->
 <script type="module">
-    // Firebase SDK'larını import et
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    // --- YENİ FIREBASE YAPILANDIRMASI ---
-    // __firebase_config global değişkeni varsa onu kullan, yoksa varsayılanı kullan
-    const firebaseConfig = typeof __firebase_config !== 'undefined' 
-        ? JSON.parse(__firebase_config)
-        : {
-            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-            authDomain: "kibris-6b4f7.firebaseapp.com",
-            projectId: "kibris-6b4f7",
-            storageBucket: "kibris-6b4f7.firebasestorage.app",
-            messagingSenderId: "141262926171",
-            appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-            measurementId: "G-JL9P6BRZTD"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+        authDomain: "kibris-6b4f7.firebaseapp.com",
+        projectId: "kibris-6b4f7",
+        storageBucket: "kibris-6b4f7.firebasestorage.app",
+        messagingSenderId: "141262926171",
+        appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+        measurementId: "G-JL9P6BRZTD"
+    };
     
-    // Firebase'i başlat
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app); // Analytics'i başlat
     const auth = getAuth(app);
     const db = getFirestore(app);
-    let cartUnsubscribe = null; // Sepet dinleyicisini tutmak için
+    let cartUnsubscribe = null;
 
-    // DOM Elementleri
+    // --- GLOBAL SETTINGS ---
+    let pricingSettings = {};
+    const DEFAULT_SETTINGS = {
+        categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
+        cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
+    };
+
+    // --- DOM Elements ---
     const loginBtn = document.getElementById('login-btn');
     const profileContainer = document.getElementById('profile-container');
     const profileImg = document.getElementById('profile-img');
@@ -288,6 +282,48 @@
     const profileForm = document.getElementById('profile-form');
     const cartBadge = document.getElementById('cart-badge');
 
+    // ---- SETTINGS LOADER ----
+    async function loadPricingSettings() {
+        try {
+            const docRef = doc(db, "settings", "pricing");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().categoryRates) {
+                pricingSettings = docSnap.data();
+                console.log("Fiyat ayarları başarıyla yüklendi.");
+            } else {
+                pricingSettings = DEFAULT_SETTINGS;
+                console.log("Fiyat ayarları bulunamadı, varsayılanlar kullanılıyor.");
+            }
+        } catch (error) {
+            console.error("Fiyat ayarları yüklenirken hata oluştu:", error);
+            pricingSettings = DEFAULT_SETTINGS;
+        }
+        populateCategoryDropdown();
+    }
+
+    function populateCategoryDropdown() {
+        const categorySelect = document.getElementById('product-category');
+        if (!categorySelect || !pricingSettings.categoryRates) return;
+        
+        categorySelect.innerHTML = '<option value="" disabled selected>Kategori seçin</option>';
+        
+        const categoryDisplayNames = {
+            furniture: "Mobilya & Ev Eşyası",
+            electronics: "Elektronik",
+            clothing: "Giyim & Ayakkabı",
+            cosmetics: "Kozmetik",
+            stationery: "Kırtasiye & Kitap"
+        };
+
+        for (const categoryKey in pricingSettings.categoryRates) {
+            const option = document.createElement('option');
+            option.value = categoryKey;
+            option.textContent = categoryDisplayNames[categoryKey] || categoryKey;
+            categorySelect.appendChild(option);
+        }
+    }
+
+
     // ---- AUTHENTICATION ---- //
     onAuthStateChanged(auth, user => {
         updateAuthUI(user);
@@ -295,10 +331,7 @@
             checkUserProfile(user);
             listenToCart(user.uid);
         } else {
-            // Kullanıcı çıkış yaptıysa, sepet dinleyicisini durdur
-            if (cartUnsubscribe) {
-                cartUnsubscribe();
-            }
+            if (cartUnsubscribe) cartUnsubscribe();
             cartBadge.classList.add('hidden');
         }
     });
@@ -315,7 +348,6 @@
         }
     }
     
-    // Modalları açma/kapama
     loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
     closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
     profileContainer.addEventListener('click', async () => {
@@ -325,39 +357,18 @@
         }
     });
     
-    // Google ile Giriş
     googleLoginBtn.addEventListener('click', async () => {
         const provider = new GoogleAuthProvider();
         try {
-            // !!! HATA DÜZELTME NOTU: 'auth/unauthorized-domain' HATASI ALIYORSANIZ !!!
-            // Bu hata, bu uygulamanın çalıştığı web sitesi adresinin (domain), 
-            // Firebase projenizde yetkilendirilmemiş olmasından kaynaklanır.
-            //
-            // ÇÖZÜM ADIMLARI:
-            // 1. Firebase Konsolu'na gidin: https://console.firebase.google.com/
-            // 2. Projenizi seçin: 'kibris-6b4f7'
-            // 3. Sol menüden 'Authentication' -> 'Settings' (Ayarlar) sekmesine gidin.
-            // 4. 'Authorized domains' (Yetkili alan adları) bölümünü bulun.
-            // 5. 'Add domain' (Alan adı ekle) butonuna tıklayın.
-            // 6. Bu uygulamayı önizlediğiniz sayfanın adresini ekleyin. (Örn: pufemo.netlify.app)
-            //
-            // Bu adımları uyguladıktan sonra sorun çözülecektir.
-
             await signInWithPopup(auth, provider);
             loginModal.classList.add('hidden');
             showToast('Giriş başarılı!');
         } catch (error) {
             console.error("Google ile giriş hatası:", error);
-            // Hata mesajını daha anlaşılır hale getirerek kullanıcıya gösterelim
-            if (error.code === 'auth/unauthorized-domain') {
-                 showToast('Giriş yapılamadı. Bu site adresi, güvenlik nedeniyle yetkilendirilmemiş.', 'error');
-            } else {
-                 showToast('Giriş sırasında bir hata oluştu.', 'error');
-            }
+            showToast('Giriş sırasında bir hata oluştu.', 'error');
         }
     });
 
-    // Giriş Gerekli Modalı
     window.showAuthRequiredModal = () => authRequiredModal.classList.remove('hidden');
     closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
     authModalLoginBtn.addEventListener('click', () => {
@@ -369,11 +380,8 @@
     async function checkUserProfile(user) {
         const userDocRef = doc(db, "users", user.uid);
         const userDocSnap = await getDoc(userDocRef);
-
         if (!userDocSnap.exists() || !userDocSnap.data().isProfileComplete) {
-            // Kullanıcı profili yoksa veya tamamlanmamışsa modalı göster
             profileModal.classList.remove('hidden');
-            // Formu kullanıcının Google bilgileriyle önceden doldur
             document.getElementById('full-name-input').value = user.displayName || '';
         }
     }
@@ -382,7 +390,6 @@
         e.preventDefault();
         const user = auth.currentUser;
         if (!user) return;
-
         const userData = {
             email: user.email,
             displayName: user.displayName,
@@ -392,7 +399,6 @@
             address: document.getElementById('address-input').value,
             isProfileComplete: true,
         };
-        
         try {
             await setDoc(doc(db, "users", user.uid), userData, { merge: true });
             profileModal.classList.add('hidden');
@@ -408,11 +414,8 @@
     const mainActionBtn = document.getElementById('main-action-btn');
     const calculationResult = document.getElementById('calculation-result');
 
-    // Formdaki herhangi bir değişiklikte hesaplama sonucunu sıfırla
     const formInputs = calculatorForm.querySelectorAll('input, select');
-    formInputs.forEach(input => {
-        input.addEventListener('input', resetCalculatorState);
-    });
+    formInputs.forEach(input => input.addEventListener('input', resetCalculatorState));
 
     function resetCalculatorState() {
         if (mainActionBtn.textContent.trim() !== 'Maliyeti Hesapla') {
@@ -423,9 +426,7 @@
     
     calculatorForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const buttonText = mainActionBtn.textContent.trim();
-        
         if (buttonText === 'Maliyeti Hesapla') {
             handleCalculation();
         } else if (buttonText === 'Sepete Ekle') {
@@ -437,26 +438,16 @@
         const price = parseFloat(document.getElementById('product-price').value);
         const category = document.getElementById('product-category').value;
         const orderMethod = document.getElementById('order-method').value;
-
         if (isNaN(price) || price <= 0 || !category) {
             showToast('Lütfen tüm zorunlu alanları doğru doldurun.', 'error');
             return;
         }
 
-        const categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
+        const categoryRates = pricingSettings.categoryRates || {};
         const categoryFee = price * (categoryRates[category] || 0);
-
-        let total, productCost;
-        if (orderMethod === 'self') {
-            productCost = 0; // Ürünü kullanıcı alıyor
-            total = categoryFee;
-             document.getElementById('result-price-label').textContent = 'Ürün Fiyatı (Size Ait):'
-        } else {
-            productCost = price;
-            total = price + categoryFee;
-            document.getElementById('result-price-label').textContent = 'Ürün Fiyatı:'
-        }
-
+        let total = (orderMethod === 'self') ? categoryFee : price + categoryFee;
+        
+        document.getElementById('result-price-label').textContent = orderMethod === 'self' ? 'Ürün Fiyatı (Size Ait):' : 'Ürün Fiyatı:';
         document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
         document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
         document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
@@ -471,7 +462,6 @@
             window.showAuthRequiredModal();
             return;
         }
-
         const productData = {
             productLink: document.getElementById('product-link').value,
             productPrice: parseFloat(document.getElementById('product-price').value),
@@ -480,10 +470,8 @@
             quantity: 1,
             addedAt: new Date()
         };
-
         try {
-            const cartCollectionRef = collection(db, 'users', user.uid, 'cart');
-            await addDoc(cartCollectionRef, productData);
+            await addDoc(collection(db, 'users', user.uid, 'cart'), productData);
             showToast('Ürün başarıyla sepete eklendi!');
             calculatorForm.reset();
             resetCalculatorState();
@@ -493,43 +481,33 @@
         }
     }
     
-    // Sepet dinleyicisi
     function listenToCart(userId) {
-        // Eğer zaten bir dinleyici varsa, önce onu durdur
-        if (cartUnsubscribe) {
-            cartUnsubscribe();
-        }
+        if (cartUnsubscribe) cartUnsubscribe();
         const cartRef = collection(db, 'users', userId, 'cart');
         cartUnsubscribe = onSnapshot(cartRef, (snapshot) => {
             const itemCount = snapshot.size;
-            if (itemCount > 0) {
-                cartBadge.textContent = itemCount;
-                cartBadge.classList.remove('hidden');
-            } else {
-                cartBadge.classList.add('hidden');
-            }
+            cartBadge.textContent = itemCount;
+            cartBadge.classList.toggle('hidden', itemCount === 0);
         });
     }
 
-    // ---- UTILS ---- //
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
-        
         toastMessage.textContent = message;
-        toast.className = 'fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl transition-all duration-300 z-[110] transform'; // reset classes
+        toast.className = 'fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl transition-all duration-300 z-[110] transform';
         toast.classList.add(type === 'error' ? 'bg-red-500' : 'bg-gray-800');
-
-        // Animate in
         toast.classList.remove('opacity-0', 'translate-y-4');
         toast.classList.add('opacity-100', 'translate-y-0');
-
-        // Animate out
         setTimeout(() => {
             toast.classList.remove('opacity-100', 'translate-y-0');
             toast.classList.add('opacity-0', 'translate-y-4');
         }, 3000);
     }
+    
+    // Sayfa yüklendiğinde ayarları çek
+    loadPricingSettings();
+
 </script>
 
 </body>
