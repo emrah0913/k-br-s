@@ -61,17 +61,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .order-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out;
-        }
-        .order-card.open .order-details {
-            max-height: 1000px; /* Genişleyeceği maksimum yükseklik */
-        }
-        .order-card.open .ri-arrow-down-s-line {
-            transform: rotate(180deg);
-        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -79,11 +68,11 @@
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen">
     <!-- HEADER -->
     <header class="sticky top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center justify-between">
-        <a href="index.html" class="flex items-center gap-2">
+        <a href="/index.html" class="flex items-center gap-2">
             <img src="https://placehold.co/100x40/5d3ebc/ffffff?text=GetirKıbrıs&font=inter" alt="Getir Kıbrıs Logo" class="h-10">
         </a>
         <div class="flex items-center gap-4">
-            <a href="index.html" class="text-gray-600 hover:text-primary transition-colors">
+            <a href="/index.html" class="text-gray-600 hover:text-primary transition-colors">
                 <i class="ri-home-4-line ri-lg"></i>
             </a>
             <div id="auth-button-container" class="w-8 h-8 flex items-center justify-center">
@@ -169,17 +158,18 @@
         <!-- PAST ORDERS SECTION -->
         <div id="past-orders-wrapper" class="mt-12">
              <h1 class="text-3xl font-bold text-gray-800 mb-6 border-t pt-8">Geçmiş Siparişlerim</h1>
-             <div id="orders-list" class="space-y-4"></div>
-             <div id="no-orders-message" class="text-center py-10 hidden">
+             <div id="no-orders-message" class="text-center py-10 bg-white rounded-lg shadow-md hidden">
                 <i class="ri-file-list-3-line text-6xl text-gray-300"></i>
                 <p class="mt-4 text-gray-500">Henüz hiç sipariş vermediniz.</p>
+                 <a href="/index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
             </div>
+             <div id="orders-list" class="space-y-4"></div>
         </div>
         
         <div id="no-content-message" class="text-center py-16 hidden">
             <i class="ri-shopping-bag-3-line text-6xl text-gray-300"></i>
             <p class="mt-4 text-gray-500">Görüntülenecek sepet veya sipariş bilgisi yok.</p>
-            <a href="index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
+            <a href="/index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
         </div>
     </main>
 
@@ -238,7 +228,9 @@
                 loader.innerHTML = `<p class="text-red-500">Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>`;
             }
         } else {
-            window.location.href = 'index.html';
+            // Kullanıcı giriş yapmamışsa, ana sayfaya yönlendir.
+            // HATA DÜZELTME: './index.html' yerine '/index.html' kullanıldı.
+            window.location.href = '/index.html';
         }
     });
 
@@ -365,7 +357,9 @@
         const pastOrdersWrapper = document.getElementById('past-orders-wrapper');
         
         if (orders.length === 0) {
-            pastOrdersWrapper.classList.add('hidden');
+            pastOrdersWrapper.classList.remove('hidden');
+            noOrdersMessage.classList.remove('hidden');
+            ordersList.innerHTML = '';
             return;
         }
         pastOrdersWrapper.classList.remove('hidden');
@@ -374,7 +368,7 @@
 
         orders.forEach(order => {
             const orderCard = document.createElement('div');
-            orderCard.className = 'order-card bg-white rounded-lg shadow-md transition-all duration-500';
+            orderCard.className = 'bg-white rounded-lg shadow-md p-4 space-y-3';
             const statusStyles = {
                 pending: { text: 'Beklemede', bg: 'bg-status-pending', text_color: 'text-white' },
                 processing: { text: 'Hazırlanıyor', bg: 'bg-status-processing', text_color: 'text-white' },
@@ -384,53 +378,50 @@
             };
             const currentStatus = statusStyles[order.status] || { text: order.status, bg: 'bg-gray-400', text_color: 'text-white' };
             const orderDate = order.orderDate ? order.orderDate.toDate().toLocaleDateString('tr-TR') : 'Bilinmiyor';
+            
+            const itemsHtml = order.items.map(item => {
+                const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
+                const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
+                return `
+                    <div class="flex justify-between items-center text-sm border-t py-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-500">Ürün Linki</p>
+                            <a href="${item.productLink}" target="_blank" class="text-blue-600 hover:underline truncate block">${item.productLink}</a>
+                        </div>
+                        <div class="w-24 text-right">
+                            <p class="text-xs text-gray-500">Fiyat</p>
+                            <p class="font-medium">${(itemFinalPrice * item.quantity).toFixed(2)} ₺</p>
+                        </div>
+                    </div>`;
+            }).join('');
+
             orderCard.innerHTML = `
-                <div class="order-summary p-4 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-500">Sipariş Kodu</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 border-b pb-3">
+                    <div>
+                        <p class="text-xs text-gray-500">Sipariş Kodu</p>
                         <p class="font-mono text-primary font-semibold text-sm">${order.id.toUpperCase().substring(0, 8)}</p>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-500">Tarih</p>
+                    <div>
+                        <p class="text-xs text-gray-500">Tarih</p>
                         <p class="font-semibold text-sm">${orderDate}</p>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-500">Tutar</p>
-                        <p class="font-bold text-lg">${order.totals.grandTotal.toFixed(2)} ₺</p>
+                    <div>
+                        <p class="text-xs text-gray-500">Teslimat</p>
+                        <p class="font-semibold text-sm">${order.deliveryType === 'home' ? 'Eve Teslim' : 'Depodan Teslim'}</p>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div>
+                        <p class="text-xs text-gray-500">Durum</p>
                         <span class="px-3 py-1 text-xs font-semibold rounded-full ${currentStatus.bg} ${currentStatus.text_color}">${currentStatus.text}</span>
-                        <i class="ri-arrow-down-s-line text-2xl text-gray-500 transition-transform duration-300"></i>
                     </div>
                 </div>
-                <div class="order-details border-t border-gray-200">
-                    <div class="p-4 bg-gray-50">
-                        <h4 class="font-semibold mb-2">Sipariş Detayları</h4>
-                        <div class="space-y-3">
-                            ${order.items.map(item => {
-                                const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
-                                const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
-                                return `
-                                <div class="flex justify-between items-center text-sm">
-                                    <div class="flex-1 min-w-0">
-                                        <a href="${item.productLink}" target="_blank" class="text-blue-600 hover:underline truncate block">${item.productLink}</a>
-                                        <p class="text-xs text-gray-500">x${item.quantity} adet</p>
-                                    </div>
-                                    <p class="w-20 text-right font-medium">${(itemFinalPrice * item.quantity).toFixed(2)} ₺</p>
-                                </div>`;
-                            }).join('')}
-                        </div>
-                        <div class="mt-4 pt-4 border-t">
-                            <h5 class="font-semibold mb-2 text-sm">Teslimat Bilgileri</h5>
-                            <p class="text-sm"><strong class="font-medium">Yöntem:</strong> ${order.deliveryType === 'home' ? 'Eve Teslim' : 'Depodan Teslim'}</p>
-                            ${order.deliveryType === 'home' ? `<p class="text-sm"><strong class="font-medium">Adres:</strong> ${order.deliveryAddress}</p>` : ''}
-                        </div>
+                <div class="space-y-1">${itemsHtml}</div>
+                <div class="flex justify-end border-t pt-3 mt-2">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Genel Toplam</p>
+                        <p class="font-bold text-lg">${order.totals.grandTotal.toFixed(2)} ₺</p>
                     </div>
                 </div>`;
             ordersList.appendChild(orderCard);
-        });
-        document.querySelectorAll('.order-summary').forEach(summary => {
-            summary.addEventListener('click', () => summary.parentElement.classList.toggle('open'));
         });
     }
 
