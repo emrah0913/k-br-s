@@ -80,48 +80,65 @@
     <main id="main-content" class="pt-8 pb-20 px-4 hidden">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Sepetim</h1>
         
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Cart Items -->
-            <div id="cart-items-container" class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Ürünler</h2>
-                <div id="cart-items-list" class="space-y-4">
-                    <!-- Ürünler buraya dinamik olarak eklenecek -->
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Left Side: Cart Items and Delivery Options -->
+            <div class="w-full lg:w-2/3">
+                <!-- Cart Items -->
+                <div id="cart-items-container" class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">Ürünler</h2>
+                    <div id="cart-items-list" class="space-y-4">
+                        <!-- Ürünler buraya dinamik olarak eklenecek -->
+                    </div>
+                    <div id="empty-cart-message" class="text-center py-10 hidden">
+                        <i class="ri-shopping-cart-2-line text-6xl text-gray-300"></i>
+                        <p class="mt-4 text-gray-500">Sepetinizde henüz ürün bulunmuyor.</p>
+                        <a href="index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
+                    </div>
                 </div>
-                <div id="empty-cart-message" class="text-center py-10 hidden">
-                    <i class="ri-shopping-cart-2-line text-6xl text-gray-300"></i>
-                    <p class="mt-4 text-gray-500">Sepetinizde henüz ürün bulunmuyor.</p>
-                    <a href="index.html" class="mt-4 inline-block bg-primary text-white px-6 py-2 rounded-button font-semibold hover:bg-primary/90">Alışverişe Başla</a>
+
+                <!-- Delivery Options (now at the bottom) -->
+                <div id="delivery-options-wrapper" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
+                     <h2 class="text-xl font-semibold mb-4 border-b pb-2">Teslimat</h2>
+                     <p class="text-sm text-gray-500 mb-4">Lütfen siparişiniz için teslimat yöntemini seçin.</p>
+                     
+                     <div class="space-y-3">
+                         <label class="flex items-center p-4 border rounded-lg cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
+                             <input type="radio" name="delivery-type" value="warehouse" class="mr-3 h-4 w-4" checked>
+                             <div class="flex-grow">
+                                <span class="font-semibold">Depodan Teslim</span>
+                                <p class="text-xs text-gray-600">Siparişinizi Lefkoşa'daki depomuzdan kendiniz teslim alın.</p>
+                             </div>
+                         </label>
+                         <label class="flex items-center p-4 border rounded-lg cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
+                             <input type="radio" name="delivery-type" value="home" class="mr-3 h-4 w-4">
+                             <div class="flex-grow">
+                                <span class="font-semibold">Eve Teslim</span>
+                                <p class="text-xs text-gray-600">Siparişinizi adresinize teslim edelim.</p>
+                             </div>
+                         </label>
+                     </div>
+
+                     <!-- City Selection (hidden by default) -->
+                     <div id="city-selection-section" class="mt-4 hidden space-y-4">
+                         <h3 class="text-md font-semibold mt-4">Teslimat Bölgesi Seçin</h3>
+                         <div id="city-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <!-- Şehirler buraya dinamik olarak eklenecek -->
+                         </div>
+                         
+                         <!-- Delivery Address (hidden by default) -->
+                         <div id="delivery-address-section" class="mt-4">
+                             <label for="delivery-address" class="block text-sm font-medium text-gray-700 mb-1">Teslimat Adresi</label>
+                             <textarea id="delivery-address" rows="3" placeholder="Lütfen tam ve açık adresinizi giriniz..." class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"></textarea>
+                         </div>
+                     </div>
                 </div>
             </div>
 
-            <!-- Order Summary -->
-            <div id="order-summary-container" class="lg:col-span-1">
-                <div class="bg-white p-6 rounded-lg shadow-md sticky top-24">
-                    <h2 class="text-xl font-semibold mb-4">Sipariş Özeti</h2>
-                    
-                    <!-- Delivery Options -->
-                    <div class="mb-4">
-                        <h3 class="text-md font-medium mb-2">Teslimat Yöntemi</h3>
-                        <div class="space-y-2">
-                            <label class="flex items-center p-3 border rounded-md cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
-                                <input type="radio" name="delivery-type" value="warehouse" class="mr-2" checked>
-                                <span>Depodan Teslim</span>
-                            </label>
-                            <label class="flex items-center p-3 border rounded-md cursor-pointer has-[:checked]:bg-primary/10 has-[:checked]:border-primary transition-all">
-                                <input type="radio" name="delivery-type" value="home" class="mr-2">
-                                <span>Eve Teslim</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Delivery Address (hidden by default) -->
-                    <div id="delivery-address-section" class="mb-4 hidden">
-                        <label for="delivery-address" class="block text-sm font-medium text-gray-700 mb-1">Teslimat Adresi</label>
-                        <textarea id="delivery-address" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"></textarea>
-                    </div>
-
-                    <!-- Totals -->
-                    <div class="space-y-2 border-t pt-4">
+            <!-- Right Side: Order Summary -->
+            <div class="w-full lg:w-1/3">
+                <div id="order-summary-container" class="bg-white p-6 rounded-lg shadow-md lg:sticky lg:top-24 hidden">
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">Sipariş Özeti</h2>
+                    <div class="space-y-2">
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>Ara Toplam (Ürünler)</span>
                             <span id="subtotal">0.00 ₺</span>
@@ -134,14 +151,15 @@
                             <span>Teslimat Ücreti</span>
                             <span id="delivery-fee">0.00 ₺</span>
                         </div>
-                        <div class="flex justify-between font-bold text-lg text-gray-800 pt-2 border-t mt-2">
+                        <div class="flex justify-between font-bold text-lg text-gray-800 pt-3 mt-3 border-t">
                             <span>Genel Toplam</span>
                             <span id="grand-total">0.00 ₺</span>
                         </div>
                     </div>
 
-                    <button id="complete-order-btn" class="w-full mt-6 bg-green-500 text-white py-3 rounded-button font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
-                        Siparişi Tamamla
+                    <button id="complete-order-btn" class="w-full mt-6 bg-green-500 text-white py-3 rounded-button font-semibold hover:bg-green-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <i class="ri-secure-payment-line"></i>
+                        <span>Siparişi Tamamla</span>
                     </button>
                 </div>
             </div>
@@ -194,8 +212,13 @@
             profileImg.src = user.photoURL || 'https://placehold.co/40x40/cccccc/000000?text=P';
             profileContainer.classList.remove('hidden');
 
-            await fetchUserProfile(user.uid);
-            listenToCart(user.uid);
+            try {
+                await fetchUserProfile(user.uid);
+                listenToCart(user.uid);
+            } catch (error) {
+                console.error("Initialization error:", error);
+                loader.innerHTML = `<p class="text-red-500">Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</p>`;
+            }
         } else {
             // Kullanıcı giriş yapmamışsa, ana sayfaya yönlendir.
             window.location.href = 'index.html';
@@ -218,34 +241,42 @@
             updateSummary();
             loader.classList.add('hidden');
             mainContent.classList.remove('hidden');
+        }, (error) => {
+            console.error("Sepet dinlenirken hata oluştu: ", error);
+            loader.innerHTML = `<p class="text-red-500">Sepet bilgileri alınamadı. Güvenlik kurallarınızı kontrol edin.</p>`;
         });
     }
 
     function renderCart() {
         cartItemsList.innerHTML = '';
+        const orderSummaryContainer = document.getElementById('order-summary-container');
+        const deliveryOptionsWrapper = document.getElementById('delivery-options-wrapper');
+
         if (cartItems.length === 0) {
             emptyCartMessage.classList.remove('hidden');
-            document.getElementById('order-summary-container').classList.add('hidden');
+            orderSummaryContainer.classList.add('hidden');
+            deliveryOptionsWrapper.classList.add('hidden');
             return;
         }
 
         emptyCartMessage.classList.add('hidden');
-        document.getElementById('order-summary-container').classList.remove('hidden');
+        orderSummaryContainer.classList.remove('hidden');
+        deliveryOptionsWrapper.classList.remove('hidden');
 
         cartItems.forEach(item => {
             const itemElement = document.createElement('div');
-            itemElement.className = 'flex items-center gap-4 border-b pb-4';
+            itemElement.className = 'flex items-start sm:items-center gap-4 border-b pb-4 flex-col sm:flex-row';
             itemElement.innerHTML = `
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                     <a href="${item.productLink}" target="_blank" class="font-semibold text-primary hover:underline truncate block text-sm">${item.productLink}</a>
                     <p class="text-xs text-gray-500">Fiyat: ${item.productPrice.toFixed(2)} ₺</p>
                 </div>
-                <div class="flex items-center gap-2 border rounded-md p-1">
+                <div class="flex items-center gap-2 border rounded-md p-1 self-start sm:self-center">
                     <button data-id="${item.id}" class="quantity-btn decrease-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-100 rounded">-</button>
                     <span class="w-6 text-center">${item.quantity}</span>
                     <button data-id="${item.id}" class="quantity-btn increase-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-100 rounded">+</button>
                 </div>
-                <p class="font-semibold w-20 text-right">${(item.productPrice * item.quantity).toFixed(2)} ₺</p>
+                <p class="font-semibold w-24 text-right">${(item.productPrice * item.quantity).toFixed(2)} ₺</p>
                 <button data-id="${item.id}" class="delete-btn text-red-500 hover:text-red-700">
                     <i class="ri-delete-bin-line ri-lg"></i>
                 </button>
@@ -269,43 +300,77 @@
     async function updateQuantity(itemId, isIncrease) {
         const item = cartItems.find(i => i.id === itemId);
         if (!item) return;
-
         let newQuantity = isIncrease ? item.quantity + 1 : item.quantity - 1;
         if (newQuantity < 1) newQuantity = 1;
-
         const itemRef = doc(db, 'users', currentUser.uid, 'cart', itemId);
-        await updateDoc(itemRef, { quantity: newQuantity });
+        try {
+            await updateDoc(itemRef, { quantity: newQuantity });
+        } catch (error) {
+            console.error("Adet güncellenirken hata:", error);
+            alert("Ürün adedi güncellenemedi.");
+        }
     }
 
     async function deleteItem(itemId) {
         if (confirm('Bu ürünü sepetten kaldırmak istediğinize emin misiniz?')) {
             const itemRef = doc(db, 'users', currentUser.uid, 'cart', itemId);
-            await deleteDoc(itemRef);
+            try {
+                await deleteDoc(itemRef);
+            } catch (error) {
+                console.error("Ürün silinirken hata:", error);
+                alert("Ürün sepetten silinemedi.");
+            }
         }
     }
 
     // --- SUMMARY & DELIVERY --- //
     const deliveryTypeRadios = document.querySelectorAll('input[name="delivery-type"]');
+    const citySelectionSection = document.getElementById('city-selection-section');
     const deliveryAddressSection = document.getElementById('delivery-address-section');
     const deliveryAddressInput = document.getElementById('delivery-address');
-
-    deliveryTypeRadios.forEach(radio => {
-        radio.addEventListener('change', () => {
-            if (radio.value === 'home') {
+    const cityListContainer = document.getElementById('city-list');
+    
+    const cityFees = { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 };
+    
+    function populateCities() {
+        cityListContainer.innerHTML = '';
+        for (const city in cityFees) {
+            const fee = cityFees[city];
+            const cityElement = document.createElement('label');
+            cityElement.className = 'flex items-center p-3 border rounded-md cursor-pointer has-[:checked]:bg-blue-50 has-[:checked]:border-blue-400 transition-all';
+            cityElement.innerHTML = `
+                <input type="radio" name="city" value="${city}" class="mr-2 h-4 w-4">
+                <span class="flex-grow text-sm">${city}</span>
+                <span class="text-sm font-semibold">${fee} ₺</span>
+            `;
+            cityListContainer.appendChild(cityElement);
+        }
+    }
+    populateCities();
+    
+    document.body.addEventListener('change', (e) => {
+        if (e.target.name === 'delivery-type' || e.target.name === 'city') {
+            const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
+            if (deliveryType === 'home') {
+                citySelectionSection.classList.remove('hidden');
                 deliveryAddressSection.classList.remove('hidden');
-                deliveryAddressInput.value = userProfile?.address || '';
+                if(!deliveryAddressInput.value) {
+                    deliveryAddressInput.value = userProfile?.address || '';
+                }
             } else {
+                citySelectionSection.classList.add('hidden');
                 deliveryAddressSection.classList.add('hidden');
             }
             updateSummary();
-        });
+        }
     });
-    
-    deliveryAddressInput.addEventListener('input', updateSummary);
-
 
     function updateSummary() {
-        const subtotal = cartItems.reduce((acc, item) => acc + (item.productPrice * item.quantity), 0);
+        if (cartItems.length === 0) return;
+
+        const subtotal = cartItems.reduce((acc, item) => {
+            return item.orderMethod === 'service' ? acc + (item.productPrice * item.quantity) : acc;
+        }, 0);
         
         const categoryRates = { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 };
         const serviceFee = cartItems.reduce((acc, item) => {
@@ -317,16 +382,12 @@
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
         const deliveryFeeRow = document.getElementById('delivery-fee-row');
         
-        if(deliveryType === 'home') {
-             const cityFees = { 'lefkosa': 200, 'girne': 350, 'magusa': 300, 'guzelyurt': 400, 'iskele': 450 };
-             const address = deliveryAddressInput.value.toLowerCase();
-             for(const city in cityFees){
-                 if(address.includes(city)){
-                     deliveryFee = cityFees[city];
-                     break;
-                 }
-             }
-             deliveryFeeRow.classList.remove('hidden');
+        if (deliveryType === 'home') {
+            const selectedCityRadio = document.querySelector('input[name="city"]:checked');
+            if(selectedCityRadio) {
+                deliveryFee = cityFees[selectedCityRadio.value] || 0;
+            }
+            deliveryFeeRow.classList.remove('hidden');
         } else {
             deliveryFeeRow.classList.add('hidden');
         }
@@ -347,7 +408,15 @@
         
         const deliveryType = document.querySelector('input[name="delivery-type"]:checked').value;
         let deliveryAddress = "Depodan Teslim";
-        if(deliveryType === 'home'){
+        let deliveryCity = null;
+
+        if (deliveryType === 'home'){
+            const selectedCityRadio = document.querySelector('input[name="city"]:checked');
+            if(!selectedCityRadio) {
+                alert('Lütfen teslimat için bir şehir seçiniz.');
+                return;
+            }
+            deliveryCity = selectedCityRadio.value;
             deliveryAddress = deliveryAddressInput.value.trim();
             if(!deliveryAddress){
                 alert('Lütfen teslimat adresini giriniz.');
@@ -362,14 +431,9 @@
             status: 'pending',
             orderDate: serverTimestamp(),
             deliveryType: deliveryType,
+            deliveryCity: deliveryCity,
             deliveryAddress: deliveryAddress,
-            items: cartItems.map(item => ({
-                productLink: item.productLink,
-                productPrice: item.productPrice,
-                category: item.category,
-                orderMethod: item.orderMethod,
-                quantity: item.quantity
-            })),
+            items: cartItems.map(item => ({...item})), // shallow copy
             totals: {
                 subtotal: parseFloat(document.getElementById('subtotal').textContent),
                 serviceFee: parseFloat(document.getElementById('service-fee').textContent),
@@ -381,11 +445,8 @@
         try {
             completeOrderBtn.disabled = true;
             completeOrderBtn.textContent = 'İşleniyor...';
-
-            // Yeni siparişi oluştur
             await addDoc(collection(db, 'orders'), orderData);
             
-            // Sepeti temizle
             const batch = writeBatch(db);
             cartItems.forEach(item => {
                 const itemRef = doc(db, 'users', currentUser.uid, 'cart', item.id);
@@ -394,15 +455,13 @@
             await batch.commit();
             
             alert('Siparişiniz başarıyla oluşturuldu!');
-            // İsteğe bağlı olarak siparişlerim sayfasına yönlendirilebilir.
-            // window.location.href = 'siparislerim.html';
 
         } catch (error) {
             console.error("Sipariş oluşturma hatası:", error);
             alert('Sipariş oluşturulurken bir hata oluştu.');
         } finally {
             completeOrderBtn.disabled = false;
-            completeOrderBtn.textContent = 'Siparişi Tamamla';
+            completeOrderBtn.innerHTML = `<i class="ri-secure-payment-line"></i><span>Siparişi Tamamla</span>`;
         }
     });
 
