@@ -148,6 +148,14 @@
                  <div class="bg-white p-6 rounded-lg shadow-md">
                      <h3 class="text-xl font-semibold text-gray-800 mb-4">Şehir Teslimat Ücretleri</h3>
                      <form id="city-fees-form" class="space-y-4"></form>
+                      <div class="mt-6 border-t pt-4">
+                         <h4 class="text-lg font-semibold text-gray-700 mb-2">Yeni Şehir Ekle</h4>
+                         <div class="flex flex-col sm:flex-row items-center gap-2">
+                             <input type="text" id="new-city-name" placeholder="Şehir Adı (örn: Lefke)" class="p-2 border rounded-lg flex-1 w-full sm:w-auto">
+                             <input type="number" id="new-city-fee" placeholder="Ücret (₺)" class="p-2 border rounded-lg w-full sm:w-28">
+                             <button id="add-city-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 w-full sm:w-auto">Ekle</button>
+                         </div>
+                     </div>
                 </div>
             </div>
         </div>
@@ -225,7 +233,6 @@
         navLinks.forEach(l => l.classList.remove('active-nav-link'));
         document.getElementById(`nav-${sectionId.replace('content-', '')}`)?.classList.add('active-nav-link');
 
-        // Load data for the shown section
         if (sectionId === 'content-dashboard') loadDashboardData();
         if (sectionId === 'content-orders') loadAllOrders();
         if (sectionId === 'content-users') loadAllUsers();
@@ -244,7 +251,6 @@
     async function loadDashboardData() {
         const statsContainer = document.getElementById('stats-cards-container');
         statsContainer.innerHTML = '<p>Veriler yükleniyor...</p>';
-        
         try {
             const ordersSnapshot = await getDocs(collection(db, "orders"));
             let pendingCount = 0;
@@ -480,20 +486,46 @@
 
             categoryForm.innerHTML = Object.entries(categoryRates).map(([key, value]) => `
                 <div class="flex items-center gap-2">
-                    <label class="w-24 capitalize">${key}:</label>
+                    <label class="w-32 capitalize">${key.replace('_', ' ')}:</label>
                     <input type="number" name="${key}" value="${value}" class="w-24 p-1 border rounded" step="0.01">
                 </div>
             `).join('') + '<button type="submit" class="w-full mt-4 bg-primary text-white py-2 rounded-lg">Kategori Oranlarını Kaydet</button>';
 
             cityForm.innerHTML = Object.entries(cityFees).map(([key, value]) => `
                 <div class="flex items-center gap-2">
-                    <label class="w-24 capitalize">${key}:</label>
+                    <label class="w-32 capitalize">${key}:</label>
                     <input type="number" name="${key}" value="${value}" class="w-24 p-1 border rounded">
                 </div>
             `).join('') + '<button type="submit" class="w-full mt-4 bg-primary text-white py-2 rounded-lg">Şehir Ücretlerini Kaydet</button>';
             
             categoryForm.addEventListener('submit', handleSettingsSave);
             cityForm.addEventListener('submit', handleSettingsSave);
+
+            const addCityBtn = document.getElementById('add-city-btn');
+            addCityBtn.addEventListener('click', async () => {
+                const newCityNameInput = document.getElementById('new-city-name');
+                const newCityFeeInput = document.getElementById('new-city-fee');
+                const newCityName = newCityNameInput.value.trim();
+                const newCityFee = Number(newCityFeeInput.value);
+
+                if (newCityName && !isNaN(newCityFee) && newCityFee >= 0) {
+                    try {
+                        const pricingDocRef = doc(db, "settings", "pricing");
+                        const cityFees = (await getDoc(pricingDocRef)).data()?.cityFees || {};
+                        cityFees[newCityName] = newCityFee;
+                        
+                        await setDoc(pricingDocRef, { cityFees }, { merge: true });
+                        
+                        alert(`'${newCityName}' başarıyla eklendi.`);
+                        loadSettings();
+                    } catch (error) {
+                        alert('Yeni şehir eklenirken bir hata oluştu.');
+                        console.error("Error adding new city:", error);
+                    }
+                } else {
+                    alert('Lütfen geçerli bir şehir adı ve ücret giriniz.');
+                }
+            });
 
         } catch (error) {
             console.error("Settings load error:", error);
