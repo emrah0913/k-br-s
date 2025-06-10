@@ -29,15 +29,15 @@
                     },
                     borderRadius: {
                         'button': '8px',
-                        'none': '0px', // index (22).html'den eklenenler
-                        'sm': '4px',    // index (22).html'den eklenenler
-                        DEFAULT: '8px', // index (22).html'den eklenenler
-                        'md': '12px',   // index (22).html'den eklenenler
-                        'lg': '16px',   // index (22).html'den eklenenler
-                        'xl': '20px',   // index (22).html'den eklenenler
-                        '2xl': '24px',  // index (22).html'den eklenenler
-                        '3xl': '32px',  // index (22).html'den eklenenler
-                        'full': '9999px', // index (22).html'den eklenenler
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
                     }
                 }
             }
@@ -47,7 +47,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9f9f9; /* index (22).html'deki renk */
+            background-color: #f9f9f9;
         }
         .copy-btn:active, .auth-button:active {
             transform: scale(0.95);
@@ -65,10 +65,8 @@
         }
 
         /* Kullanıcının index (22).html'den eklediği CSS kuralı */
-        /* Bu kural Remixicon 4.6.0'a göre ayarlandı, eğer 4.2.0 kullanıyorsanız dikkat edin */
         :where([class^="ri-"])::before {
-            content: "\f3c2"; /* Bu, ikonda ri-google-fill yerine farklı bir icon gösterebilir,
-                                 eğer problem olursa bu satırı kaldırabilirsiniz. */
+            content: "\f3c2";
         }
     </style>
 </head>
@@ -106,7 +104,7 @@
             <div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-8">
             <button id="calculate-btn"
                 class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
                 <div
@@ -122,17 +120,8 @@
                     class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                     <i class="ri-file-list-3-line ri-xl text-primary"></i>
                 </div>
-                <span class="text-sm font-medium">Siparişlerim</span>
+                <span class="text-sm font-medium">Sepetim</span>
             </a>
-
-            <button id="order-now-btn"
-                class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-                <div
-                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-                    <i class="ri-shopping-bag-line ri-xl text-primary"></i>
-                </div>
-                <span class="text-sm font-medium">Sipariş Ver</span>
-            </button>
         </div>
 
         <div id="calculator-section" class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8 hidden">
@@ -663,16 +652,15 @@
                 }
             });
         }
-
-        // Yeni "Sipariş Ver" butonuna tıklama olayı ekleme
-        const orderNowBtn = document.getElementById('order-now-btn');
-        if (orderNowBtn) {
-            orderNowBtn.addEventListener('click', function() {
-                if (window.toggleCalculatorSection) {
-                    window.toggleCalculatorSection(); // Hesaplama modülünü aç
-                }
-            });
-        }
+        // Sipariş Ver butonu kaldırıldığı için ilgili event listener da kaldırıldı.
+        // const orderNowBtn = document.getElementById('order-now-btn');
+        // if (orderNowBtn) {
+        //     orderNowBtn.addEventListener('click', function() {
+        //         if (window.toggleCalculatorSection) {
+        //             window.toggleCalculatorSection(); // Hesaplama modülünü aç
+        //         }
+        //     });
+        // }
     });
 </script>
 
