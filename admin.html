@@ -236,17 +236,16 @@
         if (sectionId === 'content-settings') loadSettings();
     }
 
-    const STATUS_MAP = {
-        pending_payment:  { text: 'Beklemede', style: 'status-pending' },
-        pending:          { text: 'Beklemede', style: 'status-pending' },
-        processing:       { text: 'Onaylandı', style: 'status-processing' },
-        tr_warehouse:     { text: 'TR Depoda', style: 'status-tr_warehouse' },
-        shipped:          { text: 'Yüklendi', style: 'status-shipped' },
-        cyprus_warehouse: { text: 'Kıbrıs Depoda', style: 'status-cyprus_warehouse' },
-        delivered:        { text: 'Teslim Edildi', style: 'status-delivered' },
-        cancelled:        { text: 'İptal Edildi', style: 'status-cancelled' }
-    };
-    
+   const statusStyles = {
+    pending_payment:  { text: 'Ödeme Bekleniyor', style: 'bg-yellow-400 text-white' },
+    pending:          { text: 'Beklemede', style: 'bg-yellow-500 text-white' },
+    processing:       { text: 'Onaylandı', style: 'bg-blue-500 text-white' },
+    tr_warehouse:     { text: 'TR Depoda', style: 'bg-cyan-700 text-white' },
+    shipped:          { text: 'Kargoya Verildi', style: 'bg-purple-500 text-white' },
+    cyprus_warehouse: { text: 'Kıbrıs Depoda', style: 'bg-indigo-700 text-white' },
+    delivered:        { text: 'Teslim Edildi', style: 'bg-green-500 text-white' },
+    cancelled:        { text: 'İptal Edildi', style: 'bg-red-500 text-white' }
+};
     async function loadDashboardData() {
         const statsContainer = document.getElementById('stats-cards-container');
         statsContainer.innerHTML = '<p>Veriler yükleniyor...</p>';
