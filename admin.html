@@ -62,7 +62,6 @@
     .status-cancelled { background-color: #fee2e2; color: #b91c1c; }
     .status-unknown { background-color: #e5e7eb; color: #4b5563; }
     
-    /* YENİ EKLENEN STİLLER */
     .category-tree ul {
         padding-left: 1.5rem;
         border-left: 1px solid #e5e7eb;
@@ -182,6 +181,7 @@
                 </div>
             </div>
         </div>
+
         <div id="content-users" class="admin-content-section hidden">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Kullanıcı Yönetimi</h2>
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -255,28 +255,30 @@
                 </form>
             </div>
         </div>
-        </main>
+    </main>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, updateDoc, setDoc, limit, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-    // YENİ EKLENEN KOD: Firebase Storage importu
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
+    // --- GÜNCELLENMİŞ firebaseConfig BÖLÜMÜ ---
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
         projectId: "kibris-6b4f7",
-        storageBucket: "kibris-6b4f7.appspot.com", // storageBucket adresini .appspot.com ile bitirin
+        storageBucket: "kibris-6b4f7.firebasestorage.app",
         messagingSenderId: "141262926171",
-        appId: "1:141262926171:web:07226845e51d4bbc0dea7e"
+        appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+        measurementId: "G-JL9P6BRZTD"
     };
+    // --- BİTİŞ ---
     
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app); // YENİ EKLENEN KOD
+    const storage = getStorage(app);
 
     const navLinks = document.querySelectorAll('aside nav a');
     const contentSections = document.querySelectorAll('.admin-content-section');
@@ -323,10 +325,9 @@
 
         if (sectionId === 'content-dashboard') loadDashboardData();
         if (sectionId === 'content-orders') loadAllOrders();
+        if (sectionId === 'content-products') loadProductManagement();
         if (sectionId === 'content-users') loadAllUsers();
         if (sectionId === 'content-settings') loadSettings();
-        // YENİ EKLENEN KOD
-        if (sectionId === 'content-products') loadProductManagement();
     }
 
     const statusStyles = {
@@ -486,7 +487,6 @@
     
     document.getElementById('close-order-modal').addEventListener('click', () => orderDetailModal.classList.add('hidden'));
     
-    // HATA DÜZELTMESİ: Bu olay dinleyici, tekrar tekrar eklenmemesi için loadSettings fonksiyonunun dışına taşındı.
     document.getElementById('add-city-btn').addEventListener('click', async () => {
         const newCityNameInput = document.getElementById('new-city-name');
         const newCityFeeInput = document.getElementById('new-city-fee');
@@ -496,7 +496,6 @@
         if (newCityName && !isNaN(newCityFee) && newCityFee >= 0) {
             try {
                 const pricingDocRef = doc(db, "settings", "pricing");
-                // Mevcut şehir ücretlerini al, üzerine yazma
                 const pricingDocSnap = await getDoc(pricingDocRef);
                 const existingData = pricingDocSnap.data() || {};
                 const cityFees = existingData.cityFees || {};
@@ -506,9 +505,9 @@
                 await setDoc(pricingDocRef, { cityFees }, { merge: true });
                 
                 alert(`'${newCityName}' başarıyla eklendi.`);
-                newCityNameInput.value = ''; // Inputları temizle
+                newCityNameInput.value = '';
                 newCityFeeInput.value = '';
-                loadSettings(); // Ayarlar görünümünü yenile
+                loadSettings();
             } catch (error) {
                 alert('Yeni şehir eklenirken bir hata oluştu.');
                 console.error("Error adding new city:", error);
@@ -566,7 +565,7 @@
                 alert('Sipariş durumu güncellendi.');
                 orderDetailModal.classList.add('hidden');
                 loadAllOrders();
-                loadDashboardData(); // Dashboard'u da yenile
+                loadDashboardData();
             } catch(error) {
                 alert('Durum güncellenirken hata oluştu.');
                 console.error("Status update error:", error);
@@ -657,7 +656,7 @@
     }
 
     // =================================================================
-    // YENİ EKLENEN KOD: ÜRÜN VE KATEGORİ YÖNETİMİ FONKSİYONLARI
+    // ÜRÜN VE KATEGORİ YÖNETİMİ FONKSİYONLARI
     // =================================================================
     
     let allCategories = [];
@@ -736,7 +735,7 @@
             const categoryName = categoryItem.querySelector('.category-name').textContent;
             document.getElementById('selected-category-name').textContent = categoryName;
             document.getElementById('add-product-btn').disabled = false;
-            renderCategoryTree(); // Seçimi göstermek için ağacı yeniden render et
+            renderCategoryTree();
             renderProductsForCategory(selectedCategoryId);
         }
     });
@@ -804,7 +803,6 @@
         }
     });
     
-    // Ürün Modalı Kontrolleri
     const productModal = document.getElementById('product-modal');
     const productForm = document.getElementById('product-form');
     
@@ -817,7 +815,7 @@
         document.getElementById('product-id').value = '';
         document.getElementById('variations-container').innerHTML = '';
 
-        if(product) { // Düzenleme modu
+        if(product) {
             document.getElementById('product-modal-title').textContent = 'Ürünü Düzenle';
             document.getElementById('product-id').value = product.id;
             document.getElementById('product-name').value = product.name;
@@ -828,9 +826,9 @@
                 addVariation(v);
             });
 
-        } else { // Ekleme modu
+        } else {
             document.getElementById('product-modal-title').textContent = 'Yeni Ürün Ekle';
-            addVariation(); // Başlangıçta bir tane boş varyasyon ekle
+            addVariation();
         }
         productModal.classList.remove('hidden');
     }
@@ -860,7 +858,6 @@
         `;
         container.insertAdjacentHTML('beforeend', html);
         
-        // Event listener for image preview
         const fileInput = container.querySelector(`[data-id='${id}'] .variation-image-file`);
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -897,7 +894,6 @@
             return;
         }
 
-        // Butonu devre dışı bırak ve yükleniyor göster
         const submitButton = productForm.querySelector('button[type="submit"]');
         submitButton.disabled = true;
         submitButton.textContent = 'Kaydediliyor...';
@@ -908,7 +904,7 @@
                 const fileInput = item.querySelector('.variation-image-file');
                 let imageUrl = item.querySelector('.variation-image-url').value;
 
-                if (fileInput.files[0]) { // Yeni dosya seçildiyse yükle
+                if (fileInput.files[0]) {
                     const file = fileInput.files[0];
                     const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
                     const snapshot = await uploadBytes(storageRef, file);
@@ -922,9 +918,9 @@
                 productData.variations.push({ colorName, imageUrl });
             }
 
-            if (productId) { // Güncelleme
+            if (productId) {
                 await setDoc(doc(db, "products", productId), productData, { merge: true });
-            } else { // Yeni ekleme
+            } else {
                 await addDoc(collection(db, "products"), productData);
             }
             
@@ -935,7 +931,6 @@
             console.error("Product save error:", error);
             alert(`Ürün kaydedilirken bir hata oluştu: ${error.message}`);
         } finally {
-            // Butonu tekrar aktif et
             submitButton.disabled = false;
             submitButton.textContent = 'Kaydet';
         }
