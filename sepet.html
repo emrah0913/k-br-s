@@ -439,16 +439,16 @@
             
             // --- 1. DEĞİŞİKLİK: statusStyles NESNESİNİ GÜNCELLEME ---
   const statusStyles = {
-    pending_payment:  { text: 'Ödeme Bekleniyor', bg: 'bg-status-pending', text_color: 'text-white' },
-    pending:          { text: 'Beklemede', bg: 'bg-status-pending', text_color: 'text-white' },
-    processing:       { text: 'Onaylandı', bg: 'bg-status-processing', text_color: 'text-white' },
-    tr_warehouse:     { text: 'TR Depoda', bg: 'bg-status-tr_warehouse', text_color: 'text-white' },
-    shipped:          { text: 'Kargoda', bg: 'bg-status-shipped', text_color: 'text-white' },
-    cyprus_warehouse: { text: 'Kıbrıs Depoda', bg: 'bg-status-cyprus_warehouse', text_color: 'text-white' },
-    delivered:        { text: 'Teslim Edildi', bg: 'bg-status-delivered', text_color: 'text-white' },
-    cancelled:        { text: 'İptal Edildi', bg: 'bg-status-cancelled', text_color: 'text-white' }
-};
-            const currentStatus = statusStyles[order.status] || { text: order.status, bg: 'bg-gray-400', text_color: 'text-white' };
+     pending_payment:  { text: 'Ödeme Bekleniyor', style: 'status-pending' },
+     pending:          { text: 'Beklemede', style: 'status-pending' },
+     processing:       { text: 'Onaylandı', style: 'status-processing' },
+     tr_warehouse:     { text: 'TR Depoda', style: 'status-tr_warehouse' },
+     shipped:          { text: 'Kargoya Verildi', style: 'status-shipped' },
+     cyprus_warehouse: { text: 'Kıbrıs Depoda', style: 'status-cyprus_warehouse' },
+     delivered:        { text: 'Teslim Edildi', style: 'status-delivered' },
+     cancelled:        { text: 'İptal Edildi', style: 'status-cancelled' }
+   };
+      const currentStatus = statusStyles[order.status] || { text: order.status, bg: 'bg-gray-400', text_color: 'text-white' };
             const orderDate = order.orderDate ? order.orderDate.toDate().toLocaleDateString('tr-TR') : 'Bilinmiyor';
             
             const categoryRates = pricingSettings.categoryRates || {};
