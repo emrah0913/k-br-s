@@ -74,18 +74,44 @@
         color: #4f46e5;
     }
     .variation-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem;
+        padding: 1rem;
         border: 1px solid #ddd;
         border-radius: 0.5rem;
     }
-    .variation-item img {
-        width: 40px;
-        height: 40px;
+    .media-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed #ccc;
+    }
+    .media-item {
+        position: relative;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .media-item img, .media-item video {
+        width: 100%;
+        height: 80px;
         object-fit: cover;
-        border-radius: 0.25rem;
+    }
+     .media-item .remove-media-btn {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background-color: rgba(0,0,0,0.6);
+        color: white;
+        border-radius: 99px;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
     }
 
 
@@ -213,16 +239,16 @@
             </div>
         </div>
 
-         <div id="order-detail-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
+        <div id="order-detail-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
              <div class="bg-white rounded-lg p-6 w-full max-w-2xl relative shadow-lg max-h-[90vh] overflow-y-auto">
                   <button id="close-order-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
                   <h3 class="text-xl font-semibold text-primary mb-4" id="modal-order-id">Sipariş Detayı</h3>
                   <div id="modal-order-content" class="space-y-4"></div>
              </div>
-         </div>
+        </div>
 
         <div id="product-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
-            <div class="bg-white rounded-lg p-6 w-full max-w-3xl relative shadow-lg max-h-[90vh] overflow-y-auto">
+            <div class="bg-white rounded-lg p-6 w-full max-w-4xl relative shadow-lg max-h-[90vh] overflow-y-auto">
                 <button id="close-product-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
                 <h3 class="text-xl font-semibold text-primary mb-4" id="product-modal-title">Yeni Ürün Ekle</h3>
                 <form id="product-form">
@@ -234,7 +260,7 @@
                         </div>
                         <div>
                             <label for="product-description" class="block text-sm font-medium text-gray-700">Açıklama</label>
-                            <textarea id="product-description" rows="4" class="w-full mt-1 p-2 border rounded-lg"></textarea>
+                            <textarea id="product-description" rows="3" class="w-full mt-1 p-2 border rounded-lg"></textarea>
                         </div>
                         <div>
                             <label for="product-price" class="block text-sm font-medium text-gray-700">Fiyat (₺)</label>
@@ -243,9 +269,9 @@
 
                         <div class="border-t pt-4">
                             <h4 class="font-semibold text-gray-800">Renk Varyasyonları</h4>
-                            <div id="variations-container" class="space-y-3 mt-2">
+                            <div id="variations-container" class="space-y-4 mt-2">
                                 </div>
-                            <button type="button" id="add-variation-btn" class="mt-2 text-sm text-primary hover:underline">+ Yeni Varyasyon Ekle</button>
+                            <button type="button" id="add-variation-btn" class="mt-3 text-sm text-primary hover:underline font-semibold">+ Yeni Renk Varyasyonu Ekle</button>
                         </div>
                     </div>
                     <div class="mt-6 flex justify-end gap-3">
@@ -263,7 +289,6 @@
     import { getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, updateDoc, setDoc, limit, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-    // --- GÜNCELLENMİŞ firebaseConfig BÖLÜMÜ ---
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -273,7 +298,6 @@
         appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
         measurementId: "G-JL9P6BRZTD"
     };
-    // --- BİTİŞ ---
     
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -517,7 +541,6 @@
         }
     });
 
-
     function showOrderDetailModal(order) {
         const content = document.getElementById('modal-order-content');
         document.getElementById('modal-order-id').textContent = `Sipariş Detayı: #${order.id.substring(0, 8)}`;
@@ -654,7 +677,7 @@
             console.error("Settings save error:", error);
         }
     }
-
+    
     // =================================================================
     // ÜRÜN VE KATEGORİ YÖNETİMİ FONKSİYONLARI
     // =================================================================
@@ -679,25 +702,14 @@
 
     function renderCategoryTree() {
         const container = document.getElementById('category-tree-container');
-        container.innerHTML = ''; // Temizle
+        container.innerHTML = '';
         const buildTree = (parentId = null) => {
             const children = allCategories.filter(cat => cat.parentId === parentId);
             if (children.length === 0) return '';
             
             let html = '<ul>';
             children.forEach(cat => {
-                html += `
-                    <li data-id="${cat.id}">
-                        <div class="category-item p-2 rounded-lg hover:bg-gray-100 flex justify-between items-center ${selectedCategoryId === cat.id ? 'selected' : ''}">
-                            <span class="category-name font-medium">${cat.name}</span>
-                            <div class="flex items-center gap-2">
-                                <button title="Alt Kategori Ekle" class="add-subcategory-btn text-blue-500 hover:text-blue-700"><i class="ri-add-line"></i></button>
-                                <button title="Kategoriyi Sil" class="delete-category-btn text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button>
-                            </div>
-                        </div>
-                        ${buildTree(cat.id)}
-                    </li>
-                `;
+                html += `<li data-id="${cat.id}"><div class="category-item p-2 rounded-lg hover:bg-gray-100 flex justify-between items-center ${selectedCategoryId === cat.id ? 'selected' : ''}"><span class="category-name font-medium">${cat.name}</span><div class="flex items-center gap-2"><button title="Alt Kategori Ekle" class="add-subcategory-btn text-blue-500 hover:text-blue-700"><i class="ri-add-line"></i></button><button title="Kategoriyi Sil" class="delete-category-btn text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button></div></div>${buildTree(cat.id)}</li>`;
             });
             html += '</ul>';
             return html;
@@ -716,16 +728,12 @@
                 loadProductManagement();
             }
         } else if (e.target.closest('.delete-category-btn')) {
-             if (confirm('Bu kategoriyi ve içindeki TÜM alt kategorileri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
-                // TODO: Kategoriyi silmeden önce içinde ürün olup olmadığını kontrol et
+             if (confirm('Bu kategoriyi ve içindeki TÜM alt kategorileri ve ürünleri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
+                // TODO: Kategoriye ait ürünleri ve resimleri de sil.
                 await deleteDoc(doc(db, "categories", categoryId));
-                // Hiyerarşik silme (alt kategorileri de sil)
                 const deleteChildren = async (parentId) => {
                     const children = allCategories.filter(c => c.parentId === parentId);
-                    for(const child of children) {
-                        await deleteChildren(child.id);
-                        await deleteDoc(doc(db, "categories", child.id));
-                    }
+                    for(const child of children) { await deleteChildren(child.id); await deleteDoc(doc(db, "categories", child.id)); }
                 }
                 await deleteChildren(categoryId);
                 loadProductManagement();
@@ -761,25 +769,11 @@
             return;
         }
 
-        let tableHtml = `<table class="min-w-full text-sm">
-            <thead class="bg-gray-50"><tr>
-                <th class="px-3 py-2 text-left font-medium text-gray-600">Ürün Adı</th>
-                <th class="px-3 py-2 text-left font-medium text-gray-600">Fiyat</th>
-                <th class="px-3 py-2 text-right font-medium text-gray-600">İşlemler</th>
-            </tr></thead><tbody>`;
+        let tableHtml = `<table class="min-w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left font-medium text-gray-600">Ürün Adı</th><th class="px-3 py-2 text-left font-medium text-gray-600">Fiyat</th><th class="px-3 py-2 text-right font-medium text-gray-600">İşlemler</th></tr></thead><tbody>`;
         
         snapshot.docs.forEach(doc => {
             const product = { id: doc.id, ...doc.data() };
-            tableHtml += `
-                <tr class="border-t">
-                    <td class="px-3 py-2">${product.name}</td>
-                    <td class="px-3 py-2">${product.price.toFixed(2)} ₺</td>
-                    <td class="px-3 py-2 text-right">
-                        <button data-id="${product.id}" class="edit-product-btn text-blue-500 hover:underline">Düzenle</button>
-                        <button data-id="${product.id}" class="delete-product-btn text-red-500 hover:underline ml-2">Sil</button>
-                    </td>
-                </tr>
-            `;
+            tableHtml += `<tr class="border-t"><td class="px-3 py-2">${product.name}</td><td class="px-3 py-2">${product.price.toFixed(2)} ₺</td><td class="px-3 py-2 text-right"><button data-id="${product.id}" class="edit-product-btn text-blue-500 hover:underline">Düzenle</button><button data-id="${product.id}" class="delete-product-btn text-red-500 hover:underline ml-2">Sil</button></td></tr>`;
         });
         
         tableHtml += '</tbody></table>';
@@ -796,7 +790,7 @@
         }
         if(e.target.classList.contains('delete-product-btn')) {
             if(confirm('Bu ürünü silmek istediğinizden emin misiniz?')) {
-                // TODO: Ürüne ait resimleri Storage'dan da silmek gerekir.
+                // TODO: Ürüne ait tüm resim ve videoları Storage'dan sil.
                 await deleteDoc(doc(db, "products", productId));
                 renderProductsForCategory(selectedCategoryId);
             }
@@ -814,7 +808,6 @@
         productForm.reset();
         document.getElementById('product-id').value = '';
         document.getElementById('variations-container').innerHTML = '';
-
         if(product) {
             document.getElementById('product-modal-title').textContent = 'Ürünü Düzenle';
             document.getElementById('product-id').value = product.id;
@@ -822,9 +815,7 @@
             document.getElementById('product-description').value = product.description;
             document.getElementById('product-price').value = product.price;
             
-            product.variations?.forEach(v => {
-                addVariation(v);
-            });
+            product.variations?.forEach(v => addVariation(v));
 
         } else {
             document.getElementById('product-modal-title').textContent = 'Yeni Ürün Ekle';
@@ -839,44 +830,77 @@
     function addVariation(variation = null) {
         const container = document.getElementById('variations-container');
         const id = variationIdCounter++;
-        const previewId = `variation-preview-${id}`;
         
-        const html = `
+        const variationHtml = `
             <div class="variation-item" data-id="${id}">
-                <img src="${variation?.imageUrl || 'https://via.placeholder.com/40'}" id="${previewId}" alt="Önizleme">
-                <div class="flex-1">
-                     <label class="text-sm">Renk Adı (opsiyonel)</label>
-                     <input type="text" class="variation-color-name w-full p-1 border rounded" value="${variation?.colorName || ''}">
+                <button type="button" class="remove-variation-btn float-right text-red-500 hover:text-red-700 font-bold">X</button>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Renk Adı (opsiyonel)</label>
+                    <input type="text" class="variation-color-name w-full mt-1 p-2 border rounded-lg" value="${variation?.colorName || ''}">
                 </div>
-                <div class="flex-1">
-                    <label class="text-sm">Görsel Yükle</label>
-                    <input type="file" accept="image/*" class="variation-image-file text-sm">
-                    <input type="hidden" class="variation-image-url" value="${variation?.imageUrl || ''}">
+                <div class="mt-2">
+                    <label class="block text-sm font-medium text-gray-700">Görseller ve Videolar</label>
+                    <div class="media-gallery" id="media-gallery-${id}"></div>
+                    <input type="file" class="add-media-input hidden" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm">
+                    <button type="button" class="add-media-btn mt-2 text-sm text-blue-600 hover:underline">Görsel/Video Ekle</button>
                 </div>
-                <button type="button" class="remove-variation-btn text-red-500 p-2 hover:bg-red-100 rounded-full"><i class="ri-close-line"></i></button>
             </div>
         `;
-        container.insertAdjacentHTML('beforeend', html);
+        container.insertAdjacentHTML('beforeend', variationHtml);
         
-        const fileInput = container.querySelector(`[data-id='${id}'] .variation-image-file`);
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
+        if(variation && variation.media) {
+            const gallery = document.getElementById(`media-gallery-${id}`);
+            variation.media.forEach(mediaItem => {
+                const mediaPreviewHtml = createMediaPreview(mediaItem.url, mediaItem.type, mediaItem.url);
+                gallery.insertAdjacentHTML('beforeend', mediaPreviewHtml);
+            });
+        }
+    }
+    
+    document.getElementById('variations-container').addEventListener('click', e => {
+        if(e.target.classList.contains('remove-variation-btn')) {
+            e.target.closest('.variation-item').remove();
+        }
+        if(e.target.classList.contains('add-media-btn')) {
+            e.target.previousElementSibling.click();
+        }
+        if(e.target.classList.contains('remove-media-btn')) {
+            e.target.closest('.media-item').remove();
+        }
+    });
+
+    document.getElementById('variations-container').addEventListener('change', e => {
+        if(e.target.classList.contains('add-media-input')) {
+            const gallery = e.target.nextElementSibling.previousElementSibling;
+            for (const file of e.target.files) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    document.getElementById(previewId).src = event.target.result;
-                }
+                    const mediaPreviewHtml = createMediaPreview(event.target.result, file.type, null, file);
+                    gallery.insertAdjacentHTML('beforeend', mediaPreviewHtml);
+                };
                 reader.readAsDataURL(file);
             }
-        });
-    }
-
-    document.getElementById('variations-container').addEventListener('click', e => {
-        if(e.target.closest('.remove-variation-btn')) {
-            e.target.closest('.variation-item').remove();
+            e.target.value = '';
         }
     });
     
+    function createMediaPreview(src, type, existingUrl, file = null) {
+        const isVideo = type.startsWith('video');
+        const mediaTag = isVideo 
+            ? `<video src="${src}" muted playsinline></video>` 
+            : `<img src="${src}" alt="Önizleme">`;
+        
+        const fileRefId = `file-${Date.now()}${Math.random()}`;
+        if(file) { window[fileRefId] = file; }
+
+        return `
+            <div class="media-item" data-file-ref="${file ? fileRefId : ''}" data-existing-url="${existingUrl || ''}">
+                ${mediaTag}
+                <button type="button" class="remove-media-btn">×</button>
+            </div>
+        `;
+    }
+
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const productId = document.getElementById('product-id').value;
@@ -889,34 +913,41 @@
         };
         
         const variationElements = document.querySelectorAll('.variation-item');
-        if(variationElements.length === 0){
-            alert('En az bir renk varyasyonu eklemelisiniz.');
-            return;
-        }
+        if(variationElements.length === 0){ alert('En az bir renk varyasyonu eklemelisiniz.'); return; }
 
         const submitButton = productForm.querySelector('button[type="submit"]');
         submitButton.disabled = true;
         submitButton.textContent = 'Kaydediliyor...';
         
         try {
-            for(const item of variationElements) {
-                const colorName = item.querySelector('.variation-color-name').value;
-                const fileInput = item.querySelector('.variation-image-file');
-                let imageUrl = item.querySelector('.variation-image-url').value;
+            const variationPromises = Array.from(variationElements).map(async (variationItem) => {
+                const colorName = variationItem.querySelector('.variation-color-name').value;
+                const mediaItems = variationItem.querySelectorAll('.media-item');
+                
+                const mediaPromises = Array.from(mediaItems).map(async (mediaItem) => {
+                    const existingUrl = mediaItem.dataset.existingUrl;
+                    const fileRefId = mediaItem.dataset.fileRef;
 
-                if (fileInput.files[0]) {
-                    const file = fileInput.files[0];
-                    const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-                    const snapshot = await uploadBytes(storageRef, file);
-                    imageUrl = await getDownloadURL(snapshot.ref);
-                }
-                
-                if(!imageUrl) {
-                    throw new Error('Her varyasyon için bir görsel yüklenmelidir.');
-                }
-                
-                productData.variations.push({ colorName, imageUrl });
-            }
+                    if (fileRefId && window[fileRefId]) {
+                        const file = window[fileRefId];
+                        const type = file.type.startsWith('video') ? 'video' : 'image';
+                        const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+                        const snapshot = await uploadBytes(storageRef, file);
+                        const url = await getDownloadURL(snapshot.ref);
+                        delete window[fileRefId];
+                        return { type, url };
+                    } else if (existingUrl) {
+                        const type = existingUrl.includes('.mp4') || existingUrl.includes('.webm') ? 'video' : 'image';
+                        return { type, url: existingUrl };
+                    }
+                    return null;
+                });
+
+                const media = (await Promise.all(mediaPromises)).filter(m => m !== null);
+                return { colorName, media };
+            });
+
+            productData.variations = await Promise.all(variationPromises);
 
             if (productId) {
                 await setDoc(doc(db, "products", productId), productData, { merge: true });
