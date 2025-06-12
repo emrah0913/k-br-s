@@ -446,9 +446,6 @@
                 delivered: { text: 'Teslim Edildi', bg: 'bg-status-delivered', text_color: 'text-white' },
                 cancelled: { text: 'İptal Edildi', bg: 'bg-status-cancelled', text_color: 'text-white' }
 };
-
-                
-            };
             const currentStatus = statusStyles[order.status] || { text: order.status, bg: 'bg-gray-400', text_color: 'text-white' };
             const orderDate = order.orderDate ? order.orderDate.toDate().toLocaleDateString('tr-TR') : 'Bilinmiyor';
             
