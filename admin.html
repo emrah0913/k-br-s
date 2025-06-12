@@ -66,13 +66,47 @@
     .status-unknown { background-color: #e5e7eb; color: #4b5563; }
     
     .category-tree ul {
-        padding-left: 1.5rem; /* Alt kategorileri sağa kaydırır */
-        border-left: 1px solid #e5e7eb; /* Bağlantı çizgisi ekler */
-        margin-left: 0.5rem; /* Çizgi ile üst kategori arasına boşluk koyar */
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        position: relative;
     }
+    .category-tree ul ul {
+        margin-left: 20px;
+    }
+    .category-tree li {
+        margin: 0;
+        padding: 0 0 0 20px;
+        list-style: none;
+        position: relative;
+    }
+    .category-tree li::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 100%;
+        background-color: #cbd5e1;
+    }
+    .category-tree li::after {
+        content: '';
+        position: absolute;
+        top: 1.1rem;
+        left: 0;
+        width: 20px;
+        height: 1px;
+        background-color: #cbd5e1;
+    }
+    .category-tree li:last-child::before {
+        height: 1.1rem;
+    }
+
     .category-item {
         cursor: grab;
         user-select: none;
+        position: relative;
+        z-index: 1;
     }
     .category-item:active {
         cursor: grabbing;
@@ -191,7 +225,7 @@
         <div id="content-products" class="admin-content-section hidden">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Ürün ve Kategori Yönetimi</h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1 bg-white p-4 rounded-lg shadow-md"><h3 class="text-lg font-semibold mb-3">Kategoriler</h3><div id="category-tree-container" class="space-y-2"></div><div class="mt-4"><input type="text" id="new-category-name" placeholder="Yeni Ana Kategori Adı" class="w-full p-2 border rounded-lg"><button id="add-main-category-btn" class="w-full mt-2 bg-primary text-white py-2 rounded-lg hover:bg-primary/90">Ana Kategori Ekle</button></div></div>
+                <div class="lg:col-span-1 bg-white p-4 rounded-lg shadow-md"><h3 class="text-lg font-semibold mb-3">Kategoriler</h3><div id="category-tree-container"></div><div class="mt-4"><input type="text" id="new-category-name" placeholder="Yeni Ana Kategori Adı" class="w-full p-2 border rounded-lg"><button id="add-main-category-btn" class="w-full mt-2 bg-primary text-white py-2 rounded-lg hover:bg-primary/90">Ana Kategori Ekle</button></div></div>
                 <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow-md"><div class="flex justify-between items-center mb-3"><h3 class="text-lg font-semibold">Ürünler (<span id="selected-category-name">Kategori Seçin</span>)</h3><button id="add-product-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400" disabled>Yeni Ürün Ekle</button></div><div id="product-list-container" class="overflow-x-auto"><p class="text-gray-500">Ürünleri görmek için bir kategori seçin.</p></div></div>
             </div>
         </div>
@@ -404,7 +438,7 @@
             } finally {
                 updateBtn.disabled = false;
             }
-        }, { once: true }); // Olay dinleyicisinin sadece bir kez çalışmasını sağlar
+        }, { once: true });
     }
 
     async function loadAllUsers() {
@@ -493,6 +527,7 @@
     
     function initializeSortable() {
         document.querySelectorAll('#category-tree-container ul').forEach(list => {
+            if (list.sortable) list.sortable.destroy(); // Önceki örneği yok et
             new Sortable(list, {
                 group: 'nested', animation: 150, fallbackOnBody: true, swapThreshold: 0.65, ghostClass: 'sortable-ghost',
                 onEnd: async (evt) => {
@@ -501,7 +536,7 @@
                     batch.update(doc(db, "categories", movedItemId), { parentId: newParentId });
                     Array.from(evt.to.children).forEach((sibling, index) => { batch.update(doc(db, "categories", sibling.dataset.id), { order: index }); });
                     if (evt.from !== evt.to) { Array.from(evt.from.children).forEach((sibling, index) => { batch.update(doc(db, "categories", sibling.dataset.id), { order: index }); }); }
-                    try { await batch.commit(); loadProductManagement(); } 
+                    try { await batch.commit(); await loadProductManagement(); } 
                     catch (error) { console.error("Sıralama hatası:", error); alert("Sıralama güncellenemedi."); }
                 }
             });
