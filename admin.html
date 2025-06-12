@@ -107,7 +107,7 @@
         <div id="content-dashboard" class="admin-content-section">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Genel Bakış</h2>
             <div id="stats-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                 </div>
+            </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">Son Bekleyen Siparişler</h3>
                 <div class="overflow-x-auto">
@@ -125,7 +125,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                  <div class="overflow-x-auto">
                     <table class="min-w-full"><tbody id="orders-table-body"></tbody></table>
-                 </div>
+                </div>
             </div>
         </div>
         
@@ -134,7 +134,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                  <div class="overflow-x-auto">
                     <table class="min-w-full"><tbody id="users-table-body"></tbody></table>
-                 </div>
+                </div>
             </div>
         </div>
 
@@ -149,13 +149,13 @@
                      <h3 class="text-xl font-semibold text-gray-800 mb-4">Şehir Teslimat Ücretleri</h3>
                      <form id="city-fees-form" class="space-y-4"></form>
                       <div class="mt-6 border-t pt-4">
-                         <h4 class="text-lg font-semibold text-gray-700 mb-2">Yeni Şehir Ekle</h4>
-                         <div class="flex flex-col sm:flex-row items-center gap-2">
-                             <input type="text" id="new-city-name" placeholder="Şehir Adı (örn: Lefke)" class="p-2 border rounded-lg flex-1 w-full sm:w-auto">
-                             <input type="number" id="new-city-fee" placeholder="Ücret (₺)" class="p-2 border rounded-lg w-full sm:w-28">
-                             <button id="add-city-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 w-full sm:w-auto">Ekle</button>
-                         </div>
-                     </div>
+                          <h4 class="text-lg font-semibold text-gray-700 mb-2">Yeni Şehir Ekle</h4>
+                          <div class="flex flex-col sm:flex-row items-center gap-2">
+                               <input type="text" id="new-city-name" placeholder="Şehir Adı (örn: Lefke)" class="p-2 border rounded-lg flex-1 w-full sm:w-auto">
+                               <input type="number" id="new-city-fee" placeholder="Ücret (₺)" class="p-2 border rounded-lg w-full sm:w-28">
+                               <button id="add-city-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 w-full sm:w-auto">Ekle</button>
+                          </div>
+                      </div>
                 </div>
             </div>
         </div>
@@ -237,15 +237,15 @@
     }
 
    const statusStyles = {
-    pending_payment:  { text: 'Ödeme Bekleniyor', style: 'bg-yellow-400 text-white' },
-    pending:          { text: 'Beklemede', style: 'bg-yellow-500 text-white' },
-    processing:       { text: 'Onaylandı', style: 'bg-blue-500 text-white' },
-    tr_warehouse:     { text: 'TR Depoda', style: 'bg-cyan-700 text-white' },
-    shipped:          { text: 'Kargoya Verildi', style: 'bg-purple-500 text-white' },
-    cyprus_warehouse: { text: 'Kıbrıs Depoda', style: 'bg-indigo-700 text-white' },
-    delivered:        { text: 'Teslim Edildi', style: 'bg-green-500 text-white' },
-    cancelled:        { text: 'İptal Edildi', style: 'bg-red-500 text-white' }
-};
+     pending_payment:  { text: 'Ödeme Bekleniyor', style: 'bg-yellow-400 text-white' },
+     pending:          { text: 'Beklemede', style: 'bg-yellow-500 text-white' },
+     processing:       { text: 'Onaylandı', style: 'bg-blue-500 text-white' },
+     tr_warehouse:     { text: 'TR Depoda', style: 'bg-cyan-700 text-white' },
+     shipped:          { text: 'Kargoya Verildi', style: 'bg-purple-500 text-white' },
+     cyprus_warehouse: { text: 'Kıbrıs Depoda', style: 'bg-indigo-700 text-white' },
+     delivered:        { text: 'Teslim Edildi', style: 'bg-green-500 text-white' },
+     cancelled:        { text: 'İptal Edildi', style: 'bg-red-500 text-white' }
+   };
     async function loadDashboardData() {
         const statsContainer = document.getElementById('stats-cards-container');
         statsContainer.innerHTML = '<p>Veriler yükleniyor...</p>';
@@ -291,16 +291,16 @@
                  tableBody.innerHTML += '<tr><td colspan="3" class="text-center py-4">Bekleyen sipariş yok.</td></tr>';
             } else {
                  latestOrdersSnapshot.forEach(doc => {
-                    const order = doc.data();
-                    const statusInfo = STATUS_MAP[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
-                    tableBody.innerHTML += `
-                        <tr class="border-t">
-                            <td class="px-4 py-2 text-sm">${order.userFullName || 'İsimsiz'}</td>
-                            <td class="px-4 py-2 text-sm font-semibold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</td>
-                            <td class="px-4 py-2 text-sm"><span class="status-badge ${statusInfo.style}">${statusInfo.text}</span></td>
-                        </tr>
-                    `;
-                });
+                     const order = doc.data();
+                     const statusInfo = statusStyles[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
+                     tableBody.innerHTML += `
+                         <tr class="border-t">
+                             <td class="px-4 py-2 text-sm">${order.userFullName || 'İsimsiz'}</td>
+                             <td class="px-4 py-2 text-sm font-semibold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</td>
+                             <td class="px-4 py-2 text-sm"><span class="status-badge ${statusInfo.style}">${statusInfo.text}</span></td>
+                         </tr>
+                     `;
+                 });
             }
         } catch (error) {
             console.error("Dashboard error:", error);
@@ -330,8 +330,8 @@
 
     function populateStatusFilter() {
         orderStatusFilter.innerHTML = '<option value="all">Tüm Durumlar</option>';
-        for(const key in STATUS_MAP) {
-            const statusInfo = STATUS_MAP[key];
+        for(const key in statusStyles) {
+            const statusInfo = statusStyles[key];
             if (!Array.from(orderStatusFilter.options).some(opt => opt.text === statusInfo.text)) {
                orderStatusFilter.innerHTML += `<option value="${key}">${statusInfo.text}</option>`;
             }
@@ -370,7 +370,7 @@
             tableBody.innerHTML += '<tr><td colspan="5" class="text-center py-4">Filtreye uygun sipariş bulunamadı.</td></tr>';
         } else {
             filteredOrders.forEach(order => {
-                const statusInfo = STATUS_MAP[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
+                const statusInfo = statusStyles[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
                 tableBody.innerHTML += `
                     <tr class="border-t">
                         <td class="px-4 py-2 text-sm">${order.userFullName || 'İsimsiz'}</td>
@@ -392,6 +392,39 @@
     });
     
     document.getElementById('close-order-modal').addEventListener('click', () => orderDetailModal.classList.add('hidden'));
+    
+    // HATA DÜZELTMESİ: Bu olay dinleyici, tekrar tekrar eklenmemesi için loadSettings fonksiyonunun dışına taşındı.
+    document.getElementById('add-city-btn').addEventListener('click', async () => {
+        const newCityNameInput = document.getElementById('new-city-name');
+        const newCityFeeInput = document.getElementById('new-city-fee');
+        const newCityName = newCityNameInput.value.trim();
+        const newCityFee = Number(newCityFeeInput.value);
+
+        if (newCityName && !isNaN(newCityFee) && newCityFee >= 0) {
+            try {
+                const pricingDocRef = doc(db, "settings", "pricing");
+                // Mevcut şehir ücretlerini al, üzerine yazma
+                const pricingDocSnap = await getDoc(pricingDocRef);
+                const existingData = pricingDocSnap.data() || {};
+                const cityFees = existingData.cityFees || {};
+                
+                cityFees[newCityName] = newCityFee;
+                
+                await setDoc(pricingDocRef, { cityFees }, { merge: true });
+                
+                alert(`'${newCityName}' başarıyla eklendi.`);
+                newCityNameInput.value = ''; // Inputları temizle
+                newCityFeeInput.value = '';
+                loadSettings(); // Ayarlar görünümünü yenile
+            } catch (error) {
+                alert('Yeni şehir eklenirken bir hata oluştu.');
+                console.error("Error adding new city:", error);
+            }
+        } else {
+            alert('Lütfen geçerli bir şehir adı ve ücret giriniz.');
+        }
+    });
+
 
     function showOrderDetailModal(order) {
         const content = document.getElementById('modal-order-content');
@@ -421,7 +454,7 @@
             <div class="mt-4">
                 <label for="modal-status-select" class="block text-sm font-medium text-gray-700">Durumu Güncelle</label>
                 <select id="modal-status-select" class="w-full mt-1 p-2 border rounded-lg">
-                    ${Object.entries(STATUS_MAP).map(([key, value]) => {
+                    ${Object.entries(statusStyles).map(([key, value]) => {
                         if(key === 'pending_payment') return '';
                         return `<option value="${key}" ${order.status === key ? 'selected' : ''}>${value.text}</option>`
                     }).join('')}
@@ -440,6 +473,7 @@
                 alert('Sipariş durumu güncellendi.');
                 orderDetailModal.classList.add('hidden');
                 loadAllOrders();
+                loadDashboardData(); // Dashboard'u da yenile
             } catch(error) {
                 alert('Durum güncellenirken hata oluştu.');
                 console.error("Status update error:", error);
@@ -503,32 +537,6 @@
             
             categoryForm.addEventListener('submit', handleSettingsSave);
             cityForm.addEventListener('submit', handleSettingsSave);
-
-            const addCityBtn = document.getElementById('add-city-btn');
-            addCityBtn.addEventListener('click', async () => {
-                const newCityNameInput = document.getElementById('new-city-name');
-                const newCityFeeInput = document.getElementById('new-city-fee');
-                const newCityName = newCityNameInput.value.trim();
-                const newCityFee = Number(newCityFeeInput.value);
-
-                if (newCityName && !isNaN(newCityFee) && newCityFee >= 0) {
-                    try {
-                        const pricingDocRef = doc(db, "settings", "pricing");
-                        const cityFees = (await getDoc(pricingDocRef)).data()?.cityFees || {};
-                        cityFees[newCityName] = newCityFee;
-                        
-                        await setDoc(pricingDocRef, { cityFees }, { merge: true });
-                        
-                        alert(`'${newCityName}' başarıyla eklendi.`);
-                        loadSettings();
-                    } catch (error) {
-                        alert('Yeni şehir eklenirken bir hata oluştu.');
-                        console.error("Error adding new city:", error);
-                    }
-                } else {
-                    alert('Lütfen geçerli bir şehir adı ve ücret giriniz.');
-                }
-            });
 
         } catch (error) {
             console.error("Settings load error:", error);
