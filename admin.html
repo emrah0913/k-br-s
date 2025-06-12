@@ -481,7 +481,7 @@
     });
 
     // =================================================================
-    // KATEGORİ VE ÜRÜN YÖNETİMİ (SÜRÜKLE-BIRAK DESTEKLİ)
+    // KATEGORİ VE ÜRÜN YÖNETİMİ
     // =================================================================
     
     let allCategories = [];
@@ -527,7 +527,7 @@
     
     function initializeSortable() {
         document.querySelectorAll('#category-tree-container ul').forEach(list => {
-            if (list.sortable) list.sortable.destroy(); // Önceki örneği yok et
+            if (list.sortable) list.sortable.destroy();
             new Sortable(list, {
                 group: 'nested', animation: 150, fallbackOnBody: true, swapThreshold: 0.65, ghostClass: 'sortable-ghost',
                 onEnd: async (evt) => {
@@ -543,15 +543,59 @@
         });
     }
 
+    async function deleteCategoryAndContents(categoryId) {
+        const descendantIds = [];
+        function findDescendants(parentId) {
+            const children = allCategories.filter(cat => cat.parentId === parentId);
+            for (const child of children) {
+                descendantIds.push(child.id);
+                findDescendants(child.id);
+            }
+        }
+        findDescendants(categoryId);
+
+        const allIdsToDelete = [categoryId, ...descendantIds];
+        const batch = writeBatch(db);
+
+        const productsToDeleteQuery = query(collection(db, "products"), where("categoryId", "in", allIdsToDelete));
+        const productsSnapshot = await getDocs(productsToDeleteQuery);
+        
+        productsSnapshot.forEach(productDoc => {
+            // TODO: Storage'daki resimleri silmek için productDoc.data().variations içindeki URL'ler kullanılabilir.
+            batch.delete(productDoc.ref);
+        });
+
+        allIdsToDelete.forEach(id => {
+            batch.delete(doc(db, "categories", id));
+        });
+
+        await batch.commit();
+    }
+
     document.getElementById('category-tree-container').addEventListener('click', async (e) => {
         const categoryItemDiv = e.target.closest('.category-item');
         if (!categoryItemDiv) return;
         const categoryId = categoryItemDiv.closest('li').dataset.id;
+
         if (e.target.closest('.add-subcategory-btn')) {
             const newName = prompt('Yeni alt kategori adını girin:');
-            if (newName?.trim()) { const siblings = allCategories.filter(c => c.parentId === categoryId); await addDoc(collection(db, "categories"), { name: newName.trim(), parentId: categoryId, order: siblings.length }); loadProductManagement(); }
+            if (newName?.trim()) { 
+                const siblings = allCategories.filter(c => c.parentId === categoryId); 
+                await addDoc(collection(db, "categories"), { name: newName.trim(), parentId: categoryId, order: siblings.length }); 
+                loadProductManagement(); 
+            }
         } else if (e.target.closest('.delete-category-btn')) {
-            if (confirm('Bu kategoriyi ve içindeki TÜM alt kategorileri silmek istediğinizden emin misiniz?')) { /* TODO: Silme mantığı */ loadProductManagement(); }
+            const categoryToDelete = allCategories.find(c => c.id === categoryId);
+            if (confirm(`'${categoryToDelete.name}' kategorisini ve içindeki TÜM alt kategorileri ve ürünleri silmek istediğinizden emin misiniz?\n\nBU İŞLEM GERİ ALINAMAZ!`)) {
+                try {
+                    await deleteCategoryAndContents(categoryId);
+                    alert("Kategori ve içeriği başarıyla silindi.");
+                    loadProductManagement();
+                } catch (error) {
+                    console.error("Kategori silinirken hata oluştu:", error);
+                    alert("Kategori silinirken bir hata oluştu.");
+                }
+            }
         } else {
             if(e.target.closest('button') || e.target.closest('i')) return;
             selectedCategoryId = categoryId;
@@ -564,7 +608,12 @@
     
     document.getElementById('add-main-category-btn').addEventListener('click', async () => {
         const input = document.getElementById('new-category-name');
-        if (input.value.trim()) { const mainCategories = allCategories.filter(c => c.parentId === null); await addDoc(collection(db, "categories"), { name: input.value.trim(), parentId: null, order: mainCategories.length }); input.value = ''; loadProductManagement(); }
+        if (input.value.trim()) { 
+            const mainCategories = allCategories.filter(c => c.parentId === null); 
+            await addDoc(collection(db, "categories"), { name: input.value.trim(), parentId: null, order: mainCategories.length }); 
+            input.value = ''; 
+            loadProductManagement(); 
+        }
     });
     
     async function renderProductsForCategory(categoryId) {
@@ -588,7 +637,10 @@
             if(productDoc.exists()) showProductModal({id: productDoc.id, ...productDoc.data()});
         }
         if(e.target.classList.contains('delete-product-btn')) {
-            if(confirm('Bu ürünü silmek istediğinizden emin misiniz?')) { await deleteDoc(doc(db, "products", productId)); renderProductsForCategory(selectedCategoryId); }
+            if(confirm('Bu ürünü silmek istediğinizden emin misiniz?')) { 
+                await deleteDoc(doc(db, "products", productId)); 
+                renderProductsForCategory(selectedCategoryId); 
+            }
         }
     });
     
