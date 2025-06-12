@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Getir Kıbrıs - Yönetici Paneli</title>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,117 +67,35 @@
     .status-cancelled { background-color: #fee2e2; color: #b91c1c; }
     .status-unknown { background-color: #e5e7eb; color: #4b5563; }
     
-    .category-tree ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        position: relative;
-    }
-    .category-tree ul ul {
-        margin-left: 20px;
-    }
-    .category-tree li {
-        margin: 0;
-        padding: 0 0 0 20px;
-        list-style: none;
-        position: relative;
-    }
-    .category-tree li::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 1px;
-        height: 100%;
-        background-color: #cbd5e1;
-    }
-    .category-tree li::after {
-        content: '';
-        position: absolute;
-        top: 1.1rem;
-        left: 0;
-        width: 20px;
-        height: 1px;
-        background-color: #cbd5e1;
-    }
-    .category-tree li:last-child::before {
-        height: 1.1rem;
-    }
+    /* YENİ: Ürün Durum Stilleri */
+    .product-status-active { background-color: #d1fae5; color: #065f46; }
+    .product-status-draft { background-color: #e5e7eb; color: #4b5563; }
 
-    .category-item {
-        cursor: grab;
-        user-select: none;
-        position: relative;
-        z-index: 1;
-    }
-    .category-item:active {
-        cursor: grabbing;
-    }
-    .category-item.selected {
-        background-color: #eef2ff;
-        color: #4f46e5;
-    }
-    .sortable-ghost {
-        background-color: #e0e7ff;
-        opacity: 0.7;
-    }
+    .category-tree ul { margin: 0; padding: 0; list-style: none; position: relative; }
+    .category-tree ul ul { margin-left: 20px; }
+    .category-tree li { margin: 0; padding: 0 0 0 20px; list-style: none; position: relative; }
+    .category-tree li::before { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background-color: #cbd5e1; }
+    .category-tree li::after { content: ''; position: absolute; top: 1.1rem; left: 0; width: 20px; height: 1px; background-color: #cbd5e1; }
+    .category-tree li:last-child::before { height: 1.1rem; }
 
-    .variation-item {
-        padding: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 0.5rem;
-    }
-    .media-gallery {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 0.75rem;
-        margin-top: 0.75rem;
-        padding-top: 0.75rem;
-        border-top: 1px dashed #ccc;
-    }
-    .media-item {
-        position: relative;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    .media-item img, .media-item video {
-        width: 100%;
-        height: 80px;
-        object-fit: cover;
-    }
-     .media-item .remove-media-btn {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        background-color: rgba(0,0,0,0.6);
-        color: white;
-        border-radius: 99px;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        line-height: 1;
-        cursor: pointer;
-    }
+    .category-item { cursor: grab; user-select: none; position: relative; z-index: 1; }
+    .category-item:active { cursor: grabbing; }
+    .category-item.selected { background-color: #eef2ff; color: #4f46e5; }
+    .sortable-ghost { background-color: #e0e7ff; opacity: 0.7; }
 
+    .variation-item { padding: 1rem; border: 1px solid #ddd; border-radius: 0.5rem; }
+    .media-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #ccc; }
+    .media-item { position: relative; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
+    .media-item img, .media-item video { width: 100%; height: 80px; object-fit: cover; }
+    .media-item .remove-media-btn { position: absolute; top: 2px; right: 2px; background-color: rgba(0,0,0,0.6); color: white; border-radius: 99px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 14px; line-height: 1; cursor: pointer; }
+
+    /* YENİ: Quill Editor Stili */
+    #quill-editor { height: 200px; background-color: white; }
 
     @media (max-width: 768px) {
-        body {
-            flex-direction: column;
-        }
-        .sidebar {
-            width: 100%;
-            height: auto;
-            position: static;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .main-content {
-            width: 100%;
-            height: auto;
-        }
+        body { flex-direction: column; }
+        .sidebar { width: 100%; height: auto; position: static; border-bottom: 1px solid #e5e7eb; }
+        .main-content { width: 100%; height: auto; }
     }
 </style>
 </head>
@@ -256,18 +176,41 @@
                 <button id="close-product-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
                 <h3 class="text-xl font-semibold text-primary mb-4" id="product-modal-title">Yeni Ürün Ekle</h3>
                 <form id="product-form">
-                    <div class="space-y-4">
-                        <input type="hidden" id="product-id">
-                        <div><label for="product-name" class="block text-sm font-medium text-gray-700">Ürün Adı</label><input type="text" id="product-name" class="w-full mt-1 p-2 border rounded-lg" required></div>
-                        <div><label for="product-description" class="block text-sm font-medium text-gray-700">Açıklama</label><textarea id="product-description" rows="3" class="w-full mt-1 p-2 border rounded-lg"></textarea></div>
-                        <div><label for="product-price" class="block text-sm font-medium text-gray-700">Fiyat (₺)</label><input type="number" id="product-price" step="0.01" class="w-full mt-1 p-2 border rounded-lg" required></div>
-                        <div class="border-t pt-4">
-                            <h4 class="font-semibold text-gray-800">Renk Varyasyonları</h4>
-                            <div id="variations-container" class="space-y-4 mt-2"></div>
-                            <button type="button" id="add-variation-btn" class="mt-3 text-sm text-primary hover:underline font-semibold">+ Yeni Renk Varyasyonu Ekle</button>
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="col-span-3 sm:col-span-2 space-y-4">
+                            <input type="hidden" id="product-id">
+                            <div><label for="product-name" class="block text-sm font-medium text-gray-700">Ürün Adı</label><input type="text" id="product-name" class="w-full mt-1 p-2 border rounded-lg" required></div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Açıklama</label>
+                                <div id="quill-editor" class="mt-1"></div>
+                            </div>
+                        </div>
+                        <div class="col-span-3 sm:col-span-1 space-y-4">
+                             <div>
+                                <label for="product-price" class="block text-sm font-medium text-gray-700">Fiyat (₺)</label>
+                                <input type="number" id="product-price" step="0.01" class="w-full mt-1 p-2 border rounded-lg" required>
+                            </div>
+                            <div>
+                                <label for="product-status" class="block text-sm font-medium text-gray-700">Durum</label>
+                                <select id="product-status" class="w-full mt-1 p-2 border rounded-lg bg-white">
+                                    <option value="active">Aktif (Yayında)</option>
+                                    <option value="draft">Taslak (Gizli)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-6 flex justify-end gap-3"><button type="button" id="cancel-product-form" class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">İptal</button><button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">Kaydet</button></div>
+                    
+                    <div class="border-t pt-4 mt-6">
+                        <h4 class="font-semibold text-gray-800">Renk Varyasyonları</h4>
+                        <div id="variations-container" class="space-y-4 mt-2"></div>
+                        <button type="button" id="add-variation-btn" class="mt-3 text-sm text-primary hover:underline font-semibold">+ Yeni Renk Varyasyonu Ekle</button>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" id="cancel-product-form" class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">İptal</button>
+                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">Kaydet</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -297,6 +240,7 @@
     const navLinks = document.querySelectorAll('aside nav a');
     const contentSections = document.querySelectorAll('.admin-content-section');
     const adminLogoutBtn = document.getElementById('admin-logout-btn');
+    let quill = null; // YENİ: Quill editor örneğini saklamak için
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -622,10 +566,14 @@
         const q = query(collection(db, "products"), where("categoryId", "==", categoryId), orderBy("name"));
         const snapshot = await getDocs(q);
         if (snapshot.empty) { container.innerHTML = '<p class="text-gray-500">Bu kategoride hiç ürün yok.</p>'; return; }
-        let tableHtml = `<table class="min-w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left font-medium text-gray-600">Ürün Adı</th><th class="px-3 py-2 text-left font-medium text-gray-600">Fiyat</th><th class="px-3 py-2 text-right font-medium text-gray-600">İşlemler</th></tr></thead><tbody>`;
+        
+        // YENİ: Ürün tablosuna Durum sütunu eklendi
+        let tableHtml = `<table class="min-w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left font-medium text-gray-600">Ürün Adı</th><th class="px-3 py-2 text-left font-medium text-gray-600">Fiyat</th><th class="px-3 py-2 text-left font-medium text-gray-600">Durum</th><th class="px-3 py-2 text-right font-medium text-gray-600">İşlemler</th></tr></thead><tbody>`;
         snapshot.docs.forEach(doc => {
             const product = { id: doc.id, ...doc.data() };
-            tableHtml += `<tr class="border-t"><td class="px-3 py-2">${product.name}</td><td class="px-3 py-2">${product.price.toFixed(2)} ₺</td><td class="px-3 py-2 text-right"><button data-id="${product.id}" class="edit-product-btn text-blue-500 hover:underline">Düzenle</button><button data-id="${product.id}" class="delete-product-btn text-red-500 hover:underline ml-2">Sil</button></td></tr>`;
+            const statusClass = product.status === 'active' ? 'product-status-active' : 'product-status-draft';
+            const statusText = product.status === 'active' ? 'Aktif' : 'Taslak';
+            tableHtml += `<tr class="border-t"><td class="px-3 py-2">${product.name}</td><td class="px-3 py-2">${product.price.toFixed(2)} ₺</td><td class="px-3 py-2"><span class="status-badge ${statusClass}">${statusText}</span></td><td class="px-3 py-2 text-right"><button data-id="${product.id}" class="edit-product-btn text-blue-500 hover:underline">Düzenle</button><button data-id="${product.id}" class="delete-product-btn text-red-500 hover:underline ml-2">Sil</button></td></tr>`;
         });
         container.innerHTML = tableHtml + '</tbody></table>';
     }
@@ -653,15 +601,31 @@
         productForm.reset();
         document.getElementById('product-id').value = '';
         document.getElementById('variations-container').innerHTML = '';
+        
+        if (!quill) {
+            quill = new Quill('#quill-editor', {
+                theme: 'snow',
+                modules: { toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{'list': 'ordered'}, {'list': 'bullet'}],
+                    ['link']
+                ]}
+            });
+        }
+        quill.root.innerHTML = '';
+
         if(product) {
             document.getElementById('product-modal-title').textContent = 'Ürünü Düzenle';
             document.getElementById('product-id').value = product.id;
             document.getElementById('product-name').value = product.name;
-            document.getElementById('product-description').value = product.description;
+            quill.root.innerHTML = product.description || '';
             document.getElementById('product-price').value = product.price;
+            document.getElementById('product-status').value = product.status || 'active';
             product.variations?.forEach(v => addVariation(v));
         } else {
             document.getElementById('product-modal-title').textContent = 'Yeni Ürün Ekle';
+            document.getElementById('product-status').value = 'active';
             addVariation();
         }
         productModal.classList.remove('hidden');
@@ -709,7 +673,15 @@
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const productId = document.getElementById('product-id').value, submitButton = productForm.querySelector('button[type="submit"]');
-        const productData = { name: document.getElementById('product-name').value, description: document.getElementById('product-description').value, price: parseFloat(document.getElementById('product-price').value), categoryId: selectedCategoryId, variations: [] };
+        const productData = { 
+            name: document.getElementById('product-name').value, 
+            description: quill.root.innerHTML, // YENİ: Quill'den HTML içeriğini al
+            price: parseFloat(document.getElementById('product-price').value), 
+            status: document.getElementById('product-status').value, // YENİ: Durum bilgisini al
+            categoryId: selectedCategoryId, 
+            variations: [] 
+        };
+
         if(document.querySelectorAll('.variation-item').length === 0){ alert('En az bir renk varyasyonu eklemelisiniz.'); return; }
         submitButton.disabled = true; submitButton.textContent = 'Kaydediliyor...';
         
