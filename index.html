@@ -93,15 +93,18 @@
     </header>
 
     <main class="pt-16 pb-20">
-        <div class="relative w-full h-64 sm:h-80 lg:h-[450px] overflow-hidden mb-6">
-            <video class="w-full h-full object-cover" controls
-                poster="https://readdy.ai/api/search-image?query=online%20shopping%20and%20delivery%20service%2C%20modern%20lifestyle%2C%20soft%20lighting%2C%20clean%20background%2C%20banner%20image&width=800&height=400&seq=1&orientation=landscape">
-                <source src="https://public.readdy.ai/assets/sample.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
-        </div>
-
+       <div class="relative w-full h-64 sm:h-80 lg:h-[450px] overflow-hidden mb-6">
+    <iframe 
+        class="w-full h-full object-cover" 
+        src="https://www.youtube.com/embed/dd-adV7eZCc?rel=0&autoplay=0&controls=1&showinfo=0&modestbranding=1" 
+        title="YouTube video player" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        allowfullscreen>
+    </iframe>
+    <div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
+</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-8">
             <button id="calculate-btn"
                 class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
@@ -729,4 +732,5 @@
 
 </body>
 </html>
+
 
