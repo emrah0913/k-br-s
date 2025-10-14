@@ -180,34 +180,15 @@
 
 <!-- 🧩 Kampanya Vitrini Başlangıcı -->
 <div class="max-w-sm mx-auto my-8 bg-white shadow-md rounded-lg overflow-hidden text-center" id="vitrin">
-  <img id="urun-gorsel" src="" alt="Ürün Görseli" class="w-full h-64 object-cover">
+  <img src="https://cdn.dsmcdn.com/mnresize/1200/1800/ty188/product/media/images/20220815/16/888449782/0/0_org.jpg" 
+       alt="Bordo Çizgili Kadın Triko Kazak" class="w-full h-64 object-cover">
   <div class="p-4">
-    <h3 id="urun-baslik" class="font-bold mb-2">Ürün Başlığı</h3>
-    <a id="urun-link" href="#" target="_blank" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary/80 transition">Satın Al</a>
+    <h3 class="font-bold mb-2">Bordo Çizgili Düğmeli Polo Yaka Kadın Triko Kazak</h3>
+    <a href="https://www.trendyol.com/madmext/bordo-cizgili-dugmeli-polo-yaka-kadin-triko-kazak-mg2280-p-888449782?merchantId=105292" 
+       target="_blank" 
+       class="bg-primary text-white px-4 py-2 rounded hover:bg-primary/80 transition">Satın Al</a>
   </div>
 </div>
-
-<script>
-async function urunCek(trendyolUrl) {
-  const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(trendyolUrl);
-  const res = await fetch(proxyUrl);
-  const data = await res.json();
-  const html = data.contents;
-
-  // Başlığı ve görseli sayfa kaynak kodundan regex ile çekiyoruz
-  const baslikMatch = html.match(/<title>(.*?)<\/title>/);
-  const gorselMatch = html.match(/"original":"(.*?)"/);
-
-  if (baslikMatch && gorselMatch) {
-    document.getElementById('urun-baslik').innerText = baslikMatch[1];
-    document.getElementById('urun-gorsel').src = gorselMatch[1].replace(/\\/g,'');
-    document.getElementById('urun-link').href = trendyolUrl;
-  }
-}
-
-// Örnek kullanım:
-urunCek('https://www.trendyol.com/madmext/bordo-cizgili-dugmeli-polo-yaka-kadin-triko-kazak-mg2280-p-888449782?merchantId=105292');
-</script>
 
 
 <!-- 🧩 Kampanya Vitrini Sonu -->
@@ -848,6 +829,7 @@ urunCek('https://www.trendyol.com/madmext/bordo-cizgili-dugmeli-polo-yaka-kadin-
 
 </body>
 </html>
+
 
 
 
