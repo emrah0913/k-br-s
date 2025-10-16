@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Türkiye'den Kıbrıs'a Sipariş Getirme Hizmeti | Getir Kıbrıs</title>
-    <meta name="description" content="Trendyol, Hepsiburada ve diğer Türkiye sitelerinden Kıbrıs'a kolayca ürün getirin. Hesaplayın ve sepetinize ekleyin.">
+    <meta name="description" content="Trendyol, Hepsiburada ve diğer Türkiye sitelerinden Kıbrs'a kolayca ürün getirin. Hesaplayın ve sepetinize ekleyin.">
     <link rel="canonical" href="https://getirkibris.com" />
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
     
@@ -570,7 +570,6 @@
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toast-message');
         
-        // Renk sınıfını ayarla
         let colorClass;
         if (type === 'success') {
             colorClass = 'bg-green-600';
@@ -583,12 +582,10 @@
         toast.className = `fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4 ${colorClass}`;
         toastMessage.textContent = message;
         
-        // Göster
         setTimeout(() => {
             toast.classList.remove('opacity-0', 'translate-y-4');
         }, 10);
 
-        // Gizle
         setTimeout(() => {
             toast.classList.add('opacity-0', 'translate-y-4');
         }, 3000);
@@ -629,7 +626,6 @@
             currentUserData = userDoc.data();
             if (!currentUserData.fullName || !currentUserData.phone || !currentUserData.address) {
                 profileModal.classList.remove('hidden');
-                // Varolan verileri forma doldur
                 fullNameInput.value = currentUserData.fullName || user.displayName || '';
                 phoneInput.value = currentUserData.phone || '';
                 addressInput.value = currentUserData.address || '';
@@ -637,7 +633,6 @@
                 profileModal.classList.add('hidden');
             }
         } else {
-            // Firestore'a temel kullanıcı bilgisini kaydet (yeni kullanıcı)
             await setDoc(userDocRef, {
                 uid: user.uid,
                 email: user.email,
@@ -691,16 +686,12 @@
             if (docSnap.exists() && docSnap.data().categoryRates) {
                 pricingSettings.categoryRates = docSnap.data().categoryRates;
                 pricingSettings.cityFees = docSnap.data().cityFees;
-                showToast("Fiyatlandırma ayarları Firebase'den yüklendi.", "info");
             } else {
-                // Varsayılan ayarları kullan
                 pricingSettings = DEFAULT_SETTINGS;
-                showToast("Firebase ayarları bulunamadı, varsayılan ayarlar kullanılıyor.", "info");
             }
         } catch (error) {
             console.error("Fiyatlandırma ayarları yüklenirken hata:", error);
             pricingSettings = DEFAULT_SETTINGS;
-            showToast("Ayarlar yüklenemedi, varsayılan kullanılıyor.", "error");
         }
         populateCategoryDropdown();
     }
@@ -709,10 +700,8 @@
     function populateCategoryDropdown() {
         productCategorySelect.innerHTML = '<option value="" disabled selected>Kategori Seçiniz</option>';
         if (pricingSettings.categoryRates) {
-            // categoryRates bir Map/Object olduğu için Object.entries kullanıyoruz
             Object.entries(pricingSettings.categoryRates).forEach(([key, value]) => {
                 const option = document.createElement('option');
-                // Key'i büyük harfle başlat
                 option.value = key;
                 option.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)} (%${(value * 100).toFixed(0)})`;
                 productCategorySelect.appendChild(option);
@@ -728,20 +717,17 @@
 
         if (isNaN(price) || price <= 0 || !categoryKey) {
             resultDiv.classList.add('hidden');
-            mainActionBtn.textContent = 'Maliyeti Hesapla';
+            mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
             return;
         }
 
-        const rate = pricingSettings.categoryRates[categoryKey] || pricingSettings.categoryRates['other'] || 0.60; // Varsayılan %60
+        const rate = pricingSettings.categoryRates[categoryKey] || pricingSettings.categoryRates['other'] || 0.60;
         
         let serviceFee = 0;
         if (orderMethod === 'service') {
-            // Ürün fiyatının X katı hizmet bedeli
             serviceFee = price * rate;
         } else {
-            // Sadece kargo hizmeti, daha düşük sabit ücret alınabilir veya burada özel bir formül kullanılabilir.
-            // Şimdilik kargo hizmetini de aynı oran üzerinden hesaplayalım.
-            serviceFee = price * rate;
+            serviceFee = price * rate; // Kargo hizmeti için aynı oran kullanılabilir
         }
 
         const totalPrice = price + serviceFee;
@@ -792,11 +778,10 @@
             await addDoc(cartRef, {
                 ...productData,
                 createdAt: new Date(),
-                status: 'pending' // Başlangıç durumu
+                status: 'pending'
             });
             showToast("Ürün sepete başarıyla eklendi!", "success");
             
-            // Hesaplama formunu sıfırla
             calculatorForm.reset();
             resultDiv.classList.add('hidden');
             mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
@@ -807,9 +792,8 @@
     }
 
 
-    // --- YORUM MODÜLÜ İŞLEVLERİ (Aynı kalan veya güncellenenler) ---
+    // --- YORUM MODÜLÜ İŞLEVLERİ ---
     
-    // İstenen formata (A**** Y*****) göre ismi maskeler
     function maskUserName(fullName) {
         if (!fullName) return "Anonim Kullanıcı";
         const parts = fullName.trim().split(/\s+/);
@@ -823,7 +807,6 @@
         return `${maskedFirstName} ${maskedLastName}`;
     }
 
-    // Yıldızları oluşturur ve renklendirir
     function renderStars(rating) {
         let html = '';
         for (let i = 1; i <= 5; i++) {
@@ -834,7 +817,6 @@
         return html;
     }
 
-    // Tek bir yorum kartını oluşturur
     function createReviewCard(review, maskedName) {
         const date = review.tarih ? new Date(review.tarih.seconds * 1000).toLocaleDateString('tr-TR') : 'Bilinmiyor';
         
@@ -850,14 +832,12 @@
         `;
     }
 
-    // Yorumları Listeleme Fonksiyonu (Sadece Onaylanmışları çeker)
     async function loadAndDisplayReviews() {
         reviewsList.innerHTML = ''; 
         loadingReviews.classList.remove('hidden');
 
         try {
             const reviewsRef = collection(db, "yorumlar");
-            // Firestore Dizin (Index) Gereksinimi: onay_durumu (asc), tarih (desc)
             const q = query(reviewsRef, 
                 where("onay_durumu", "==", "Onaylandı"),
                 orderBy("tarih", "desc")
@@ -893,7 +873,6 @@
     }
 
 
-    // YILDIZLARI GÖRSEL OLARAK GÜNCELLEYEN FONKSİYON
     function updateStarAppearance(rating) {
         const stars = starRating.querySelectorAll('i');
         stars.forEach(star => {
@@ -906,7 +885,6 @@
         });
     }
 
-    // Yorum Durumu Kontrol Fonksiyonu
     async function checkUserReviewStatus(userId) {
         try {
             const q = query(collection(db, "yorumlar"), where("kullanici_id", "==", userId));
@@ -917,15 +895,17 @@
             reviewLoginRequired.classList.add('hidden');
 
             if (querySnapshot.empty) {
-                // Yorum yapmamış
                 reviewFormContainer.classList.remove('hidden');
+                // Formun başlangıçta sıfırlandığından emin ol
+                reviewForm.reset();
+                reviewRatingInput.value = 0;
+                reviewRatingInput.dataset.currentRating = 0;
+                updateStarAppearance(0);
             } else {
-                // Yorum yapmış
                 const reviewData = querySnapshot.docs[0].data();
                 if (reviewData.onay_durumu === 'Beklemede') {
                     reviewPendingMessage.classList.remove('hidden');
                 }
-                // 'Onaylandı' veya 'Reddedildi' ise form gizli kalır, sadece mevcut durumu gösterilir (şimdilik gizli kalıyor).
             }
         } catch (error) {
             console.error("Yorum durumu kontrol edilirken hata oluştu:", error);
@@ -935,7 +915,7 @@
 
     // --- EVENT LISTENERS ---
 
-    // 1. Hesapla butonuna basıldığında hesaplama alanını aç
+    // 1. Hesapla butonu
     calculateBtn.addEventListener('click', () => {
         calculatorSection.classList.toggle('hidden');
         if (!calculatorSection.classList.contains('hidden')) {
@@ -952,11 +932,9 @@
         const categoryKey = productCategorySelect.value;
         const orderMethod = orderMethodSelect.value;
 
-        // Hesapla butonu aktifken (Sepete Ekle değilken)
         if (mainActionBtn.textContent.includes('Hesapla')) {
             calculateCost();
         } else {
-            // Sepete Ekle butonu aktifken
             const serviceFee = parseFloat(resultCategoryFeeSpan.textContent.replace(' ₺', ''));
             const totalPrice = parseFloat(resultTotalSpan.textContent.replace(' ₺', ''));
             
@@ -972,17 +950,15 @@
         }
     });
 
-    // 3. Fiyat veya Kategori değiştiğinde tekrar hesaplamaya yönlendir
+    // 3. Fiyat/Kategori/Yöntem değiştiğinde tekrar hesaplamaya yönlendir
     productPriceInput.addEventListener('input', () => {
         resultDiv.classList.add('hidden');
         mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
     });
-
     productCategorySelect.addEventListener('change', () => {
         resultDiv.classList.add('hidden');
         mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
     });
-    
     orderMethodSelect.addEventListener('change', () => {
         resultDiv.classList.add('hidden');
         mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
@@ -993,7 +969,6 @@
     closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
     googleLoginBtn.addEventListener('click', handleGoogleLogin);
     profileImg.addEventListener('click', () => {
-        // Oturumu kapatma işlevi
         if (confirm("Oturumu kapatmak istediğinizden emin misiniz?")) {
             signOut(auth).then(() => {
                 showToast("Çıkış yapıldı.", "info");
@@ -1005,6 +980,9 @@
     });
     authModalLoginBtn.addEventListener('click', handleGoogleLogin);
     closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
+    openLoginForReview.addEventListener('click', () => {
+        loginModal.classList.remove('hidden');
+    });
 
     // 5. YILDIZ Puanlama Dinleyicileri (Yorum Modülü)
     starRating.addEventListener('click', (e) => {
@@ -1041,8 +1019,64 @@
         reviewRatingInput.dataset.currentRating = 0;
         updateStarAppearance(0);
     });
+
+    // 6. YORUM GÖNDERME İŞLEMİ (Eksik olan ve şimdi eklenen kritik blok)
+    reviewForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) {
+            showToast("Yorum göndermek için lütfen giriş yapın.", "error");
+            return;
+        }
+
+        const rating = parseInt(reviewRatingInput.value || 0);
+        const reviewText = reviewTextInput.value.trim();
+
+        if (rating === 0 || reviewText.length < 10) {
+            showToast("Lütfen 1 ile 5 arasında puan verin ve en az 10 karakter yorum yazın.", "error");
+            return;
+        }
+
+        submitReviewBtn.disabled = true;
+        submitReviewBtn.textContent = "Gönderiliyor...";
+        reviewPendingMessage.classList.add('hidden');
+
+        try {
+            const existingReviewSnapshot = await getDocs(query(collection(db, "yorumlar"), where("kullanici_id", "==", user.uid)));
+
+            if (!existingReviewSnapshot.empty) {
+                showToast("Zaten bir yorum yaptınız. Yorumunuz onay bekliyor veya yayınlanmıştır.", "error");
+                reviewFormContainer.classList.add('hidden');
+                reviewPendingMessage.classList.remove('hidden');
+                return;
+            }
+
+            await addDoc(collection(db, "yorumlar"), {
+                kullanici_id: user.uid,
+                puan: rating,
+                yorum_metni: reviewText,
+                tarih: new Date(),
+                onay_durumu: "Beklemede"
+            });
+
+            showToast("Yorumunuz başarıyla gönderildi ve onay bekliyor.", "success");
+            reviewForm.reset();
+            reviewRatingInput.dataset.currentRating = 0;
+            updateStarAppearance(0);
+            reviewFormContainer.classList.add('hidden');
+            reviewPendingMessage.classList.remove('hidden');
+            loadAndDisplayReviews();
+            
+        } catch (error) {
+            console.error("Yorum gönderilirken hata oluştu:", error);
+            showToast("Yorum gönderilemedi. Lütfen tekrar deneyin.", "error");
+        } finally {
+            submitReviewBtn.disabled = false;
+            submitReviewBtn.textContent = "Yorumu Gönder";
+        }
+    });
     
-    // 6. Kopyalama Butonları
+    // 7. Kopyalama Butonları
     copyButtons.forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.dataset.copy;
@@ -1074,16 +1108,10 @@
             if (cartUnsubscribe) cartUnsubscribe();
             updateCartBadge(0);
             
-            // Yorum Modülü Kontrolü (Giriş yapılmadıysa)
             reviewFormContainer.classList.add('hidden');
             reviewPendingMessage.classList.add('hidden');
             reviewLoginRequired.classList.remove('hidden'); 
         }
-    });
-    
-    // openLoginForReview butonu
-    openLoginForReview.addEventListener('click', () => {
-        loginModal.classList.remove('hidden');
     });
 
 </script>
