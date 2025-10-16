@@ -318,142 +318,25 @@
 
 
 <!-- MÜŞTERİ YORUMLARI -->
-<section id="yorumlar" class="bg-gray-50 py-12">
-  <div class="max-w-5xl mx-auto text-center px-4">
-    <h2 class="text-2xl font-bold mb-6 text-gray-800">Müşteri Yorumları</h2>
+<div id="yorumlar-alani">
+  <h2>Müşteri Yorumları</h2>
 
-    <!-- Yorum Formu -->
-    <div id="yorumFormAlani" class="bg-white shadow-md rounded-xl p-6 mb-8 text-left hidden">
-      <h3 class="text-lg font-semibold mb-3">Yorumunuzu Bırakın</h3>
-      <form id="yorumForm" class="space-y-4">
-        <input type="text" id="adSoyad" placeholder="Ad Soyad" class="w-full border p-2 rounded-md" required>
-        <textarea id="yorumMetni" placeholder="Yorumunuzu yazın..." class="w-full border p-2 rounded-md h-24" required></textarea>
-        <div class="flex items-center gap-1">
-          <label class="font-semibold mr-2">Puan:</label>
-          <div id="yildizlar" class="flex gap-1 text-yellow-400 text-xl cursor-pointer">
-            <span data-puan="1">★</span>
-            <span data-puan="2">★</span>
-            <span data-puan="3">★</span>
-            <span data-puan="4">★</span>
-            <span data-puan="5">★</span>
-          </div>
-        </div>
-        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90">Gönder</button>
-      </form>
-      <p class="text-gray-500 text-sm mt-2">Yorumunuz admin onayından sonra yayınlanacaktır.</p>
-    </div>
-
-    <p id="girisUyarisi" class="text-gray-600 mb-8">Yorum yapmak için giriş yapmalısınız.</p>
-
-    <!-- Onaylı Yorumlar -->
-    <div id="yorumListesi" class="grid md:grid-cols-2 gap-6"></div>
+  <!-- Yorum formu -->
+  <div id="yorum-formu">
+    <textarea id="yorum-text" placeholder="Yorumunuzu yazın..."></textarea>
+    <select id="yorum-puan">
+      <option value="5">⭐️⭐️⭐️⭐️⭐️</option>
+      <option value="4">⭐️⭐️⭐️⭐️</option>
+      <option value="3">⭐️⭐️⭐️</option>
+      <option value="2">⭐️⭐️</option>
+      <option value="1">⭐️</option>
+    </select>
+    <button onclick="yorumEkle()">Gönder</button>
   </div>
-</section>
 
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-  authDomain: "kibris-6b4f7.firebaseapp.com",
-  projectId: "kibris-6b4f7",
-  storageBucket: "kibris-6b4f7.firebasestorage.app",
-  messagingSenderId: "141262926171",
-  appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-  measurementId: "G-JL9P6BRZTD"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-onAuthStateChanged(auth, async (user) => {
-  const formAlani = document.getElementById("yorumFormAlani");
-  const uyari = document.getElementById("girisUyarisi");
-  if (user) {
-    formAlani.classList.remove("hidden");
-    uyari.textContent = "";
-    yorumlariGetir();
-  } else {
-    uyari.innerHTML = `<button id="girisBtn" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90">Google ile Giriş Yap</button>`;
-    document.getElementById("yorumListesi").innerHTML = "";
-    document.getElementById("girisBtn").addEventListener("click", googleGiris);
-  }
-});
-
-async function googleGiris() {
-  const provider = new GoogleAuthProvider();
-  await signInWithPopup(auth, provider);
-}
-
-// ⭐ Yıldız seçimi
-let seciliPuan = 0;
-document.querySelectorAll('#yildizlar span').forEach(star => {
-  star.addEventListener('click', () => {
-    seciliPuan = parseInt(star.dataset.puan);
-    document.querySelectorAll('#yildizlar span').forEach(s => {
-      s.classList.toggle('text-gray-300', parseInt(s.dataset.puan) > seciliPuan);
-    });
-  });
-});
-
-// 💬 Yorum Gönderme
-document.getElementById('yorumForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const user = auth.currentUser;
-  if (!user) return alert("Yorum yapmak için giriş yapın.");
-
-  const adSoyad = document.getElementById('adSoyad').value.trim();
-  const yorumMetni = document.getElementById('yorumMetni').value.trim();
-  if (!adSoyad || !yorumMetni || seciliPuan === 0) {
-    alert('Lütfen tüm alanları doldurun ve puan verin.');
-    return;
-  }
-
-  await addDoc(collection(db, "yorumlar"), {
-    uid: user.uid,
-    adSoyad,
-    yorumMetni,
-    puan: seciliPuan,
-    tarih: new Date(),
-    onay: false
-  });
-
-  alert("Yorumunuz gönderildi. Admin onayından sonra yayınlanacaktır.");
-  document.getElementById('yorumForm').reset();
-  seciliPuan = 0;
-});
-
-// 🔹 Onaylı yorumları listele
-async function yorumlariGetir() {
-  const q = query(collection(db, "yorumlar"), where("onay", "==", true), orderBy("tarih", "desc"));
-  const snapshot = await getDocs(q);
-  const liste = document.getElementById("yorumListesi");
-  liste.innerHTML = "";
-
-  snapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const [ad, soyad] = data.adSoyad.split(" ");
-    const gizliAd = ad ? ad[0] + "****" : "";
-    const gizliSoyad = soyad ? soyad[0] + "****" : "";
-
-    const yorumDiv = document.createElement("div");
-    yorumDiv.className = "bg-white shadow-sm rounded-xl p-4 text-left";
-    yorumDiv.innerHTML = `
-      <div class="flex items-center justify-between mb-2">
-        <span class="font-semibold text-gray-800">${gizliAd} ${gizliSoyad}</span>
-        <span class="text-yellow-400">${"★".repeat(data.puan)}${"☆".repeat(5 - data.puan)}</span>
-      </div>
-      <p class="text-gray-600 mb-2">${data.yorumMetni}</p>
-    `;
-    liste.appendChild(yorumDiv);
-  });
-}
-</script>
-
+  <!-- Yorumlar listesi -->
+  <div id="yorum-listesi"></div>
+</div>
 
 
         
@@ -1001,6 +884,7 @@ async function yorumlariGetir() {
 
 </body>
 </html>
+
 
 
 
