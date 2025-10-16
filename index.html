@@ -181,27 +181,27 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 <a href="https://www.trendyol.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png"Trendyol" class="w-16 h-16 object-contain">
+                    <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" alt="Trendyol" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.hepsiburada.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png"Hepsiburada" class="w-16 h-16 object-contain">
+                    <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" alt="Hepsiburada" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.n11.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg"N11" class="w-16 h-16 object-contain">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg" alt="N11" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.amazon.com.tr" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s"Amazon" class="w-16 h-16 object-contain">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s" alt="Amazon" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.ciceksepeti.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg"ÇiçekSepeti" class="w-16 h-16 object-contain">
+                    <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg" alt="ÇiçekSepeti" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.gittigidiyor.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s"GittiGidiyor" class="w-16 h-16 object-contain">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s" alt="GittiGidiyor" class="w-16 h-16 object-contain">
                 </a>
             </div>
         </div>
@@ -484,11 +484,12 @@
 </div>
 
 <script type="module">
+    // FIREBASE İMPORTLARI
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    // Firestore'dan gerekli fonksiyonları güncelliyoruz
     import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+    // Kendi Firebase Yapılandırmanızı Buraya Girin
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -505,14 +506,33 @@
     let cartUnsubscribe = null;
     let currentUserData = null; // Kullanıcının tam bilgilerini tutmak için
 
-    // --- GLOBAL SETTINGS (Mevcut koddan) ---
+    // --- GLOBAL SETTINGS (Bu kısımlar sizin eski kodunuzdan çalışır durumda alınmıştır) ---
     let pricingSettings = {};
     const DEFAULT_SETTINGS = {
-        categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
-        cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
+        categoryRates: { 
+            'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 
+            'cosmetics': 0.70, 'stationery': 0.40, 'book': 0.35, 'other': 0.60 
+        },
+        cityFees: { 
+            'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 
+            'Güzelyurt': 400, 'İskele': 450 
+        }
     };
 
-    // --- DOM Elements (Mevcut koddan gelenler ve YENİLER) ---
+    // --- DOM Elements ---
+    const calculateBtn = document.getElementById('calculate-btn');
+    const calculatorSection = document.getElementById('calculator-section');
+    const calculatorForm = document.getElementById('calculator-form');
+    const productPriceInput = document.getElementById('product-price');
+    const productCategorySelect = document.getElementById('product-category');
+    const resultDiv = document.getElementById('calculation-result');
+    const resultTotalSpan = document.getElementById('result-total');
+    const resultPriceSpan = document.getElementById('result-price');
+    const resultCategoryFeeSpan = document.getElementById('result-category-fee');
+    const mainActionBtn = document.getElementById('main-action-btn');
+    const orderMethodSelect = document.getElementById('order-method');
+    const cartBadge = document.getElementById('cart-badge');
+    const cartPageBtn = document.getElementById('cart-page-btn');
     const loginBtn = document.getElementById('login-btn');
     const profileContainer = document.getElementById('profile-container');
     const profileImg = document.getElementById('profile-img');
@@ -524,10 +544,12 @@
     const authModalLoginBtn = document.getElementById('auth-modal-login-btn');
     const profileModal = document.getElementById('profile-modal');
     const profileForm = document.getElementById('profile-form');
-    const cartBadge = document.getElementById('cart-badge');
-
+    const fullNameInput = document.getElementById('full-name-input');
+    const phoneInput = document.getElementById('phone-input');
+    const addressInput = document.getElementById('address-input');
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    
     // YORUM MODÜLÜ ELEMENTLERİ
-    const reviewsSection = document.getElementById('reviews-section');
     const reviewFormContainer = document.getElementById('review-form-container');
     const reviewForm = document.getElementById('review-form');
     const starRating = document.getElementById('star-rating');
@@ -543,21 +565,261 @@
 
     // --- YARDIMCI FONKSİYONLAR ---
 
+    // Toast Mesajı Gösterme
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        
+        // Renk sınıfını ayarla
+        let colorClass;
+        if (type === 'success') {
+            colorClass = 'bg-green-600';
+        } else if (type === 'error') {
+            colorClass = 'bg-red-600';
+        } else {
+            colorClass = 'bg-gray-800';
+        }
+        
+        toast.className = `fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4 ${colorClass}`;
+        toastMessage.textContent = message;
+        
+        // Göster
+        setTimeout(() => {
+            toast.classList.remove('opacity-0', 'translate-y-4');
+        }, 10);
+
+        // Gizle
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4');
+        }, 3000);
+    }
+
+    // AUTH: UI Güncelleme
+    function updateAuthUI(user) {
+        if (user) {
+            loginBtn.classList.add('hidden');
+            profileContainer.classList.remove('hidden');
+            profileImg.src = user.photoURL || 'default-profile.png';
+            profileImg.alt = user.displayName || 'Profil';
+        } else {
+            loginBtn.classList.remove('hidden');
+            profileContainer.classList.add('hidden');
+        }
+    }
+
+    // AUTH: Google Giriş
+    const provider = new GoogleAuthProvider();
+    async function handleGoogleLogin() {
+        try {
+            await signInWithPopup(auth, provider);
+            loginModal.classList.add('hidden');
+        } catch (error) {
+            console.error("Google Giriş Hatası:", error);
+            showToast("Giriş işlemi başarısız oldu.", "error");
+        }
+    }
+
+    // AUTH: Profil Kontrolü ve Yönlendirme
+    async function checkUserProfile(user) {
+        if (!user) return;
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+            currentUserData = userDoc.data();
+            if (!currentUserData.fullName || !currentUserData.phone || !currentUserData.address) {
+                profileModal.classList.remove('hidden');
+                // Varolan verileri forma doldur
+                fullNameInput.value = currentUserData.fullName || user.displayName || '';
+                phoneInput.value = currentUserData.phone || '';
+                addressInput.value = currentUserData.address || '';
+            } else {
+                profileModal.classList.add('hidden');
+            }
+        } else {
+            // Firestore'a temel kullanıcı bilgisini kaydet (yeni kullanıcı)
+            await setDoc(userDocRef, {
+                uid: user.uid,
+                email: user.email,
+                fullName: user.displayName || '',
+                phone: '',
+                address: '',
+                createdAt: new Date()
+            });
+            currentUserData = { uid: user.uid, email: user.email, fullName: user.displayName || '' };
+            profileModal.classList.remove('hidden');
+            fullNameInput.value = user.displayName || '';
+        }
+    }
+
+    // AUTH: Profil Kaydetme
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const data = {
+            fullName: fullNameInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            address: addressInput.value.trim(),
+            updatedAt: new Date()
+        };
+
+        if (data.fullName.length < 3 || data.phone.length < 10 || data.address.length < 5) {
+            showToast("Lütfen tüm alanları doğru doldurun.", "error");
+            return;
+        }
+
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            await setDoc(userDocRef, { ...currentUserData, ...data }, { merge: true });
+            currentUserData = { ...currentUserData, ...data };
+            profileModal.classList.add('hidden');
+            showToast("Profiliniz başarıyla güncellendi.", "success");
+        } catch (error) {
+            console.error("Profil güncelleme hatası:", error);
+            showToast("Profil güncellenirken bir hata oluştu.", "error");
+        }
+    });
+
+    // SETTINGS: Fiyatlandırma Ayarlarını Yükleme
+    async function loadPricingSettings() {
+        try {
+            const settingsDocRef = doc(db, "settings", "pricing");
+            const docSnap = await getDoc(settingsDocRef);
+            
+            if (docSnap.exists() && docSnap.data().categoryRates) {
+                pricingSettings.categoryRates = docSnap.data().categoryRates;
+                pricingSettings.cityFees = docSnap.data().cityFees;
+                showToast("Fiyatlandırma ayarları Firebase'den yüklendi.", "info");
+            } else {
+                // Varsayılan ayarları kullan
+                pricingSettings = DEFAULT_SETTINGS;
+                showToast("Firebase ayarları bulunamadı, varsayılan ayarlar kullanılıyor.", "info");
+            }
+        } catch (error) {
+            console.error("Fiyatlandırma ayarları yüklenirken hata:", error);
+            pricingSettings = DEFAULT_SETTINGS;
+            showToast("Ayarlar yüklenemedi, varsayılan kullanılıyor.", "error");
+        }
+        populateCategoryDropdown();
+    }
+
+    // SETTINGS: Kategori Dropdown'ını Doldurma
+    function populateCategoryDropdown() {
+        productCategorySelect.innerHTML = '<option value="" disabled selected>Kategori Seçiniz</option>';
+        if (pricingSettings.categoryRates) {
+            // categoryRates bir Map/Object olduğu için Object.entries kullanıyoruz
+            Object.entries(pricingSettings.categoryRates).forEach(([key, value]) => {
+                const option = document.createElement('option');
+                // Key'i büyük harfle başlat
+                option.value = key;
+                option.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)} (%${(value * 100).toFixed(0)})`;
+                productCategorySelect.appendChild(option);
+            });
+        }
+    }
+
+    // CALC: Maliyet Hesaplama
+    function calculateCost() {
+        const price = parseFloat(productPriceInput.value);
+        const categoryKey = productCategorySelect.value;
+        const orderMethod = orderMethodSelect.value;
+
+        if (isNaN(price) || price <= 0 || !categoryKey) {
+            resultDiv.classList.add('hidden');
+            mainActionBtn.textContent = 'Maliyeti Hesapla';
+            return;
+        }
+
+        const rate = pricingSettings.categoryRates[categoryKey] || pricingSettings.categoryRates['other'] || 0.60; // Varsayılan %60
+        
+        let serviceFee = 0;
+        if (orderMethod === 'service') {
+            // Ürün fiyatının X katı hizmet bedeli
+            serviceFee = price * rate;
+        } else {
+            // Sadece kargo hizmeti, daha düşük sabit ücret alınabilir veya burada özel bir formül kullanılabilir.
+            // Şimdilik kargo hizmetini de aynı oran üzerinden hesaplayalım.
+            serviceFee = price * rate;
+        }
+
+        const totalPrice = price + serviceFee;
+
+        // Sonuçları göster
+        resultPriceSpan.textContent = `${price.toFixed(2)} ₺`;
+        resultCategoryFeeSpan.textContent = `${serviceFee.toFixed(2)} ₺`;
+        resultTotalSpan.textContent = `${totalPrice.toFixed(2)} ₺`;
+        
+        resultDiv.classList.remove('hidden');
+        mainActionBtn.innerHTML = '<i class="ri-shopping-cart-line"></i> <span>Sepete Ekle</span>';
+    }
+
+    // CART: Sepet Durumunu Dinleme
+    function listenToCart(userId) {
+        if (cartUnsubscribe) cartUnsubscribe();
+        
+        const cartRef = collection(db, "users", userId, "cart");
+        cartUnsubscribe = onSnapshot(cartRef, (snapshot) => {
+            const itemCount = snapshot.size;
+            updateCartBadge(itemCount);
+        }, (error) => {
+            console.error("Sepet dinlenirken hata:", error);
+            updateCartBadge(0);
+        });
+    }
+
+    // CART: Sepet Rozetini Güncelleme
+    function updateCartBadge(count) {
+        cartBadge.textContent = count;
+        if (count > 0) {
+            cartBadge.classList.remove('hidden');
+        } else {
+            cartBadge.classList.add('hidden');
+        }
+    }
+
+    // CART: Sepete Ürün Ekleme
+    async function addToCart(productData) {
+        const user = auth.currentUser;
+        if (!user) {
+            authRequiredModal.classList.remove('hidden');
+            return;
+        }
+        
+        try {
+            const cartRef = collection(db, "users", user.uid, "cart");
+            await addDoc(cartRef, {
+                ...productData,
+                createdAt: new Date(),
+                status: 'pending' // Başlangıç durumu
+            });
+            showToast("Ürün sepete başarıyla eklendi!", "success");
+            
+            // Hesaplama formunu sıfırla
+            calculatorForm.reset();
+            resultDiv.classList.add('hidden');
+            mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
+        } catch (error) {
+            console.error("Sepete ekleme hatası:", error);
+            showToast("Sepete ekleme sırasında bir sorun oluştu.", "error");
+        }
+    }
+
+
+    // --- YORUM MODÜLÜ İŞLEVLERİ (Aynı kalan veya güncellenenler) ---
+    
     // İstenen formata (A**** Y*****) göre ismi maskeler
     function maskUserName(fullName) {
         if (!fullName) return "Anonim Kullanıcı";
         const parts = fullName.trim().split(/\s+/);
         if (parts.length < 2) {
-            // Tek kelime ise (örn: sadece isim)
             return parts[0].charAt(0).toUpperCase() + Array(parts[0].length - 1).fill('*').join('');
         }
-
         const firstName = parts[0];
-        const lastName = parts[parts.length - 1]; // Son kelimeyi soyadı varsayalım
-
+        const lastName = parts[parts.length - 1]; 
         const maskedFirstName = firstName.charAt(0).toUpperCase() + Array(firstName.length - 1).fill('*').join('');
         const maskedLastName = lastName.charAt(0).toUpperCase() + Array(lastName.length - 1).fill('*').join('');
-
         return `${maskedFirstName} ${maskedLastName}`;
     }
 
@@ -567,7 +829,6 @@
         for (let i = 1; i <= 5; i++) {
             const colorClass = i <= rating ? 'text-secondary' : 'text-gray-300';
             const iconClass = i <= rating ? 'ri-star-fill' : 'ri-star-line';
-            // Puan gösterilirken tıklama özelliği eklenmez
             html += `<i class="${iconClass} ri-lg ${colorClass}"></i>`; 
         }
         return html;
@@ -575,7 +836,6 @@
 
     // Tek bir yorum kartını oluşturur
     function createReviewCard(review, maskedName) {
-        // Firebase Timestamp'i Date objesine çevirme
         const date = review.tarih ? new Date(review.tarih.seconds * 1000).toLocaleDateString('tr-TR') : 'Bilinmiyor';
         
         return `
@@ -592,13 +852,12 @@
 
     // Yorumları Listeleme Fonksiyonu (Sadece Onaylanmışları çeker)
     async function loadAndDisplayReviews() {
-        reviewsList.innerHTML = ''; // Önceki yorumları temizle
+        reviewsList.innerHTML = ''; 
         loadingReviews.classList.remove('hidden');
 
         try {
-            // Firestore'dan onaylanmış yorumları tarih sırasına göre çek
             const reviewsRef = collection(db, "yorumlar");
-            // NOT: Firestore'da 'onay_durumu' ve 'tarih' alanları için Composite Index (Birleşik Dizin) oluşturmanız gerekebilir.
+            // Firestore Dizin (Index) Gereksinimi: onay_durumu (asc), tarih (desc)
             const q = query(reviewsRef, 
                 where("onay_durumu", "==", "Onaylandı"),
                 orderBy("tarih", "desc")
@@ -613,11 +872,9 @@
             const reviewPromises = querySnapshot.docs.map(async (docSnap) => {
                 const review = docSnap.data();
                 
-                // Kullanıcı verilerini çek (isim maskeleme için)
                 const userDocRef = doc(db, "users", review.kullanici_id);
                 const userDoc = await getDoc(userDocRef);
                 
-                // fullName yoksa email'den ad soyad çıkarımı yapılabilir, ya da varsayılan değer kullanılır
                 let userName = userDoc.exists() ? userDoc.data().fullName || userDoc.data().email : 'Bilinmeyen Kullanıcı';
                 
                 const maskedName = maskUserName(userName);
@@ -629,7 +886,7 @@
 
         } catch (error) {
             console.error("Yorumlar yüklenirken hata oluştu:", error);
-            reviewsList.innerHTML = '<p class="text-center text-red-500">Yorumlar yüklenemedi. Lütfen tekrar deneyin.</p>';
+            reviewsList.innerHTML = '<p class="text-center text-red-500">Yorumlar yüklenemedi. (Dizin hatası olabilir)</p>';
         } finally {
             loadingReviews.classList.add('hidden');
         }
@@ -642,121 +899,12 @@
         stars.forEach(star => {
             const starValue = parseInt(star.dataset.star);
             if (starValue <= rating) {
-                // Dolu yıldız (Seçili)
                 star.className = 'ri-star-fill ri-xl text-secondary cursor-pointer hover:text-secondary transition-colors';
             } else {
-                // Boş yıldız (Seçili değil)
                 star.className = 'ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors';
             }
         });
     }
-
-
-    // YILDIZ Puanlama Dinleyicisi (CLICK)
-    starRating.addEventListener('click', (e) => {
-        const starElement = e.target.closest('i');
-        
-        if (starElement && starElement.dataset.star) {
-            const rating = parseInt(starElement.dataset.star);
-            
-            // Hidden input değerini güncelle
-            reviewRatingInput.value = rating;
-            reviewRatingInput.dataset.currentRating = rating; 
-            
-            // Yıldızların görselini güncelle
-            updateStarAppearance(rating);
-        }
-    });
-
-    // Fare ile Üzerine Gelme Etkileşimi (HOVER)
-    starRating.addEventListener('mouseover', (e) => {
-        const starElement = e.target.closest('i');
-        if (starElement && starElement.dataset.star) {
-            const hoverRating = parseInt(starElement.dataset.star);
-            const stars = starRating.querySelectorAll('i');
-            
-            stars.forEach(star => {
-                const starValue = parseInt(star.dataset.star);
-                // Üzerine gelinen yıldıza kadar olanları doldur (Geçici)
-                if (starValue <= hoverRating) {
-                    star.className = 'ri-star-fill ri-xl text-secondary cursor-pointer hover:text-secondary transition-colors';
-                } else {
-                    star.className = 'ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors';
-                }
-            });
-        }
-    });
-
-    // Fare Çekildiğinde (MOUSE OUT)
-    starRating.addEventListener('mouseout', (e) => {
-        // Mevcut (kaydedilmiş) puana geri dön
-        const currentRating = parseInt(reviewRatingInput.dataset.currentRating || 0);
-        updateStarAppearance(currentRating);
-    });
-
-    // Yorum Formu Sıfırlandığında Yıldızları da Sıfırla
-    reviewForm.addEventListener('reset', () => {
-        reviewRatingInput.value = 0;
-        reviewRatingInput.dataset.currentRating = 0;
-        updateStarAppearance(0);
-    });
-
-    // Yorum Gönderme İşlemi
-    reviewForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const user = auth.currentUser;
-        if (!user) {
-            showToast("Yorum göndermek için lütfen giriş yapın.", "error");
-            return;
-        }
-
-        const rating = parseInt(reviewRatingInput.value || 0);
-        const reviewText = reviewTextInput.value.trim();
-
-        if (rating === 0 || reviewText.length < 10) {
-            showToast("Lütfen 1 ile 5 arasında puan verin ve en az 10 karakter yorum yazın.", "error");
-            return;
-        }
-
-        submitReviewBtn.disabled = true;
-        submitReviewBtn.textContent = "Gönderiliyor...";
-        reviewPendingMessage.classList.add('hidden');
-
-        try {
-            // Kullanıcının daha önce yorum yapıp yapmadığını kontrol et
-            const existingReviewSnapshot = await getDocs(query(collection(db, "yorumlar"), where("kullanici_id", "==", user.uid)));
-
-            if (!existingReviewSnapshot.empty) {
-                showToast("Zaten bir yorum yaptınız. Yorumunuz onay bekliyor veya yayınlanmıştır.", "error");
-                reviewFormContainer.classList.add('hidden'); // Formu gizle
-                reviewPendingMessage.classList.remove('hidden'); // Mesajı göster
-                return;
-            }
-
-            // Yeni yorumu Firestore'a ekle (Onay Durumu: Beklemede)
-            await addDoc(collection(db, "yorumlar"), {
-                kullanici_id: user.uid,
-                puan: rating,
-                yorum_metni: reviewText,
-                tarih: new Date(),
-                onay_durumu: "Beklemede" // Admin paneli için ana kontrol noktası
-            });
-
-            showToast("Yorumunuz başarıyla gönderildi ve onay bekliyor.", "success");
-            reviewForm.reset();
-            reviewRatingInput.dataset.currentRating = 0;
-            updateStarAppearance(0);
-            reviewFormContainer.classList.add('hidden');
-            reviewPendingMessage.classList.remove('hidden');
-
-        } catch (error) {
-            console.error("Yorum gönderilirken hata oluştu:", error);
-            showToast("Yorum gönderilemedi. Lütfen tekrar deneyin.", "error");
-        } finally {
-            submitReviewBtn.disabled = false;
-            submitReviewBtn.textContent = "Yorumu Gönder";
-        }
-    });
 
     // Yorum Durumu Kontrol Fonksiyonu
     async function checkUserReviewStatus(userId) {
@@ -766,6 +914,7 @@
 
             reviewFormContainer.classList.add('hidden');
             reviewPendingMessage.classList.add('hidden');
+            reviewLoginRequired.classList.add('hidden');
 
             if (querySnapshot.empty) {
                 // Yorum yapmamış
@@ -776,7 +925,7 @@
                 if (reviewData.onay_durumu === 'Beklemede') {
                     reviewPendingMessage.classList.remove('hidden');
                 }
-                // 'Onaylandı' veya 'Reddedildi' ise form gizli kalır.
+                // 'Onaylandı' veya 'Reddedildi' ise form gizli kalır, sadece mevcut durumu gösterilir (şimdilik gizli kalıyor).
             }
         } catch (error) {
             console.error("Yorum durumu kontrol edilirken hata oluştu:", error);
@@ -784,19 +933,143 @@
         }
     }
 
+    // --- EVENT LISTENERS ---
 
-    // ---- SETTINGS LOADER ---- (Mevcut kodunuzdan)
-    // ... (loadPricingSettings ve populateCategoryDropdown fonksiyonları)
+    // 1. Hesapla butonuna basıldığında hesaplama alanını aç
+    calculateBtn.addEventListener('click', () => {
+        calculatorSection.classList.toggle('hidden');
+        if (!calculatorSection.classList.contains('hidden')) {
+            calculatorSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
 
-    // .... (Diğer mevcut fonksiyonlarınızın tamamı buraya gelecek)
+    // 2. Hesaplama formunun gönderilmesi
+    calculatorForm.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-    // ---- AUTHENTICATION ---- //
+        const productLink = document.getElementById('product-link').value;
+        const productPrice = parseFloat(productPriceInput.value);
+        const categoryKey = productCategorySelect.value;
+        const orderMethod = orderMethodSelect.value;
+
+        // Hesapla butonu aktifken (Sepete Ekle değilken)
+        if (mainActionBtn.textContent.includes('Hesapla')) {
+            calculateCost();
+        } else {
+            // Sepete Ekle butonu aktifken
+            const serviceFee = parseFloat(resultCategoryFeeSpan.textContent.replace(' ₺', ''));
+            const totalPrice = parseFloat(resultTotalSpan.textContent.replace(' ₺', ''));
+            
+            const productData = {
+                link: productLink,
+                price: productPrice,
+                category: categoryKey,
+                orderMethod: orderMethod,
+                serviceFee: serviceFee,
+                totalCost: totalPrice
+            };
+            addToCart(productData);
+        }
+    });
+
+    // 3. Fiyat veya Kategori değiştiğinde tekrar hesaplamaya yönlendir
+    productPriceInput.addEventListener('input', () => {
+        resultDiv.classList.add('hidden');
+        mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
+    });
+
+    productCategorySelect.addEventListener('change', () => {
+        resultDiv.classList.add('hidden');
+        mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
+    });
+    
+    orderMethodSelect.addEventListener('change', () => {
+        resultDiv.classList.add('hidden');
+        mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
+    });
+
+    // 4. Auth Modalları
+    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+    closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
+    googleLoginBtn.addEventListener('click', handleGoogleLogin);
+    profileImg.addEventListener('click', () => {
+        // Oturumu kapatma işlevi
+        if (confirm("Oturumu kapatmak istediğinizden emin misiniz?")) {
+            signOut(auth).then(() => {
+                showToast("Çıkış yapıldı.", "info");
+            }).catch(error => {
+                console.error("Çıkış hatası:", error);
+                showToast("Çıkış yapılırken bir sorun oluştu.", "error");
+            });
+        }
+    });
+    authModalLoginBtn.addEventListener('click', handleGoogleLogin);
+    closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
+
+    // 5. YILDIZ Puanlama Dinleyicileri (Yorum Modülü)
+    starRating.addEventListener('click', (e) => {
+        const starElement = e.target.closest('i');
+        if (starElement && starElement.dataset.star) {
+            const rating = parseInt(starElement.dataset.star);
+            reviewRatingInput.value = rating;
+            reviewRatingInput.dataset.currentRating = rating; 
+            updateStarAppearance(rating);
+        }
+    });
+
+    starRating.addEventListener('mouseover', (e) => {
+        const starElement = e.target.closest('i');
+        if (starElement && starElement.dataset.star) {
+            const hoverRating = parseInt(starElement.dataset.star);
+            starRating.querySelectorAll('i').forEach(star => {
+                const starValue = parseInt(star.dataset.star);
+                const className = starValue <= hoverRating ? 
+                    'ri-star-fill ri-xl text-secondary cursor-pointer hover:text-secondary transition-colors' : 
+                    'ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors';
+                star.className = className;
+            });
+        }
+    });
+
+    starRating.addEventListener('mouseout', (e) => {
+        const currentRating = parseInt(reviewRatingInput.dataset.currentRating || 0);
+        updateStarAppearance(currentRating);
+    });
+
+    reviewForm.addEventListener('reset', () => {
+        reviewRatingInput.value = 0;
+        reviewRatingInput.dataset.currentRating = 0;
+        updateStarAppearance(0);
+    });
+    
+    // 6. Kopyalama Butonları
+    copyButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.dataset.copy;
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                navigator.clipboard.writeText(targetElement.textContent.trim()).then(() => {
+                    showToast("Bilgi panoya kopyalandı!", "success");
+                }).catch(err => {
+                    console.error('Kopyalama hatası:', err);
+                    showToast("Kopyalama başarısız oldu.", "error");
+                });
+            }
+        });
+    });
+
+
+    // --- BAŞLANGIÇ ---
+    loadPricingSettings(); 
+    loadAndDisplayReviews();
+
     onAuthStateChanged(auth, async user => {
         updateAuthUI(user);
         if (user) {
             checkUserProfile(user);
             listenToCart(user.uid);
-            await checkUserReviewStatus(user.uid); // Yorum durumunu kontrol et
+            checkUserReviewStatus(user.uid); 
+            reviewLoginRequired.classList.add('hidden');
         } else {
             if (cartUnsubscribe) cartUnsubscribe();
             updateCartBadge(0);
@@ -807,16 +1080,11 @@
             reviewLoginRequired.classList.remove('hidden'); 
         }
     });
-
-    // openLoginForReview butonu için olay dinleyicisi
+    
+    // openLoginForReview butonu
     openLoginForReview.addEventListener('click', () => {
         loginModal.classList.remove('hidden');
     });
-
-    // Sayfa Yüklendiğinde Çağrılanlar
-    loadPricingSettings(); // Mevcut fonksiyonunuz
-    loadAndDisplayReviews(); // Yorumları yükle
-    // ... (Diğer başlangıç fonksiyonlarınız)
 
 </script>
 </body>
