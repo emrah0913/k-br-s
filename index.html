@@ -312,13 +312,7 @@
 
     </div>
 
-                    <div>
-                        <h4 class="text-lg font-semibold mb-4">Müşteri Hizmetleri</h4>
-                                                </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          
 <section id="reviews-section" class="px-4 mt-12">
     <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-secondary pb-2">
         Müşteri Yorumları ⭐
@@ -379,7 +373,315 @@
         </div>
 </section>
 <section class="px-4 py-6 text-center">
+<label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Te
 
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+<script>
+    // Firebase Proje Yapılandırma Bilgilerinizi BURAYA GİRİN
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY", // KENDİ BİLGİNİZİ GİRİN
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com", // KENDİ BİLGİNİZİ GİRİN
+        projectId: "YOUR_PROJECT_ID", // KENDİ BİLGİNİZİ GİRİN
+        storageBucket: "YOUR_PROJECT_ID.appspot.com", // KENDİ BİLGİNİZİ GİRİN
+        messagingSenderId: "...", // KENDİ BİLGİNİZİ GİRİN
+        appId: "..." // KENDİ BİLGİNİZİ GİRİN
+    };
+
+    // Firebase'i Başlat
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = app.auth();
+    const db = app.firestore();
+    
+    const REVIEWS_COLLECTION = 'reviews'; // Firestore'daki koleksiyon adınız
+    
+    // DOM Elementleri
+    // NOT: loginBtn, profileContainer, profileImg, openLoginForReviewBtn gibi 
+    // öğeleri mevcut kodunuzdan alıyoruz.
+    const reviewLoginRequired = document.getElementById('review-login-required');
+    const reviewFormContainer = document.getElementById('review-form-container');
+    const reviewForm = document.getElementById('review-form');
+    const starRatingContainer = document.getElementById('star-rating');
+    const reviewRatingInput = document.getElementById('review-rating');
+    const reviewsList = document.getElementById('reviews-list');
+    const loadingReviews = document.getElementById('loading-reviews');
+    const reviewPendingMessage = document.getElementById('review-pending-message');
+    const googleLoginBtn = document.getElementById('google-login-btn'); // Modal içindeki buton
+
+    let currentUser = null; 
+
+    // --- A. YILDIZ DEĞERLENDİRME İŞLEVLERİ ---
+    // (Önceki yanıtta verdiğim tüm A, B, C, D, E, F, G bloklarındaki kodları buraya yapıştırın)
+
+    function updateStarRating(rating) {
+        reviewRatingInput.value = rating;
+        reviewRatingInput.dataset.currentRating = rating;
+
+        starRatingContainer.querySelectorAll('i').forEach(star => {
+            const starValue = parseInt(star.dataset.star);
+            if (starValue <= rating) {
+                star.className = 'ri-star-fill ri-xl text-secondary cursor-pointer'; 
+            } else {
+                star.className = 'ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors'; 
+            }
+        });
+    }
+
+    starRatingContainer.addEventListener('mouseover', (e) => {
+        if (e.target.tagName === 'I') {
+            const hoverRating = parseInt(e.target.dataset.star);
+            updateStarRating(hoverRating);
+        }
+    });
+
+    starRatingContainer.addEventListener('mouseout', () => {
+        const currentRating = parseInt(reviewRatingInput.dataset.currentRating);
+        updateStarRating(currentRating);
+    });
+
+    starRatingContainer.addEventListener('click', (e) => {
+        if (e.target.tagName === 'I') {
+            const clickedRating = parseInt(e.target.dataset.star);
+            reviewRatingInput.dataset.currentRating = clickedRating;
+            updateStarRating(clickedRating);
+        }
+    });
+
+
+    // --- B. AUTH (GİRİŞ/ÇIKIŞ) İŞLEVLERİ ---
+
+    // Google ile Giriş Fonksiyonu
+    function signInWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .catch((error) => {
+                console.error("Giriş hatası:", error);
+                alert("Giriş yaparken bir hata oluştu: " + error.message);
+            });
+    }
+    
+    // Header'daki küçük buton
+    loginBtn.addEventListener('click', signInWithGoogle);
+    
+    // Yorum alanı altındaki buton
+    openLoginForReviewBtn.addEventListener('click', signInWithGoogle);
+    
+    // Profile konteynırına tıklandığında çıkış yapma (Basit bir çıkış mekanizması)
+    profileContainer.addEventListener('click', () => {
+        if (confirm("Çıkış yapmak istediğinizden emin misiniz?")) {
+            auth.signOut();
+        }
+    });
+
+
+    // Oturum Durumu Değişikliği
+    auth.onAuthStateChanged(user => {
+        currentUser = user;
+        if (user) {
+            profileImg.src = user.photoURL || 'default-avatar.png';
+            profileContainer.classList.remove('hidden');
+            loginBtn.classList.add('hidden');
+            checkUserReviewStatus(user.uid);
+        } else {
+            profileContainer.classList.add('hidden');
+            loginBtn.classList.remove('hidden');
+            reviewLoginRequired.classList.remove('hidden');
+            reviewFormContainer.classList.add('hidden');
+            reviewPendingMessage.classList.add('hidden');
+        }
+    });
+
+    // --- C. YORUM GÖNDERME İŞLEVİ ---
+    
+    reviewForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!currentUser) {
+            alert("Yorum göndermek için lütfen giriş yapın.");
+            return;
+        }
+
+        const rating = parseInt(reviewRatingInput.value);
+        const text = document.getElementById('review-text').value.trim();
+
+        if (rating === 0 || text.length < 10) {
+            alert("Lütfen bir puan seçin ve yorumunuz en az 10 karakter olsun.");
+            return;
+        }
+        
+        // Formu devre dışı bırak
+        document.querySelector('#review-form button[type="submit"]').disabled = true;
+        document.querySelector('#review-form button[type="submit"] span').textContent = 'Gönderiliyor...';
+
+        try {
+            await db.collection(REVIEWS_COLLECTION).add({
+                userId: currentUser.uid,
+                userName: currentUser.displayName,
+                userPhoto: currentUser.photoURL || 'default-avatar.png',
+                rating: rating,
+                text: text,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                isApproved: false // Yönetici onayına kadar beklemede
+            });
+
+            alert("Yorumunuz başarıyla gönderildi ve onay bekliyor.");
+            reviewForm.reset();
+            updateStarRating(0);
+            checkUserReviewStatus(currentUser.uid); // Durumu güncelle
+            
+        } catch (error) {
+            console.error("Yorum gönderme hatası:", error);
+            alert("Yorumunuz gönderilirken bir hata oluştu: " + error.message);
+        } finally {
+             // Formu tekrar etkinleştir
+            document.querySelector('#review-form button[type="submit"]').disabled = false;
+            document.querySelector('#review-form button[type="submit"] span').textContent = 'Yorumu Gönder';
+        }
+    });
+
+    // --- D. YORUM SİLME İŞLEVİ ---
+    window.deleteReview = async function(reviewId) { // Global erişim için window'a ekledik
+        if (!currentUser) return;
+
+        if (confirm("Bu yorumu silmek istediğinizden emin misiniz?")) {
+            try {
+                await db.collection(REVIEWS_COLLECTION).doc(reviewId).delete();
+                alert("Yorumunuz başarıyla silindi.");
+                checkUserReviewStatus(currentUser.uid);
+                loadReviews(); 
+            } catch (error) {
+                console.error("Yorum silme hatası:", error);
+                alert("Yorum silinirken bir hata oluştu: " + error.message);
+            }
+        }
+    }
+
+
+    // --- E. YORUM DURUMU KONTROLÜ (GİRİŞ YAPAN KULLANICI İÇİN) ---
+
+    async function checkUserReviewStatus(userId) {
+        if (!userId) {
+            // Kullanıcı çıkış yaptıysa form gösterilir
+            reviewLoginRequired.classList.remove('hidden');
+            reviewFormContainer.classList.add('hidden');
+            reviewPendingMessage.classList.add('hidden');
+            return;
+        }
+        
+        try {
+            const snapshot = await db.collection(REVIEWS_COLLECTION)
+                .where('userId', '==', userId)
+                .limit(1)
+                .get();
+
+            if (snapshot.empty) {
+                // Yorum yok, formu göster
+                reviewLoginRequired.classList.add('hidden');
+                reviewPendingMessage.classList.add('hidden');
+                reviewFormContainer.classList.remove('hidden');
+            } else {
+                // Yorum var, formu gizle ve durum mesajını göster
+                const reviewData = snapshot.docs[0].data();
+
+                reviewLoginRequired.classList.add('hidden');
+                reviewFormContainer.classList.add('hidden');
+
+                if (reviewData.isApproved) {
+                    reviewPendingMessage.classList.add('hidden'); // Onaylıysa sadece yorum listede görünür
+                } else {
+                    reviewPendingMessage.classList.remove('hidden'); // Onay bekliyor
+                }
+            }
+        } catch (error) {
+            console.error("Yorum durumu kontrol edilirken hata oluştu:", error);
+        }
+    }
+
+
+    // --- F. YORUMLARI LİSTELEME İŞLEVİ ---
+    
+    function createStarHtml(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                stars += '<i class="ri-star-fill text-secondary"></i>';
+            } else {
+                stars += '<i class="ri-star-line text-gray-300"></i>';
+            }
+        }
+        return stars;
+    }
+
+    function renderReview(doc) {
+        const data = doc.data();
+        const date = data.createdAt ? data.createdAt.toDate().toLocaleDateString('tr-TR') : 'Bilinmiyor';
+        
+        // Yorumu silme butonu sadece kendi yorumuysa görünür
+        const deleteButton = (currentUser && currentUser.uid === data.userId) ? 
+            `<button onclick="deleteReview('${doc.id}')" class="text-red-500 hover:text-red-700 transition-colors ml-auto text-sm font-medium">
+                <i class="ri-delete-bin-line"></i> Sil
+             </button>` : '';
+
+        const reviewHtml = `
+            <div id="review-${doc.id}" class="bg-white p-5 rounded-xl shadow-md border border-gray-100 fade-in">
+                <div class="flex items-center mb-3">
+                    <img src="${data.userPhoto}" alt="${data.userName}" class="w-10 h-10 rounded-full mr-3 border border-gray-200">
+                    <div>
+                        <p class="font-semibold text-gray-800">${data.userName}</p>
+                        <p class="text-xs text-gray-500">${date}</p>
+                    </div>
+                    ${deleteButton}
+                </div>
+                <div class="flex items-center mb-3">
+                    <div class="text-sm space-x-0.5">
+                        ${createStarHtml(data.rating)}
+                    </div>
+                </div>
+                <p class="text-gray-700">${data.text}</p>
+            </div>
+        `;
+
+        reviewsList.insertAdjacentHTML('beforeend', reviewHtml);
+    }
+
+    async function loadReviews() {
+        reviewsList.innerHTML = '';
+        loadingReviews.classList.remove('hidden');
+        
+        try {
+            // Sadece onaylanmış yorumları getir ve tarihe göre sırala
+            const snapshot = await db.collection(REVIEWS_COLLECTION)
+                .where('isApproved', '==', true) 
+                .orderBy('createdAt', 'desc')
+                .limit(10)
+                .get();
+            
+            loadingReviews.classList.add('hidden');
+
+            if (snapshot.empty) {
+                reviewsList.innerHTML = '<p class="text-center text-gray-500 mt-4">Henüz hiç onaylı yorum yapılmamış.</p>';
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                renderReview(doc);
+            });
+
+        } catch (error) {
+            console.error("Yorumlar yüklenirken hata oluştu:", error);
+            loadingReviews.classList.add('hidden');
+            reviewsList.innerHTML = '<p class="text-center text-red-500 mt-4">Yorumlar yüklenirken bir hata oluştu. Lütfen güvenlik kurallarınızı kontrol edin.</p>';
+        }
+    }
+
+    // --- G. BAŞLANGIÇ ÇAĞRILARI ---
+    loadReviews();
+
+</script>
+</body>
+</html>
 
         
 
@@ -926,6 +1228,7 @@
 
 </body>
 </html>
+
 
 
 
