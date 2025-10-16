@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Türkiye'den Kıbrıs'a Sipariş Getirme Hizmeti | Getir Kıbrıs</title>
-    <meta name="description" content="Trendyol, Hepsiburada ve diğer Türkiye sitelerinden Kıbrs'a kolayca ürün getirin. Hesaplayın ve sepetinize ekleyin.">
+    <meta name="description" content="Trendyol, Hepsiburada ve diğer Türkiye sitelerinden Kıbrıs'a kolayca ürün getirin. Hesaplayın ve sepetinize ekleyin.">
     <link rel="canonical" href="https://getirkibris.com" />
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
     
@@ -16,7 +16,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 
     <script>
-        // Tailwind CSS Konfigürasyonu
+        // Tailwind CSS Konfigürasyonu (index (22).html'deki borderRadius ile birleştirildi)
         tailwind.config = {
             theme: {
                 extend: {
@@ -47,12 +47,12 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9f9f9;
+            background-color: #f9f9f9; /* index (22).html'deki daha açık gri tonu tercih edildi */
         }
         .copy-btn:active, .auth-button:active {
             transform: scale(0.95);
         }
-        /* Animasyonlar */
+        /* Animasyonlar (eski index.html'den korunmuştur) */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -181,68 +181,31 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 <a href="https://www.trendyol.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" alt="Trendyol" class="w-16 h-16 object-contain">
+                    <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png"Trendyol" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.hepsiburada.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" alt="Hepsiburada" class="w-16 h-16 object-contain">
+                    <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png"Hepsiburada" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.n11.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg" alt="N11" class="w-16 h-16 object-contain">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg"N11" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.amazon.com.tr" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s" alt="Amazon" class="w-16 h-16 object-contain">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s"Amazon" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.ciceksepeti.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg" alt="ÇiçekSepeti" class="w-16 h-16 object-contain">
+                    <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg"ÇiçekSepeti" class="w-16 h-16 object-contain">
                 </a>
                 <a href="https://www.gittigidiyor.com" target="_blank"
                     class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s" alt="GittiGidiyor" class="w-16 h-16 object-contain">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s"GittiGidiyor" class="w-16 h-16 object-contain">
                 </a>
             </div>
         </div>
 
-        <section id="reviews-section" class="bg-white rounded-lg shadow-lg mx-4 p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-6 text-primary border-b pb-2">Müşteri Yorumları ⭐</h2>
-
-            <div id="review-form-container" class="border border-gray-200 rounded-lg p-4 mb-8 hidden fade-in">
-                <h3 class="text-lg font-medium mb-4 text-gray-800">Hizmetimizi Puanla ve Yorum Yap</h3>
-                <form id="review-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Puanınız (1-5)</label>
-                        <div class="flex space-x-1" id="star-rating">
-                            <i class="ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors" data-star="1"></i>
-                            <i class="ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors" data-star="2"></i>
-                            <i class="ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors" data-star="3"></i>
-                            <i class="ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors" data-star="4"></i>
-                            <i class="ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors" data-star="5"></i>
-                        </div>
-                        <input type="hidden" id="review-rating" required value="0" data-current-rating="0"> 
-                    </div>
-                    <div>
-                        <label for="review-text" class="block text-sm font-medium text-gray-700 mb-1">Yorumunuz</label>
-                        <textarea id="review-text" rows="3" required minlength="10" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Deneyiminizi bizimle paylaşın..."></textarea>
-                    </div>
-                    <button type="submit" id="submit-review-btn" class="w-full bg-secondary text-primary py-3 rounded-button font-semibold hover:bg-secondary/90 transition-colors">
-                        Yorumu Gönder
-                    </button>
-                    <p id="review-pending-message" class="text-sm text-center text-gray-500 hidden">Yorumunuz onay bekliyor. Onaylandıktan sonra yayınlanacaktır. 🙏</p>
-                </form>
-            </div>
-            
-            <div id="review-login-required" class="text-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300 hidden">
-                <p class="text-sm text-gray-700">Yorum yapmak için lütfen <a id="open-login-for-review" class="text-primary font-medium cursor-pointer hover:underline">Giriş Yapın</a>.</p>
-            </div>
-
-            <div id="reviews-list" class="space-y-4">
-                <p id="loading-reviews" class="text-center text-gray-500">Yorumlar yükleniyor...</p>
-            </div>
-
-        </section>
         <div class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8">
             <h3 class="text-lg font-semibold mb-4">Nasıl Çalışır?</h3>
             <ol class="list-decimal pl-5 space-y-3 text-sm text-gray-700">
@@ -484,12 +447,10 @@
 </div>
 
 <script type="module">
-    // FIREBASE İMPORTLARI
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    // Kendi Firebase Yapılandırmanızı Buraya Girin
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -504,35 +465,15 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     let cartUnsubscribe = null;
-    let currentUserData = null; // Kullanıcının tam bilgilerini tutmak için
 
-    // --- GLOBAL SETTINGS (Bu kısımlar sizin eski kodunuzdan çalışır durumda alınmıştır) ---
+    // --- GLOBAL SETTINGS ---
     let pricingSettings = {};
     const DEFAULT_SETTINGS = {
-        categoryRates: { 
-            'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 
-            'cosmetics': 0.70, 'stationery': 0.40, 'book': 0.35, 'other': 0.60 
-        },
-        cityFees: { 
-            'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 
-            'Güzelyurt': 400, 'İskele': 450 
-        }
+        categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
+        cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
     };
 
     // --- DOM Elements ---
-    const calculateBtn = document.getElementById('calculate-btn');
-    const calculatorSection = document.getElementById('calculator-section');
-    const calculatorForm = document.getElementById('calculator-form');
-    const productPriceInput = document.getElementById('product-price');
-    const productCategorySelect = document.getElementById('product-category');
-    const resultDiv = document.getElementById('calculation-result');
-    const resultTotalSpan = document.getElementById('result-total');
-    const resultPriceSpan = document.getElementById('result-price');
-    const resultCategoryFeeSpan = document.getElementById('result-category-fee');
-    const mainActionBtn = document.getElementById('main-action-btn');
-    const orderMethodSelect = document.getElementById('order-method');
-    const cartBadge = document.getElementById('cart-badge');
-    const cartPageBtn = document.getElementById('cart-page-btn');
     const loginBtn = document.getElementById('login-btn');
     const profileContainer = document.getElementById('profile-container');
     const profileImg = document.getElementById('profile-img');
@@ -544,576 +485,251 @@
     const authModalLoginBtn = document.getElementById('auth-modal-login-btn');
     const profileModal = document.getElementById('profile-modal');
     const profileForm = document.getElementById('profile-form');
-    const fullNameInput = document.getElementById('full-name-input');
-    const phoneInput = document.getElementById('phone-input');
-    const addressInput = document.getElementById('address-input');
-    const copyButtons = document.querySelectorAll('.copy-btn');
-    
-    // YORUM MODÜLÜ ELEMENTLERİ
-    const reviewFormContainer = document.getElementById('review-form-container');
-    const reviewForm = document.getElementById('review-form');
-    const starRating = document.getElementById('star-rating');
-    const reviewRatingInput = document.getElementById('review-rating');
-    const reviewTextInput = document.getElementById('review-text');
-    const submitReviewBtn = document.getElementById('submit-review-btn');
-    const reviewLoginRequired = document.getElementById('review-login-required');
-    const openLoginForReview = document.getElementById('open-login-for-review');
-    const reviewsList = document.getElementById('reviews-list');
-    const loadingReviews = document.getElementById('loading-reviews');
-    const reviewPendingMessage = document.getElementById('review-pending-message');
+    const cartBadge = document.getElementById('cart-badge');
 
-
-    // --- YARDIMCI FONKSİYONLAR ---
-
-    // Toast Mesajı Gösterme
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toast-message');
-        
-        let colorClass;
-        if (type === 'success') {
-            colorClass = 'bg-green-600';
-        } else if (type === 'error') {
-            colorClass = 'bg-red-600';
-        } else {
-            colorClass = 'bg-gray-800';
+    // ---- SETTINGS LOADER ----
+    async function loadPricingSettings() {
+        try {
+            const docRef = doc(db, "settings", "pricing");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().categoryRates) {
+                pricingSettings = docSnap.data();
+                console.log("Fiyat ayarları başarıyla yüklendi.");
+            } else {
+                pricingSettings = DEFAULT_SETTINGS;
+                console.log("Fiyat ayarları bulunamadı, varsayılanlar kullanılıyor.");
+            }
+        } catch (error) {
+            console.error("Fiyat ayarları yüklenirken hata oluştu:", error);
+            pricingSettings = DEFAULT_SETTINGS;
         }
-        
-        toast.className = `fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4 ${colorClass}`;
-        toastMessage.textContent = message;
-        
-        setTimeout(() => {
-            toast.classList.remove('opacity-0', 'translate-y-4');
-        }, 10);
-
-        setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-4');
-        }, 3000);
+        populateCategoryDropdown();
     }
 
-    // AUTH: UI Güncelleme
+    function populateCategoryDropdown() {
+        const categorySelect = document.getElementById('product-category');
+        if (!categorySelect || !pricingSettings.categoryRates) return;
+        
+        categorySelect.innerHTML = '<option value="" disabled selected>Kategori seçin</option>';
+        
+        const categoryDisplayNames = {
+            furniture: "Mobilya & Ev Eşyası",
+            electronics: "Elektronik",
+            clothing: "Giyim & Ayakkabı",
+            cosmetics: "Kozmetik",
+            stationery: "Kırtasiye & Kitap"
+        };
+
+        for (const categoryKey in pricingSettings.categoryRates) {
+            const option = document.createElement('option');
+            option.value = categoryKey;
+            option.textContent = categoryDisplayNames[categoryKey] || categoryKey;
+            categorySelect.appendChild(option);
+        }
+    }
+
+
+    // ---- AUTHENTICATION ---- //
+    onAuthStateChanged(auth, user => {
+        updateAuthUI(user);
+        if (user) {
+            checkUserProfile(user);
+            listenToCart(user.uid);
+        } else {
+            if (cartUnsubscribe) cartUnsubscribe();
+            cartBadge.classList.add('hidden');
+        }
+    });
+
     function updateAuthUI(user) {
         if (user) {
             loginBtn.classList.add('hidden');
             profileContainer.classList.remove('hidden');
-            profileImg.src = user.photoURL || 'default-profile.png';
+            profileImg.src = user.photoURL || 'https://placehold.co/40x40/cccccc/000000?text=P';
             profileImg.alt = user.displayName || 'Profil';
         } else {
             loginBtn.classList.remove('hidden');
             profileContainer.classList.add('hidden');
         }
     }
-
-    // AUTH: Google Giriş
-    const provider = new GoogleAuthProvider();
-    async function handleGoogleLogin() {
+    
+    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+    closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
+    profileContainer.addEventListener('click', async () => {
+        if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+            await signOut(auth);
+            showToast('Başarıyla çıkış yapıldı.');
+        }
+    });
+    
+    googleLoginBtn.addEventListener('click', async () => {
+        const provider = new GoogleAuthProvider();
         try {
             await signInWithPopup(auth, provider);
             loginModal.classList.add('hidden');
+            showToast('Giriş başarılı!');
         } catch (error) {
-            console.error("Google Giriş Hatası:", error);
-            showToast("Giriş işlemi başarısız oldu.", "error");
+            console.error("Google ile giriş hatası:", error);
+            showToast('Giriş sırasında bir hata oluştu.', 'error');
         }
-    }
+    });
 
-    // AUTH: Profil Kontrolü ve Yönlendirme
+    window.showAuthRequiredModal = () => authRequiredModal.classList.remove('hidden');
+    closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
+    authModalLoginBtn.addEventListener('click', () => {
+        authRequiredModal.classList.add('hidden');
+        loginModal.classList.remove('hidden');
+    });
+
+    // ---- USER PROFILE ---- //
     async function checkUserProfile(user) {
-        if (!user) return;
         const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-            currentUserData = userDoc.data();
-            if (!currentUserData.fullName || !currentUserData.phone || !currentUserData.address) {
-                profileModal.classList.remove('hidden');
-                fullNameInput.value = currentUserData.fullName || user.displayName || '';
-                phoneInput.value = currentUserData.phone || '';
-                addressInput.value = currentUserData.address || '';
-            } else {
-                profileModal.classList.add('hidden');
-            }
-        } else {
-            await setDoc(userDocRef, {
-                uid: user.uid,
-                email: user.email,
-                fullName: user.displayName || '',
-                phone: '',
-                address: '',
-                createdAt: new Date()
-            });
-            currentUserData = { uid: user.uid, email: user.email, fullName: user.displayName || '' };
+        const userDocSnap = await getDoc(userDocRef);
+        if (!userDocSnap.exists() || !userDocSnap.data().isProfileComplete) {
             profileModal.classList.remove('hidden');
-            fullNameInput.value = user.displayName || '';
+            document.getElementById('full-name-input').value = user.displayName || '';
         }
     }
-
-    // AUTH: Profil Kaydetme
+    
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const user = auth.currentUser;
         if (!user) return;
+        const userData = {
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            fullName: document.getElementById('full-name-input').value,
+            phone: document.getElementById('phone-input').value,
+            address: document.getElementById('address-input').value,
+            isProfileComplete: true,
+        };
+        try {
+            await setDoc(doc(db, "users", user.uid), userData, { merge: true });
+            profileModal.classList.add('hidden');
+            showToast('Profiliniz başarıyla güncellendi!');
+        } catch (error) {
+            console.error("Profil kaydetme hatası:", error);
+            showToast('Profil kaydedilirken bir hata oluştu.', 'error');
+        }
+    });
+    
+    // ---- CALCULATOR & CART ---- //
+    const calculatorSection = document.getElementById('calculator-section');
+    const calculatorForm = document.getElementById('calculator-form');
+    const mainActionBtn = document.getElementById('main-action-btn');
+    const calculationResult = document.getElementById('calculation-result');
 
-        const data = {
-            fullName: fullNameInput.value.trim(),
-            phone: phoneInput.value.trim(),
-            address: addressInput.value.trim(),
-            updatedAt: new Date()
+    const formInputs = calculatorForm.querySelectorAll('input, select');
+    formInputs.forEach(input => input.addEventListener('input', resetCalculatorState));
+
+    // Calculate butonu tıklandığında hesaplama bölümünü görünür yap
+    const calculateBtn = document.getElementById('calculate-btn'); // ID düzeltildi
+    calculateBtn.addEventListener('click', () => {
+        calculatorSection.classList.remove('hidden');
+        calculatorSection.scrollIntoView({ behavior: 'smooth' });
+        calculatorForm.reset(); // Formu sıfırla
+        resetCalculatorState(); // Butonu Hesapla'ya getir
+    });
+
+
+    function resetCalculatorState() {
+        mainActionBtn.innerHTML = `<i class="ri-calculator-line"></i><span>Maliyeti Hesapla</span>`;
+        calculationResult.classList.add('hidden');
+    }
+    
+    calculatorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const buttonText = mainActionBtn.textContent.trim();
+
+        if (buttonText === 'Maliyeti Hesapla') {
+            handleCalculation();
+        } else if (buttonText === 'Sepete Ekle') {
+            await handleAddToCart();
+        }
+    });
+
+    function handleCalculation() {
+        const price = parseFloat(document.getElementById('product-price').value);
+        const category = document.getElementById('product-category').value;
+        const orderMethod = document.getElementById('order-method').value;
+        const productLink = document.getElementById('product-link').value.trim();
+
+        if (isNaN(price) || price <= 0 || !category || !productLink) {
+            showToast('Lütfen tüm zorunlu alanları doğru doldurun.', 'error');
+            return;
+        }
+
+        const categoryRates = pricingSettings.categoryRates || {};
+        const categoryFee = price * (categoryRates[category] || 0);
+        let total = (orderMethod === 'self') ? categoryFee : price + categoryFee;
+        
+        document.getElementById('result-price-label').textContent = orderMethod === 'self' ? 'Ürün Fiyatı (Size Ait):' : 'Ürün Fiyatı:';
+        document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
+        document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
+        document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
+        
+        calculationResult.classList.remove('hidden');
+        mainActionBtn.innerHTML = `<i class="ri-shopping-cart-add-line"></i><span>Sepete Ekle</span>`;
+    }
+
+    async function handleAddToCart() {
+        const user = auth.currentUser;
+        if (!user) {
+            window.showAuthRequiredModal();
+            return;
+        }
+
+        const productData = {
+            productLink: document.getElementById('product-link').value,
+            productPrice: parseFloat(document.getElementById('product-price').value),
+            category: document.getElementById('product-category').value,
+            orderMethod: document.getElementById('order-method').value,
+            quantity: 1,
+            addedAt: new Date() // Date objesi olarak eklendi, Firebase'e gönderirken otomatik Timestamp'a çevrilir
         };
 
-        if (data.fullName.length < 3 || data.phone.length < 10 || data.address.length < 5) {
-            showToast("Lütfen tüm alanları doğru doldurun.", "error");
-            return;
-        }
-
         try {
-            const userDocRef = doc(db, "users", user.uid);
-            await setDoc(userDocRef, { ...currentUserData, ...data }, { merge: true });
-            currentUserData = { ...currentUserData, ...data };
-            profileModal.classList.add('hidden');
-            showToast("Profiliniz başarıyla güncellendi.", "success");
-        } catch (error) {
-            console.error("Profil güncelleme hatası:", error);
-            showToast("Profil güncellenirken bir hata oluştu.", "error");
-        }
-    });
-
-    // SETTINGS: Fiyatlandırma Ayarlarını Yükleme
-    async function loadPricingSettings() {
-        try {
-            const settingsDocRef = doc(db, "settings", "pricing");
-            const docSnap = await getDoc(settingsDocRef);
-            
-            if (docSnap.exists() && docSnap.data().categoryRates) {
-                pricingSettings.categoryRates = docSnap.data().categoryRates;
-                pricingSettings.cityFees = docSnap.data().cityFees;
-            } else {
-                pricingSettings = DEFAULT_SETTINGS;
-            }
-        } catch (error) {
-            console.error("Fiyatlandırma ayarları yüklenirken hata:", error);
-            pricingSettings = DEFAULT_SETTINGS;
-        }
-        populateCategoryDropdown();
-    }
-
-    // SETTINGS: Kategori Dropdown'ını Doldurma
-    function populateCategoryDropdown() {
-        productCategorySelect.innerHTML = '<option value="" disabled selected>Kategori Seçiniz</option>';
-        if (pricingSettings.categoryRates) {
-            Object.entries(pricingSettings.categoryRates).forEach(([key, value]) => {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = `${key.charAt(0).toUpperCase() + key.slice(1)} (%${(value * 100).toFixed(0)})`;
-                productCategorySelect.appendChild(option);
-            });
-        }
-    }
-
-    // CALC: Maliyet Hesaplama
-    function calculateCost() {
-        const price = parseFloat(productPriceInput.value);
-        const categoryKey = productCategorySelect.value;
-        const orderMethod = orderMethodSelect.value;
-
-        if (isNaN(price) || price <= 0 || !categoryKey) {
-            resultDiv.classList.add('hidden');
-            mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
-            return;
-        }
-
-        const rate = pricingSettings.categoryRates[categoryKey] || pricingSettings.categoryRates['other'] || 0.60;
-        
-        let serviceFee = 0;
-        if (orderMethod === 'service') {
-            serviceFee = price * rate;
-        } else {
-            serviceFee = price * rate; // Kargo hizmeti için aynı oran kullanılabilir
-        }
-
-        const totalPrice = price + serviceFee;
-
-        // Sonuçları göster
-        resultPriceSpan.textContent = `${price.toFixed(2)} ₺`;
-        resultCategoryFeeSpan.textContent = `${serviceFee.toFixed(2)} ₺`;
-        resultTotalSpan.textContent = `${totalPrice.toFixed(2)} ₺`;
-        
-        resultDiv.classList.remove('hidden');
-        mainActionBtn.innerHTML = '<i class="ri-shopping-cart-line"></i> <span>Sepete Ekle</span>';
-    }
-
-    // CART: Sepet Durumunu Dinleme
-    function listenToCart(userId) {
-        if (cartUnsubscribe) cartUnsubscribe();
-        
-        const cartRef = collection(db, "users", userId, "cart");
-        cartUnsubscribe = onSnapshot(cartRef, (snapshot) => {
-            const itemCount = snapshot.size;
-            updateCartBadge(itemCount);
-        }, (error) => {
-            console.error("Sepet dinlenirken hata:", error);
-            updateCartBadge(0);
-        });
-    }
-
-    // CART: Sepet Rozetini Güncelleme
-    function updateCartBadge(count) {
-        cartBadge.textContent = count;
-        if (count > 0) {
-            cartBadge.classList.remove('hidden');
-        } else {
-            cartBadge.classList.add('hidden');
-        }
-    }
-
-    // CART: Sepete Ürün Ekleme
-    async function addToCart(productData) {
-        const user = auth.currentUser;
-        if (!user) {
-            authRequiredModal.classList.remove('hidden');
-            return;
-        }
-        
-        try {
-            const cartRef = collection(db, "users", user.uid, "cart");
-            await addDoc(cartRef, {
-                ...productData,
-                createdAt: new Date(),
-                status: 'pending'
-            });
-            showToast("Ürün sepete başarıyla eklendi!", "success");
-            
+            await addDoc(collection(db, 'users', user.uid, 'cart'), productData);
+            showToast('Ürün başarıyla sepete eklendi!');
             calculatorForm.reset();
-            resultDiv.classList.add('hidden');
-            mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
+            resetCalculatorState();
+            window.location.href = 'https://getirkibris.com/sepet.html'; 
         } catch (error) {
             console.error("Sepete ekleme hatası:", error);
-            showToast("Sepete ekleme sırasında bir sorun oluştu.", "error");
+            showToast('Ürün sepete eklenirken bir hata oluştu: ' + error.message, 'error');
         }
     }
-
-
-    // --- YORUM MODÜLÜ İŞLEVLERİ ---
     
-    function maskUserName(fullName) {
-        if (!fullName) return "Anonim Kullanıcı";
-        const parts = fullName.trim().split(/\s+/);
-        if (parts.length < 2) {
-            return parts[0].charAt(0).toUpperCase() + Array(parts[0].length - 1).fill('*').join('');
-        }
-        const firstName = parts[0];
-        const lastName = parts[parts.length - 1]; 
-        const maskedFirstName = firstName.charAt(0).toUpperCase() + Array(firstName.length - 1).fill('*').join('');
-        const maskedLastName = lastName.charAt(0).toUpperCase() + Array(lastName.length - 1).fill('*').join('');
-        return `${maskedFirstName} ${maskedLastName}`;
-    }
-
-    function renderStars(rating) {
-        let html = '';
-        for (let i = 1; i <= 5; i++) {
-            const colorClass = i <= rating ? 'text-secondary' : 'text-gray-300';
-            const iconClass = i <= rating ? 'ri-star-fill' : 'ri-star-line';
-            html += `<i class="${iconClass} ri-lg ${colorClass}"></i>`; 
-        }
-        return html;
-    }
-
-    function createReviewCard(review, maskedName) {
-        const date = review.tarih ? new Date(review.tarih.seconds * 1000).toLocaleDateString('tr-TR') : 'Bilinmiyor';
-        
-        return `
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 fade-in">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="text-sm font-semibold text-gray-800">${maskedName}</div>
-                    <div class="flex items-center space-x-1">${renderStars(review.puan)}</div>
-                </div>
-                <p class="text-sm text-gray-600">${review.yorum_metni}</p>
-                <div class="text-xs text-gray-400 mt-2 text-right">${date}</div>
-            </div>
-        `;
-    }
-
-    async function loadAndDisplayReviews() {
-        reviewsList.innerHTML = ''; 
-        loadingReviews.classList.remove('hidden');
-
-        try {
-            const reviewsRef = collection(db, "yorumlar");
-            const q = query(reviewsRef, 
-                where("onay_durumu", "==", "Onaylandı"),
-                orderBy("tarih", "desc")
-            );
-            const querySnapshot = await getDocs(q);
-            
-            if (querySnapshot.empty) {
-                reviewsList.innerHTML = '<p class="text-center text-gray-500">Henüz onaylanmış bir yorum bulunmamaktadır.</p>';
-                return;
-            }
-
-            const reviewPromises = querySnapshot.docs.map(async (docSnap) => {
-                const review = docSnap.data();
-                
-                const userDocRef = doc(db, "users", review.kullanici_id);
-                const userDoc = await getDoc(userDocRef);
-                
-                let userName = userDoc.exists() ? userDoc.data().fullName || userDoc.data().email : 'Bilinmeyen Kullanıcı';
-                
-                const maskedName = maskUserName(userName);
-                return createReviewCard(review, maskedName);
-            });
-            
-            const reviewCards = await Promise.all(reviewPromises);
-            reviewsList.innerHTML = reviewCards.join('');
-
-        } catch (error) {
-            console.error("Yorumlar yüklenirken hata oluştu:", error);
-            reviewsList.innerHTML = '<p class="text-center text-red-500">Yorumlar yüklenemedi. (Dizin hatası olabilir)</p>';
-        } finally {
-            loadingReviews.classList.add('hidden');
-        }
-    }
-
-
-    function updateStarAppearance(rating) {
-        const stars = starRating.querySelectorAll('i');
-        stars.forEach(star => {
-            const starValue = parseInt(star.dataset.star);
-            if (starValue <= rating) {
-                star.className = 'ri-star-fill ri-xl text-secondary cursor-pointer hover:text-secondary transition-colors';
-            } else {
-                star.className = 'ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors';
-            }
+    function listenToCart(userId) {
+        if (cartUnsubscribe) cartUnsubscribe();
+        const cartRef = collection(db, 'users', userId, 'cart');
+        cartUnsubscribe = onSnapshot(cartRef, (snapshot) => {
+            const itemCount = snapshot.size;
+            cartBadge.textContent = itemCount;
+            cartBadge.classList.toggle('hidden', itemCount === 0);
         });
     }
 
-    async function checkUserReviewStatus(userId) {
-        try {
-            const q = query(collection(db, "yorumlar"), where("kullanici_id", "==", userId));
-            const querySnapshot = await getDocs(q);
-
-            reviewFormContainer.classList.add('hidden');
-            reviewPendingMessage.classList.add('hidden');
-            reviewLoginRequired.classList.add('hidden');
-
-            if (querySnapshot.empty) {
-                reviewFormContainer.classList.remove('hidden');
-                // Formun başlangıçta sıfırlandığından emin ol
-                reviewForm.reset();
-                reviewRatingInput.value = 0;
-                reviewRatingInput.dataset.currentRating = 0;
-                updateStarAppearance(0);
-            } else {
-                const reviewData = querySnapshot.docs[0].data();
-                if (reviewData.onay_durumu === 'Beklemede') {
-                    reviewPendingMessage.classList.remove('hidden');
-                }
-            }
-        } catch (error) {
-            console.error("Yorum durumu kontrol edilirken hata oluştu:", error);
-            reviewFormContainer.classList.add('hidden');
-        }
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        toastMessage.textContent = message;
+        toast.className = 'fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl transition-all duration-300 z-[110] transform';
+        toast.classList.add(type === 'error' ? 'bg-red-500' : 'bg-gray-800');
+        toast.classList.remove('opacity-0', 'translate-y-4');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-4');
+        }, 3000);
     }
-
-    // --- EVENT LISTENERS ---
-
-    // 1. Hesapla butonu
-    calculateBtn.addEventListener('click', () => {
-        calculatorSection.classList.toggle('hidden');
-        if (!calculatorSection.classList.contains('hidden')) {
-            calculatorSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    });
-
-    // 2. Hesaplama formunun gönderilmesi
-    calculatorForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const productLink = document.getElementById('product-link').value;
-        const productPrice = parseFloat(productPriceInput.value);
-        const categoryKey = productCategorySelect.value;
-        const orderMethod = orderMethodSelect.value;
-
-        if (mainActionBtn.textContent.includes('Hesapla')) {
-            calculateCost();
-        } else {
-            const serviceFee = parseFloat(resultCategoryFeeSpan.textContent.replace(' ₺', ''));
-            const totalPrice = parseFloat(resultTotalSpan.textContent.replace(' ₺', ''));
-            
-            const productData = {
-                link: productLink,
-                price: productPrice,
-                category: categoryKey,
-                orderMethod: orderMethod,
-                serviceFee: serviceFee,
-                totalCost: totalPrice
-            };
-            addToCart(productData);
-        }
-    });
-
-    // 3. Fiyat/Kategori/Yöntem değiştiğinde tekrar hesaplamaya yönlendir
-    productPriceInput.addEventListener('input', () => {
-        resultDiv.classList.add('hidden');
-        mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
-    });
-    productCategorySelect.addEventListener('change', () => {
-        resultDiv.classList.add('hidden');
-        mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
-    });
-    orderMethodSelect.addEventListener('change', () => {
-        resultDiv.classList.add('hidden');
-        mainActionBtn.innerHTML = '<i class="ri-calculator-line"></i> <span>Maliyeti Hesapla</span>';
-    });
-
-    // 4. Auth Modalları
-    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
-    closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
-    googleLoginBtn.addEventListener('click', handleGoogleLogin);
-    profileImg.addEventListener('click', () => {
-        if (confirm("Oturumu kapatmak istediğinizden emin misiniz?")) {
-            signOut(auth).then(() => {
-                showToast("Çıkış yapıldı.", "info");
-            }).catch(error => {
-                console.error("Çıkış hatası:", error);
-                showToast("Çıkış yapılırken bir sorun oluştu.", "error");
-            });
-        }
-    });
-    authModalLoginBtn.addEventListener('click', handleGoogleLogin);
-    closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
-    openLoginForReview.addEventListener('click', () => {
-        loginModal.classList.remove('hidden');
-    });
-
-    // 5. YILDIZ Puanlama Dinleyicileri (Yorum Modülü)
-    starRating.addEventListener('click', (e) => {
-        const starElement = e.target.closest('i');
-        if (starElement && starElement.dataset.star) {
-            const rating = parseInt(starElement.dataset.star);
-            reviewRatingInput.value = rating;
-            reviewRatingInput.dataset.currentRating = rating; 
-            updateStarAppearance(rating);
-        }
-    });
-
-    starRating.addEventListener('mouseover', (e) => {
-        const starElement = e.target.closest('i');
-        if (starElement && starElement.dataset.star) {
-            const hoverRating = parseInt(starElement.dataset.star);
-            starRating.querySelectorAll('i').forEach(star => {
-                const starValue = parseInt(star.dataset.star);
-                const className = starValue <= hoverRating ? 
-                    'ri-star-fill ri-xl text-secondary cursor-pointer hover:text-secondary transition-colors' : 
-                    'ri-star-line ri-xl text-gray-300 cursor-pointer hover:text-secondary transition-colors';
-                star.className = className;
-            });
-        }
-    });
-
-    starRating.addEventListener('mouseout', (e) => {
-        const currentRating = parseInt(reviewRatingInput.dataset.currentRating || 0);
-        updateStarAppearance(currentRating);
-    });
-
-    reviewForm.addEventListener('reset', () => {
-        reviewRatingInput.value = 0;
-        reviewRatingInput.dataset.currentRating = 0;
-        updateStarAppearance(0);
-    });
-
-    // 6. YORUM GÖNDERME İŞLEMİ (Eksik olan ve şimdi eklenen kritik blok)
-    reviewForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const user = auth.currentUser;
-        if (!user) {
-            showToast("Yorum göndermek için lütfen giriş yapın.", "error");
-            return;
-        }
-
-        const rating = parseInt(reviewRatingInput.value || 0);
-        const reviewText = reviewTextInput.value.trim();
-
-        if (rating === 0 || reviewText.length < 10) {
-            showToast("Lütfen 1 ile 5 arasında puan verin ve en az 10 karakter yorum yazın.", "error");
-            return;
-        }
-
-        submitReviewBtn.disabled = true;
-        submitReviewBtn.textContent = "Gönderiliyor...";
-        reviewPendingMessage.classList.add('hidden');
-
-        try {
-            const existingReviewSnapshot = await getDocs(query(collection(db, "yorumlar"), where("kullanici_id", "==", user.uid)));
-
-            if (!existingReviewSnapshot.empty) {
-                showToast("Zaten bir yorum yaptınız. Yorumunuz onay bekliyor veya yayınlanmıştır.", "error");
-                reviewFormContainer.classList.add('hidden');
-                reviewPendingMessage.classList.remove('hidden');
-                return;
-            }
-
-            await addDoc(collection(db, "yorumlar"), {
-                kullanici_id: user.uid,
-                puan: rating,
-                yorum_metni: reviewText,
-                tarih: new Date(),
-                onay_durumu: "Beklemede"
-            });
-
-            showToast("Yorumunuz başarıyla gönderildi ve onay bekliyor.", "success");
-            reviewForm.reset();
-            reviewRatingInput.dataset.currentRating = 0;
-            updateStarAppearance(0);
-            reviewFormContainer.classList.add('hidden');
-            reviewPendingMessage.classList.remove('hidden');
-            loadAndDisplayReviews();
-            
-        } catch (error) {
-            console.error("Yorum gönderilirken hata oluştu:", error);
-            showToast("Yorum gönderilemedi. Lütfen tekrar deneyin.", "error");
-        } finally {
-            submitReviewBtn.disabled = false;
-            submitReviewBtn.textContent = "Yorumu Gönder";
-        }
-    });
     
-    // 7. Kopyalama Butonları
-    copyButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targetId = button.dataset.copy;
-            const targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                navigator.clipboard.writeText(targetElement.textContent.trim()).then(() => {
-                    showToast("Bilgi panoya kopyalandı!", "success");
-                }).catch(err => {
-                    console.error('Kopyalama hatası:', err);
-                    showToast("Kopyalama başarısız oldu.", "error");
-                });
-            }
-        });
-    });
-
-
-    // --- BAŞLANGIÇ ---
-    loadPricingSettings(); 
-    loadAndDisplayReviews();
-
-    onAuthStateChanged(auth, async user => {
-        updateAuthUI(user);
-        if (user) {
-            checkUserProfile(user);
-            listenToCart(user.uid);
-            checkUserReviewStatus(user.uid); 
-            reviewLoginRequired.classList.add('hidden');
-        } else {
-            if (cartUnsubscribe) cartUnsubscribe();
-            updateCartBadge(0);
-            
-            reviewFormContainer.classList.add('hidden');
-            reviewPendingMessage.classList.add('hidden');
-            reviewLoginRequired.classList.remove('hidden'); 
-        }
-    });
+    // Sayfa yüklendiğinde ayarları çek
+    loadPricingSettings();
 
 </script>
+
 </body>
 </html>
+
