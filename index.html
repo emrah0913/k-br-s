@@ -112,7 +112,7 @@
                     class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                     <i class="ri-calculator-line ri-xl text-primary"></i>
                 </div>
-                <span class="text-sm font-medium">Hesapla</span>
+                <span class="text-sm font-medium">Sipariş Ver</span>
             </button>
 
             <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
@@ -176,61 +176,184 @@
             </form>
         </section>
 
-        <div class="px-4 mb-8">
-            <h3 class="text-lg font-semibold mb-4">Popüler Alışveriş Siteleri</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                <a href="https://www.trendyol.com" target="_blank"
-                    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png"Trendyol" class="w-16 h-16 object-contain">
-                </a>
-                <a href="https://www.hepsiburada.com" target="_blank"
-                    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png"Hepsiburada" class="w-16 h-16 object-contain">
-                </a>
-                <a href="https://www.n11.com" target="_blank"
-                    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg"N11" class="w-16 h-16 object-contain">
-                </a>
-                <a href="https://www.amazon.com.tr" target="_blank"
-                    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s"Amazon" class="w-16 h-16 object-contain">
-                </a>
-                <a href="https://www.ciceksepeti.com" target="_blank"
-                    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg"ÇiçekSepeti" class="w-16 h-16 object-contain">
-                </a>
-                <a href="https://www.gittigidiyor.com" target="_blank"
-                    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s"GittiGidiyor" class="w-16 h-16 object-contain">
-                </a>
-            </div>
-        </div>
 
-        <div class="bg-white rounded-lg shadow-md mx-4 p-4 mb-8">
-            <h3 class="text-lg font-semibold mb-4">Nasıl Çalışır?</h3>
-            <ol class="list-decimal pl-5 space-y-3 text-sm text-gray-700">
-                <li>Türkiye'deki herhangi bir siteden ürün seçin ve fiyatını hesaplayın.</li>
-                <li>Sipariş formunu doldurun ve ödemenizi yapın.</li>
-                <li>Ürünü kendi adınıza sipariş edin ve aşağıdaki teslimat adresini kullanın.</li>
-            </ol>
-            <div class="mt-4 p-3 bg-gray-50 rounded-lg relative">
-                <h4 class="text-sm font-medium mb-1">Teslimat Adresi</h4>
-                <p id="delivery-address" class="text-sm text-gray-700 pr-8">Getir Kıbrıs Depo, Mersin 10, Türkiye</p>
-                <button class="copy-btn absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-primary cursor-pointer"
-                    data-copy="delivery-address">
-                    <i class="ri-file-copy-line ri-lg"></i>
-                </button>
-            </div>
-            <div class="mt-3 p-3 bg-gray-50 rounded-lg relative">
-                <h4 class="text-sm font-medium mb-1">IBAN Bilgisi</h4>
-                <p id="iban-info" class="text-sm text-gray-700 pr-8">TR12 3456 7890 1234 5678 9012 34</p>
-                <button class="copy-btn absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-primary cursor-pointer"
-                    data-copy="iban-info">
-                    <i class="ri-file-copy-line ri-lg"></i>
-                </button>
-            </div>
+
+<!-- 🧩 Kampanya Vitrini Başlangıcı -->
+<h2 class="text-2xl font-bold text-gray-800 mb-4 text-center border-b-2 border-primary pb-2">
+    ✨ Haftanın Ürünü ✨
+</h2>
+
+<div class="max-w-sm mx-auto my-8 bg-white shadow-md rounded-lg overflow-hidden text-center">
+  
+  <img src="https://cdn.dsmcdn.com/ty1617/prod/QC/20250101/10/d3da108c-94a7-3889-a7bb-473e0a2d7fd6/1_org_zoom.jpg"
+       alt="Bordo Çizgili Düğmeli Polo Yaka Kadın Triko Kazak MG2280"
+       class="w-full object-cover">
+  
+  <h3 class="font-bold mb-2">Bordo Çizgili Düğmeli Polo Yaka Kadın Triko Kazak MG2280</h3>
+  <a href="https://www.trendyol.com/madmext/bordo-cizgili-dugmeli-polo-yaka-kadin-triko-kazak-mg2280-p-888449782?merchantId=105292"
+     target="_blank"
+     class="bg-primary text-white px-4 py-2 rounded hover:bg-primary/80 transition">Satın Al</a>
+</div>
+
+
+<!-- 🧩 Kampanya Vitrini Sonu -->
+
+
+
+        
+
+        <div class="px-4 mb-8">
+    <h3 class="text-lg font-semibold mb-4">Popüler Alışveriş Siteleri</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+
+        <!-- Trendyol -->
+        <a href="https://www.trendyol.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png"
+                 alt="Trendyol" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                Kıbrıs'ta Trendyol var mı, Türkiye'den Kıbrıs'a Trendyol kargo, Trendyol Kıbrıs alışveriş,
+                Trendyol Kıbrıs sipariş, Kıbrıs Trendyol ürünleri, Trendyol Kıbrıs teslim, Trendyol Türkiye’den gönderim,
+                Kıbrıs Trendyol fırsatları, Trendyol kampanya Kıbrıs, Trendyol ürün fiyatları Kıbrıs, Trendyol Kıbrıs alışveriş sitesi,
+                Trendyol Kıbrıs hızlı kargo, Trendyol Kıbrıs güvenli alışveriş, Trendyol Kıbrıs indirim, Kıbrıs Trendyol sipariş süreci,
+                Trendyol Kıbrıs popüler ürünler, Trendyol Kıbrıs müşteri yorumları, Trendyol Kıbrıs ödeme seçenekleri,
+                Trendyol Kıbrıs elektronik ürünleri, Trendyol Kıbrıs moda ürünleri, Trendyol Kıbrıs ev dekorasyonu,
+                Trendyol Kıbrıs kıyafet, Trendyol Kıbrıs ayakkabı, Trendyol Kıbrıs çanta, Trendyol Kıbrıs indirimli ürünler,
+                Trendyol Kıbrıs ücretsiz kargo, Kıbrıs Trendyol sipariş takibi, Trendyol Kıbrıs alışveriş rehberi
+            </span>
+        </a>
+
+        <!-- Hepsiburada -->
+        <a href="https://www.hepsiburada.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png"
+                 alt="Hepsiburada" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                Hepsiburada Kıbrıs, Türkiye'den Kıbrıs'a Hepsiburada kargo, Hepsiburada alışveriş, Hepsiburada Kıbrıs sipariş,
+                Kıbrıs Hepsiburada ürünleri, Hepsiburada Kıbrıs teslim, Hepsiburada Türkiye’den gönderim, Kıbrıs Hepsiburada fırsatları,
+                Hepsiburada kampanya Kıbrıs, Hepsiburada ürün fiyatları Kıbrıs, Hepsiburada Kıbrıs alışveriş sitesi,
+                Hepsiburada Kıbrıs hızlı kargo, Hepsiburada Kıbrıs güvenli alışveriş, Hepsiburada Kıbrıs indirim, Kıbrıs Hepsiburada sipariş süreci,
+                Hepsiburada Kıbrıs popüler ürünler, Hepsiburada Kıbrıs müşteri yorumları, Hepsiburada Kıbrıs ödeme seçenekleri,
+                Hepsiburada Kıbrıs elektronik ürünleri, Hepsiburada Kıbrıs moda ürünleri, Hepsiburada Kıbrıs ev dekorasyonu
+            </span>
+        </a>
+
+        <!-- N11 -->
+        <a href="https://www.n11.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg"
+                 alt="N11" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                N11 Kıbrıs, Türkiye'den Kıbrıs'a N11 kargo, N11 Kıbrıs alışveriş, N11 Kıbrıs sipariş, Kıbrıs N11 ürünleri,
+                N11 Kıbrıs teslim, N11 Türkiye’den gönderim, Kıbrıs N11 fırsatları, N11 kampanya Kıbrıs, N11 ürün fiyatları Kıbrıs,
+                N11 Kıbrıs alışveriş sitesi, N11 Kıbrıs hızlı kargo, N11 Kıbrıs güvenli alışveriş, N11 Kıbrıs indirim,
+                N11 Kıbrıs popüler ürünler, N11 Kıbrıs müşteri yorumları, N11 Kıbrıs ödeme seçenekleri
+            </span>
+        </a>
+
+        <!-- Amazon -->
+        <a href="https://www.amazon.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s"
+                 alt="Amazon" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                Amazon Kıbrıs, Türkiye'den Kıbrıs'a Amazon kargo, Amazon Kıbrıs alışveriş, Amazon Kıbrıs sipariş,
+                Kıbrıs Amazon ürünleri, Amazon Kıbrıs teslim, Amazon Türkiye’den gönderim, Kıbrıs Amazon fırsatları,
+                Amazon kampanya Kıbrıs, Amazon ürün fiyatları Kıbrıs, Amazon Kıbrıs alışveriş sitesi, Amazon Kıbrıs hızlı kargo
+            </span>
+        </a>
+
+
+        <a href="https://www.temu.com" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Temu_logo_icon.svg/2048px-Temu_logo_icon.svg.png"
+        alt="Temu" class="w-16 h-16 object-contain">
+    <span class="hidden">
+        Temu Kıbrıs, Türkiye'den Kıbrıs'a Temu kargo, Temu Kıbrıs sipariş, Kıbrıs Temu ürünleri,
+        Temu Kıbrıs teslim, Temu Türkiye’den gönderim, Kıbrıs Temu fırsatları, Temu kampanya Kıbrıs,
+        Temu ürün fiyatları Kıbrıs, Temu Kıbrıs alışveriş sitesi, Temu Kıbrıs hızlı kargo, Temu sipariş takibi Kıbrıs
+    </span>
+</a>
+
+     <a href="https://www.zara.com/tr/" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png"
+        alt="Zara" class="w-16 h-16 object-contain">
+    <span class="hidden">
+        Zara Kıbrıs, Türkiye'den Kıbrıs'a Zara kargo, Zara Kıbrıs sipariş, Kıbrıs Zara ürünleri,
+        Zara Kıbrıs teslim, Zara Türkiye’den gönderim, Kıbrıs Zara fırsatları, Zara kampanya Kıbrıs,
+        Zara ürün fiyatları Kıbrıs, Zara Kıbrıs moda, Zara Kıbrıs kıyafet, Zara Kıbrıs hızlı kargo
+    </span>
+</a>
+
+        <!-- ÇiçekSepeti -->
+        <a href="https://www.ciceksepeti.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg"
+                 alt="ÇiçekSepeti" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                ÇiçekSepeti Kıbrıs, Türkiye'den Kıbrıs'a ÇiçekSepeti kargo, ÇiçekSepeti Kıbrıs sipariş, Kıbrıs ÇiçekSepeti ürünleri,
+                ÇiçekSepeti Kıbrıs teslim, ÇiçekSepeti Türkiye’den gönderim, Kıbrıs ÇiçekSepeti fırsatları, ÇiçekSepeti kampanya Kıbrıs,
+                ÇiçekSepeti ürün fiyatları Kıbrıs, ÇiçekSepeti Kıbrıs alışveriş sitesi, ÇiçekSepeti Kıbrıs hızlı kargo
+            </span>
+        </a>
+
+        <!-- GittiGidiyor -->
+        <a href="https://www.gittigidiyor.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s"
+                 alt="GittiGidiyor" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                GittiGidiyor Kıbrıs, Türkiye'den Kıbrıs'a GittiGidiyor kargo, GittiGidiyor Kıbrıs alışveriş, GittiGidiyor Kıbrıs sipariş,
+                Kıbrıs GittiGidiyor ürünleri, GittiGidiyor Kıbrıs teslim, GittiGidiyor Türkiye’den gönderim, Kıbrıs GittiGidiyor fırsatları,
+                GittiGidiyor kampanya Kıbrıs, GittiGidiyor ürün fiyatları Kıbrıs, GittiGidiyor Kıbrıs alışveriş sitesi, GittiGidiyor Kıbrıs hızlı kargo
+            </span>
+        </a>
+
+    </div>
+</div>
+
+
+       <div class="mt-8 bg-gray-50 p-6 rounded-xl shadow-sm">
+  <h3 class="text-xl font-semibold mb-3 text-gray-800">Sipariş Yöntemleri</h3>
+  <p class="text-gray-700 mb-4">
+    Getir Kıbrıs’ta iki farklı sipariş yöntemiyle hizmet veriyoruz. Aşağıdaki seçeneklerden hangisi size uygunsa onu tercih edebilirsiniz:
+  </p>
+
+  <div class="space-y-6">
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h4 class="font-semibold text-lg text-indigo-700 mb-2">1️⃣ Ürünü Benim Yerime Sipariş Edin</h4>
+      <p class="text-gray-700">
+        Ürünü sizin yerinize biz sipariş ediyoruz. 
+        Ödemeyi bize yapıyorsunuz, tüm süreci biz takip ediyoruz.
+        Ürün elinize teslim edilene kadar Getir Kıbrıs güvencesindesiniz.
+      </p>
+    </div>
+
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h4 class="font-semibold text-lg text-indigo-700 mb-2">2️⃣ Ürünü Ben Alacağım Sadece Kargo Hizmeti İstiyorum</h4>
+      <p class="text-gray-700">
+        Bu yöntemde alışverişi kendiniz yaparsınız. Yalnızca Türkiye'deki gönderim adresi olarak <strong>Getir Kıbrıs deposu adresini</strong> girmelisiniz:
+      </p>
+
+      <div class="bg-gray-100 p-3 rounded-lg mt-3">
+        <p class="font-semibold text-sm text-gray-800">Getir Kıbrıs Türkiye Adresi:</p>
+        <p class="text-sm text-gray-700">
+          <strong>Adres:</strong> Aydın, Nazilli, Bozyurt Mah. Kanal Üstü 3281 sk. No:3 <br>
+          <strong>Telefon:</strong> +90 547 190 19 88
+        </p>
+      </div>
+
+      <p class="text-gray-700 mt-3">
+        Ürün bu adrese ulaştığında biz sizin adınıza teslim alır, Kıbrıs’a kargo ile gönderimini sağlarız.
+      </p>
+    </div>
+  </div>
+</div>
+
+            
             <div class="mt-6">
-                <h4 class="text-lg font-semibold mb-4">İletişim Bilgileri</h4>
+                <h4 class="text-lg font-semibold mb-4">Kıbrıs Depo Adresimiz</h4>
                 <div class="space-y-4">
                     <div class="flex items-start gap-3">
                         <div class="w-6 h-6 flex items-center justify-center text-primary">
@@ -377,18 +500,21 @@
         </section>
     </main>
 
-    <a href="https://wa.me/905391090879" target="_blank" data-readdy="true"
-        class="fixed bottom-20 right-4 z-50 bg-[#25D366] w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors">
-        <i class="ri-whatsapp-line ri-xl text-white"></i>
-    </a>
+<a href="https://wa.me/905471901988" target="_blank" data-readdy="true"
+   class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors p-6">
+   <i class="ri-whatsapp-line ri-xl text-white"></i>
+</a>
 
-    <div class="mt-8 px-4 pb-20 text-center">
-        <div class="space-x-4">
-            <a href="#" class="text-xs text-gray-600 hover:text-primary">Gizlilik Politikası</a>
-            <a href="#" class="text-xs text-gray-600 hover:text-primary">Kullanım Şartları</a>
-            <a href="#" class="text-xs text-gray-600 hover:text-primary">S.S.S.</a>
-        </div>
+
+
+
+  <div class="mt-8 px-4 pb-20 text-center">
+    <div class="space-x-4">
+        <a href="gizlilik-politikasi.html" class="text-xs text-gray-600 hover:text-primary">Gizlilik Politikası</a>
+        <a href="kullanim-sartlari.html" class="text-xs text-gray-600 hover:text-primary">Kullanım Şartları</a>
+        <a href="sss.html" class="text-xs text-gray-600 hover:text-primary">S.S.S.</a>
     </div>
+</div>
 
     <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
         <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
@@ -469,7 +595,7 @@
     // --- GLOBAL SETTINGS ---
     let pricingSettings = {};
     const DEFAULT_SETTINGS = {
-        categoryRates: { 'furniture': 0.70, 'electronics': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
+        categoryRates: { 'furniture': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
         cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
     };
 
@@ -514,7 +640,6 @@
         
         const categoryDisplayNames = {
             furniture: "Mobilya & Ev Eşyası",
-            electronics: "Elektronik",
             clothing: "Giyim & Ayakkabı",
             cosmetics: "Kozmetik",
             stationery: "Kırtasiye & Kitap"
@@ -732,4 +857,35 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
