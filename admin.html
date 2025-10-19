@@ -427,59 +427,82 @@
 
 
     function showOrderDetailModal(order) {
-        const content = document.getElementById('modal-order-content');
-        document.getElementById('modal-order-id').textContent = `Sipariş Detayı: #${order.id.substring(0, 8)}`;
-        
-        const itemsHtml = (order.items || []).map(item => `
-            <div class="border-t pt-2 mt-2">
-                <a href="${item.productLink}" target="_blank" class="text-blue-600 text-sm hover:underline truncate block">${item.productLink}</a>
-                <p class="text-xs text-gray-500">${item.quantity} adet x ${item.productPrice.toFixed(2)} ₺</p>
-            </div>
-        `).join('');
+    const content = document.getElementById('modal-order-content');
+    document.getElementById('modal-order-id').textContent = `Sipariş Detayı: #${order.id.substring(0, 8)}`;
 
-        content.innerHTML = `
-            <div class="grid grid-cols-2 gap-4 text-sm">
-                <div><strong>Müşteri:</strong> ${order.userFullName || 'N/A'}</div>
-                <div><strong>Telefon:</strong> ${order.userPhone || 'N/A'}</div>
-                <div><strong>Adres:</strong> ${order.deliveryAddress || 'N/A'}</div>
-                <div><strong>Sipariş Tarihi:</strong> ${order.orderDate?.toDate().toLocaleString('tr-TR') || 'N/A'}</div>
-            </div>
-            <div class="mt-4">
-                <h4 class="font-semibold mb-2">Ürünler</h4>
-                <div class="space-y-2">${itemsHtml}</div>
-            </div>
-            <div class="mt-4 border-t pt-2 text-right">
-                <p><strong>Genel Toplam:</strong> <span class="text-lg font-bold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</span></p>
-            </div>
-            <div class="mt-4">
-                <label for="modal-status-select" class="block text-sm font-medium text-gray-700">Durumu Güncelle</label>
-                <select id="modal-status-select" class="w-full mt-1 p-2 border rounded-lg">
-                    ${Object.entries(statusStyles).map(([key, value]) => {
-                        if(key === 'pending_payment') return '';
-                        return `<option value="${key}" ${order.status === key ? 'selected' : ''}>${value.text}</option>`
-                    }).join('')}
-                </select>
-                <button data-id="${order.id}" id="update-status-btn" class="w-full mt-2 bg-primary text-white py-2 rounded-lg hover:bg-primary/90">Güncelle</button>
-            </div>
-        `;
+    // 🔥 DÜZELTME: Hizmet Türünü items[0].orderMethod alanından okuyoruz.
+    // Eğer siparişte ürün yoksa veya ilk üründe bu bilgi yoksa null döner.
+    const serviceTypeRaw = (order.items && order.items.length > 0) ? order.items[0].orderMethod : null;
 
-        orderDetailModal.classList.remove('hidden');
+    let serviceTypeText = 'Belirtilmemiş (Veri Yok)';
+    let serviceTypeStyle = 'bg-gray-200 text-gray-800';
 
-        document.getElementById('update-status-btn').addEventListener('click', async e => {
-            const newStatus = document.getElementById('modal-status-select').value;
-            const orderId = e.target.dataset.id;
-            try {
-                await updateDoc(doc(db, "orders", orderId), { status: newStatus });
-                alert('Sipariş durumu güncellendi.');
-                orderDetailModal.classList.add('hidden');
-                loadAllOrders();
-                loadDashboardData(); // Dashboard'u da yenile
-            } catch(error) {
-                alert('Durum güncellenirken hata oluştu.');
-                console.error("Status update error:", error);
-            }
-        });
+    if (serviceTypeRaw === 'service') { // Müşteri: Benim için alın.
+        serviceTypeText = 'BENİM İÇİN AL';
+        serviceTypeStyle = 'bg-primary/10 text-primary font-bold'; 
+    } else if (serviceTypeRaw === 'self') { // Müşteri: Kendim sipariş edeceğim.
+        serviceTypeText = 'KARGO HİZMETİ İSTİYORUM';
+        serviceTypeStyle = 'bg-secondary/20 text-yellow-800 font-bold'; 
     }
+
+    const itemsHtml = (order.items || []).map(item => `
+        <div class="border-t pt-2 mt-2">
+            <a href="${item.productLink}" target="_blank" class="text-blue-600 text-sm hover:underline truncate block">${item.productLink}</a>
+            <p class="text-xs text-gray-500">${item.quantity} adet x ${item.productPrice.toFixed(2)} ₺</p>
+            <p class="text-xs ${item.orderMethod === 'service' ? 'text-primary' : 'text-yellow-800'} font-medium">
+                Sipariş Yöntemi: ${item.orderMethod === 'service' ? 'Admin Alacak' : 'Müşteri Alacak'}
+            </p>
+        </div>
+    `).join('');
+
+    content.innerHTML = `
+        <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="col-span-2 pb-2 mb-2 border-b">
+                <strong>Genel Sipariş Yöntemi:</strong> 
+                <span class="px-3 py-1 rounded-full ${serviceTypeStyle} text-xs uppercase shadow-sm">${serviceTypeText}</span>
+            </div>
+            
+            <div><strong>Müşteri:</strong> ${order.userFullName || 'N/A'}</div>
+            <div><strong>Telefon:</strong> ${order.userPhone || 'N/A'}</div>
+            <div><strong>Adres/Şehir:</strong> ${order.deliveryAddress || 'N/A'} (${order.deliveryCity || 'N/A'})</div>
+            <div><strong>Sipariş Tarihi:</strong> ${order.orderDate?.toDate().toLocaleString('tr-TR') || 'N/A'}</div>
+        </div>
+        <div class="mt-4">
+            <h4 class="font-semibold mb-2">Ürünler</h4>
+            <div class="space-y-2">${itemsHtml}</div>
+        </div>
+        <div class="mt-4 border-t pt-2 text-right">
+            <p><strong>Genel Toplam:</strong> <span class="text-lg font-bold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</span></p>
+        </div>
+        <div class="mt-4">
+            <label for="modal-status-select" class="block text-sm font-medium text-gray-700">Durumu Güncelle</label>
+            <select id="modal-status-select" class="w-full mt-1 p-2 border rounded-lg">
+                ${Object.entries(statusStyles).map(([key, value]) => {
+                    // pending_payment durumunu modal'da görünür yapmak için if kontrolü kaldırıldı (Önceki Düzeltme)
+                    return `<option value="${key}" ${order.status === key ? 'selected' : ''}>${value.text}</option>`
+                }).join('')}
+            </select>
+            <button data-id="${order.id}" id="update-status-btn" class="w-full mt-2 bg-primary text-white py-2 rounded-lg hover:bg-primary/90">Güncelle</button>
+        </div>
+    `;
+
+    orderDetailModal.classList.remove('hidden');
+
+    document.getElementById('update-status-btn').addEventListener('click', async e => {
+        const newStatus = document.getElementById('modal-status-select').value;
+        const orderId = e.target.dataset.id;
+        try {
+            await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+            alert('Sipariş durumu güncellendi.');
+            orderDetailModal.classList.add('hidden');
+            loadAllOrders();
+            loadDashboardData();
+        } catch(error) {
+            alert('Durum güncellenirken hata oluştu.');
+            console.error("Status update error:", error);
+        }
+    });
+}
 
     async function loadAllUsers() {
         const tableBody = document.getElementById('users-table-body');
