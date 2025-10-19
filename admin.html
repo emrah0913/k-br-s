@@ -430,9 +430,11 @@
     const content = document.getElementById('modal-order-content');
     document.getElementById('modal-order-id').textContent = `Sipariş Detayı: #${order.id.substring(0, 8)}`;
 
-    // 🔥 DÜZELTME: Hizmet Türünü items[0].orderMethod alanından okuyoruz.
-    // Eğer siparişte ürün yoksa veya ilk üründe bu bilgi yoksa null döner.
+    // 🔥 DÜZELTME 1: Hizmet Türünü (orderMethod) okuyoruz.
     const serviceTypeRaw = (order.items && order.items.length > 0) ? order.items[0].orderMethod : null;
+    // 🔥 YENİ EKLEME 1: Kategoriyi items[0].category alanından okuyoruz.
+    const orderCategory = (order.items && order.items.length > 0) ? order.items[0].category : 'Belirtilmemiş';
+
 
     let serviceTypeText = 'Belirtilmemiş (Veri Yok)';
     let serviceTypeStyle = 'bg-gray-200 text-gray-800';
@@ -445,6 +447,7 @@
         serviceTypeStyle = 'bg-secondary/20 text-yellow-800 font-bold'; 
     }
 
+    // 🔥 YENİ EKLEME 2: Ürünler listesine kategori bilgisini ekliyoruz.
     const itemsHtml = (order.items || []).map(item => `
         <div class="border-t pt-2 mt-2">
             <a href="${item.productLink}" target="_blank" class="text-blue-600 text-sm hover:underline truncate block">${item.productLink}</a>
@@ -452,6 +455,7 @@
             <p class="text-xs ${item.orderMethod === 'service' ? 'text-primary' : 'text-yellow-800'} font-medium">
                 Sipariş Yöntemi: ${item.orderMethod === 'service' ? 'Admin Alacak' : 'Müşteri Alacak'}
             </p>
+            <p class="text-xs text-gray-500 mt-0.5">Kategori: <span class="capitalize font-medium text-gray-700">${item.category || 'Belirtilmemiş'}</span></p>
         </div>
     `).join('');
 
@@ -462,6 +466,7 @@
                 <span class="px-3 py-1 rounded-full ${serviceTypeStyle} text-xs uppercase shadow-sm">${serviceTypeText}</span>
             </div>
             
+            <div><strong>Kategori:</strong> <span class="capitalize font-semibold">${orderCategory}</span></div>
             <div><strong>Müşteri:</strong> ${order.userFullName || 'N/A'}</div>
             <div><strong>Telefon:</strong> ${order.userPhone || 'N/A'}</div>
             <div><strong>Adres/Şehir:</strong> ${order.deliveryAddress || 'N/A'} (${order.deliveryCity || 'N/A'})</div>
@@ -478,7 +483,6 @@
             <label for="modal-status-select" class="block text-sm font-medium text-gray-700">Durumu Güncelle</label>
             <select id="modal-status-select" class="w-full mt-1 p-2 border rounded-lg">
                 ${Object.entries(statusStyles).map(([key, value]) => {
-                    // pending_payment durumunu modal'da görünür yapmak için if kontrolü kaldırıldı (Önceki Düzeltme)
                     return `<option value="${key}" ${order.status === key ? 'selected' : ''}>${value.text}</option>`
                 }).join('')}
             </select>
