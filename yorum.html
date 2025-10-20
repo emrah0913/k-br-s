@@ -15,8 +15,29 @@
     <meta name="google-signin-client_id" content="**GOOGLE_CLIENT_ID_BURAYA**.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
     <script>
-        // Tailwind CSS Konfigürasyonu (index.html'den kopyalandı)
+        // SİZİN TARAFLINDAN SAĞLANAN FIREBASE KONFİGÜRASYONU
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+            authDomain: "kibris-6b4f7.firebaseapp.com",
+            projectId: "kibris-6b4f7",
+            storageBucket: "kibris-6b4f7.firebasestorage.app",
+            messagingSenderId: "141262926171",
+            appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+            measurementId: "G-JL9P6BRZTD"
+        };
+
+        // Firebase'i Başlat ve Servisleri Tanımla
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+    <script>
+        // Tailwind CSS Konfigürasyonu
         tailwind.config = {
             theme: {
                 extend: {
@@ -29,15 +50,7 @@
                     },
                     borderRadius: {
                         'button': '8px',
-                        'none': '0px',
-                        'sm': '4px',
                         DEFAULT: '8px',
-                        'md': '12px',
-                        'lg': '16px',
-                        'xl': '20px',
-                        '2xl': '24px',
-                        '3xl': '32px',
-                        'full': '9999px',
                     }
                 }
             }
@@ -49,16 +62,15 @@
             font-family: 'Inter', sans-serif;
             background-color: #f9f9f9; 
         }
-        /* Yorum yıldızlarının rengini değiştiren özel CSS */
+        /* Yıldız Stilleri */
         .stars input[type="radio"]:checked ~ label::before {
-            color: #ffd300; /* secondary rengi */
+            color: #ffd300; 
         }
         .stars label:hover,
         .stars label:hover ~ label {
-            color: #ffd300; /* secondary rengi */
+            color: #ffd300; 
         }
         .stars label {
-            /* Remixicon kullanımı için */
             font-family: 'RemixIcon' !important;
             font-style: normal;
             font-size: 24px;
@@ -67,8 +79,7 @@
             cursor: pointer;
         }
         .stars label::before {
-             /* ri-star-fill unicode */
-            content: "\e8a1"; 
+            content: "\e8a1"; /* ri-star-fill unicode */
         }
         .stars input[type="radio"] {
             display: none;
@@ -85,8 +96,7 @@
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
     <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
-        <div class="flex-1">
-        </div>
+        <div class="flex-1"></div>
         <div class="flex flex-col items-center">
             <img src="logom.png" alt="Getir Kıbrıs" class="h-12"> 
             <a href="index.html" class="text-sm font-medium text-primary mt-1">Ana Sayfa</a>
@@ -140,30 +150,7 @@
             </div>
 
             <div id="approved-comments-list" class="space-y-4 mt-8">
-                <h3 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Kullanıcı Deneyimleri</h3>
-                
-                <div class="comment-card bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-2">
-                        <p class="font-semibold text-primary">Ayşe T. (Örnek)</p>
-                        <div class="star-rating text-secondary text-lg">
-                            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-line"></i>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-700">Trendyol'dan aldığım ayakkabılar 5 günde elime ulaştı. Süreç çok hızlı ve bilgilendirme harikaydı. Kesinlikle tavsiye ederim!</p>
-                    <p class="text-xs text-gray-500 mt-2 text-right">01.01.2024</p>
                 </div>
-                <div class="comment-card bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-2">
-                        <p class="font-semibold text-primary">Mehmet K. (Örnek)</p>
-                        <div class="star-rating text-secondary text-lg">
-                            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-700">Büyük bir mobilya ürünü sipariş ettim, kargo ve gümrük işlemleriyle hiç uğraşmadım. Getir Kıbrıs ekibine teşekkürler.</p>
-                    <p class="text-xs text-gray-500 mt-2 text-right">15.12.2023</p>
-                </div>
-                
-            </div>
 
         </section>
     </main>
@@ -175,34 +162,24 @@
     // 1. Google Girişi Başarılı Olunca Çalışacak Fonksiyon
     function onSignIn(googleUser) {
         const profile = googleUser.getBasicProfile();
-        const id_token = googleUser.getAuthResponse().id_token; 
-
+        // Kullanıcı bilgilerini global değişkene kaydet
         currentUser = {
             id: profile.getId(), 
             name: profile.getName(),
             email: profile.getEmail(),
             imageUrl: profile.getImageUrl(),
-            token: id_token
+            token: googleUser.getAuthResponse().id_token
         };
 
-        // Header'daki profil alanını güncelle
-        const profileImg = document.getElementById('profile-img');
-        const profileContainer = document.getElementById('profile-container');
-        const loginBtn = document.getElementById('login-btn');
-
-        profileImg.src = currentUser.imageUrl;
-        profileImg.alt = currentUser.name;
-        profileContainer.classList.remove('hidden');
-        loginBtn.classList.add('hidden');
-        
-        // Yorum formunu göster ve giriş butonunu gizle
+        // Görünümü güncelle
+        document.getElementById('profile-img').src = currentUser.imageUrl;
+        document.getElementById('profile-container').classList.remove('hidden');
+        document.getElementById('login-btn').classList.add('hidden');
         document.getElementById('login-to-comment').style.display = 'none';
         document.getElementById('comment-form-container').style.display = 'block';
-
-        console.log("Kullanıcı Giriş Yaptı:", currentUser.name);
     }
 
-    // 2. Yorum Formu Gönderildiğinde Çalışacak Fonksiyon
+    // 2. Yorum Formu Gönderildiğinde Çalışacak Fonksiyon (FIRESTORE)
     document.getElementById('comment-form').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -221,40 +198,44 @@
         }
         
         const commentData = {
-            user_id: currentUser.id,
-            user_name: currentUser.name,
-            rating: ratingElement.value,
-            comment: commentText,
-            is_approved: false, 
+            userId: currentUser.id,
+            userName: currentUser.name,
+            userPhoto: currentUser.imageUrl,
+            rating: parseInt(ratingElement.value),
+            commentText: commentText,
+            isApproved: false, // Yönetici onayı bekliyor
+            createdAt: firebase.firestore.FieldValue.serverTimestamp() // Sunucu Zaman Damgası
         };
         
         commentStatus.textContent = "Yorumunuz gönderiliyor...";
         commentStatus.classList.remove('hidden', 'text-green-600', 'text-red-600');
         commentStatus.classList.add('text-gray-600');
         
-        // Gerçek bir sunucu isteği ve backend simülasyonu
-        // BURADA SİZİN KENDİ /api/submit-comment ENDPOINTİNİZ OLMALIDIR!
-        
-        // **Simülasyon (Backend yoksa bu çalışır):**
-        setTimeout(() => {
-            commentStatus.textContent = "Yorumunuz başarıyla gönderildi ve yönetici onayını bekliyor. Teşekkür ederiz! 🎉";
+        // Firestore'a veri kaydı ('comments' koleksiyonuna)
+        db.collection("comments").add(commentData)
+        .then(() => {
+            commentStatus.textContent = "Yorumunuz başarıyla gönderildi ve yönetici onayını bekliyor. 🎉";
             commentStatus.classList.remove('text-gray-600');
             commentStatus.classList.add('text-green-600');
-            commentStatus.classList.remove('hidden');
             document.getElementById('comment-form').reset();
-            // Puanlamayı sıfırla
             document.querySelectorAll('.stars input[type="radio"]').forEach(radio => radio.checked = false);
-        }, 1500);
+            commentStatus.classList.remove('hidden');
+        })
+        .catch((error) => {
+            console.error("Yorum kaydetme hatası:", error);
+            commentStatus.textContent = "Hata: Yorum kaydedilemedi. Lütfen tekrar deneyin.";
+            commentStatus.classList.remove('text-gray-600');
+            commentStatus.classList.add('text-red-600');
+            commentStatus.classList.remove('hidden');
+        });
     });
     
     // Google Sign-Out Fonksiyonu
     document.getElementById('profile-img').addEventListener('click', function() {
         if (confirm("Çıkış yapmak istediğinizden emin misiniz?")) {
-            // gapi yüklendi mi kontrolü
             if (typeof gapi !== 'undefined' && gapi.auth2) {
                 const auth2 = gapi.auth2.getAuthInstance();
                 auth2.signOut().then(function () {
-                    console.log('Kullanıcı Google Hesabından Çıkış Yaptı.');
                     currentUser = null;
                     document.getElementById('profile-container').classList.add('hidden');
                     document.getElementById('login-btn').classList.remove('hidden');
@@ -262,7 +243,6 @@
                     document.getElementById('comment-form-container').style.display = 'none';
                 });
             } else {
-                 // Gapi yüklenmediyse bile görünümü elle sıfırla
                 currentUser = null;
                 document.getElementById('profile-container').classList.add('hidden');
                 document.getElementById('login-btn').classList.remove('hidden');
@@ -272,6 +252,72 @@
         }
     });
 
+    // Yıldız HTML'i üreten yardımcı fonksiyon
+    function generateStars(rating) {
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                html += '<i class="ri-star-fill"></i>';
+            } else {
+                html += '<i class="ri-star-line text-gray-300"></i>';
+            }
+        }
+        return html;
+    }
+
+    // 3. Onaylanmış Yorumları Çekip Listeleme Fonksiyonu (FIRESTORE)
+    function fetchApprovedComments() {
+        const listContainer = document.getElementById('approved-comments-list');
+        listContainer.innerHTML = '<h3 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Kullanıcı Deneyimleri</h3><p class="text-gray-500 text-center">Yorumlar yükleniyor...</p>';
+
+        // Firestore sorgusu: isApproved = true olanları, en yeniyi üste koyarak getir.
+        db.collection("comments")
+          .where("isApproved", "==", true) 
+          .orderBy("createdAt", "desc")
+          .get()
+          .then((querySnapshot) => {
+            listContainer.innerHTML = '<h3 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Kullanıcı Deneyimleri</h3>';
+            
+            if (querySnapshot.empty) {
+                listContainer.insertAdjacentHTML('beforeend', '<p class="text-gray-500 text-center">Henüz onaylanmış bir yorum bulunmamaktadır.</p>');
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const comment = doc.data();
+                
+                const starsHtml = generateStars(comment.rating);
+                // Tarih formatlama
+                const dateString = comment.createdAt 
+                    ? new Date(comment.createdAt.seconds * 1000).toLocaleDateString('tr-TR') 
+                    : 'Tarih Yok';
+                
+                const commentElement = `
+                    <div class="comment-card bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center">
+                                <img src="${comment.userPhoto || 'https://via.placeholder.com/40'}" alt="${comment.userName}" class="w-8 h-8 rounded-full mr-2">
+                                <p class="font-semibold text-primary">${comment.userName}</p>
+                            </div>
+                            <div class="star-rating text-secondary text-lg">
+                                ${starsHtml}
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-700">${comment.commentText}</p>
+                        <p class="text-xs text-gray-500 mt-2 text-right">${dateString}</p>
+                    </div>
+                `;
+                listContainer.insertAdjacentHTML('beforeend', commentElement);
+            });
+          })
+          .catch((error) => {
+              console.error("Yorumları yükleme hatası:", error);
+              listContainer.innerHTML = '<p class="text-red-500 text-center">Yorumlar yüklenirken bir hata oluştu.</p>';
+          });
+    }
+
+    // Sayfa yüklendiğinde yorumları çek
+    document.addEventListener('DOMContentLoaded', fetchApprovedComments);
 </script>
 
 </body>
