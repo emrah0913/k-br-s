@@ -111,19 +111,26 @@
         </div>
     </header>
 
-    <main class="pt-16 pb-20">
-       <div class="relative w-full h-64 sm:h-80 lg:h-[450px] overflow-hidden mb-6">
+   <main class="pt-16 pb-20">
+  <div class="relative w-full overflow-hidden mb-6" style="padding-top: 56.25%;">
     <iframe 
-        class="w-full h-full object-cover" 
-        src="https://www.youtube.com/embed/YYNLzJJKTXs" 
-        title="YouTube video player" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        referrerpolicy="strict-origin-when-cross-origin" 
-        allowfullscreen>
+      class="absolute top-0 left-0 w-full h-full" 
+      src="https://www.youtube.com/embed/YYNLzJJKTXs?autoplay=1&mute=1&loop=1&playlist=YYNLzJJKTXs"
+      title="YouTube video player" 
+      frameborder="0" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      referrerpolicy="strict-origin-when-cross-origin" 
+      allowfullscreen>
     </iframe>
-    <div class="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent pointer-events-none"></div>
-</div>
+
+    <!-- Hafif mor transparan geçiş (videoyu boğmadan, mobilde görünürlüğü artırır) -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#5b21b6]/25 via-transparent to-transparent pointer-events-none"></div>
+
+    <!-- Alt kısmı biraz yumuşatmak için -->
+    <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#5b21b6]/40 to-transparent pointer-events-none"></div>
+  </div>
+</main>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-8">
             <button id="calculate-btn"
                 class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
@@ -1242,6 +1249,7 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
 
 </body>
 </html>
+
 
 
 
