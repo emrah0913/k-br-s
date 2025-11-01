@@ -72,30 +72,18 @@
         const productListElement = document.getElementById('product-list');
         const statusMessageElement = document.getElementById('status-message');
 
-        // Global değişkenleri güvenli bir şekilde al ve Firebase yapılandırmasını kontrol et
-        let firebaseConfig = {};
-        try {
-            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                firebaseConfig = JSON.parse(__firebase_config);
-                if (!firebaseConfig.projectId) {
-                    throw new Error("Firebase config içinde 'projectId' eksik.");
-                }
-            } else {
-                throw new Error("Firebase yapılandırması (__firebase_config) tanımlanmamış veya boş.");
-            }
-        } catch (error) {
-            console.error("Yapılandırma Hatası:", error.message);
-            statusMessageElement.textContent = `HATA: Firebase yapılandırma verisi geçerli değil. ${error.message}`;
-            statusMessageElement.classList.add('text-red-600');
-            // Veri yüklenmediği için daha fazla işlem yapma
-            throw new Error("Veritabanı bağlantısı kurulamadı, yapılandırma hatası.");
-        }
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
+        // Firestore ve Auth referansları için modül kapsamlı değişkenler EKLENDİ.
         let db, auth;
-        let userId = null;
+
+        // Sahte veri (Mock Data)
+        const MOCK_PRODUCTS = [
+            { id: 'm1', name: 'Beyaz Akıllı Kupa', price: 199.90, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Kupa' },
+            { id: 'm2', name: 'Ergonomik Masa Lambası', price: 450.00, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Lamba' },
+            { id: 'm3', name: 'Premium Türk Kahvesi (250g)', price: 75.50, unit: '250 gr', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Kahve' },
+            { id: 'm4', name: 'Mini Elektrikli Süpürge', price: 899.00, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Supurge' },
+            { id: 'm5', name: 'Akıllı Telefon Tutucu', price: 59.99, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Tutucu' },
+        ];
+
 
         // Utility: Parayı TL formatında biçimlendirir
         const formatPrice = (price) => {
@@ -104,8 +92,8 @@
         };
 
         // Ürünleri DOM'a render eden fonksiyon
-        const renderProducts = (products) => {
-            productListElement.innerHTML = ''; // Mevcut içeriği temizle
+        const renderProducts = (products, isMock = false) => {
+            productListElement.innerHTML = ''; 
 
             if (products.length === 0) {
                 statusMessageElement.textContent = 'Admin panelinden henüz ürün eklenmemiş.';
@@ -114,12 +102,19 @@
                 return;
             }
 
-            statusMessageElement.classList.add('hidden'); // Ürün varsa mesajı gizle
+            statusMessageElement.classList.add('hidden'); 
+
+            if (isMock) {
+                const mockWarning = document.createElement('div');
+                mockWarning.className = "col-span-full mb-4 p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg text-sm font-semibold";
+                mockWarning.textContent = "UYARI: Firebase bağlantı hatası nedeniyle SAHTE VERİLER (MOCK DATA) gösteriliyor. Gerçek veriler için konsoldaki yapılandırma hatasını düzeltin.";
+                productListElement.appendChild(mockWarning);
+            }
+
 
             products.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'product-card bg-white rounded-xl shadow-md overflow-hidden p-3 border border-gray-100 flex flex-col justify-between';
-                // Fiyatı number olarak alalım, string olarak gelirse 0 varsayalım
                 const price = typeof product.price === 'string' ? parseFloat(product.price.replace(',', '.')) : product.price;
 
                 card.innerHTML = `
@@ -146,6 +141,40 @@
 
         // Firebase başlatma ve kimlik doğrulama
         const initializeFirebase = async () => {
+            let firebaseConfig = {};
+            let configError = null;
+
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                    if (!firebaseConfig.projectId) {
+                        throw new Error("Firebase config içinde 'projectId' eksik.");
+                    }
+                } else {
+                    throw new Error("Firebase yapılandırması (__firebase_config) tanımlanmamış veya boş.");
+                }
+            } catch (error) {
+                configError = error.message;
+                console.error("Yapılandırma Hatası:", configError);
+            }
+
+            if (configError) {
+                // Yapılandırma hatası varsa mock veriyi göster
+                statusMessageElement.textContent = `HATA: Firebase bağlantısı kurulamadı. ${configError}`;
+                statusMessageElement.classList.remove('getir-text');
+                statusMessageElement.classList.add('text-red-600');
+                
+                // Sahte verileri göster
+                MOCK_PRODUCTS.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                renderProducts(MOCK_PRODUCTS, true);
+                return; 
+            }
+            
+            // Eğer config doğruysa, normal akışa devam et
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            let userId = null;
+
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
@@ -157,7 +186,6 @@
                         if (user) {
                             userId = user.uid;
                         } else {
-                            // Token varsa custom token ile oturum aç, yoksa anonim oturum aç
                             if (initialAuthToken) {
                                 await signInWithCustomToken(auth, initialAuthToken);
                                 userId = auth.currentUser.uid;
@@ -174,11 +202,10 @@
                 console.log("Firebase ve Kimlik Doğrulama Hazır. Kullanıcı ID:", userId);
 
                 // Veri dinlemeyi başlat
-                startDataListener();
+                startDataListener(db, appId);
 
             } catch (error) {
-                // Yapılandırma hatası zaten yukarıda yakalanır. Burası sadece auth veya firestore hataları içindir.
-                console.error("Firebase başlatılırken/doğrulanırken bir hata oluştu:", error);
+                console.error("Firebase başlatılırken/doğrulanırken kritik hata oluştu:", error);
                 statusMessageElement.textContent = `Hata: Oturum veya veritabanı bağlantısında sorun. Lütfen konsolu kontrol edin.`;
                 statusMessageElement.classList.remove('getir-text');
                 statusMessageElement.classList.add('text-red-600');
@@ -186,29 +213,25 @@
         };
 
         // Firestore'dan ürün verilerini dinlemeyi başlatan fonksiyon (Realtime)
-        const startDataListener = () => {
+        const startDataListener = (dbInstance, currentAppId) => {
             // Ürünlerin tutulacağı koleksiyon yolu: /artifacts/{appId}/public/data/getirHomeProducts
-            const productsCollectionPath = `/artifacts/${appId}/public/data/getirHomeProducts`;
-            const q = collection(db, productsCollectionPath);
+            const productsCollectionPath = `/artifacts/${currentAppId}/public/data/getirHomeProducts`;
+            const q = collection(dbInstance, productsCollectionPath);
 
             // onSnapshot ile gerçek zamanlı veri dinlemesi
             onSnapshot(q, (snapshot) => {
                 const products = [];
                 snapshot.forEach((doc) => {
-                    // Veriyi alırken parse etmeye gerek kalmaması için doğrudan kullanıyoruz
-                    // Not: JSON.parse/stringify sadece nested array'ler için zorunludur.
                     products.push({ id: doc.id, ...doc.data() });
                 });
 
-                // Products'ı isme göre alfabetik sıralayalım (Firestore'da index gerektiren orderBy kullanmaktan kaçınıyoruz)
                 products.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
                 renderProducts(products);
-                console.log(`${products.length} adet ürün yüklendi.`);
+                console.log(`Gerçek veritabanından ${products.length} adet ürün yüklendi.`);
 
             }, (error) => {
                 console.error("Firestore verileri dinlenirken hata oluştu:", error);
-                // Kullanıcıya görünür bir hata mesajı göster
                 statusMessageElement.textContent = 'Ürünleri getirirken bir hata oluştu. Veritabanı okuma izninizi kontrol edin.';
                 statusMessageElement.classList.remove('getir-text');
                 statusMessageElement.classList.add('text-red-600');
