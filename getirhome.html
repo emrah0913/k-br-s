@@ -28,14 +28,13 @@
     const auth = getAuth(app); 
     let currentUser = null; 
 
-    // YENİ: Sayfa yüklendiğinde kullanıcı durumunu dinle
+    // Sayfa yüklendiğinde kullanıcı durumunu dinle
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
     });
 
     // === Dinamik Banner ===
     async function loadBanners() {
-      // ... (Aynı kaldı)
       const bannerContainer = document.getElementById("banner-slider");
       const q = query(collection(db, "homeBanners"));
       try {
@@ -60,7 +59,6 @@
 
     // === Kategoriler ===
     async function loadCategories() {
-      // ... (Aynı kaldı)
       const catContainer = document.getElementById("kategori-listesi");
       try {
         const snapshot = await getDocs(collection(db, "homeCategories"));
@@ -80,8 +78,8 @@
       }
     }
     
-    // === Sepete Ekleme Fonksiyonu (GÜNCELLENDİ: 4. parametre eklendi) ===
-    async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) { // <-- urunLink buraya eklendi!
+    // === Sepete Ekleme Fonksiyonu (Eksiksiz: Link, Ad, Resim URL kaydı yapıldı) ===
+    async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) {
         if (!currentUser) {
             alert("Sepete ürün eklemek için lütfen giriş yapınız.");
             window.location.href = '/index.html'; 
@@ -92,18 +90,17 @@
             const cartRef = collection(db, 'users', currentUser.uid, 'cart');
             
             const newCartItem = {
-                // KRİTİK DEĞİŞİKLİK: urunLink parametresi artık 'productLink' alanına kaydediliyor.
+                // KRİTİK: İstenen tüm bilgiler (Link, Ad, Resim URL) Firebase'e kaydediliyor
                 productLink: urunLink, 
+                urunAdi: urunAdi,
+                resimURL: resimURL,
                 
-                productPrice: parseFloat(urunFiyati), // Gönderilen SON FİYAT
+                productPrice: parseFloat(urunFiyati),
                 quantity: 1, 
                 
-                // Komisyon ayarları
+                // Komisyon ayarları (Eski kodunuzdan korundu)
                 category: 'directBuyHome', 
                 orderMethod: 'service', 
-
-                urunAdi: urunAdi,
-                resimURL: resimURL
             };
 
             await addDoc(cartRef, newCartItem);
@@ -117,7 +114,7 @@
         }
     }
 
-    // === Ürünler (GÜNCELLENDİ: urunLink okundu ve gönderildi) ===
+    // === Ürünler (Eksiksiz: Link okundu ve addToCart'a gönderildi) ===
     async function loadProducts(kategoriId = null, kategoriAdi = null) {
       const urunContainer = document.getElementById("urun-listesi");
       urunContainer.innerHTML = "<p class='text-gray-400'>Yükleniyor...</p>";
@@ -136,18 +133,18 @@
           const card = document.createElement("div");
           card.className = "border rounded-xl p-4 shadow hover:shadow-lg transition bg-white";
 
-          // YENİ: Firebase'den urun.link alanını alıyoruz. (link alanının var olduğu varsayılmıştır)
+          // 1. Link, Resim ve Ad okundu
           const urunLink = urun.link || "#"; 
-          // SQL injection'ı önlemek için tırnakları temizliyoruz
-          const cleanUrunAdi = urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"');
-          
-          // GÜNCELLENDİ: addToCart fonksiyonuna urunLink 4. parametre olarak eklendi
+          const cleanUrunAdi = urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"');
+          const urunResim = urun.resimURL || 'placeholder.jpg';
+
+          // 2. addToCart fonksiyonuna tüm 4 parametre gönderildi.
           card.innerHTML = `
-            <img src="${urun.resimURL}" alt="${urun.urunAdi}" class="w-full h-48 object-cover rounded-lg mb-3">
+            <img src="${urunResim}" alt="${urun.urunAdi}" class="w-full h-48 object-cover rounded-lg mb-3">
             <h3 class="text-lg font-semibold mb-1">${urun.urunAdi}</h3>
             <p class="text-gray-600 text-sm mb-2">${urun.aciklama || ""}</p>
             <p class="text-blue-600 font-bold mb-3">${urun.fiyat} ₺</p>
-            <button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urun.resimURL}', '${urunLink}')"
+            <button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urunResim}', '${urunLink}')"
                     class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
               Sepete Ekle
             </button>
