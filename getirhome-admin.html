@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getir Home Yönetimi | Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    // === Firebase Modülleri ===
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+      authDomain: "kibris-6b4f7.firebaseapp.com",
+      projectId: "kibris-6b4f7",
+      storageBucket: "kibris-6b4f7.firebasestorage.app",
+      messagingSenderId: "141262926171",
+      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+      measurementId: "G-JL9P6BRZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // === Admin kontrolü ===
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        alert("Bu sayfaya erişim için giriş yapmalısınız.");
+        window.location.href = "/admin.html";
+        return;
+      }
+
+      // Firestore'da kullanıcının admin olup olmadığını kontrol et
+      const usersSnap = await getDocs(collection(db, "users"));
+      let isAdmin = false;
+      usersSnap.forEach(u => {
+        const data = u.data();
+        if (data.email === user.email && data.role === "admin") {
+          isAdmin = true;
+        }
+      });
+
+      if (!isAdmin) {
+        alert("Bu sayfaya sadece admin erişebilir.");
+        window.location.href = "/index.html";
+        return;
+      }
+
+      document.getElementById("panel").classList.remove("hidden");
+      loadAllData();
+    });
+
+    // === Banner Ekle ===
+    async function addBanner() {
+      const url = document.getElementById("bannerUrl").value;
+      if (!url) return alert("Banner URL'si boş olamaz!");
+      await addDoc(collection(db, "homeBanners"), { resimURL: url, aktif: true });
+      document.getElementById("bannerUrl").value = "";
+      alert("Banner eklendi!");
+      loadBanners();
+    }
+
+    async function loadBanners() {
+      const list = document.getElementById("bannerList");
+      list.innerHTML = "";
+      const snap = await getDocs(collection(db, "homeBanners"));
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between bg-gray-100 p-2 rounded";
+        div.innerHTML = `
+          <img src="${data.resimURL}" class="h-12 w-20 object-cover rounded">
+          <button class="text-red-500" onclick="deleteBanner('${docSnap.id}')">Sil</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function deleteBanner(id) {
+      await deleteDoc(doc(db, "homeBanners", id));
+      loadBanners();
+    }
+
+    // === Kategori Ekle ===
+    async function addCategory() {
+      const name = document.getElementById("kategoriAdi").value;
+      const ust = document.getElementById("ustKategori").value;
+      if (!name) return alert("Kategori adı boş olamaz!");
+      await addDoc(collection(db, "homeCategories"), { kategoriAdi: name, ustKategori: ust, aktif: true });
+      document.getElementById("kategoriAdi").value = "";
+      document.getElementById("ustKategori").value = "";
+      alert("Kategori eklendi!");
+      loadCategories();
+    }
+
+    async function loadCategories() {
+      const list = document.getElementById("kategoriList");
+      list.innerHTML = "";
+      const snap = await getDocs(collection(db, "homeCategories"));
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between bg-gray-100 p-2 rounded";
+        div.innerHTML = `
+          <span>${data.kategoriAdi}</span>
+          <button class="text-red-500" onclick="deleteCategory('${docSnap.id}')">Sil</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function deleteCategory(id) {
+      await deleteDoc(doc(db, "homeCategories", id));
+      loadCategories();
+    }
+
+    // === Ürün Ekle ===
+    async function addProduct() {
+      const urunAdi = document.getElementById("urunAdi").value;
+      const fiyat = document.getElementById("fiyat").value;
+      const aciklama = document.getElementById("aciklama").value;
+      const resimURL = document.getElementById("resimURL").value;
+      const kategoriId = document.getElementById("kategoriId").value;
+
+      if (!urunAdi || !fiyat || !kategoriId) return alert("Lütfen zorunlu alanları doldurun.");
+
+      await addDoc(collection(db, "homeProducts"), {
+        urunAdi, fiyat, aciklama, resimURL, kategoriId, aktif: true
+      });
+
+      document.getElementById("urunAdi").value = "";
+      document.getElementById("fiyat").value = "";
+      document.getElementById("aciklama").value = "";
+      document.getElementById("resimURL").value = "";
+      document.getElementById("kategoriId").value = "";
+      alert("Ürün eklendi!");
+      loadProducts();
+    }
+
+    async function loadProducts() {
+      const list = document.getElementById("urunList");
+      list.innerHTML = "";
+      const snap = await getDocs(collection(db, "homeProducts"));
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between bg-gray-100 p-2 rounded";
+        div.innerHTML = `
+          <span>${data.urunAdi} (${data.fiyat} ₺)</span>
+          <button class="text-red-500" onclick="deleteProduct('${docSnap.id}')">Sil</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    async function deleteProduct(id) {
+      await deleteDoc(doc(db, "homeProducts", id));
+      loadProducts();
+    }
+
+    // === Hepsini Yükle ===
+    async function loadAllData() {
+      loadBanners();
+      loadCategories();
+      loadProducts();
+    }
+
+  </script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+  <div id="panel" class="hidden max-w-5xl mx-auto p-6">
+    <h1 class="text-2xl font-bold text-blue-600 mb-4">🏠 Getir Home Yönetimi</h1>
+
+    <!-- Sekmeler -->
+    <div class="flex gap-4 mb-6">
+      <button onclick="showTab('banner')" class="tab-btn bg-blue-500 text-white px-4 py-2 rounded">Banner</button>
+      <button onclick="showTab('kategori')" class="tab-btn bg-gray-200 text-gray-700 px-4 py-2 rounded">Kategori</button>
+      <button onclick="showTab('urun')" class="tab-btn bg-gray-200 text-gray-700 px-4 py-2 rounded">Ürün</button>
+    </div>
+
+    <!-- Banner Sekmesi -->
+    <section id="tab-banner" class="tab">
+      <h2 class="font-semibold mb-3">🖼️ Banner Yönetimi</h2>
+      <div class="flex gap-2 mb-3">
+        <input id="bannerUrl" type="text" placeholder="Banner Görsel URL" class="border p-2 w-full rounded">
+        <button onclick="addBanner()" class="bg-blue-500 text-white px-4 rounded">Ekle</button>
+      </div>
+      <div id="bannerList" class="flex flex-col gap-2"></div>
+    </section>
+
+    <!-- Kategori Sekmesi -->
+    <section id="tab-kategori" class="tab hidden">
+      <h2 class="font-semibold mb-3">🗂️ Kategori Yönetimi</h2>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <input id="kategoriAdi" type="text" placeholder="Kategori Adı" class="border p-2 rounded">
+        <input id="ustKategori" type="text" placeholder="Üst Kategori (isteğe bağlı)" class="border p-2 rounded">
+      </div>
+      <button onclick="addCategory()" class="bg-blue-500 text-white px-4 py-2 rounded mb-3">Ekle</button>
+      <div id="kategoriList" class="flex flex-col gap-2"></div>
+    </section>
+
+    <!-- Ürün Sekmesi -->
+    <section id="tab-urun" class="tab hidden">
+      <h2 class="font-semibold mb-3">🛍️ Ürün Yönetimi</h2>
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <input id="urunAdi" type="text" placeholder="Ürün Adı" class="border p-2 rounded">
+        <input id="fiyat" type="number" placeholder="Fiyat" class="border p-2 rounded">
+        <input id="aciklama" type="text" placeholder="Açıklama" class="border p-2 rounded">
+        <input id="resimURL" type="text" placeholder="Resim URL" class="border p-2 rounded">
+        <input id="kategoriId" type="text" placeholder="Kategori ID" class="border p-2 rounded col-span-2">
+      </div>
+      <button onclick="addProduct()" class="bg-blue-500 text-white px-4 py-2 rounded mb-3">Ekle</button>
+      <div id="urunList" class="flex flex-col gap-2"></div>
+    </section>
+
+  </div>
+
+  <script>
+    function showTab(tab) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.add("hidden"));
+      document.getElementById("tab-" + tab).classList.remove("hidden");
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("bg-blue-500", "text-white"));
+      event.target.classList.add("bg-blue-500", "text-white");
+    }
+  </script>
+
+</body>
+</html>
