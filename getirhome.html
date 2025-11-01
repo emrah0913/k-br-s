@@ -11,7 +11,7 @@
     // YENİ: addDoc (ekleme için), getAuth, onAuthStateChanged (kullanıcı kontrolü için)
     import { getFirestore, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
     import { getStorage } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"; 
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"; 
 
     const firebaseConfig = {
       apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -26,8 +26,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
-    const auth = getAuth(app); // YENİ
-    let currentUser = null; // YENİ: Giriş yapmış kullanıcıyı tutacak
+    const auth = getAuth(app); 
+    let currentUser = null; 
 
     // YENİ: Sayfa yüklendiğinde kullanıcı durumunu dinle
     onAuthStateChanged(auth, (user) => {
@@ -79,35 +79,37 @@
         console.error("Kategori yüklenirken hata:", error);
       }
     }
-    
-    // === Sepete Ekleme Fonksiyonu (YENİ) ===
+    
+    // === Sepete Ekleme Fonksiyonu (GÜNCELLENMİŞ) ===
     /**
      * Ürünü Firebase'de kullanıcının sepetine ekler ve sepet sayfasına yönlendirir.
+     * Özel kategori ve orderMethod kullanarak sepet sayfasında komisyon eklenmesini engeller.
      */
     async function addToCart(urunAdi, urunFiyati, resimURL) {
         if (!currentUser) {
             alert("Sepete ürün eklemek için lütfen giriş yapınız.");
-            // Kullanıcıyı oturum açma sayfasına yönlendir
-            window.location.href = '/index.html'; 
+            window.location.href = '/index.html'; 
             return;
         }
 
         try {
             const cartRef = collection(db, 'users', currentUser.uid, 'cart');
-            
-            // Sepet sayfasının (sepet.html) beklediği veri formatı
+            
             const newCartItem = {
-                productLink: `GETIR HOME: ${urunAdi}`, 
-                productPrice: parseFloat(urunFiyati), // Fiyatı sayı formatına çevir
-                quantity: 1, 
-                category: 'homeProducts', // Fiyatlandırma/komisyon ayarları için kategori
-                orderMethod: 'directBuy', // Doğrudan satın alma ürünü
+                productLink: `GETIR HOME: ${urunAdi}`, 
+                productPrice: parseFloat(urunFiyati), // Gönderilen SON FİYAT
+                quantity: 1, 
+                
+                // KRİTİK: Sepet sayfasının komisyonu SIFIR (0) olarak hesaplamasını sağlayacak ayarlar:
+                category: 'directBuyHome', // Firestore'da %0 oran tanımlanacak
+                orderMethod: 'service', // Sepet sayfasının komisyon formülünü tetikler (productPrice + komisyon)
+
                 urunAdi: urunAdi,
                 resimURL: resimURL
             };
 
             await addDoc(cartRef, newCartItem);
-            
+            
             alert(`${urunAdi} sepete eklendi!`);
             // Başarılı eklemeden sonra kullanıcıyı sepet sayfasına yönlendir
             window.location.href = '/sepet.html';
@@ -164,10 +166,10 @@
       await loadCategories();
       await loadProducts();
     });
-    
-    // YENİ: addToCart fonksiyonunu HTML'den çağrılabilir hale getir
-    window.addToCart = addToCart;
-    
+    
+    // YENİ: addToCart fonksiyonunu HTML'den çağrılabilir hale getir
+    window.addToCart = addToCart;
+    
   </script>
 </head>
 
