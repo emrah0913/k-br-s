@@ -64,22 +64,38 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, onSnapshot, getDocs, doc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firestore hata ayıklama seviyesini ayarla (debug modunda görmek için)
         setLogLevel('Debug');
 
-        // Global değişkenleri güvenli bir şekilde al
+        const productListElement = document.getElementById('product-list');
+        const statusMessageElement = document.getElementById('status-message');
+
+        // Global değişkenleri güvenli bir şekilde al ve Firebase yapılandırmasını kontrol et
+        let firebaseConfig = {};
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                firebaseConfig = JSON.parse(__firebase_config);
+                if (!firebaseConfig.projectId) {
+                    throw new Error("Firebase config içinde 'projectId' eksik.");
+                }
+            } else {
+                throw new Error("Firebase yapılandırması (__firebase_config) tanımlanmamış veya boş.");
+            }
+        } catch (error) {
+            console.error("Yapılandırma Hatası:", error.message);
+            statusMessageElement.textContent = `HATA: Firebase yapılandırma verisi geçerli değil. ${error.message}`;
+            statusMessageElement.classList.add('text-red-600');
+            // Veri yüklenmediği için daha fazla işlem yapma
+            throw new Error("Veritabanı bağlantısı kurulamadı, yapılandırma hatası.");
+        }
+        
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let db, auth;
         let userId = null;
-        let isAuthReady = false;
-
-        const productListElement = document.getElementById('product-list');
-        const statusMessageElement = document.getElementById('status-message');
 
         // Utility: Parayı TL formatında biçimlendirir
         const formatPrice = (price) => {
@@ -93,7 +109,8 @@
 
             if (products.length === 0) {
                 statusMessageElement.textContent = 'Admin panelinden henüz ürün eklenmemiş.';
-                statusMessageElement.classList.remove('hidden');
+                statusMessageElement.classList.remove('hidden', 'text-red-600');
+                statusMessageElement.classList.add('getir-text');
                 return;
             }
 
@@ -102,6 +119,9 @@
             products.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'product-card bg-white rounded-xl shadow-md overflow-hidden p-3 border border-gray-100 flex flex-col justify-between';
+                // Fiyatı number olarak alalım, string olarak gelirse 0 varsayalım
+                const price = typeof product.price === 'string' ? parseFloat(product.price.replace(',', '.')) : product.price;
+
                 card.innerHTML = `
                     <div class="relative h-28 w-full mb-3">
                         <img src="${product.imageUrl || 'https://placehold.co/150x112/4c3398/ffffff?text=Urun'}" 
@@ -114,7 +134,7 @@
                         <span class="text-xs text-gray-500 mb-2">${product.unit || 'Birim Yok'}</span>
                     </div>
                     <div class="flex justify-between items-center mt-auto">
-                        <span class="text-base font-bold getir-text">${formatPrice(product.price)}</span>
+                        <span class="text-base font-bold getir-text">${formatPrice(price)}</span>
                         <button class="getir-btn text-white text-sm font-bold w-8 h-8 rounded-lg flex items-center justify-center shadow-lg hover:shadow-xl">
                             +
                         </button>
@@ -146,7 +166,6 @@
                                 userId = auth.currentUser.uid;
                             }
                         }
-                        isAuthReady = true;
                         resolve();
                     });
                 });
@@ -154,12 +173,15 @@
                 await authReadyPromise;
                 console.log("Firebase ve Kimlik Doğrulama Hazır. Kullanıcı ID:", userId);
 
-                // Kimlik doğrulama hazır olduğunda veri dinlemeyi başlat
+                // Veri dinlemeyi başlat
                 startDataListener();
 
             } catch (error) {
-                console.error("Firebase başlatılırken bir hata oluştu:", error);
-                statusMessageElement.textContent = `Hata: Veritabanı bağlantısı kurulamadı. Lütfen konsolu kontrol edin.`;
+                // Yapılandırma hatası zaten yukarıda yakalanır. Burası sadece auth veya firestore hataları içindir.
+                console.error("Firebase başlatılırken/doğrulanırken bir hata oluştu:", error);
+                statusMessageElement.textContent = `Hata: Oturum veya veritabanı bağlantısında sorun. Lütfen konsolu kontrol edin.`;
+                statusMessageElement.classList.remove('getir-text');
+                statusMessageElement.classList.add('text-red-600');
             }
         };
 
@@ -173,6 +195,8 @@
             onSnapshot(q, (snapshot) => {
                 const products = [];
                 snapshot.forEach((doc) => {
+                    // Veriyi alırken parse etmeye gerek kalmaması için doğrudan kullanıyoruz
+                    // Not: JSON.parse/stringify sadece nested array'ler için zorunludur.
                     products.push({ id: doc.id, ...doc.data() });
                 });
 
@@ -185,8 +209,9 @@
             }, (error) => {
                 console.error("Firestore verileri dinlenirken hata oluştu:", error);
                 // Kullanıcıya görünür bir hata mesajı göster
-                statusMessageElement.textContent = 'Ürünleri getirirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.';
-                statusMessageElement.classList.remove('hidden');
+                statusMessageElement.textContent = 'Ürünleri getirirken bir hata oluştu. Veritabanı okuma izninizi kontrol edin.';
+                statusMessageElement.classList.remove('getir-text');
+                statusMessageElement.classList.add('text-red-600');
             });
         };
 
