@@ -1,211 +1,269 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Getir Home | Getir Kıbrıs</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module">
-    // === Firebase Bağlantısı ===
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-    import { getStorage } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"; 
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Getir Home | Getir Kıbrıs</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script type="module">
+		// === Firebase Bağlantısı ===
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+		import { getFirestore, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+		import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"; // signInAnonymously eklendi
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-      authDomain: "kibris-6b4f7.firebaseapp.com",
-      projectId: "kibris-6b4f7",
-      storageBucket: "kibris-6b4f7.firebasestorage.app",
-      messagingSenderId: "141262926171",
-      appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-      measurementId: "G-JL9P6BRZTD"
-    };
+		const firebaseConfig = {
+			apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+			authDomain: "kibris-6b4f7.firebaseapp.com",
+			projectId: "kibris-6b4f7",
+			storageBucket: "kibris-6b4f7.firebasestorage.app",
+			messagingSenderId: "141262926171",
+			appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+			measurementId: "G-JL9P6BRZTD"
+		};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const auth = getAuth(app); 
-    let currentUser = null; 
+		const app = initializeApp(firebaseConfig);
+		const db = getFirestore(app);
+		const auth = getAuth(app);
+		let currentUser = null;
 
-    // Sayfa yüklendiğinde kullanıcı durumunu dinle
-    onAuthStateChanged(auth, (user) => {
-        currentUser = user;
-    });
+		// YENİ: Firebase Authentication'ı başlat ve anonim oturum açmayı dene
+		async function ensureAuthAndLoadData() {
+			try {
+				await signInAnonymously(auth); // Anonim olarak oturum aç
+			} catch (error) {
+				console.error("Anonim oturum açma başarısız:", error);
+			}
 
-    // === Dinamik Banner ===
-    async function loadBanners() {
-      const bannerContainer = document.getElementById("banner-slider");
-      const q = query(collection(db, "homeBanners"));
-      try {
-        const snapshot = await getDocs(q);
-        let banners = [];
-        snapshot.forEach(doc => {
-          let data = doc.data();
-          if (data.aktif) banners.push(data.resimURL);
-        });
-        if (banners.length === 0) return;
+			// Sayfa yüklendiğinde kullanıcı durumunu dinle
+			onAuthStateChanged(auth, (user) => {
+				currentUser = user;
+				// Kullanıcı durumu belirlendikten sonra verileri yükle
+				loadBanners();
+				loadCategories();
+				loadProducts();
+			});
+		}
+		
+		// === Toast Bildirim Fonksiyonu (Alert yerine) ===
+		function showToast(message) {
+			const toast = document.getElementById('toast-message');
+			toast.textContent = message;
+			const toastContainer = document.getElementById('toast-container');
+			toastContainer.classList.remove('hidden');
+			toastContainer.classList.add('opacity-100');
 
-        let index = 0;
-        bannerContainer.style.backgroundImage = `url(${banners[0]})`;
-        setInterval(() => {
-          index = (index + 1) % banners.length;
-          bannerContainer.style.backgroundImage = `url(${banners[index]})`;
-        }, 4000);
-      } catch (error) {
-        console.error("Banner yüklenirken hata:", error);
-      }
-    }
+			setTimeout(() => {
+				toastContainer.classList.remove('opacity-100');
+				toastContainer.classList.add('hidden');
+			}, 3000);
+		}
 
-    // === Kategoriler ===
-    async function loadCategories() {
-      const catContainer = document.getElementById("kategori-listesi");
-      try {
-        const snapshot = await getDocs(collection(db, "homeCategories"));
-        catContainer.innerHTML = "";
-        snapshot.forEach(doc => {
-          const cat = doc.data();
-          if (cat.aktif) {
-            const btn = document.createElement("button");
-            btn.className = "px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700";
-            btn.textContent = cat.kategoriAdi;
-            btn.onclick = () => loadProducts(doc.id, cat.kategoriAdi);
-            catContainer.appendChild(btn);
-          }
-        });
-      } catch (error) {
-        console.error("Kategori yüklenirken hata:", error);
-      }
-    }
-    
-    // === Sepete Ekleme Fonksiyonu (Eksiksiz: Link, Ad, Resim URL kaydı yapıldı) ===
-    async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) {
-        if (!currentUser) {
-            alert("Sepete ürün eklemek için lütfen giriş yapınız.");
-            window.location.href = '/index.html'; 
-            return;
-        }
 
-        try {
-            const cartRef = collection(db, 'users', currentUser.uid, 'cart');
-            
-            const newCartItem = {
-                // KRİTİK: İstenen tüm bilgiler (Link, Ad, Resim URL) Firebase'e kaydediliyor
-                productLink: urunLink, 
-                urunAdi: urunAdi,
-                resimURL: resimURL,
-                
-                productPrice: parseFloat(urunFiyati),
-                quantity: 1, 
-                
-                // Komisyon ayarları (Eski kodunuzdan korundu)
-                category: 'directBuyHome', 
-                orderMethod: 'service', 
-            };
+		// === Dinamik Banner ===
+		async function loadBanners() {
+			const bannerContainer = document.getElementById("banner-slider");
+			const q = query(collection(db, "homeBanners"));
+			try {
+				const snapshot = await getDocs(q);
+				let banners = [];
+				snapshot.forEach(doc => {
+					let data = doc.data();
+					if (data.aktif) banners.push(data.resimURL);
+				});
+				if (banners.length === 0) return;
 
-            await addDoc(cartRef, newCartItem);
-            
-            alert(`${urunAdi} sepete eklendi!`);
-            window.location.href = '/sepet.html';
+				let index = 0;
+				bannerContainer.style.backgroundImage = `url(${banners[0]})`;
+				setInterval(() => {
+					index = (index + 1) % banners.length;
+					bannerContainer.style.backgroundImage = `url(${banners[index]})`;
+				}, 4000);
+			} catch (error) {
+				console.error("Banner yüklenirken hata:", error);
+			}
+		}
 
-        } catch (error) {
-            console.error("Ürün sepete eklenirken hata oluştu:", error);
-            alert("Ürün sepete eklenemedi: " + error.message);
-        }
-    }
+		// === Kategoriler ===
+		async function loadCategories() {
+			const catContainer = document.getElementById("kategori-listesi");
+			try {
+				const snapshot = await getDocs(collection(db, "homeCategories"));
+				catContainer.innerHTML = "";
+				snapshot.forEach(doc => {
+					const cat = doc.data();
+					if (cat.aktif) {
+						const btn = document.createElement("button");
+						btn.className = "px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700";
+						btn.textContent = cat.kategoriAdi;
+						btn.onclick = () => loadProducts(doc.id, cat.kategoriAdi);
+						catContainer.appendChild(btn);
+					}
+				});
+			} catch (error) {
+				console.error("Kategori yüklenirken hata:", error);
+			}
+		}
+		
+		// === Sepete Ekleme Fonksiyonu (ALERT Kaldırıldı) ===
+		async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) {
+			if (!currentUser) {
+				showToast("Sepete ürün eklemek için lütfen giriş yapınız.");
+				// Giriş yapılmayan durumda yönlendirmeyi kaldırıyorum, Toast mesajı yeterli
+				return;
+			}
 
-    // === Ürünler (Eksiksiz: Link okundu ve addToCart'a gönderildi) ===
-    async function loadProducts(kategoriId = null, kategoriAdi = null) {
-      const urunContainer = document.getElementById("urun-listesi");
-      urunContainer.innerHTML = "<p class='text-gray-400'>Yükleniyor...</p>";
+			try {
+				const cartRef = collection(db, 'users', currentUser.uid, 'cart');
+				
+				const newCartItem = {
+					// KRİTİK: İstenen tüm bilgiler (Link, Ad, Resim URL) Firebase'e kaydediliyor
+					productLink: urunLink,
+					urunAdi: urunAdi,
+					resimURL: resimURL,
+					
+					productPrice: parseFloat(urunFiyati),
+					quantity: 1,
+					
+					// Komisyon ayarları (Eski kodunuzdan korundu)
+					category: 'directBuyHome',
+					orderMethod: 'service',
+				};
 
-      let q = collection(db, "homeProducts");
-      if (kategoriId) q = query(q, where("kategoriId", "==", kategoriId));
+				await addDoc(cartRef, newCartItem);
+				
+				showToast(`${urunAdi} sepete eklendi! Sepete yönlendiriliyorsunuz...`);
+				
+				// Sepete ekleme başarılı olduktan hemen sonra sepet sayfasına yönlendir
+				setTimeout(() => {
+					window.location.href = '/sepet.html';
+				}, 1000); 
 
-      try {
-        const snapshot = await getDocs(q);
-        urunContainer.innerHTML = "";
+			} catch (error) {
+				console.error("Ürün sepete eklenirken hata oluştu:", error);
+				showToast("Ürün sepete eklenemedi: " + error.message);
+			}
+		}
 
-        snapshot.forEach(doc => {
-          const urun = doc.data();
-          if (!urun.aktif) return;
+		// === Ürünler (Eksiksiz: Link okundu ve addToCart'a gönderildi) ===
+		async function loadProducts(kategoriId = null, kategoriAdi = null) {
+			const urunContainer = document.getElementById("urun-listesi");
+			urunContainer.innerHTML = "<p class='text-gray-400'>Yükleniyor...</p>";
 
-          const card = document.createElement("div");
-          card.className = "border rounded-xl p-4 shadow hover:shadow-lg transition bg-white";
+			let q = collection(db, "homeProducts");
+			if (kategoriId) q = query(q, where("kategoriId", "==", kategoriId));
 
-          // 1. Link, Resim ve Ad okundu
-          const urunLink = urun.link || "#"; 
-          const cleanUrunAdi = urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"');
-          const urunResim = urun.resimURL || 'placeholder.jpg';
+			try {
+				const snapshot = await getDocs(q);
+				urunContainer.innerHTML = "";
 
-          // 2. addToCart fonksiyonuna tüm 4 parametre gönderildi.
-          card.innerHTML = `
-            <img src="${urunResim}" alt="${urun.urunAdi}" class="w-full h-48 object-cover rounded-lg mb-3">
-            <h3 class="text-lg font-semibold mb-1">${urun.urunAdi}</h3>
-            <p class="text-gray-600 text-sm mb-2">${urun.aciklama || ""}</p>
-            <p class="text-blue-600 font-bold mb-3">${urun.fiyat} ₺</p>
-            <button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urunResim}', '${urunLink}')"
-                    class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
-              Sepete Ekle
-            </button>
-          `;
-          urunContainer.appendChild(card);
-        });
-      } catch (error) {
-        console.error("Ürün yüklenirken hata:", error);
-        urunContainer.innerHTML = "<p class='text-red-500'>Ürünler yüklenemedi. Yetki veya bağlantı hatası olabilir.</p>";
-      }
+				snapshot.forEach(doc => {
+					const urun = doc.data();
+					if (!urun.aktif) return;
 
-      document.getElementById("secili-kategori").textContent = kategoriAdi || "Tüm Ürünler";
-    }
+					const card = document.createElement("div");
+					card.className = "border rounded-xl p-4 shadow hover:shadow-lg transition bg-white";
 
-    // === Sayfa Yüklendiğinde ===
-    window.addEventListener("DOMContentLoaded", async () => {
-      await loadBanners();
-      await loadCategories();
-      await loadProducts();
-    });
-    
-    // YENİ: addToCart fonksiyonunu HTML'den çağrılabilir hale getir
-    window.addToCart = addToCart;
-    
-  </script>
+					// 1. Link, Resim ve Ad okundu
+					const urunLink = urun.link || "#";
+					const cleanUrunAdi = urun.urunAdi ? urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"') : "Ürün Adı Yok"; // Güvenli okuma
+					const urunResim = urun.resimURL || 'https://placehold.co/400x300/e5e7eb/4b5563?text=Resim+Yok'; // Placeholder eklendi
+
+					// 2. addToCart fonksiyonuna tüm 4 parametre gönderildi.
+					card.innerHTML = `
+						<img src="${urunResim}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/e5e7eb/4b5563?text=Resim+Y%C3%BCklenemedi';" alt="${urun.urunAdi}" class="w-full h-48 object-cover rounded-lg mb-3">
+						<h3 class="text-lg font-semibold mb-1">${urun.urunAdi}</h3>
+						<p class="text-gray-600 text-sm mb-2">${urun.aciklama || "Açıklama mevcut değil."}</p>
+						<p class="text-blue-600 font-bold mb-3">${urun.fiyat} ₺</p>
+						<button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urunResim}', '${urunLink}')"
+								class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+							Sepete Ekle
+						</button>
+					`;
+					urunContainer.appendChild(card);
+				});
+
+				// Eğer kategori yoksa, tüm kategoriler yüklensin.
+				if (kategoriId === null && snapshot.empty) {
+					urunContainer.innerHTML = "<p class='text-gray-500 text-center col-span-full'>Gösterilecek ürün bulunmamaktadır.</p>";
+				}
+
+			} catch (error) {
+				console.error("Ürün yüklenirken hata:", error);
+				// Hata mesajı, kullanıcının Firebase hatasını görmesine izin verir
+				urunContainer.innerHTML = `<p class='text-red-500 col-span-full'>Ürünler yüklenemedi. Yetki veya bağlantı hatası olabilir: ${error.message}</p>`;
+			}
+
+			document.getElementById("secili-kategori").textContent = kategoriAdi || "Tüm Ürünler";
+		}
+
+		// === Sayfa Yüklendiğinde ===
+		window.addEventListener("DOMContentLoaded", ensureAuthAndLoadData);
+		
+		// YENİ: addToCart fonksiyonunu HTML'den çağrılabilir hale getir
+		window.addToCart = addToCart;
+		
+	</script>
+    <!-- Tailwind CSS'i Inter fontu ile yükle -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
 </head>
 
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-50 min-h-screen flex flex-col font-sans">
 
-    <header class="bg-white shadow sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-      <h1 class="text-xl font-bold text-blue-700">Getir Home</h1>
-      <nav class="flex gap-4">
-        <a href="/index.html" class="text-gray-600 hover:text-blue-700">Ana Sayfa</a>
-        <a href="/getirhome.html" class="text-blue-700 font-semibold">Home</a>
-        <a href="/sepet.html" class="text-gray-600 hover:text-blue-700">Sepetim</a>
-      </nav>
-    </div>
-  </header>
+	<header class="bg-white shadow sticky top-0 z-50">
+		<div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+			<h1 class="text-xl font-bold text-blue-700">Getir Home</h1>
+			<nav class="flex gap-4">
+				<a href="/index.html" class="text-gray-600 hover:text-blue-700">Ana Sayfa</a>
+				<a href="/getirhome.html" class="text-blue-700 font-semibold">Home</a>
+				<a href="/sepet.html" class="text-gray-600 hover:text-blue-700">Sepetim</a>
+			</nav>
+		</div>
+	</header>
 
-    <section id="banner-slider"
-           class="w-full h-60 bg-center bg-cover transition-all duration-700 flex items-center justify-center text-white text-2xl font-bold">
-    <div class="bg-black/40 w-full h-full flex items-center justify-center">
-      <span>Getir Home Kampanyaları</span>
-    </div>
-  </section>
+	<section id="banner-slider"
+			class="w-full h-60 bg-gray-600 bg-center bg-cover transition-all duration-700 flex items-center justify-center text-white text-2xl font-bold rounded-b-xl shadow-inner">
+		<div class="bg-black/40 w-full h-full flex items-center justify-center">
+			<span>Getir Home Kampanyaları</span>
+		</div>
+	</section>
 
-    <section class="max-w-7xl mx-auto px-4 py-6">
-    <div id="kategori-listesi" class="flex flex-wrap gap-3 justify-center"></div>
-  </section>
+	<section class="max-w-7xl mx-auto px-4 py-6 w-full">
+		<div id="kategori-listesi" class="flex flex-wrap gap-3 justify-center"></div>
+	</section>
 
-    <main class="max-w-7xl mx-auto px-4 pb-10">
-    <h2 class="text-2xl font-semibold mb-4 text-gray-800 text-center">
-      <span id="secili-kategori">Tüm Ürünler</span>
-    </h2>
-    <div id="urun-listesi" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-  </main>
+	<main class="max-w-7xl mx-auto px-4 pb-10 w-full flex-grow">
+		<h2 class="text-2xl font-semibold mb-6 text-gray-800 text-center border-b pb-2">
+			<span id="secili-kategori">Tüm Ürünler</span>
+		</h2>
+		<div id="urun-listesi" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+			<p class='text-gray-400 col-span-full text-center'>Yükleniyor...</p>
+		</div>
+	</main>
 
-    <footer class="bg-gray-100 py-6 mt-auto text-center text-gray-500 text-sm">
-    © 2025 Getir Kıbrıs | Tüm hakları saklıdır.
-  </footer>
+	<!-- Toast Bildirim Alanı -->
+	<div id="toast-container" class="fixed bottom-5 right-5 hidden opacity-0 transition-opacity duration-300">
+		<div class="bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+			<span id="toast-message" class="font-medium"></span>
+		</div>
+	</div>
+
+
+	<footer class="bg-gray-100 py-6 mt-auto text-center text-gray-500 text-sm border-t">
+		© 2025 Getir Kıbrıs | Tüm hakları saklıdır.
+	</footer>
 
 </body>
 </html>
