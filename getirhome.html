@@ -6,12 +6,15 @@
     <title>Getir Home Ürünleri</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (İkonlar için) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Inter fontunu yükle */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         :root {
             --getir-purple: #4c3398;
             --getir-yellow: #ffd001;
+            --getir-light: #f5f0fe; /* Açık mor arka plan */
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -19,7 +22,7 @@
         }
         .product-card {
             transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
+            cursor: default;
         }
         .product-card:hover {
             transform: translateY(-4px);
@@ -33,10 +36,22 @@
         }
         .getir-btn {
             background-color: var(--getir-purple);
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
         }
         .getir-btn:hover {
             background-color: #6a49ad;
+            transform: scale(1.05);
+        }
+        .mock-image-container {
+            height: 112px; /* h-28 ile aynı */
+            background-color: var(--getir-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mock-icon {
+            color: var(--getir-purple);
+            font-size: 3rem;
         }
     </style>
 </head>
@@ -66,37 +81,61 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firestore hata ayıklama seviyesini ayarla (debug modunda görmek için)
+        // Firestore hata ayıklama seviyesini ayarla
         setLogLevel('Debug');
 
         const productListElement = document.getElementById('product-list');
         const statusMessageElement = document.getElementById('status-message');
+        
+        // Firestore ve Auth referansları
+        let db, auth; 
 
-        // Firestore ve Auth referansları için modül kapsamlı değişkenler EKLENDİ.
-        let db, auth;
+        // Firebase Yapılandırması (Kullanıcı Tarafından Sağlanan Veri)
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+            authDomain: "kibris-6b4f7.firebaseapp.com",
+            projectId: "kibris-6b4f7",
+            storageBucket: "kibris-6b4f7.firebasestorage.app",
+            messagingSenderId: "141262926171",
+            appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+            measurementId: "G-JL9P6BRZTD"
+        };
 
-        // Sahte veri (Mock Data)
+        // Sahte veri (Mock Data) - Firebase bağlantısı başarısız olursa yedek olarak kullanılır
         const MOCK_PRODUCTS = [
-            { id: 'm1', name: 'Beyaz Akıllı Kupa', price: 199.90, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Kupa' },
-            { id: 'm2', name: 'Ergonomik Masa Lambası', price: 450.00, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Lamba' },
-            { id: 'm3', name: 'Premium Türk Kahvesi (250g)', price: 75.50, unit: '250 gr', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Kahve' },
-            { id: 'm4', name: 'Mini Elektrikli Süpürge', price: 899.00, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Supurge' },
-            { id: 'm5', name: 'Akıllı Telefon Tutucu', price: 59.99, unit: '1 adet', imageUrl: 'https://placehold.co/150x112/4c3398/ffffff?text=Tutucu' },
+            { id: 'm1', name: 'Beyaz Akıllı Kupa', price: 199.90, unit: '1 adet', icon: 'fa-mug-hot' },
+            { id: 'm2', name: 'Ergonomik Masa Lambası', price: 450.00, unit: '1 adet', icon: 'fa-lightbulb' },
+            { id: 'm3', name: 'Premium Türk Kahvesi (250g)', price: 75.50, unit: '250 gr', icon: 'fa-coffee' },
+            { id: 'm4', name: 'Mini Elektrikli Süpürge', price: 899.00, unit: '1 adet', icon: 'fa-broom' },
+            { id: 'm5', name: 'Akıllı Telefon Tutucu', price: 59.99, unit: '1 adet', icon: 'fa-mobile-alt' },
         ];
 
 
+        // Mock resim yoksa ikon gösteren HTML parçası
+        const getMockImageHtml = (product) => {
+            return `
+                <div class="mock-image-container rounded-lg">
+                    <i class="fas ${product.icon || 'fa-box'} mock-icon"></i>
+                </div>
+            `;
+        };
+
         // Utility: Parayı TL formatında biçimlendirir
         const formatPrice = (price) => {
-            if (typeof price !== 'number') return 'Fiyat Belirtilmemiş';
-            return price.toFixed(2).replace('.', ',') + ' TL';
+            if (typeof price !== 'number' && typeof price !== 'string') return 'Fiyat Belirtilmemiş';
+            const numPrice = typeof price === 'string' ? parseFloat(price.replace(',', '.')) : price;
+            if (isNaN(numPrice)) return 'Fiyat Belirtilmemiş';
+            
+            return numPrice.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 });
         };
+
 
         // Ürünleri DOM'a render eden fonksiyon
         const renderProducts = (products, isMock = false) => {
             productListElement.innerHTML = ''; 
 
             if (products.length === 0) {
-                statusMessageElement.textContent = 'Admin panelinden henüz ürün eklenmemiş.';
+                statusMessageElement.textContent = 'Veritabanında henüz ürün bulunmuyor.';
                 statusMessageElement.classList.remove('hidden', 'text-red-600');
                 statusMessageElement.classList.add('getir-text');
                 return;
@@ -106,8 +145,8 @@
 
             if (isMock) {
                 const mockWarning = document.createElement('div');
-                mockWarning.className = "col-span-full mb-4 p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg text-sm font-semibold";
-                mockWarning.textContent = "UYARI: Firebase bağlantı hatası nedeniyle SAHTE VERİLER (MOCK DATA) gösteriliyor. Gerçek veriler için konsoldaki yapılandırma hatasını düzeltin.";
+                mockWarning.className = "col-span-full mb-4 p-3 bg-red-100 border border-red-300 text-red-800 rounded-xl text-sm font-semibold";
+                mockWarning.textContent = "HATA: Firebase bağlantısı başarısız olduğu için SAHTE VERİLER (MOCK DATA) gösteriliyor. Konsoldaki detayları kontrol edin.";
                 productListElement.appendChild(mockWarning);
             }
 
@@ -115,22 +154,29 @@
             products.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'product-card bg-white rounded-xl shadow-md overflow-hidden p-3 border border-gray-100 flex flex-col justify-between';
-                const price = typeof product.price === 'string' ? parseFloat(product.price.replace(',', '.')) : product.price;
+                
+                // Fiyatı string'den sayıya çevir
+                const priceValue = typeof product.price === 'string' ? parseFloat(product.price.replace(',', '.')) : product.price;
+
+                // Resim URL'si varsa resmi, yoksa mock ikonu göster
+                const imageContent = product.imageUrl 
+                    ? `<img src="${product.imageUrl}" 
+                             onerror="this.onerror=null;this.style.display='none';this.closest('.relative').innerHTML='${getMockImageHtml(product)}';"
+                             alt="${product.name}" 
+                             class="w-full h-full object-cover rounded-lg">`
+                    : getMockImageHtml(product);
 
                 card.innerHTML = `
                     <div class="relative h-28 w-full mb-3">
-                        <img src="${product.imageUrl || 'https://placehold.co/150x112/4c3398/ffffff?text=Urun'}" 
-                             onerror="this.onerror=null;this.src='https://placehold.co/150x112/4c3398/ffffff?text=Resim+Yok';"
-                             alt="${product.name}" 
-                             class="w-full h-full object-cover rounded-lg">
+                        ${imageContent}
                     </div>
                     <div class="flex flex-col flex-grow">
                         <span class="text-gray-900 font-semibold text-sm mb-1 line-clamp-2">${product.name}</span>
                         <span class="text-xs text-gray-500 mb-2">${product.unit || 'Birim Yok'}</span>
                     </div>
                     <div class="flex justify-between items-center mt-auto">
-                        <span class="text-base font-bold getir-text">${formatPrice(price)}</span>
-                        <button class="getir-btn text-white text-sm font-bold w-8 h-8 rounded-lg flex items-center justify-center shadow-lg hover:shadow-xl">
+                        <span class="text-base font-bold getir-text">${formatPrice(priceValue)}</span>
+                        <button class="getir-btn text-white text-sm font-bold w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl">
                             +
                         </button>
                     </div>
@@ -141,42 +187,13 @@
 
         // Firebase başlatma ve kimlik doğrulama
         const initializeFirebase = async () => {
-            let firebaseConfig = {};
-            let configError = null;
-
-            try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    firebaseConfig = JSON.parse(__firebase_config);
-                    if (!firebaseConfig.projectId) {
-                        throw new Error("Firebase config içinde 'projectId' eksik.");
-                    }
-                } else {
-                    throw new Error("Firebase yapılandırması (__firebase_config) tanımlanmamış veya boş.");
-                }
-            } catch (error) {
-                configError = error.message;
-                console.error("Yapılandırma Hatası:", configError);
-            }
-
-            if (configError) {
-                // Yapılandırma hatası varsa mock veriyi göster
-                statusMessageElement.textContent = `HATA: Firebase bağlantısı kurulamadı. ${configError}`;
-                statusMessageElement.classList.remove('getir-text');
-                statusMessageElement.classList.add('text-red-600');
-                
-                // Sahte verileri göster
-                MOCK_PRODUCTS.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                renderProducts(MOCK_PRODUCTS, true);
-                return; 
-            }
-            
-            // Eğer config doğruysa, normal akışa devam et
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            // __app_id, Firebase'deki /artifacts/{appId} yolunu oluşturmak için kullanılıyor.
+            const appId = typeof __app_id !== 'undefined' ? __app_id : FIREBASE_CONFIG.projectId;
             const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
             let userId = null;
 
             try {
-                const app = initializeApp(firebaseConfig);
+                const app = initializeApp(FIREBASE_CONFIG);
                 db = getFirestore(app);
                 auth = getAuth(app);
 
@@ -186,10 +203,12 @@
                         if (user) {
                             userId = user.uid;
                         } else {
+                            // Eğer kullanıcı oturumu yoksa (Canvas'tan gelen token olsa bile)
                             if (initialAuthToken) {
                                 await signInWithCustomToken(auth, initialAuthToken);
                                 userId = auth.currentUser.uid;
                             } else {
+                                // Anonim oturum aç
                                 await signInAnonymously(auth);
                                 userId = auth.currentUser.uid;
                             }
@@ -199,16 +218,21 @@
                 });
 
                 await authReadyPromise;
-                console.log("Firebase ve Kimlik Doğrulama Hazır. Kullanıcı ID:", userId);
+                console.log("Firebase ve Kimlik Doğrulama Başarılı. Kullanıcı ID:", userId);
 
                 // Veri dinlemeyi başlat
                 startDataListener(db, appId);
 
             } catch (error) {
                 console.error("Firebase başlatılırken/doğrulanırken kritik hata oluştu:", error);
-                statusMessageElement.textContent = `Hata: Oturum veya veritabanı bağlantısında sorun. Lütfen konsolu kontrol edin.`;
+                
+                // Ciddi bir hata oluşursa, mock veriyi göster
+                statusMessageElement.textContent = `HATA: Veritabanı bağlantısı kurulamadı. Lütfen konsolu kontrol edin.`;
                 statusMessageElement.classList.remove('getir-text');
                 statusMessageElement.classList.add('text-red-600');
+                
+                MOCK_PRODUCTS.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                renderProducts(MOCK_PRODUCTS, true);
             }
         };
 
@@ -232,9 +256,13 @@
 
             }, (error) => {
                 console.error("Firestore verileri dinlenirken hata oluştu:", error);
-                statusMessageElement.textContent = 'Ürünleri getirirken bir hata oluştu. Veritabanı okuma izninizi kontrol edin.';
+                statusMessageElement.textContent = 'Ürünleri getirirken bir hata oluştu. Veritabanı güvenlik kurallarınızı kontrol edin.';
                 statusMessageElement.classList.remove('getir-text');
                 statusMessageElement.classList.add('text-red-600');
+                
+                // Veri dinlemede hata olursa mock veriyi göster
+                MOCK_PRODUCTS.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                renderProducts(MOCK_PRODUCTS, true);
             });
         };
 
