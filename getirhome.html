@@ -8,7 +8,6 @@
   <script type="module">
     // === Firebase Bağlantısı ===
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    // YENİ: addDoc (ekleme için), getAuth, onAuthStateChanged (kullanıcı kontrolü için)
     import { getFirestore, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
     import { getStorage } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"; 
@@ -81,11 +80,7 @@
     }
     
     // === Sepete Ekleme Fonksiyonu (GÜNCELLENMİŞ) ===
-    /**
-     * Ürünü Firebase'de kullanıcının sepetine ekler ve sepet sayfasına yönlendirir.
-     * Özel kategori ve orderMethod kullanarak sepet sayfasında komisyon eklenmesini engeller.
-     */
-    async function addToCart(urunAdi, urunFiyati, resimURL) {
+    async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) { // <-- 4. parametre eklendi!
         if (!currentUser) {
             alert("Sepete ürün eklemek için lütfen giriş yapınız.");
             window.location.href = '/index.html'; 
@@ -96,13 +91,14 @@
             const cartRef = collection(db, 'users', currentUser.uid, 'cart');
             
             const newCartItem = {
-                productLink: `GETIR HOME: ${urunAdi}`, 
-                productPrice: parseFloat(urunFiyati), // Gönderilen SON FİYAT
+                // Müşteriyi yönlendireceğiniz harici linki productLink alanına kaydettik
+                productLink: urunLink, 
+                productPrice: parseFloat(urunFiyati),
                 quantity: 1, 
                 
-                // KRİTİK: Sepet sayfasının komisyonu SIFIR (0) olarak hesaplamasını sağlayacak ayarlar:
-                category: 'directBuyHome', // Firestore'da %0 oran tanımlanacak
-                orderMethod: 'service', // Sepet sayfasının komisyon formülünü tetikler (productPrice + komisyon)
+                // Fiyatlandırma ayarları (Komisyonu sıfırlamak için)
+                category: 'directBuyHome', 
+                orderMethod: 'service', 
 
                 urunAdi: urunAdi,
                 resimURL: resimURL
@@ -111,7 +107,6 @@
             await addDoc(cartRef, newCartItem);
             
             alert(`${urunAdi} sepete eklendi!`);
-            // Başarılı eklemeden sonra kullanıcıyı sepet sayfasına yönlendir
             window.location.href = '/sepet.html';
 
         } catch (error) {
@@ -120,7 +115,7 @@
         }
     }
 
-    // === Ürünler ===
+    // === Ürünler (GÜNCELLENMİŞ) ===
     async function loadProducts(kategoriId = null, kategoriAdi = null) {
       const urunContainer = document.getElementById("urun-listesi");
       urunContainer.innerHTML = "<p class='text-gray-400'>Yükleniyor...</p>";
@@ -139,13 +134,17 @@
           const card = document.createElement("div");
           card.className = "border rounded-xl p-4 shadow hover:shadow-lg transition bg-white";
 
-          // GÜNCELLENDİ: Sepete Ekle butonu addToCart fonksiyonunu çağırıyor
+          // Firestore'dan urun.link alanını alıyoruz. (urunLink adlı alana sahip olduğunuz varsayılmıştır)
+          const urunLink = urun.link || "#"; 
+          // Link varsa, tırnak işaretlerini (tek ve çift) JavaScript'e güvenli bir şekilde geçirmek için değişkene ihtiyacımız var.
+          const cleanUrunAdi = urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"');
+
           card.innerHTML = `
             <img src="${urun.resimURL}" alt="${urun.urunAdi}" class="w-full h-48 object-cover rounded-lg mb-3">
             <h3 class="text-lg font-semibold mb-1">${urun.urunAdi}</h3>
             <p class="text-gray-600 text-sm mb-2">${urun.aciklama || ""}</p>
             <p class="text-blue-600 font-bold mb-3">${urun.fiyat} ₺</p>
-            <button onclick="window.addToCart('${urun.urunAdi.replace(/'/g, "\\'")}', ${urun.fiyat}, '${urun.resimURL}')"
+            <button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urun.resimURL}', '${urunLink}')"
                     class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
               Sepete Ekle
             </button>
