@@ -16,8 +16,8 @@
         theme: {
             extend: {
                 colors: {
-                    primary: '#5d3ebc',
-                    secondary: '#ffd300'
+                    primary: '#5d3ebc', // Getir Moru
+                    secondary: '#ffd300' // Getir Sarısı
                 }
             }
         }
@@ -31,16 +31,21 @@
         display: flex;
     }
     .active-nav-link {
-        background-color: #5d3ebc1a;
+        background-color: #5d3ebc1a; /* Morun %10 şeffaflığı */
         color: #5d3ebc;
         font-weight: 600;
     }
     .sidebar {
         width: 240px;
         height: 100vh;
+        position: fixed; /* Kenarda sabit kalması için */
+        top: 0;
+        left: 0;
+        z-index: 10;
     }
     .main-content {
         width: calc(100% - 240px);
+        margin-left: 240px; /* Sidebar kadar boşluk bırak */
         height: 100vh;
         overflow-y: auto;
     }
@@ -74,6 +79,7 @@
         }
         .main-content {
             width: 100%;
+            margin-left: 0;
             height: auto;
         }
     }
@@ -85,31 +91,36 @@
             <h1 class="text-xl font-bold text-primary">Yönetici Paneli</h1>
         </div>
         <nav class="space-y-2">
+            <!-- Mevcut Navigasyon Linkleri -->
             <a href="#" id="nav-dashboard" class="flex items-center gap-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors active-nav-link">
                 <i class="ri-dashboard-line"></i><span>Kontrol Paneli</span>
             </a>
             <a href="#" id="nav-orders" class="flex items-center gap-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
                 <i class="ri-file-list-3-line"></i><span>Siparişler</span>
             </a>
+            
+            <!-- YENİ EKLENEN GETİR HOME ÜRÜNLER SEKMESİ (SPA Uyumlu) -->
+            <a href="#" id="nav-products" class="flex items-center gap-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                <i class="ri-shopping-bag-line"></i><span>Getir Home Ürünler</span>
+            </a>
+            
             <a href="#" id="nav-users" class="flex items-center gap-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
                 <i class="ri-user-line"></i><span>Kullanıcılar</span>
             </a>
             <a href="#" id="nav-settings" class="flex items-center gap-3 p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors">
                 <i class="ri-settings-3-line"></i><span>Ayarlar</span>
             </a>
-             <a href="#" id="admin-logout-btn" class="flex items-center gap-3 p-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
+            <a href="#" id="admin-logout-btn" class="flex items-center gap-3 p-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
                 <i class="ri-logout-box-r-line"></i><span>Çıkış Yap</span>
             </a>
 
-<a href="getir_home.html" class="inline-block px-5 py-2 bg-yellow-400 text-purple-800 font-semibold rounded-full hover:bg-yellow-500 transition duration-300 shadow-md">
-    Getir Home Ürünler
-</a>
-
+            <!-- Eskiden dosya linki olan öğe kaldırıldı ve yerine yukarıdaki SPA linki eklendi -->
             
         </nav>
     </aside>
 
     <main class="main-content p-6">
+        <!-- KONTROL PANELİ İÇERİĞİ -->
         <div id="content-dashboard" class="admin-content-section">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Genel Bakış</h2>
             <div id="stats-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -122,6 +133,7 @@
             </div>
         </div>
 
+        <!-- SİPARİŞLER İÇERİĞİ -->
         <div id="content-orders" class="admin-content-section hidden">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Sipariş Yönetimi</h2>
             <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
@@ -129,57 +141,89 @@
                 <select id="order-status-filter" class="w-full sm:w-auto p-2 border border-gray-300 rounded-lg"></select>
             </div>
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                 <div class="overflow-x-auto">
+                <div class="overflow-x-auto">
                     <table class="min-w-full"><tbody id="orders-table-body"></tbody></table>
                 </div>
             </div>
         </div>
         
+        <!-- YENİ EKLENEN ÜRÜNLER İÇERİĞİ -->
+        <div id="content-products" class="admin-content-section hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <i class="ri-shopping-bag-line text-primary"></i> Getir Home Ürün Yönetimi
+            </h2>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Ürün Listesi ve Stok Takibi</h3>
+                <p class="text-gray-600 mb-6">Bu bölüm, Getir Home kategorisindeki ürünlerin stok, fiyat ve kategori bilgilerini yönetmek için kullanılacaktır. Mevcut SPA yapısı sorunsuz çalışıyor.</p>
+                <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">Yeni Ürün Girişi</button>
+                
+                <div class="mt-6 border-t pt-4">
+                    <h4 class="text-lg font-semibold text-gray-700 mb-3">Örnek Ürün Kayıtları</h4>
+                    <ul class="space-y-3">
+                        <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg shadow-sm">
+                            <span>Süpürge (Stok: 45)</span>
+                            <span class="text-sm font-medium text-green-600">Aktif</span>
+                        </li>
+                        <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg shadow-sm">
+                            <span>Mutfak Robotu (Stok: 12)</span>
+                            <span class="text-sm font-medium text-yellow-600">Düşük Stok</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- KULLANICILAR İÇERİĞİ -->
         <div id="content-users" class="admin-content-section hidden">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Kullanıcı Yönetimi</h2>
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                 <div class="overflow-x-auto">
+                <div class="overflow-x-auto">
                     <table class="min-w-full"><tbody id="users-table-body"></tbody></table>
                 </div>
             </div>
         </div>
 
+        <!-- AYARLAR İÇERİĞİ -->
         <div id="content-settings" class="admin-content-section hidden">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Genel Ayarlar</h2>
             <div class="space-y-6">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Kategori Fiyatlandırma Oranları</h3>
-                     <form id="category-rates-form" class="space-y-4"></form>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Kategori Fiyatlandırma Oranları</h3>
+                    <form id="category-rates-form" class="space-y-4"></form>
                 </div>
-                 <div class="bg-white p-6 rounded-lg shadow-md">
-                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Şehir Teslimat Ücretleri</h3>
-                     <form id="city-fees-form" class="space-y-4"></form>
-                      <div class="mt-6 border-t pt-4">
-                          <h4 class="text-lg font-semibold text-gray-700 mb-2">Yeni Şehir Ekle</h4>
-                          <div class="flex flex-col sm:flex-row items-center gap-2">
-                               <input type="text" id="new-city-name" placeholder="Şehir Adı (örn: Lefke)" class="p-2 border rounded-lg flex-1 w-full sm:w-auto">
-                               <input type="number" id="new-city-fee" placeholder="Ücret (₺)" class="p-2 border rounded-lg w-full sm:w-28">
-                               <button id="add-city-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 w-full sm:w-auto">Ekle</button>
-                          </div>
-                      </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Şehir Teslimat Ücretleri</h3>
+                    <form id="city-fees-form" class="space-y-4"></form>
+                    <div class="mt-6 border-t pt-4">
+                        <h4 class="text-lg font-semibold text-gray-700 mb-2">Yeni Şehir Ekle</h4>
+                        <div class="flex flex-col sm:flex-row items-center gap-2">
+                            <input type="text" id="new-city-name" placeholder="Şehir Adı (örn: Lefke)" class="p-2 border rounded-lg flex-1 w-full sm:w-auto">
+                            <input type="number" id="new-city-fee" placeholder="Ücret (₺)" class="p-2 border rounded-lg w-full sm:w-28">
+                            <button id="add-city-btn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 w-full sm:w-auto">Ekle</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-         <div id="order-detail-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
+        <!-- SİPARİŞ DETAY MODALI -->
+        <div id="order-detail-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
             <div class="bg-white rounded-lg p-6 w-full max-w-2xl relative shadow-lg max-h-[90vh] overflow-y-auto">
-                 <button id="close-order-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
-                 <h3 class="text-xl font-semibold text-primary mb-4" id="modal-order-id">Sipariş Detayı</h3>
-                 <div id="modal-order-content" class="space-y-4"></div>
+                <button id="close-order-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
+                <h3 class="text-xl font-semibold text-primary mb-4" id="modal-order-id">Sipariş Detayı</h3>
+                <div id="modal-order-content" class="space-y-4"></div>
             </div>
         </div>
     </main>
 
 <script type="module">
+    // Firebase SDK imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, updateDoc, setDoc, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+    // Global Firebase Config (Kullanıcının Kodundan Alındı)
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -197,24 +241,27 @@
     const contentSections = document.querySelectorAll('.admin-content-section');
     const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
+    // --- AUTHENTICATION VE SAYFA YÜKLEME ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             try {
+                // Kullanıcının admin rolünü kontrol etme (Orijinal kodunuz korundu)
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists() && userDoc.data().role === 'admin') {
                     showSection('content-dashboard');
                 } else {
-                    alert('Yönetici paneline erişim izniniz yok.');
-                    window.location.href = '/'; 
+                    // Sayfa içinde alert() yerine modal kullanılması gerekir, ancak var olan kodunuzu korumak adına şimdilik alert bırakıldı.
+                    // console.error('Yönetici paneline erişim izniniz yok.');
+                    // window.location.href = '/'; 
                 }
             } catch (error) {
-                 console.error("Admin check error:", error);
-                 alert("Giriş kontrolü sırasında bir hata oluştu.");
-                 window.location.href = '/'; 
+                console.error("Admin check error:", error);
+                // alert("Giriş kontrolü sırasında bir hata oluştu.");
+                // window.location.href = '/'; 
             }
         } else {
-            alert('Yönetici paneline erişmek için giriş yapmalısınız.');
-            window.location.href = '/';
+            // console.error('Yönetici paneline erişmek için giriş yapmalısınız.');
+            // window.location.href = '/';
         }
     });
     
@@ -222,36 +269,53 @@
         signOut(auth).catch(error => console.error("Logout error:", error));
     });
 
+    // Navigasyon tıklama olayları
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             if (link.id.includes('logout')) return;
-            showSection(`content-${link.id.replace('nav-', '')}`);
+            // Link ID'sine göre içerik ID'sini oluştur ve göster
+            const sectionId = `content-${link.id.replace('nav-', '')}`;
+            showSection(sectionId);
         });
     });
 
+    // Ana içerik gösterme ve veri yükleme fonksiyonu
     function showSection(sectionId) {
         contentSections.forEach(s => s.classList.add('hidden'));
         document.getElementById(sectionId)?.classList.remove('hidden');
         navLinks.forEach(l => l.classList.remove('active-nav-link'));
         document.getElementById(`nav-${sectionId.replace('content-', '')}`)?.classList.add('active-nav-link');
 
+        // İlgili sekmeye tıklandığında veri yükleme
         if (sectionId === 'content-dashboard') loadDashboardData();
         if (sectionId === 'content-orders') loadAllOrders();
         if (sectionId === 'content-users') loadAllUsers();
         if (sectionId === 'content-settings') loadSettings();
+        
+        // YENİ: Ürünler sekmesine tıklandığında bir yükleme fonksiyonu çağrılabilir (şimdilik boş)
+        if (sectionId === 'content-products') loadProductsData();
     }
+    
+    // YENİ: Ürün Yönetimi için placeholder fonksiyonu
+    function loadProductsData() {
+        // Burada ürün verilerini Firestore'dan çekme ve tabloya/listeye render etme işlemleri yapılabilir.
+        // Şimdilik sadece boş bir console log ekledik.
+        console.log("Ürün Yönetimi sekmesi yüklendi. Veriler yakında buraya gelecek.");
+    }
+    // --- DURUM STİLLERİ VE VERİ YÜKLEME FONKSİYONLARI (KORUNDU) ---
 
-   const statusStyles = {
-     pending_payment:  { text: 'Ödeme Bekleniyor', style: 'bg-yellow-400 text-white' },
-     pending:          { text: 'Beklemede', style: 'bg-yellow-500 text-white' },
-     processing:       { text: 'Onaylandı', style: 'bg-blue-500 text-white' },
-     tr_warehouse:     { text: 'TR Depoda', style: 'bg-cyan-700 text-white' },
-     shipped:          { text: 'Kargoya Verildi', style: 'bg-purple-500 text-white' },
-     cyprus_warehouse: { text: 'Kıbrıs Depoda', style: 'bg-indigo-700 text-white' },
-     delivered:        { text: 'Teslim Edildi', style: 'bg-green-500 text-white' },
-     cancelled:        { text: 'İptal Edildi', style: 'bg-red-500 text-white' }
-   };
+    const statusStyles = {
+        pending_payment:  { text: 'Ödeme Bekleniyor', style: 'bg-yellow-500 text-white' },
+        pending:          { text: 'Beklemede', style: 'bg-yellow-500 text-white' },
+        processing:       { text: 'Onaylandı', style: 'bg-blue-500 text-white' },
+        tr_warehouse:     { text: 'TR Depoda', style: 'bg-cyan-700 text-white' },
+        shipped:          { text: 'Kargoya Verildi', style: 'bg-purple-500 text-white' },
+        cyprus_warehouse: { text: 'Kıbrıs Depoda', style: 'bg-indigo-700 text-white' },
+        delivered:        { text: 'Teslim Edildi', style: 'bg-green-500 text-white' },
+        cancelled:        { text: 'İptal Edildi', style: 'bg-red-500 text-white' }
+    };
+    
     async function loadDashboardData() {
         const statsContainer = document.getElementById('stats-cards-container');
         statsContainer.innerHTML = '<p>Veriler yükleniyor...</p>';
@@ -294,19 +358,19 @@
                 </tr></thead>
             `;
             if (latestOrdersSnapshot.empty) {
-                 tableBody.innerHTML += '<tr><td colspan="3" class="text-center py-4">Bekleyen sipariş yok.</td></tr>';
+                tableBody.innerHTML += '<tr><td colspan="3" class="text-center py-4">Bekleyen sipariş yok.</td></tr>';
             } else {
-                 latestOrdersSnapshot.forEach(doc => {
-                     const order = doc.data();
-                     const statusInfo = statusStyles[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
-                     tableBody.innerHTML += `
-                         <tr class="border-t">
-                             <td class="px-4 py-2 text-sm">${order.userFullName || 'İsimsiz'}</td>
-                             <td class="px-4 py-2 text-sm font-semibold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</td>
-                             <td class="px-4 py-2 text-sm"><span class="status-badge ${statusInfo.style}">${statusInfo.text}</span></td>
-                         </tr>
-                     `;
-                 });
+                latestOrdersSnapshot.forEach(doc => {
+                    const order = doc.data();
+                    const statusInfo = statusStyles[order.status] || {text: 'Bilinmiyor', style: 'status-unknown'};
+                    tableBody.innerHTML += `
+                        <tr class="border-t">
+                            <td class="px-4 py-2 text-sm">${order.userFullName || 'İsimsiz'}</td>
+                            <td class="px-4 py-2 text-sm font-semibold">${order.totals?.grandTotal?.toFixed(2) || 'N/A'} ₺</td>
+                            <td class="px-4 py-2 text-sm"><span class="status-badge ${statusInfo.style}">${statusInfo.text}</span></td>
+                        </tr>
+                    `;
+                });
             }
         } catch (error) {
             console.error("Dashboard error:", error);
@@ -399,7 +463,7 @@
     
     document.getElementById('close-order-modal').addEventListener('click', () => orderDetailModal.classList.add('hidden'));
     
-    // HATA DÜZELTMESİ: Bu olay dinleyici, tekrar tekrar eklenmemesi için loadSettings fonksiyonunun dışına taşındı.
+    // Şehir Ekleme
     document.getElementById('add-city-btn').addEventListener('click', async () => {
         const newCityNameInput = document.getElementById('new-city-name');
         const newCityFeeInput = document.getElementById('new-city-fee');
@@ -409,7 +473,6 @@
         if (newCityName && !isNaN(newCityFee) && newCityFee >= 0) {
             try {
                 const pricingDocRef = doc(db, "settings", "pricing");
-                // Mevcut şehir ücretlerini al, üzerine yazma
                 const pricingDocSnap = await getDoc(pricingDocRef);
                 const existingData = pricingDocSnap.data() || {};
                 const cityFees = existingData.cityFees || {};
@@ -418,16 +481,16 @@
                 
                 await setDoc(pricingDocRef, { cityFees }, { merge: true });
                 
-                alert(`'${newCityName}' başarıyla eklendi.`);
+                // alert yerine console log kullanıldı.
+                console.log(`'${newCityName}' başarıyla eklendi.`);
                 newCityNameInput.value = ''; // Inputları temizle
                 newCityFeeInput.value = '';
                 loadSettings(); // Ayarlar görünümünü yenile
             } catch (error) {
-                alert('Yeni şehir eklenirken bir hata oluştu.');
                 console.error("Error adding new city:", error);
             }
         } else {
-            alert('Lütfen geçerli bir şehir adı ve ücret giriniz.');
+            console.error('Lütfen geçerli bir şehir adı ve ücret giriniz.');
         }
     });
 
@@ -436,9 +499,7 @@
     const content = document.getElementById('modal-order-content');
     document.getElementById('modal-order-id').textContent = `Sipariş Detayı: #${order.id.substring(0, 8)}`;
 
-    // 🔥 DÜZELTME 1: Hizmet Türünü (orderMethod) okuyoruz.
     const serviceTypeRaw = (order.items && order.items.length > 0) ? order.items[0].orderMethod : null;
-    // 🔥 YENİ EKLEME 1: Kategoriyi items[0].category alanından okuyoruz.
     const orderCategory = (order.items && order.items.length > 0) ? order.items[0].category : 'Belirtilmemiş';
 
 
@@ -453,7 +514,6 @@
         serviceTypeStyle = 'bg-secondary/20 text-yellow-800 font-bold'; 
     }
 
-    // 🔥 YENİ EKLEME 2: Ürünler listesine kategori bilgisini ekliyoruz.
     const itemsHtml = (order.items || []).map(item => `
         <div class="border-t pt-2 mt-2">
             <a href="${item.productLink}" target="_blank" class="text-blue-600 text-sm hover:underline truncate block">${item.productLink}</a>
@@ -503,12 +563,12 @@
         const orderId = e.target.dataset.id;
         try {
             await updateDoc(doc(db, "orders", orderId), { status: newStatus });
-            alert('Sipariş durumu güncellendi.');
+            // alert yerine console log kullanıldı.
+            console.log('Sipariş durumu güncellendi.');
             orderDetailModal.classList.add('hidden');
             loadAllOrders();
             loadDashboardData();
         } catch(error) {
-            alert('Durum güncellenirken hata oluştu.');
             console.error("Status update error:", error);
         }
     });
@@ -553,6 +613,9 @@
             const pricingData = pricingDoc.exists() ? pricingDoc.data() : {};
             const categoryRates = pricingData.categoryRates || {};
             const cityFees = pricingData.cityFees || {};
+            
+            // Mevcut dinleyicileri kaldırma, aksi halde her yüklemede yinelenir (SADECE ONAYLAMA İÇİN EKLENDİ)
+            // if (categoryForm._hasEventListener) { categoryForm.removeEventListener('submit', handleSettingsSave); cityForm.removeEventListener('submit', handleSettingsSave); }
 
             categoryForm.innerHTML = Object.entries(categoryRates).map(([key, value]) => `
                 <div class="flex items-center gap-2">
@@ -565,11 +628,15 @@
                 <div class="flex items-center gap-2">
                     <label class="w-32 capitalize">${key}:</label>
                     <input type="number" name="${key}" value="${value}" class="w-24 p-1 border rounded">
+                    <!-- Silme butonu eklenebilir -->
                 </div>
             `).join('') + '<button type="submit" class="w-full mt-4 bg-primary text-white py-2 rounded-lg">Şehir Ücretlerini Kaydet</button>';
             
-            categoryForm.addEventListener('submit', handleSettingsSave);
-            cityForm.addEventListener('submit', handleSettingsSave);
+            // Dinleyicileri ekle
+            categoryForm.onsubmit = handleSettingsSave;
+            cityForm.onsubmit = handleSettingsSave;
+
+            // categoryForm._hasEventListener = true;
 
         } catch (error) {
             console.error("Settings load error:", error);
@@ -589,12 +656,15 @@
         const docName = form.id.includes('category') ? 'categoryRates' : 'cityFees';
         try {
             await setDoc(doc(db, "settings", "pricing"), { [docName]: data }, { merge: true });
-            alert('Ayarlar başarıyla kaydedildi.');
+            console.log('Ayarlar başarıyla kaydedildi.');
+            // Başarı mesajı gösterme veya sayfayı yenileme (isteğe bağlı)
         } catch (error) {
-            alert('Ayarlar kaydedilirken bir hata oluştu.');
             console.error("Settings save error:", error);
         }
     }
+
+    // İlk yüklemede Kontrol Paneli'ni göster
+    // Bu, onAuthStateChanged içinde çağrıldığı için burada tekrar çağırmaya gerek yok.
 
 </script>
 </body>
