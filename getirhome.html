@@ -7,7 +7,7 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script type="module">
 		// === Firebase Bağlantısı ve Zorunlu Global Değişkenler ===
-		// Canvas ortamı için gerekli olan en güncel SDK'lar ve yöntemler korunmuştur.
+		// Canvas ortamı için gerekli olan en güncel SDK'lar ve yöntemler
 		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 		import { getFirestore, collection, getDocs, query, where, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 		import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
@@ -15,16 +15,24 @@
 		// Zorunlu Global Değişkenlerin Tanımlanması (Canvas Ortamı için KRİTİK)
 		const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 		
+		// Firebase Config nesnesini Canvas ortamından almak
 		const firebaseConfig = (() => {
 			if (typeof __firebase_config !== 'undefined' && __firebase_config) {
 				try {
-					return JSON.parse(__firebase_config);
+					// Kullanıcının config'i yerine, Canvas'ın sağladığı güvenli config'i kullanıyoruz.
+					return JSON.parse(__firebase_config); 
 				} catch (e) {
-					console.error("HATA: __firebase_config JSON ayrıştırılamadı. Yedek projectId kullanılıyor.", e);
-					return { projectId: 'parse-error-fallback' };
+					console.error("HATA: __firebase_config JSON ayrıştırılamadı.", e);
+					return {};
 				}
 			}
-			return { projectId: 'undefined-config-fallback' };
+			// Fallback: Kullanıcının kendi config'inde sadece apiKey ve authDomain'i koruyoruz
+			// Diğer alanlar Firebase'de hata verebileceği için kaldırıldı.
+			return { 
+				apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+				authDomain: "kibris-6b4f7.firebaseapp.com",
+				projectId: "kibris-6b4f7",
+			};
 		})();
 
 		const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -32,11 +40,11 @@
 		const app = initializeApp(firebaseConfig);
 		const db = getFirestore(app);
 		const auth = getAuth(app);
-		setLogLevel('Debug'); // Firestore loglarını aç
+		setLogLevel('Debug'); 
 
 		let currentUser = null;
 		let userId = null;
-		const provider = new GoogleAuthProvider(); // Google Auth Sağlayıcısı
+		const provider = new GoogleAuthProvider(); 
         
         // Halka açık (public) koleksiyon yolunu döndüren yardımcı fonksiyon (Canvas'ın zorunlu yolu)
         function getPublicCollectionRef(collectionName) {
@@ -44,29 +52,28 @@
             return collection(db, 'artifacts', appId, 'public', 'data', collectionName);
         }
 
-		// Basit Kök Koleksiyon yolunu döndüren yardımcı fonksiyon (Eski/Basit yol)
+		// Basit Kök Koleksiyon yolunu döndüren yardımcı fonksiyon (Kullanıcının çalışan kodundan gelen yol)
 		function getRootCollectionRef(collectionName) {
             // Path: /{collectionName}
             return collection(db, collectionName);
         }
 
-		// YENİ: Firebase Authentication'ı başlat ve zorunlu oturum açma tokenını kullan
+		// === Oturum Yönetimi ve Yükleme ===
 		async function ensureAuthAndLoadData() {
 			try {
 				if (initialAuthToken) {
-					// Özel token varsa, bununla oturum aç
 					await signInWithCustomToken(auth, initialAuthToken);
 				} else {
-					// Yoksa anonim olarak oturum aç (Veri okumak için minimum yetki)
 					await signInAnonymously(auth);
 				}
 			} catch (error) {
 				console.error("Firebase oturum açma başarısız:", error);
 			}
 
-			// Sayfa yüklendiğinde kullanıcı durumunu dinle
+			// Kullanıcı durumu değiştiğinde (anonim/Google/token) tetiklenir
 			onAuthStateChanged(auth, (user) => {
 				currentUser = user;
+				// Kullanıcı yoksa rastgele ID kullan (aslında anonim kullanıcı oluşmalı)
 				userId = user ? user.uid : crypto.randomUUID(); 
 				
 				// Kullanıcı durumu belirlendikten sonra verileri yükle
@@ -74,12 +81,12 @@
 				loadCategories();
 				loadProducts();
 
-				// Navigasyon çubuğunu kullanıcı durumuna göre güncelle
 				updateUserUI(user);
 			});
 		}
 
-		// Kullanıcı Arayüzünü Güncelleyen Fonksiyon (Önceki kodunuzdan korundu)
+		// --- UI ve Auth Yardımcıları ---
+
 		function updateUserUI(user) {
 			const authContainer = document.getElementById('auth-container');
 			if (!authContainer) return;
@@ -107,7 +114,6 @@
 			}
 		}
 
-		// Google ile Giriş Yöneticisi (Önceki kodunuzdan korundu)
 		async function googleSignIn() {
 			try {
 				await signInWithPopup(auth, provider);
@@ -118,10 +124,10 @@
 			}
 		}
 
-		// Çıkış Yap Yöneticisi (Önceki kodunuzdan korundu)
 		async function handleSignOut() {
 			try {
 				await signOut(auth);
+				// Çıkış yaptıktan sonra anonim olarak tekrar oturum aç (Veri okuma yetkisi için)
 				await signInAnonymously(auth); 
 				showToast("Başarıyla çıkış yapıldı.");
 			} catch (error) {
@@ -130,7 +136,6 @@
 			}
 		}
 		
-		// === Toast Bildirim Fonksiyonu (Önceki kodunuzdan korundu) ===
 		function showToast(message, isError = false) {
 			const toastContainer = document.getElementById('toast-container');
 			const toast = document.getElementById('toast-message');
@@ -155,31 +160,41 @@
 		}
 
 
-		// === Dinamik Banner (Fallback eklendi) ===
-		async function loadBanners() {
-			const bannerContainer = document.getElementById("banner-slider");
+		// --- Veri Yükleme ve Fallback Mantığı ---
+
+		// Veri yükleme işlemini iki farklı koleksiyon yolunu deneyerek yapar.
+		async function fetchWithFallback(collectionName, queryRef) {
 			let snapshot;
 			
 			// 1. Deneme: Canvas Public Yolu
 			try {
-				snapshot = await getDocs(query(getPublicCollectionRef("homeBanners")));
+				const publicQuery = queryRef(getPublicCollectionRef(collectionName));
+				snapshot = await getDocs(publicQuery);
 			} catch(e) {
-				console.warn("Canvas Public Path'te Banner yüklenirken ilk deneme başarısız oldu.");
+				console.warn(`[${collectionName}] Canvas Public Path'te ilk deneme başarısız oldu.`);
 			}
 			
 			// 2. Deneme: Basit Kök Yolu (Kullanıcının çalışan kodundan gelen yol)
 			if (!snapshot || snapshot.empty) {
 				try {
-					snapshot = await getDocs(query(getRootCollectionRef("homeBanners")));
+					const rootQuery = queryRef(getRootCollectionRef(collectionName));
+					snapshot = await getDocs(rootQuery);
 					if (!snapshot.empty) {
-						console.warn("Bannerlar, Basit Kök Yolu (/homeBanners) kullanılarak yüklendi.");
+						console.warn(`[${collectionName}] Basit Kök Yolu kullanılarak yüklendi.`);
 					}
 				} catch(e) {
-					console.error("Banner yüklenirken her iki yolda da hata:", e);
-					return;
+					console.error(`[${collectionName}] Veri yüklenirken her iki yolda da hata:`, e);
+					return null;
 				}
 			}
+			return snapshot;
+		}
 
+		// === Dinamik Banner ===
+		async function loadBanners() {
+			const bannerContainer = document.getElementById("banner-slider");
+			const snapshot = await fetchWithFallback("homeBanners", (ref) => query(ref));
+			
 			if (!snapshot || snapshot.empty) return;
 			
 			let banners = [];
@@ -192,37 +207,18 @@
 			let index = 0;
 			bannerContainer.style.backgroundImage = `url(${banners[0]})`; 
 
+			// Otomatik slayt geçişi
 			setInterval(() => {
 				index = (index + 1) % banners.length;
 				bannerContainer.style.backgroundImage = `url(${banners[index]})`;
 			}, 4000);
 		}
 
-		// === Kategoriler (Fallback eklendi) ===
+		// === Kategoriler ===
 		async function loadCategories() {
 			const catContainer = document.getElementById("kategori-listesi");
-			let snapshot;
-
-			// 1. Deneme: Canvas Public Yolu
-			try {
-				snapshot = await getDocs(getPublicCollectionRef("homeCategories"));
-			} catch(e) {
-				console.warn("Canvas Public Path'te Kategoriler yüklenirken ilk deneme başarısız oldu.");
-			}
-
-			// 2. Deneme: Basit Kök Yolu (Kullanıcının çalışan kodundan gelen yol)
-			if (!snapshot || snapshot.empty) {
-				try {
-					snapshot = await getDocs(getRootCollectionRef("homeCategories"));
-					if (!snapshot.empty) {
-						console.warn("Kategoriler, Basit Kök Yolu (/homeCategories) kullanılarak yüklendi.");
-					}
-				} catch(e) {
-					console.error("Kategori yüklenirken her iki yolda da hata:", e);
-					return;
-				}
-			}
-
+			const snapshot = await fetchWithFallback("homeCategories", (ref) => query(ref));
+			
 			if (!snapshot || snapshot.empty) {
 				catContainer.innerHTML = "<p class='text-gray-500'>Kategori bulunamadı.</p>";
 				return;
@@ -233,7 +229,7 @@
 				const cat = doc.data();
 				if (cat.aktif) {
 					const btn = document.createElement("button");
-					btn.className = "px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition duration-150 shadow-sm font-medium";
+					btn.className = "px-4 py-2 rounded-lg bg-gray-200 hover:bg-blue-200 text-gray-700 transition duration-150 shadow-sm font-medium";
 					btn.textContent = cat.kategoriAdi;
 					// Kategori filtrelemesi için doc.id kullanıldı
 					btn.onclick = () => loadProducts(doc.id, cat.kategoriAdi);
@@ -242,26 +238,16 @@
 			});
 		}
 		
-		// Sepete Ekleme Fonksiyonu (Canvas uyumlu yolu korundu ve alert yerine toast kullanıldı)
+		// === Sepete Ekleme Fonksiyonu ===
 		async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) {
+			// Oturum açılmamışsa veya anonimse (Google girişi zorunlu)
 			if (!currentUser || currentUser.isAnonymous) {
 				showToast("Sepete ürün eklemek için lütfen Google ile giriş yapın.", true);
-				
-				try {
-					await signInWithPopup(auth, provider);
-					currentUser = auth.currentUser; 
-					showToast("Giriş başarılı, şimdi ürünü ekleyebilirsiniz.");
-				} catch(e) {
-					console.log("Kullanıcı giriş yapmayı reddetti veya işlem başarısız oldu.");
-					showToast("Giriş yapılmadan sepet işlemi gerçekleştirilemez.", true);
-					return;
-				}
+				return;
 			}
 
-			if (!currentUser || currentUser.isAnonymous) return;
-
 			try {
-				// Sepet yolu doğru: /artifacts/{appId}/users/{userId}/cart
+				// Sepet yolu doğru: /artifacts/{appId}/users/{userId}/cart (Kullanıcıya özel)
 				const cartRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'cart');
 				
 				const newCartItem = {
@@ -269,11 +255,12 @@
 					urunAdi: urunAdi,
 					resimURL: resimURL,
 					
-					productPrice: parseFloat(urunFiyati),
+					productPrice: parseFloat(urunFiyati), // Fiyatı sayı olarak kaydet
 					quantity: 1,
 					
-					category: 'directBuyHome',
-					orderMethod: 'service',
+					// KRİTİK: Sepet sayfasının komisyonu SIFIR (0) olarak hesaplamasını sağlayan etiketler
+					category: 'directBuyHome', 
+					orderMethod: 'service', 
 					timestamp: new Date()
 				};
 
@@ -282,8 +269,9 @@
 				showToast(`${urunAdi} sepete eklendi! Sepete yönlendiriliyor...`);
 				
 				setTimeout(() => {
+					// Başarılı eklemeden sonra kullanıcıyı sepet sayfasına yönlendir
 					window.location.href = '/sepet.html'; 
-				}, 1500); 
+				}, 1000);
 
 			} catch (error) {
 				console.error("Ürün sepete eklenirken hata oluştu:", error);
@@ -291,44 +279,22 @@
 			}
 		}
 
-		// === Ürünler (Fallback eklendi) ===
+		// === Ürünler ===
 		async function loadProducts(kategoriId = null, kategoriAdi = null) {
 			const urunContainer = document.getElementById("urun-listesi");
 			urunContainer.innerHTML = "<p class='text-gray-400 col-span-full text-center'>Yükleniyor...</p>";
 
-			let q;
-			let snapshot;
-
-			// 1. Deneme: Canvas Public Yolu
-			try {
-				let publicRef = getPublicCollectionRef("homeProducts");
-				q = kategoriId ? query(publicRef, where("kategoriId", "==", kategoriId)) : query(publicRef);
-				snapshot = await getDocs(q);
-			} catch(e) {
-				console.warn("Canvas Public Path'te Ürünler yüklenirken ilk deneme başarısız oldu.");
-			}
-
-			// 2. Deneme: Basit Kök Yolu (Kullanıcının çalışan kodundan gelen yol)
-			if (!snapshot || snapshot.empty) {
-				try {
-					let rootRef = getRootCollectionRef("homeProducts");
-					q = kategoriId ? query(rootRef, where("kategoriId", "==", kategoriId)) : query(rootRef);
-					snapshot = await getDocs(q);
-					if (!snapshot.empty) {
-						console.warn("Ürünler, Basit Kök Yolu (/homeProducts) kullanılarak yüklendi.");
-					}
-				} catch(e) {
-					console.error("Ürün yüklenirken her iki yolda da hata:", e);
-					urunContainer.innerHTML = `<p class='text-red-500 col-span-full text-center'>Ürünler yüklenemedi. Yetki veya bağlantı hatası olabilir: ${e.message}</p>`;
-					document.getElementById("secili-kategori").textContent = kategoriAdi || "Tüm Ürünler";
-					return;
+			const snapshot = await fetchWithFallback("homeProducts", (ref) => {
+				if (kategoriId) {
+					return query(ref, where("kategoriId", "==", kategoriId));
 				}
-			}
+				return query(ref);
+			});
 			
 			urunContainer.innerHTML = "";
 			
-			if (snapshot.empty) {
-				urunContainer.innerHTML = "<p class='text-gray-500 text-center col-span-full'>Gösterilecek ürün bulunmamaktadır. Lütfen Firebase verilerinizi kontrol edin.</p>";
+			if (!snapshot || snapshot.empty) {
+				urunContainer.innerHTML = "<p class='text-gray-500 text-center col-span-full'>Gösterilecek ürün bulunmamaktadır.</p>";
 				document.getElementById("secili-kategori").textContent = kategoriAdi || "Tüm Ürünler";
 				return;
 			}
@@ -341,10 +307,11 @@
 				const card = document.createElement("div");
 				card.className = "border border-gray-100 rounded-xl p-4 shadow-md hover:shadow-xl transition duration-300 bg-white flex flex-col";
 
-				const urunLink = urun.link || "#";
+				const urunLink = urun.link || "";
 				// Tırnak işaretlerini kaçış karakteri ile temizleme
 				const cleanUrunAdi = urun.urunAdi ? urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"') : "Ürün Adı Yok"; 
 				const urunResim = urun.resimURL || 'https://placehold.co/400x300/e5e7eb/4b5563?text=Resim+Yok'; 
+				const urunFiyat = parseFloat(urun.fiyat) || 0; // Fiyatı sayıya çevir
 
 				card.innerHTML = `
 					<img src="${urunResim}" onerror="this.onerror=null;this.src='https://placehold.co/400x300/e5e7eb/4b5563?text=Resim+Yok';" 
@@ -352,8 +319,8 @@
 					<h3 class="text-lg font-semibold mb-1 truncate">${urun.urunAdi}</h3>
 					<p class="text-gray-600 text-sm mb-2 line-clamp-2">${urun.aciklama || "Açıklama mevcut değil."}</p>
 					<div class="mt-auto">
-						<p class="text-blue-600 text-xl font-bold mb-3">${urun.fiyat} ₺</p>
-						<button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urunResim}', '${urunLink}')"
+						<p class="text-blue-600 text-xl font-bold mb-3">${urunFiyat.toFixed(2)} ₺</p>
+						<button onclick="window.addToCart('${cleanUrunAdi}', ${urunFiyat}, '${urunResim}', '${urunLink}')"
 								class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-150 transform hover:scale-[1.01] shadow-lg text-sm font-medium">
 							Sepete Ekle
 						</button>
@@ -404,7 +371,6 @@
 				</a>
 				<!-- Auth Durumunu Gösteren Alan -->
 				<div id="auth-container" class="ml-4">
-					<!-- İçerik JS tarafından doldurulacak -->
 					<div class="animate-pulse bg-gray-200 w-28 h-8 rounded-lg"></div>
 				</div>
 			</nav>
