@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GetirHome Admin Paneli</title>
   <script type="module">
-    // Firebase importları
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // Firebase yapılandırması
     const firebaseConfig = {
       apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
       authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -22,9 +21,8 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
-
-    // Admin e-postası
     const ADMIN_EMAIL = "emirmob09@gmail.com";
 
     // Giriş kontrolü
@@ -34,8 +32,9 @@
           document.getElementById("adminPanel").classList.remove("hidden");
           document.getElementById("loginSection").classList.add("hidden");
           document.getElementById("adminName").textContent = user.displayName;
+          loadCategories();
+          loadProducts();
         } else {
-          // Admin değilse ana sayfaya yönlendir
           window.location.href = "getirhome.html";
         }
       } else {
@@ -44,7 +43,7 @@
       }
     });
 
-    // Google ile giriş
+    // Giriş / Çıkış
     window.googleLogin = async () => {
       try {
         await signInWithPopup(auth, provider);
@@ -52,18 +51,95 @@
         alert("Giriş başarısız: " + error.message);
       }
     };
+    window.logout = async () => await signOut(auth);
 
-    // Çıkış
-    window.logout = async () => {
-      await signOut(auth);
+    // --- 🔹 KATEGORİ İŞLEMLERİ ---
+    window.addCategory = async () => {
+      const name = document.getElementById("categoryName").value.trim();
+      if (!name) return alert("Kategori adı giriniz.");
+      await addDoc(collection(db, "categories"), { name });
+      document.getElementById("categoryName").value = "";
+      loadCategories();
+    };
+
+    async function loadCategories() {
+      const container = document.getElementById("categoryList");
+      container.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "categories"));
+      snapshot.forEach((docItem) => {
+        const data = docItem.data();
+        const div = document.createElement("div");
+        div.className = "flex justify-between items-center p-2 border-b";
+        div.innerHTML = `
+          <span>${data.name}</span>
+          <button class="text-red-600" onclick="deleteCategory('${docItem.id}')">Sil</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.deleteCategory = async (id) => {
+      await deleteDoc(doc(db, "categories", id));
+      loadCategories();
+    };
+
+    // --- 🔹 ÜRÜN İŞLEMLERİ ---
+    window.addProduct = async () => {
+      const name = document.getElementById("productName").value.trim();
+      const price = document.getElementById("productPrice").value.trim();
+      const description = document.getElementById("productDesc").value.trim();
+      const categoryId = document.getElementById("productCategory").value;
+      const imageUrl = document.getElementById("productImage").value.trim();
+
+      if (!name || !price || !categoryId) return alert("Lütfen gerekli alanları doldurun.");
+      await addDoc(collection(db, "products"), { name, price, description, categoryId, imageUrl });
+      document.getElementById("productName").value = "";
+      document.getElementById("productPrice").value = "";
+      document.getElementById("productDesc").value = "";
+      document.getElementById("productImage").value = "";
+      loadProducts();
+    };
+
+    async function loadProducts() {
+      const container = document.getElementById("productList");
+      container.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "products"));
+      snapshot.forEach((docItem) => {
+        const data = docItem.data();
+        const div = document.createElement("div");
+        div.className = "flex justify-between items-center p-2 border-b";
+        div.innerHTML = `
+          <span>${data.name} - ${data.price}₺</span>
+          <button class="text-red-600" onclick="deleteProduct('${docItem.id}')">Sil</button>
+        `;
+        container.appendChild(div);
+      });
+      loadCategoriesToSelect();
+    }
+
+    async function loadCategoriesToSelect() {
+      const select = document.getElementById("productCategory");
+      select.innerHTML = "";
+      const snapshot = await getDocs(collection(db, "categories"));
+      snapshot.forEach((docItem) => {
+        const opt = document.createElement("option");
+        opt.value = docItem.id;
+        opt.textContent = docItem.data().name;
+        select.appendChild(opt);
+      });
+    }
+
+    window.deleteProduct = async (id) => {
+      await deleteDoc(doc(db, "products", id));
+      loadProducts();
     };
   </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
+<body class="bg-gray-50 min-h-screen flex flex-col items-center p-6">
 
-  <!-- Giriş ekranı -->
+  <!-- Giriş -->
   <section id="loginSection" class="text-center">
     <h1 class="text-2xl font-bold mb-4">GetirHome Admin Girişi</h1>
     <button onclick="googleLogin()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
@@ -71,8 +147,8 @@
     </button>
   </section>
 
-  <!-- Admin paneli -->
-  <section id="adminPanel" class="hidden w-full max-w-4xl p-6 bg-white rounded-lg shadow mt-10">
+  <!-- Admin Panel -->
+  <section id="adminPanel" class="hidden w-full max-w-5xl bg-white rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-semibold">Yönetim Paneli</h1>
       <div class="flex items-center space-x-3">
@@ -81,17 +157,28 @@
       </div>
     </div>
 
-    <!-- Menü -->
-    <div class="grid grid-cols-2 gap-6">
-      <div class="p-6 border rounded-lg text-center hover:bg-gray-100 cursor-pointer">
-        <h2 class="text-xl font-medium">📦 Ürün Yönetimi</h2>
-        <p class="text-sm text-gray-500 mt-2">Ürün ekle, düzenle veya sil</p>
+    <!-- Kategoriler -->
+    <div class="mb-10">
+      <h2 class="text-xl font-medium mb-2">📂 Kategori Yönetimi</h2>
+      <div class="flex gap-3 mb-4">
+        <input id="categoryName" placeholder="Kategori adı" class="border px-3 py-2 rounded w-full">
+        <button onclick="addCategory()" class="bg-green-600 text-white px-4 py-2 rounded">Ekle</button>
       </div>
+      <div id="categoryList" class="border rounded p-3 bg-gray-50"></div>
+    </div>
 
-      <div class="p-6 border rounded-lg text-center hover:bg-gray-100 cursor-pointer">
-        <h2 class="text-xl font-medium">🗂️ Kategori Yönetimi</h2>
-        <p class="text-sm text-gray-500 mt-2">Kategori ve alt kategori oluştur</p>
+    <!-- Ürünler -->
+    <div>
+      <h2 class="text-xl font-medium mb-2">🛋️ Ürün Yönetimi</h2>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <input id="productName" placeholder="Ürün adı" class="border px-3 py-2 rounded">
+        <input id="productPrice" placeholder="Fiyat (₺)" class="border px-3 py-2 rounded">
+        <input id="productDesc" placeholder="Açıklama" class="border px-3 py-2 rounded col-span-2">
+        <input id="productImage" placeholder="Görsel URL" class="border px-3 py-2 rounded col-span-2">
+        <select id="productCategory" class="border px-3 py-2 rounded col-span-2"></select>
       </div>
+      <button onclick="addProduct()" class="bg-blue-600 text-white px-6 py-2 rounded">Ürün Ekle</button>
+      <div id="productList" class="border rounded p-3 bg-gray-50 mt-4"></div>
     </div>
   </section>
 </body>
