@@ -80,7 +80,7 @@
     }
     
     // === Sepete Ekleme Fonksiyonu (GÜNCELLENMİŞ) ===
-    async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) { // <-- 4. parametre eklendi!
+    async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) { // <-- Tüm parametreler burada
         if (!currentUser) {
             alert("Sepete ürün eklemek için lütfen giriş yapınız.");
             window.location.href = '/index.html'; 
@@ -91,17 +91,18 @@
             const cartRef = collection(db, 'users', currentUser.uid, 'cart');
             
             const newCartItem = {
-                // Müşteriyi yönlendireceğiniz harici linki productLink alanına kaydettik
-                productLink: urunLink, 
-                productPrice: parseFloat(urunFiyati),
+                // İstenen tüm bilgiler Firebase'e kaydediliyor:
+                productLink: urunLink,  // Müşterinin tıklayacağı dış link
+                urunAdi: urunAdi,       // Ürünün adı
+                resimURL: resimURL,     // Ürünün resmi
+
+                productPrice: parseFloat(urunFiyati), // Gönderilen SON FİYAT
                 quantity: 1, 
                 
                 // Fiyatlandırma ayarları (Komisyonu sıfırlamak için)
                 category: 'directBuyHome', 
                 orderMethod: 'service', 
 
-                urunAdi: urunAdi,
-                resimURL: resimURL
             };
 
             await addDoc(cartRef, newCartItem);
@@ -134,17 +135,17 @@
           const card = document.createElement("div");
           card.className = "border rounded-xl p-4 shadow hover:shadow-lg transition bg-white";
 
-          // Firestore'dan urun.link alanını alıyoruz. (urunLink adlı alana sahip olduğunuz varsayılmıştır)
+          // Firestore'dan urun.link ve urun.resimURL alanlarını alıyoruz.
           const urunLink = urun.link || "#"; 
-          // Link varsa, tırnak işaretlerini (tek ve çift) JavaScript'e güvenli bir şekilde geçirmek için değişkene ihtiyacımız var.
-          const cleanUrunAdi = urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"');
+          const urunResim = urun.resimURL || 'placeholder.jpg'; // Varsayılan resim
+          const cleanUrunAdi = urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"');
 
           card.innerHTML = `
-            <img src="${urun.resimURL}" alt="${urun.urunAdi}" class="w-full h-48 object-cover rounded-lg mb-3">
+            <img src="${urunResim}" alt="${urun.urunAdi}" class="w-full h-48 object-cover rounded-lg mb-3">
             <h3 class="text-lg font-semibold mb-1">${urun.urunAdi}</h3>
             <p class="text-gray-600 text-sm mb-2">${urun.aciklama || ""}</p>
             <p class="text-blue-600 font-bold mb-3">${urun.fiyat} ₺</p>
-            <button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urun.resimURL}', '${urunLink}')"
+            <button onclick="window.addToCart('${cleanUrunAdi}', ${urun.fiyat}, '${urunResim}', '${urunLink}')"
                     class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
               Sepete Ekle
             </button>
