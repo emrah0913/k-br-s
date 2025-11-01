@@ -6,11 +6,10 @@
   <title>Getir Home | Getir Kıbrıs</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
-
     // === Firebase Bağlantısı ===
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-    import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+    import { getStorage } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -40,7 +39,6 @@
 
       let index = 0;
       bannerContainer.style.backgroundImage = `url(${banners[0]})`;
-
       setInterval(() => {
         index = (index + 1) % banners.length;
         bannerContainer.style.backgroundImage = `url(${banners[index]})`;
@@ -70,9 +68,7 @@
       urunContainer.innerHTML = "<p class='text-gray-400'>Yükleniyor...</p>";
 
       let q = collection(db, "homeProducts");
-      if (kategoriId) {
-        q = query(q, where("kategoriId", "==", kategoriId));
-      }
+      if (kategoriId) q = query(q, where("kategoriId", "==", kategoriId));
 
       const snapshot = await getDocs(q);
       urunContainer.innerHTML = "";
@@ -97,11 +93,7 @@
         urunContainer.appendChild(card);
       });
 
-      if (kategoriAdi) {
-        document.getElementById("secili-kategori").textContent = kategoriAdi;
-      } else {
-        document.getElementById("secili-kategori").textContent = "Tüm Ürünler";
-      }
+      document.getElementById("secili-kategori").textContent = kategoriAdi || "Tüm Ürünler";
     }
 
     // === Sayfa Yüklendiğinde ===
