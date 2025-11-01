@@ -7,15 +7,30 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script type="module">
 		// === Firebase Bağlantısı ve Zorunlu Global Değişkenler ===
-		// Canvas ortamında zorunlu olan, platform tarafından sağlanan global değişkenler kullanılır.
+		// Firebase v11 SDK'ları kullanılıyor.
 		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 		import { getFirestore, collection, getDocs, query, where, addDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-		// KRİTİK GÜNCELLEME: Google ile giriş için gerekli modüller eklendi
+		// getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, Google Sign-in
 		import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
 
-		// Zorunlu Global Değişkenlerin Tanımlanması
+		// Zorunlu Global Değişkenlerin Tanımlanması (Canvas Ortamı için KRİTİK)
 		const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-		const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+		
+		// GÜNCELLEME: Firebase Config'i Canvas ortamından güvenli bir şekilde yükler.
+		const firebaseConfig = (() => {
+			if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+				try {
+					// Eğer config geliyorsa, JSON olarak ayrıştır
+					return JSON.parse(__firebase_config);
+				} catch (e) {
+					console.error("HATA: __firebase_config JSON ayrıştırılamadı. Yedek projectId kullanılıyor.", e);
+					return { projectId: 'parse-error-fallback' };
+				}
+			}
+			// Config undefined ise, zorunlu olan projectId'yi içeren bir yedek konfigürasyon dön
+			return { projectId: 'undefined-config-fallback' };
+		})();
+
 		const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 		
 		const app = initializeApp(firebaseConfig);
@@ -34,7 +49,7 @@
 					// Özel token varsa, bununla oturum aç
 					await signInWithCustomToken(auth, initialAuthToken);
 				} else {
-					// Yoksa anonim olarak oturum aç
+					// Yoksa anonim olarak oturum aç (Veri okumak için minimum yetki)
 					await signInAnonymously(auth);
 				}
 			} catch (error) {
@@ -45,6 +60,7 @@
 			onAuthStateChanged(auth, (user) => {
 				currentUser = user;
 				// userId'yi oturum açmış kullanıcı UID'si veya rastgele bir UUID olarak belirle
+				// Not: Sepet için mutlaka gerçek UID gereklidir. Anonim kullanıcılar sepet verisini yazamaz.
 				userId = user ? user.uid : crypto.randomUUID(); 
 				
 				// Kullanıcı durumu belirlendikten sonra verileri yükle
@@ -57,7 +73,7 @@
 			});
 		}
 
-		// Kullanıcı Arayüzünü Güncelleyen Fonksiyon (Opsiyonel ama kullanışlı)
+		// Kullanıcı Arayüzünü Güncelleyen Fonksiyon
 		function updateUserUI(user) {
 			const authContainer = document.getElementById('auth-container');
 			if (!authContainer) return;
@@ -65,22 +81,22 @@
 			// Anonim kullanıcı veya oturum açmamış kullanıcı
 			if (!user || user.isAnonymous) {
 				authContainer.innerHTML = `
-					<button onclick="window.googleSignIn()" class="bg-yellow-500 text-gray-800 py-1.5 px-4 rounded-lg hover:bg-yellow-600 transition font-semibold flex items-center shadow-md">
-						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 48 48" fill="none">
+					<button onclick="window.googleSignIn()" class="bg-yellow-500 text-gray-800 py-1.5 px-4 rounded-lg hover:bg-yellow-600 transition font-semibold flex items-center shadow-md text-sm">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 48 48" fill="none">
 							<path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.309c-.751 3.511-3.155 6.44-6.427 8.353v5.82h7.323c4.279-3.951 6.75-9.763 6.75-16.176 0-1.127-.101-2.226-.294-3.284z"/>
 							<path fill="#FF3D00" d="M24 44c6.315 0 11.536-2.071 15.385-5.636l-7.323-5.82c-2.029 1.353-4.595 2.156-8.062 2.156-6.195 0-11.41-4.143-13.344-9.72H3.77v5.908C8.257 39.525 15.708 44 24 44z"/>
 							<path fill="#4CAF50" d="M3.77 28h8.893c-.381-1.353-.604-2.784-.604-4s.223-2.647.604-4H3.77v5.908C8.257 39.525 15.708 44 24 44z"/>
 							<path fill="#1976D2" d="M24 4c-5.187 0-9.825 2.05-13.344 5.378l-7.323-5.82C8.257 4.475 15.708 0 24 0c7.11 0 13.433 2.607 18.293 7.07l-6.75 5.25C31.272 8.143 28.025 6 24 6c-3.791 0-7.234 1.34-9.816 3.585L16.29 14.992l-4.996 4.996L3.996 12.5C8.257 4.475 15.708 0 24 0z"/>
 						</svg>
-						Giriş Yap (Sepet İçin)
+						Giriş Yap
 					</button>
 				`;
 			} else {
 				// Gerçek kullanıcı
-				const emailDisplay = user.email || "Kullanıcı Adı";
+				const emailDisplay = user.email || "Kullanıcı";
 				authContainer.innerHTML = `
-					<div class="text-sm font-medium text-gray-700 mr-4 hidden sm:block">${emailDisplay}</div>
-					<button onclick="window.handleSignOut()" class="bg-gray-200 text-gray-800 py-1.5 px-4 rounded-lg hover:bg-gray-300 transition font-semibold shadow-sm">
+					<div class="text-sm font-medium text-gray-700 mr-4 hidden sm:block truncate max-w-[120px]" title="${emailDisplay}">${emailDisplay}</div>
+					<button onclick="window.handleSignOut()" class="bg-gray-200 text-gray-800 py-1.5 px-4 rounded-lg hover:bg-gray-300 transition font-semibold shadow-sm text-sm">
 						Çıkış Yap
 					</button>
 				`;
@@ -102,7 +118,7 @@
 		async function handleSignOut() {
 			try {
 				await signOut(auth);
-				// Anonim oturum açmaya geri dön (Sayfayı yenilemek de bir seçenek)
+				// Anonim oturum açmaya geri dön
 				await signInAnonymously(auth); 
 				showToast("Başarıyla çıkış yapıldı.");
 			} catch (error) {
@@ -111,11 +127,21 @@
 			}
 		}
 		
-		// === Toast Bildirim Fonksiyonu (Alert yerine) ===
-		function showToast(message) {
-			const toast = document.getElementById('toast-message');
-			toast.textContent = message;
+		// === Toast Bildirim Fonksiyonu (Alert yerine KRİTİK) ===
+		function showToast(message, isError = false) {
 			const toastContainer = document.getElementById('toast-container');
+			const toast = document.getElementById('toast-message');
+			
+			// Renkleri ayarla
+			if (isError) {
+				toastContainer.classList.remove('bg-green-600');
+				toastContainer.classList.add('bg-red-600');
+			} else {
+				toastContainer.classList.remove('bg-red-600');
+				toastContainer.classList.add('bg-green-600');
+			}
+
+			toast.textContent = message;
 			toastContainer.classList.remove('hidden', 'opacity-0');
 			toastContainer.classList.add('opacity-100');
 
@@ -127,7 +153,7 @@
 		}
 
 
-		// === Dinamik Banner ===
+		// === Dinamik Banner, Kategoriler ve Ürün Yükleyiciler (Değişiklik Yok) ===
 		async function loadBanners() {
 			const bannerContainer = document.getElementById("banner-slider");
 			// 'homeBanners' koleksiyonundan veri sorgula
@@ -142,7 +168,6 @@
 				if (banners.length === 0) return;
 
 				let index = 0;
-				// İlk banner'ı yükle (eğer yer tutucu görsel varsa, Firestore'dan gelen ilk görsel ile değiştirilir)
 				bannerContainer.style.backgroundImage = `url(${banners[0]})`; 
 
 				setInterval(() => {
@@ -154,7 +179,6 @@
 			}
 		}
 
-		// === Kategoriler ===
 		async function loadCategories() {
 			const catContainer = document.getElementById("kategori-listesi");
 			try {
@@ -164,7 +188,8 @@
 					const cat = doc.data();
 					if (cat.aktif) {
 						const btn = document.createElement("button");
-						btn.className = "px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition duration-150 shadow-sm";
+						// Stil güncellendi
+						btn.className = "px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition duration-150 shadow-sm font-medium";
 						btn.textContent = cat.kategoriAdi;
 						btn.onclick = () => loadProducts(doc.id, cat.kategoriAdi);
 						catContainer.appendChild(btn);
@@ -175,22 +200,28 @@
 			}
 		}
 		
-		// === Sepete Ekleme Fonksiyonu (Firestore Güvenli Yola Kayıt) ===
+		// Sepete Ekleme Fonksiyonu (Firestore Güvenli Yola Kayıt ve Auth Kontrolü)
 		async function addToCart(urunAdi, urunFiyati, resimURL, urunLink) {
 			// KRİTİK KONTROL: Eğer kullanıcı anonimse, Google ile giriş yapmasını iste.
 			if (!currentUser || currentUser.isAnonymous) {
-				showToast("Sepete ürün eklemek için lütfen Google ile giriş yapın.");
-				await googleSignIn(); // Google Giriş Pop-up'ını tetikle
-				// Pop-up kapandıktan sonra (başarılı veya başarısız), currentUser güncellenmiş olacak.
+				showToast("Sepete ürün eklemek için lütfen Google ile giriş yapın.", true);
 				
-				// Tekrar kontrol et: Eğer kullanıcı hala anonimse veya null ise, sepet ekleme işlemini sonlandır.
-				if (!auth.currentUser || auth.currentUser.isAnonymous) {
+				// Google Giriş Pop-up'ını tetikle
+				try {
+					await signInWithPopup(auth, provider);
+					// Giriş başarılıysa, currentUser otomatik olarak güncellenir.
+					currentUser = auth.currentUser; 
+					showToast("Giriş başarılı, şimdi ürünü ekleyebilirsiniz.");
+				} catch(e) {
 					console.log("Kullanıcı giriş yapmayı reddetti veya işlem başarısız oldu.");
+					showToast("Giriş yapılmadan sepet işlemi gerçekleştirilemez.", true);
 					return;
 				}
-				// Güncellenmiş kullanıcıyı al
-				currentUser = auth.currentUser;
 			}
+
+			// Tekrar kontrol: Giriş yapılmamışsa veya anonim kalmışsa işlemi sonlandır
+			if (!currentUser || currentUser.isAnonymous) return;
+
 
 			try {
 				// KRİTİK GÜNCELLEME: Güvenlik kurallarına uygun olarak private path kullanılıyor
@@ -199,35 +230,33 @@
 				
 				const newCartItem = {
 					// İstenen tüm bilgiler kaydediliyor
-					productLink: urunLink,
+					productLink: urunLink || `GETIR HOME: ${urunAdi}`,
 					urunAdi: urunAdi,
 					resimURL: resimURL,
 					
 					productPrice: parseFloat(urunFiyati),
 					quantity: 1,
 					
-					category: 'directBuyHome',
+					category: 'directBuyHome', // Komisyonu sıfırlamak için
 					orderMethod: 'service',
 					timestamp: new Date()
 				};
 
 				await addDoc(cartRef, newCartItem);
 				
-				showToast(`${urunAdi} sepete eklendi!`);
+				showToast(`${urunAdi} sepete eklendi! Sepete yönlendiriliyor...`);
 				
 				// Yönlendirme simülasyonu
 				setTimeout(() => {
-					// window.location.href = '/sepet.html'; 
-					console.log("Sepete yönlendirildi (simüle)."); 
-				}, 1000); 
+					window.location.href = '/sepet.html'; 
+				}, 1500); 
 
 			} catch (error) {
 				console.error("Ürün sepete eklenirken hata oluştu:", error);
-				showToast("Ürün sepete eklenemedi: " + error.message);
+				showToast("Ürün sepete eklenemedi: " + error.message, true);
 			}
 		}
 
-		// === Ürünler (Eksiksiz: Link okundu ve addToCart'a gönderildi) ===
 		async function loadProducts(kategoriId = null, kategoriAdi = null) {
 			const urunContainer = document.getElementById("urun-listesi");
 			urunContainer.innerHTML = "<p class='text-gray-400 col-span-full text-center'>Yükleniyor...</p>";
@@ -253,7 +282,6 @@
 					const card = document.createElement("div");
 					card.className = "border border-gray-100 rounded-xl p-4 shadow-md hover:shadow-xl transition duration-300 bg-white flex flex-col";
 
-					// Link, Resim ve Ad okundu ve temizlendi
 					const urunLink = urun.link || "#";
 					const cleanUrunAdi = urun.urunAdi ? urun.urunAdi.replace(/'/g, "\\'").replace(/"/g, '\\"') : "Ürün Adı Yok"; 
 					const urunResim = urun.resimURL || 'https://placehold.co/400x300/e5e7eb/4b5563?text=Resim+Yok'; 
@@ -288,7 +316,7 @@
 		// === Sayfa Yüklendiğinde ===
 		window.addEventListener("DOMContentLoaded", ensureAuthAndLoadData);
 		
-		// Google Giriş ve Çıkış fonksiyonlarını global olarak çağrılabilir yap
+		// Global erişim için
 		window.addToCart = addToCart;
 		window.googleSignIn = googleSignIn;
 		window.handleSignOut = handleSignOut;
@@ -355,13 +383,11 @@
 	</main>
 
 	<!-- Toast Bildirim Alanı -->
-	<div id="toast-container" class="fixed bottom-5 right-5 hidden opacity-0 transition-opacity duration-300">
-		<div class="bg-green-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-2 transform translate-y-0">
-			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-			</svg>
-			<span id="toast-message" class="font-medium text-lg"></span>
-		</div>
+	<div id="toast-container" class="fixed bottom-5 right-5 hidden opacity-0 transition-opacity duration-300 bg-green-600 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-2 transform translate-y-0">
+		<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+		</svg>
+		<span id="toast-message" class="font-medium text-lg"></span>
 	</div>
 
 
