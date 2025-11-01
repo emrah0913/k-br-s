@@ -6,8 +6,13 @@
   <title>GetirHome Admin Paneli</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { 
+      getAuth, GoogleAuthProvider, signInWithPopup, 
+      onAuthStateChanged, signOut 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      getFirestore, collection, addDoc, getDocs, deleteDoc, doc 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -25,16 +30,17 @@
     const provider = new GoogleAuthProvider();
     const ADMIN_EMAIL = "emirmob09@gmail.com";
 
-    // Giriş kontrolü
-    onAuthStateChanged(auth, (user) => {
+    // 🔹 Giriş kontrolü
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         if (user.email === ADMIN_EMAIL) {
           document.getElementById("adminPanel").classList.remove("hidden");
           document.getElementById("loginSection").classList.add("hidden");
           document.getElementById("adminName").textContent = user.displayName;
-          loadCategories();
-          loadProducts();
+          await loadCategories();
+          await loadProducts();
         } else {
+          alert("Bu panel sadece yöneticilere özeldir.");
           window.location.href = "getirhome.html";
         }
       } else {
@@ -43,7 +49,7 @@
       }
     });
 
-    // Giriş / Çıkış
+    // 🔹 Giriş / Çıkış
     window.googleLogin = async () => {
       try {
         await signInWithPopup(auth, provider);
@@ -53,37 +59,53 @@
     };
     window.logout = async () => await signOut(auth);
 
-    // --- 🔹 KATEGORİ İŞLEMLERİ ---
+    // 🔹 KATEGORİ İŞLEMLERİ
     window.addCategory = async () => {
       const name = document.getElementById("categoryName").value.trim();
       if (!name) return alert("Kategori adı giriniz.");
-      await addDoc(collection(db, "categories"), { name });
-      document.getElementById("categoryName").value = "";
-      loadCategories();
+      try {
+        await addDoc(collection(db, "categories"), { name });
+        document.getElementById("categoryName").value = "";
+        await loadCategories();
+      } catch (e) {
+        console.error(e);
+        alert("Kategori eklenemedi: Yetki veya bağlantı hatası.");
+      }
     };
 
     async function loadCategories() {
-      const container = document.getElementById("categoryList");
-      container.innerHTML = "";
-      const snapshot = await getDocs(collection(db, "categories"));
-      snapshot.forEach((docItem) => {
-        const data = docItem.data();
-        const div = document.createElement("div");
-        div.className = "flex justify-between items-center p-2 border-b";
-        div.innerHTML = `
-          <span>${data.name}</span>
-          <button class="text-red-600" onclick="deleteCategory('${docItem.id}')">Sil</button>
-        `;
-        container.appendChild(div);
-      });
+      try {
+        const container = document.getElementById("categoryList");
+        container.innerHTML = "";
+        const snapshot = await getDocs(collection(db, "categories"));
+        snapshot.forEach((docItem) => {
+          const data = docItem.data();
+          const div = document.createElement("div");
+          div.className = "flex justify-between items-center p-2 border-b";
+          div.innerHTML = `
+            <span>${data.name}</span>
+            <button class="text-red-600" onclick="deleteCategory('${docItem.id}')">Sil</button>
+          `;
+          container.appendChild(div);
+        });
+      } catch (e) {
+        console.error(e);
+        alert("Kategoriler yüklenemedi: Yetki veya bağlantı hatası.");
+      }
     }
 
     window.deleteCategory = async (id) => {
-      await deleteDoc(doc(db, "categories", id));
-      loadCategories();
+      if (!confirm("Bu kategoriyi silmek istediğinizden emin misiniz?")) return;
+      try {
+        await deleteDoc(doc(db, "categories", id));
+        await loadCategories();
+      } catch (e) {
+        console.error(e);
+        alert("Silme işlemi başarısız: Yetki veya bağlantı hatası.");
+      }
     };
 
-    // --- 🔹 ÜRÜN İŞLEMLERİ ---
+    // 🔹 ÜRÜN İŞLEMLERİ
     window.addProduct = async () => {
       const name = document.getElementById("productName").value.trim();
       const price = document.getElementById("productPrice").value.trim();
@@ -92,53 +114,72 @@
       const imageUrl = document.getElementById("productImage").value.trim();
 
       if (!name || !price || !categoryId) return alert("Lütfen gerekli alanları doldurun.");
-      await addDoc(collection(db, "products"), { name, price, description, categoryId, imageUrl });
-      document.getElementById("productName").value = "";
-      document.getElementById("productPrice").value = "";
-      document.getElementById("productDesc").value = "";
-      document.getElementById("productImage").value = "";
-      loadProducts();
+      try {
+        await addDoc(collection(db, "products"), { name, price, description, categoryId, imageUrl });
+        document.getElementById("productName").value = "";
+        document.getElementById("productPrice").value = "";
+        document.getElementById("productDesc").value = "";
+        document.getElementById("productImage").value = "";
+        await loadProducts();
+      } catch (e) {
+        console.error(e);
+        alert("Ürün eklenemedi: Yetki veya bağlantı hatası.");
+      }
     };
 
     async function loadProducts() {
-      const container = document.getElementById("productList");
-      container.innerHTML = "";
-      const snapshot = await getDocs(collection(db, "products"));
-      snapshot.forEach((docItem) => {
-        const data = docItem.data();
-        const div = document.createElement("div");
-        div.className = "flex justify-between items-center p-2 border-b";
-        div.innerHTML = `
-          <span>${data.name} - ${data.price}₺</span>
-          <button class="text-red-600" onclick="deleteProduct('${docItem.id}')">Sil</button>
-        `;
-        container.appendChild(div);
-      });
-      loadCategoriesToSelect();
+      try {
+        const container = document.getElementById("productList");
+        container.innerHTML = "";
+        const snapshot = await getDocs(collection(db, "products"));
+        snapshot.forEach((docItem) => {
+          const data = docItem.data();
+          const div = document.createElement("div");
+          div.className = "flex justify-between items-center p-2 border-b";
+          div.innerHTML = `
+            <span>${data.name} - ${data.price}₺</span>
+            <button class="text-red-600" onclick="deleteProduct('${docItem.id}')">Sil</button>
+          `;
+          container.appendChild(div);
+        });
+        await loadCategoriesToSelect();
+      } catch (e) {
+        console.error(e);
+        alert("Ürünler yüklenemedi: Yetki veya bağlantı hatası.");
+      }
     }
 
     async function loadCategoriesToSelect() {
       const select = document.getElementById("productCategory");
       select.innerHTML = "";
-      const snapshot = await getDocs(collection(db, "categories"));
-      snapshot.forEach((docItem) => {
-        const opt = document.createElement("option");
-        opt.value = docItem.id;
-        opt.textContent = docItem.data().name;
-        select.appendChild(opt);
-      });
+      try {
+        const snapshot = await getDocs(collection(db, "categories"));
+        snapshot.forEach((docItem) => {
+          const opt = document.createElement("option");
+          opt.value = docItem.id;
+          opt.textContent = docItem.data().name;
+          select.appendChild(opt);
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     window.deleteProduct = async (id) => {
-      await deleteDoc(doc(db, "products", id));
-      loadProducts();
+      if (!confirm("Bu ürünü silmek istediğinizden emin misiniz?")) return;
+      try {
+        await deleteDoc(doc(db, "products", id));
+        await loadProducts();
+      } catch (e) {
+        console.error(e);
+        alert("Ürün silinemedi: Yetki veya bağlantı hatası.");
+      }
     };
   </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col items-center p-6">
-
   <!-- Giriş -->
   <section id="loginSection" class="text-center">
     <h1 class="text-2xl font-bold mb-4">GetirHome Admin Girişi</h1>
