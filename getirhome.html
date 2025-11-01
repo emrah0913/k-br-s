@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getir Home Ürünleri</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Inter fontunu yükle */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --getir-purple: #4c3398;
+            --getir-yellow: #ffd001;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+        }
+        .product-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .getir-bg {
+            background-color: var(--getir-purple);
+        }
+        .getir-text {
+            color: var(--getir-purple);
+        }
+        .getir-btn {
+            background-color: var(--getir-purple);
+            transition: background-color 0.2s;
+        }
+        .getir-btn:hover {
+            background-color: #6a49ad;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header class="getir-bg text-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">getir <span class="text-yellow-300">home</span> Ürünleri</h1>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 pt-8">
+        <!-- Durum mesajları burada gösterilecek -->
+        <div id="status-message" class="text-center text-lg font-medium py-8 getir-text">
+            Ürünler yükleniyor...
+        </div>
+
+        <!-- Ürünler listesi buraya JS ile eklenecek -->
+        <div id="product-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <!-- Ürün Kartları -->
+        </div>
+    </main>
+
+    <!-- Firebase Kütüphaneleri -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, onSnapshot, getDocs, doc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firestore hata ayıklama seviyesini ayarla (debug modunda görmek için)
+        setLogLevel('Debug');
+
+        // Global değişkenleri güvenli bir şekilde al
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        const productListElement = document.getElementById('product-list');
+        const statusMessageElement = document.getElementById('status-message');
+
+        // Utility: Parayı TL formatında biçimlendirir
+        const formatPrice = (price) => {
+            if (typeof price !== 'number') return 'Fiyat Belirtilmemiş';
+            return price.toFixed(2).replace('.', ',') + ' TL';
+        };
+
+        // Ürünleri DOM'a render eden fonksiyon
+        const renderProducts = (products) => {
+            productListElement.innerHTML = ''; // Mevcut içeriği temizle
+
+            if (products.length === 0) {
+                statusMessageElement.textContent = 'Admin panelinden henüz ürün eklenmemiş.';
+                statusMessageElement.classList.remove('hidden');
+                return;
+            }
+
+            statusMessageElement.classList.add('hidden'); // Ürün varsa mesajı gizle
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card bg-white rounded-xl shadow-md overflow-hidden p-3 border border-gray-100 flex flex-col justify-between';
+                card.innerHTML = `
+                    <div class="relative h-28 w-full mb-3">
+                        <img src="${product.imageUrl || 'https://placehold.co/150x112/4c3398/ffffff?text=Urun'}" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/150x112/4c3398/ffffff?text=Resim+Yok';"
+                             alt="${product.name}" 
+                             class="w-full h-full object-cover rounded-lg">
+                    </div>
+                    <div class="flex flex-col flex-grow">
+                        <span class="text-gray-900 font-semibold text-sm mb-1 line-clamp-2">${product.name}</span>
+                        <span class="text-xs text-gray-500 mb-2">${product.unit || 'Birim Yok'}</span>
+                    </div>
+                    <div class="flex justify-between items-center mt-auto">
+                        <span class="text-base font-bold getir-text">${formatPrice(product.price)}</span>
+                        <button class="getir-btn text-white text-sm font-bold w-8 h-8 rounded-lg flex items-center justify-center shadow-lg hover:shadow-xl">
+                            +
+                        </button>
+                    </div>
+                `;
+                productListElement.appendChild(card);
+            });
+        };
+
+        // Firebase başlatma ve kimlik doğrulama
+        const initializeFirebase = async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Kimlik doğrulama durumunu bekle
+                const authReadyPromise = new Promise((resolve) => {
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                        } else {
+                            // Token varsa custom token ile oturum aç, yoksa anonim oturum aç
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                                userId = auth.currentUser.uid;
+                            } else {
+                                await signInAnonymously(auth);
+                                userId = auth.currentUser.uid;
+                            }
+                        }
+                        isAuthReady = true;
+                        resolve();
+                    });
+                });
+
+                await authReadyPromise;
+                console.log("Firebase ve Kimlik Doğrulama Hazır. Kullanıcı ID:", userId);
+
+                // Kimlik doğrulama hazır olduğunda veri dinlemeyi başlat
+                startDataListener();
+
+            } catch (error) {
+                console.error("Firebase başlatılırken bir hata oluştu:", error);
+                statusMessageElement.textContent = `Hata: Veritabanı bağlantısı kurulamadı. Lütfen konsolu kontrol edin.`;
+            }
+        };
+
+        // Firestore'dan ürün verilerini dinlemeyi başlatan fonksiyon (Realtime)
+        const startDataListener = () => {
+            // Ürünlerin tutulacağı koleksiyon yolu: /artifacts/{appId}/public/data/getirHomeProducts
+            const productsCollectionPath = `/artifacts/${appId}/public/data/getirHomeProducts`;
+            const q = collection(db, productsCollectionPath);
+
+            // onSnapshot ile gerçek zamanlı veri dinlemesi
+            onSnapshot(q, (snapshot) => {
+                const products = [];
+                snapshot.forEach((doc) => {
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Products'ı isme göre alfabetik sıralayalım (Firestore'da index gerektiren orderBy kullanmaktan kaçınıyoruz)
+                products.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+                renderProducts(products);
+                console.log(`${products.length} adet ürün yüklendi.`);
+
+            }, (error) => {
+                console.error("Firestore verileri dinlenirken hata oluştu:", error);
+                // Kullanıcıya görünür bir hata mesajı göster
+                statusMessageElement.textContent = 'Ürünleri getirirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.';
+                statusMessageElement.classList.remove('hidden');
+            });
+        };
+
+        // Uygulamayı başlat
+        initializeFirebase();
+
+    </script>
+</body>
+</html>
