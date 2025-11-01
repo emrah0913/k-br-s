@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getir Ana Sayfa - Ürünler</title>
+    <!-- Tailwind CSS CDN'i -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Getir'e özgü renk paleti (Mor ve Sarı) */
+        :root {
+            --getir-purple: #4e2e8e;
+            --getir-yellow: #ffd93a;
+        }
+        .text-getir-purple { color: var(--getir-purple); }
+        .bg-getir-purple { background-color: var(--getir-purple); }
+        .bg-getir-yellow { background-color: var(--getir-yellow); }
+        .border-getir-purple { border-color: var(--getir-purple); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f5fb; /* Açık mor/gri arka plan */
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Başlık Alanı -->
+    <header class="bg-getir-purple shadow-md p-4 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-white">Getir. Ürünler</h1>
+            <!-- Geri Dön Butonu -->
+            <a href="index.html" class="px-4 py-2 bg-getir-yellow text-getir-purple font-semibold rounded-full shadow-lg transition duration-200 hover:opacity-90">
+                &larr; Ana Sayfaya Dön
+            </a>
+        </div>
+    </header>
+
+    <!-- Ürün Izgarası -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-getir-purple">Fırsat Ürünleri</h2>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+            <!-- Örnek Ürün Kartları -->
+
+            <!-- Ürün 1: Süt -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/805ad5/ffffff?text=Süt" alt="[Süt Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">İçecekler</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Taze Günlük Süt (1L)</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">59,90 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ürün 2: Yumurta -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/9e7bbd/ffffff?text=Yumurta" alt="[Yumurta Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">Kahvaltılık</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Organik Köy Yumurtası (10'lu)</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">84,50 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ürün 3: Gazlı İçecek -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/ffd93a/4e2e8e?text=Kola" alt="[Gazlı İçecek Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">İçecekler</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Popüler Gazlı İçecek (330ml)</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">29,00 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ürün 4: Cips -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/4e2e8e/ffd93a?text=Cips" alt="[Cips Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">Atıştırmalık</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Büyük Boy Baharatlı Cips</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">42,95 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ürün 5: Ekmek -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/805ad5/ffffff?text=Ekmek" alt="[Ekmek Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">Fırın Ürünleri</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Tam Buğday Ekmeği</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">22,50 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ürün 6: Su Şişesi -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/9e7bbd/ffffff?text=Su" alt="[Su Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">İçecekler</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Doğal Kaynak Suyu (6x0.5L)</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">35,00 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ürün 7: Dondurma -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/ffd93a/4e2e8e?text=Dondurma" alt="[Dondurma Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">Dondurulmuş</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Vanilyalı Kutu Dondurma</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">99,90 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ürün 8: Peynir -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/4e2e8e/ffd93a?text=Peynir" alt="[Peynir Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">Süt Ürünleri</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Beyaz Peynir (500gr)</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">120,00 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ürün 9: Çikolata -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/805ad5/ffffff?text=Çikolata" alt="[Çikolata Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">Tatlılar</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">Sütlü Çikolata Tablet</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">39,90 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ürün 10: Meyve Suyu -->
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-100">
+                <img src="https://placehold.co/600x400/9e7bbd/ffffff?text=Meyve+Suyu" alt="[Meyve Suyu Görseli]" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4 text-center">
+                    <p class="text-sm text-gray-500">İçecekler</p>
+                    <h3 class="font-bold text-gray-800 mt-1 mb-2 truncate">%100 Portakal Suyu (1L)</h3>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-lg font-extrabold text-getir-purple">45,00 TL</span>
+                        <button class="w-8 h-8 flex items-center justify-center bg-getir-purple text-white rounded-full text-xl hover:scale-105 transition">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Diğer ürün kartlarını buraya ekleyebilirsiniz -->
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 p-6 text-center text-sm text-gray-600 border-t border-gray-200">
+        <p>Getir - Her şey birkaç dakikada kapınızda.</p>
+    </footer>
+
+</body>
+</html>
