@@ -30,7 +30,7 @@
     const provider = new GoogleAuthProvider();
     const ADMIN_EMAIL = "emirmob09@gmail.com";
 
-    // 🔹 Giriş kontrolü
+    // 🔐 Admin kontrolü
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         if (user.email === ADMIN_EMAIL) {
@@ -40,7 +40,8 @@
           await loadCategories();
           await loadProducts();
         } else {
-          alert("Bu panel sadece yöneticilere özeldir.");
+          alert("Bu sayfa sadece yöneticilere özeldir.");
+          await signOut(auth);
           window.location.href = "getirhome.html";
         }
       } else {
@@ -49,7 +50,7 @@
       }
     });
 
-    // 🔹 Giriş / Çıkış
+    // 🔹 Giriş / Çıkış işlemleri
     window.googleLogin = async () => {
       try {
         await signInWithPopup(auth, provider);
@@ -69,14 +70,14 @@
         await loadCategories();
       } catch (e) {
         console.error(e);
-        alert("Kategori eklenemedi: Yetki veya bağlantı hatası.");
+        alert("Kategori eklenemedi. Firestore yetki hatası olabilir.");
       }
     };
 
     async function loadCategories() {
+      const container = document.getElementById("categoryList");
+      container.innerHTML = "";
       try {
-        const container = document.getElementById("categoryList");
-        container.innerHTML = "";
         const snapshot = await getDocs(collection(db, "categories"));
         snapshot.forEach((docItem) => {
           const data = docItem.data();
@@ -90,18 +91,18 @@
         });
       } catch (e) {
         console.error(e);
-        alert("Kategoriler yüklenemedi: Yetki veya bağlantı hatası.");
+        alert("Kategoriler yüklenemedi.");
       }
     }
 
     window.deleteCategory = async (id) => {
-      if (!confirm("Bu kategoriyi silmek istediğinizden emin misiniz?")) return;
+      if (!confirm("Bu kategoriyi silmek istediğinize emin misiniz?")) return;
       try {
         await deleteDoc(doc(db, "categories", id));
         await loadCategories();
       } catch (e) {
         console.error(e);
-        alert("Silme işlemi başarısız: Yetki veya bağlantı hatası.");
+        alert("Silme işlemi başarısız.");
       }
     };
 
@@ -123,14 +124,14 @@
         await loadProducts();
       } catch (e) {
         console.error(e);
-        alert("Ürün eklenemedi: Yetki veya bağlantı hatası.");
+        alert("Ürün eklenemedi.");
       }
     };
 
     async function loadProducts() {
+      const container = document.getElementById("productList");
+      container.innerHTML = "";
       try {
-        const container = document.getElementById("productList");
-        container.innerHTML = "";
         const snapshot = await getDocs(collection(db, "products"));
         snapshot.forEach((docItem) => {
           const data = docItem.data();
@@ -145,7 +146,7 @@
         await loadCategoriesToSelect();
       } catch (e) {
         console.error(e);
-        alert("Ürünler yüklenemedi: Yetki veya bağlantı hatası.");
+        alert("Ürünler yüklenemedi.");
       }
     }
 
@@ -166,13 +167,13 @@
     }
 
     window.deleteProduct = async (id) => {
-      if (!confirm("Bu ürünü silmek istediğinizden emin misiniz?")) return;
+      if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) return;
       try {
         await deleteDoc(doc(db, "products", id));
         await loadProducts();
       } catch (e) {
         console.error(e);
-        alert("Ürün silinemedi: Yetki veya bağlantı hatası.");
+        alert("Ürün silinemedi.");
       }
     };
   </script>
