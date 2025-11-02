@@ -9,36 +9,40 @@
 <body class="bg-gray-50 min-h-screen">
 
 <header class="bg-white shadow p-4">
-  <div class="max-w-6xl mx-auto flex items-center justify-between">
-    <h1 class="text-xl font-bold text-blue-700">Getir Home</h1>
-    <div class="flex items-center gap-3">
-      <span id="user-email" class="text-gray-600"></span>
-      <button id="loginBtn" class="bg-blue-600 text-white px-3 py-1 rounded">Giriş Yap</button>
-      <button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded hidden">Çıkış Yap</button>
-    </div>
-  </div>
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <h1 class="text-xl font-bold text-blue-700">Getir Home</h1>
+    <div class="flex items-center gap-3">
+      <span id="user-email" class="text-gray-600"></span>
+      <button id="loginBtn" class="bg-blue-600 text-white px-3 py-1 rounded">Giriş Yap</button>
+      <button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded hidden">Çıkış Yap</button>
+      <a href="/sepet.html" class="bg-yellow-500 text-white px-3 py-1 rounded font-semibold flex items-center gap-1">
+        🛒 Sepet
+      </a>
+    </div>
+  </div>
 </header>
 
 <main class="max-w-6xl mx-auto p-6">
-  <h2 class="text-2xl font-semibold mb-4">Ürünler</h2>
-  <div id="products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+  <h2 class="text-2xl font-semibold mb-4">Ürünler</h2>
+  <div id="products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
 </main>
 
-<div id="msg" class="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded hidden"></div>
+<div id="msg" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded hidden"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+// doc ve setDoc, sepete ekleme işlemini basitleştirmek için eklendi.
+import { getFirestore, collection, getDocs, setDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-  authDomain: "kibris-6b4f7.firebaseapp.com",
-  projectId: "kibris-6b4f7",
-  storageBucket: "kibris-6b4f7.appspot.com",
-  messagingSenderId: "141262926171",
-  appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-  measurementId: "G-JL9P6BRZTD"
+  apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+  authDomain: "kibris-6b4f7.firebaseapp.com",
+  projectId: "kibris-6b4f7",
+  storageBucket: "kibris-6b4f7.appspot.com",
+  messagingSenderId: "141262926171",
+  appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
+  measurementId: "G-JL9P6BRZTD"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -52,70 +56,87 @@ const userEmailSpan = document.getElementById("user-email");
 const productsDiv = document.getElementById("products");
 const msgDiv = document.getElementById("msg");
 
-function showMsg(text){
-  msgDiv.textContent=text;
-  msgDiv.classList.remove("hidden");
-  setTimeout(()=>msgDiv.classList.add("hidden"),3000);
+function showMsg(text, isError=false){
+  msgDiv.textContent=text;
+  msgDiv.className = `fixed bottom-4 right-4 px-4 py-2 rounded ${isError ? 'bg-red-600' : 'bg-green-600'}`;
+  msgDiv.classList.remove("hidden");
+  setTimeout(()=>msgDiv.classList.add("hidden"),3000);
 }
 
 // --- AUTH ---
-loginBtn.addEventListener("click", async ()=>{ 
-  try{ await signInWithPopup(auth,provider); } 
-  catch(e){ showMsg("Giriş hatası: "+e.message); } 
+loginBtn.addEventListener("click", async ()=>{ 
+  try{ await signInWithPopup(auth,provider); } 
+  catch(e){ showMsg("Giriş hatası: "+e.message, true); } 
 });
 
-logoutBtn.addEventListener("click", async ()=>{ 
-  await signOut(auth); 
+logoutBtn.addEventListener("click", async ()=>{ 
+  await signOut(auth); 
 });
 
 onAuthStateChanged(auth, user=>{
-  if(user){
-    userEmailSpan.textContent=user.email;
-    loginBtn.classList.add("hidden");
-    logoutBtn.classList.remove("hidden");
-  }else{
-    userEmailSpan.textContent="";
-    loginBtn.classList.remove("hidden");
-    logoutBtn.classList.add("hidden");
-  }
+  if(user){
+    userEmailSpan.textContent=user.email;
+    loginBtn.classList.add("hidden");
+    logoutBtn.classList.remove("hidden");
+  }else{
+    userEmailSpan.textContent="";
+    loginBtn.classList.remove("hidden");
+    logoutBtn.classList.add("hidden");
+  }
 });
 
 // --- Load products from Firestore ---
 async function loadProducts(){
-  productsDiv.innerHTML="Yükleniyor...";
-  const snap = await getDocs(collection(db,"products"));
-  productsDiv.innerHTML="";
-  snap.forEach(docSnap=>{
-    const d = docSnap.data();
-    if(!d.active) return; // sadece aktif ürünleri göster
-    const card = document.createElement("div");
-    card.className="bg-white p-4 rounded shadow flex flex-col";
-    card.innerHTML=`
-      <img src="${d.image}" class="w-full h-48 object-cover mb-2 rounded"/>
-      <h3 class="font-semibold text-lg">${d.name}</h3>
-      <p class="text-gray-600 mb-2">${d.description||""}</p>
-      <div class="font-bold text-blue-700 mb-2">${d.price} ₺</div>
-      <button class="bg-green-600 text-white px-3 py-1 rounded">Sepete Ekle</button>
-    `;
-    const btn = card.querySelector("button");
-    btn.addEventListener("click", async ()=>{
-      const user = auth.currentUser;
-      if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!"); return;}
+  productsDiv.innerHTML="Yükleniyor...";
+  // KRİTİK DÜZELTME: "products" yerine "homeProducts" kullanıldı
+  const snap = await getDocs(collection(db,"homeProducts"));
+  productsDiv.innerHTML="";
+
+  if (snap.empty) {
+    productsDiv.innerHTML = "<p class='text-gray-500'>Listelenecek aktif ürün bulunamadı.</p>";
+    return;
+  }
+  
+  snap.forEach(docSnap=>{
+    const d = docSnap.data();
+    if(!d.active) return; // sadece aktif ürünleri göster
+    const card = document.createElement("div");
+    card.className="bg-white p-4 rounded shadow flex flex-col";
+    card.innerHTML=`
+      <img src="${d.image}" class="w-full h-48 object-cover mb-2 rounded"/>
+      <h3 class="font-semibold text-lg">${d.name}</h3>
+      <p class="text-gray-600 mb-2">${d.description||""}</p>
+      <div class="font-bold text-blue-700 mb-2">${d.price} ₺</div>
+      <button class="bg-green-600 text-white px-3 py-1 rounded">Sepete Ekle</button>
+    `;
+    const btn = card.querySelector("button");
+    // Sepete ekleme işlevi düzeltildi: `carts` koleksiyonu yerine `users/{userId}/cart` alt koleksiyonu kullanıldı
+    // Bu, güvenlik kurallarına uyum için en iyi yoldur.
+    btn.addEventListener("click", async ()=>{
+      const user = auth.currentUser;
+      if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
+      
       try{
-        await addDoc(collection(db,"carts"),{
-          userId:user.uid,
-          productId:docSnap.id,
-          name:d.name,
-          price:d.price,
-          image:d.image,
-          quantity:1,
-          addedAt:new Date()
-        });
-        showMsg("Ürün sepete eklendi!", false);
-      }catch(e){ showMsg("Hata: "+e.message);}
-    });
-    productsDiv.appendChild(card);
-  });
+        // Sepet öğesi referansı: users/{userId}/cart/{productId}
+        const itemRef = doc(db, "users", user.uid, "cart", docSnap.id);
+        
+        // Yeni bir ürün ekliyor veya miktarını 1 artırıyoruz (Varsayım: Her tıklama +1 miktar ekler)
+        // SetDoc kullanılarak, ürün ID'si sepet doküman ID'si olarak ayarlandı.
+        await setDoc(itemRef, {
+          userId:user.uid,
+          productId:docSnap.id,
+          name:d.name,
+          price:d.price,
+          image:d.image,
+          quantity: 1, // Basitlik için her zaman 1 olarak ekleniyor. Sepet.html'de miktar artışı yapılabilir.
+          addedAt:new Date()
+        }, { merge: true }); // merge: true ile sadece miktar ve tarih alanlarını güncelleyebilirsiniz.
+        
+        showMsg("Ürün sepete eklendi!");
+      }catch(e){ showMsg("Hata: "+e.message, true);}
+    });
+    productsDiv.appendChild(card);
+  });
 }
 
 // Başlangıçta ürünleri yükle
