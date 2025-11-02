@@ -103,7 +103,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-// query modülünü ekledik (sorgu işlemi için gereklidir)
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -177,6 +176,7 @@ onAuthStateChanged(auth, async (user)=>{
     if(user.email!==ADMIN_EMAIL){ alert("Bu panel sadece admin için."); await signOut(auth); window.location.href="/getirhome.html"; return; }
     loginScreen.classList.add("hidden"); adminPanel.classList.remove("hidden"); logoutBtn.classList.remove("hidden"); adminEmailSpan.textContent=user.email;
 
+    // Verilerin ilk yüklenmesi
     await loadBanners();
     await loadCategories();
     await loadProducts();
@@ -190,16 +190,18 @@ logoutBtn.addEventListener("click",async()=>{ await signOut(auth); window.locati
 addBannerBtn.addEventListener("click", async ()=>{
   const url=bannerUrl.value.trim();
   if(!url){ showMsg("URL boş olamaz"); return;}
-  try{ await addDoc(collection(db,"banners"),{url, createdAt:new Date()}); bannerUrl.value=""; await loadBanners(); showMsg("Banner eklendi!",false);}catch(e){ showMsg(e.message);}
+  // KRİTİK DÜZELTME: "banners" yerine "homeBanners" kullanıldı
+  try{ await addDoc(collection(db,"homeBanners"),{url, createdAt:new Date()}); bannerUrl.value=""; await loadBanners(); showMsg("Banner eklendi!",false);}catch(e){ showMsg(e.message);}
 });
 refreshBannerBtn.addEventListener("click",loadBanners);
 
 async function loadBanners(){
   bannerList.innerHTML="Yükleniyor...";
-  const snap=await getDocs(collection(db,"banners"));
+  // KRİTİK DÜZELTME: "banners" yerine "homeBanners" kullanıldı
+  const snap=await getDocs(collection(db,"homeBanners"));
   bannerList.innerHTML="";
   
-  // ✨ GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur
+  // GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur (Map hatasını önler)
   if(snap.empty){
     bannerList.innerHTML="<p class='text-gray-500'>Yüklenecek banner bulunamadı.</p>";
     return;
@@ -210,7 +212,8 @@ async function loadBanners(){
     const el=document.createElement("div");
     el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
     el.innerHTML=`<span>${d.url}</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
-    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"banners",docSnap.id)); await loadBanners(); showMsg("Silindi!",false); });
+    // KRİTİK DÜZELTME: Silme işlemi de "homeBanners" hedefler
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeBanners",docSnap.id)); await loadBanners(); showMsg("Silindi!",false); });
     bannerList.appendChild(el);
   });
 }
@@ -219,7 +222,8 @@ async function loadBanners(){
 addCategoryBtn.addEventListener("click", async ()=>{
   const name=categoryName.value.trim(); if(!name){showMsg("Kategori adı boş"); return;}
   try{
-    await addDoc(collection(db,"categories"),{name,parent:parentCategory.value||null, createdAt:new Date()});
+    // KRİTİK DÜZELTME: "categories" yerine "homeCategories" kullanıldı
+    await addDoc(collection(db,"homeCategories"),{name,parent:parentCategory.value||null, createdAt:new Date()});
     categoryName.value=""; await loadCategories(); showMsg("Kategori eklendi",false);
   }catch(e){showMsg(e.message);}
 });
@@ -228,10 +232,11 @@ async function loadCategories(){
   categoryList.innerHTML="Yükleniyor...";
   parentCategory.innerHTML='<option value="">Üst Kategori</option>';
   productCategorySelect.innerHTML='<option value="">Kategori seç</option>';
-  const snap=await getDocs(collection(db,"categories"));
+  // KRİTİK DÜZELTME: "categories" yerine "homeCategories" kullanıldı
+  const snap=await getDocs(collection(db,"homeCategories")); 
   categoryList.innerHTML=""; 
   
-  // ✨ GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur
+  // GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur (Map hatasını önler)
   if(snap.empty){
     categoryList.innerHTML="<p class='text-gray-500'>Yüklenecek kategori bulunamadı.</p>";
     return;
@@ -242,7 +247,8 @@ async function loadCategories(){
     const el=document.createElement("div");
     el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
     el.innerHTML=`<span>${d.parent?d.parent+" > ":""}${d.name}</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
-    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"categories",docSnap.id)); await loadCategories(); showMsg("Silindi",false); });
+    // KRİTİK DÜZELTME: Silme işlemi de "homeCategories" hedefler
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeCategories",docSnap.id)); await loadCategories(); showMsg("Silindi",false); });
     categoryList.appendChild(el);
     parentCategory.innerHTML+=`<option value="${d.name}">${d.name}</option>`;
     productCategorySelect.innerHTML+=`<option value="${d.name}">${d.name}</option>`;
@@ -256,13 +262,15 @@ addProductBtn.addEventListener("click", async ()=>{
   const category=productCategorySelect.value;
   const image=productImage.value.trim();
   const video=productVideo.value.trim();
-  const extraImages=productExtraImages.value.trim().split(",").map(x=>x.trim()).filter(Boolean);
+  // Boşlukları temizler ve boş dizeleri filtreler
+  const extraImages=productExtraImages.value.trim().split(",").map(x=>x.trim()).filter(Boolean); 
   const desc=productDescription.value.trim();
   const active=productActive.checked;
 
   if(!name || !price || !category || !image){ showMsg("Ürün adı, fiyat, kategori ve ana görsel zorunlu"); return; }
   try{
-    await addDoc(collection(db,"products"),{name,price,category,image,video,extraImages,description:desc,active,createdAt:new Date()});
+    // KRİTİK DÜZELTME: "products" yerine "homeProducts" kullanıldı
+    await addDoc(collection(db,"homeProducts"),{name,price,category,image,video,extraImages,description:desc,active,createdAt:new Date()});
     productName.value=""; productPrice.value=""; productCategorySelect.value=""; productImage.value=""; productVideo.value=""; productExtraImages.value=""; productDescription.value=""; productActive.checked=false;
     await loadProducts(); showMsg("Ürün eklendi",false);
   }catch(e){ showMsg(e.message);}
@@ -271,10 +279,11 @@ refreshProductsBtn.addEventListener("click",loadProducts);
 
 async function loadProducts(){
   productList.innerHTML="Yükleniyor...";
-  const snap=await getDocs(collection(db,"products"));
+  // KRİTİK DÜZELTME: "products" yerine "homeProducts" kullanıldı
+  const snap=await getDocs(collection(db,"homeProducts")); 
   productList.innerHTML="";
   
-  // ✨ GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur
+  // GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur (Map hatasını önler)
   if(snap.empty){
     productList.innerHTML="<p class='text-gray-500'>Yüklenecek ürün bulunamadı.</p>";
     return;
@@ -285,10 +294,10 @@ async function loadProducts(){
     const el=document.createElement("div");
     el.className="p-3 bg-gray-100 rounded";
     
-    // ✨ KRİTİK DÜZELTME: d.extraImages'ın varlığını ve bir dizi olduğunu kontrol et
+    // KRİTİK DÜZELTME: Map hatasını önler. Array değilse veya boşsa boş string döndürür.
     const extraImagesHtml = (Array.isArray(d.extraImages) && d.extraImages.length > 0) 
       ? d.extraImages.map(url => `<img src="${url}" class="w-20 h-20 object-cover inline-block mr-2 my-1 rounded">`).join("")
-      : ''; // Eğer tanımsızsa veya dizi değilse boş dize döndürür
+      : ''; 
 
     el.innerHTML=`
       <div class="font-semibold">${d.name} ${d.active?"(Aktif)":"(Pasif)"}</div>
@@ -297,9 +306,11 @@ async function loadProducts(){
       <div class="text-blue-600 font-bold">${d.price} ₺</div>
       <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded" />
       ${d.video?`<video src="${d.video}" controls class="w-full h-36 my-2 rounded"></video>`:""}
-      ${extraImagesHtml} <button class="mt-2 bg-red-600 text-white px-2 py-1 rounded">Sil</button>
+      ${extraImagesHtml}
+      <button class="mt-2 bg-red-600 text-white px-2 py-1 rounded">Sil</button>
     `;
-    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"products",docSnap.id)); await loadProducts(); showMsg("Ürün silindi",false); });
+    // KRİTİK DÜZELTME: Silme işlemi de "homeProducts" hedefler
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeProducts",docSnap.id)); await loadProducts(); showMsg("Ürün silindi",false); });
     productList.appendChild(el);
   });
 }
