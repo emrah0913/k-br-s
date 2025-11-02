@@ -3,36 +3,104 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Getir Home | Getir Kıbrıs</title>
+<title>Getir Kıbrıs - Anasayfa</title>
+<meta name="description" content="Kıbrıs'ın en büyük online alışveriş platformu. Binlerce ürünü kapına teslim al.">
+
 <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css" rel="stylesheet">
+
+<script>
+    // Tailwind Konfigürasyonu: Getir'in ana rengini (primary) tanımla
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#5D3EBC', // Getir Moru
+                    secondary: '#FFD300', // Getir Sarısı
+                    'getir-yellow': '#FFD300',
+                },
+                fontFamily: {
+                    inter: ['Inter', 'sans-serif'],
+                },
+            },
+        }
+    }
+</script>
+
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .product-card { transition: all 0.2s; }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05); }
+</style>
+
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-<header class="bg-white shadow p-4">
-  <div class="max-w-6xl mx-auto flex items-center justify-between">
-    <h1 class="text-xl font-bold text-blue-700">Getir Home</h1>
-    <div class="flex items-center gap-3">
-      <span id="user-email" class="text-gray-600"></span>
-      <button id="loginBtn" class="bg-blue-600 text-white px-3 py-1 rounded">Giriş Yap</button>
-      <button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded hidden">Çıkış Yap</button>
-      <a href="/sepet.html" class="bg-yellow-500 text-white px-3 py-1 rounded font-semibold flex items-center gap-1">
-        🛒 Sepet
-      </a>
-    </div>
-  </div>
+<header class="sticky top-0 w-full bg-white shadow-md z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <h1 class="text-2xl font-extrabold text-primary">Getir Kıbrıs</h1>
+        <div class="flex items-center gap-4">
+            <a href="/sepet.html" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+                <i class="ri-shopping-cart-2-fill"></i> Sepetim
+            </a>
+            <div class="h-8 w-px bg-gray-200"></div> <div class="flex items-center gap-3">
+                <span id="user-email" class="text-sm font-medium text-gray-600 truncate max-w-[100px]"></span>
+                <button id="loginBtn" class="text-primary hover:text-primary/80 font-semibold transition-colors">Giriş</button>
+                <button id="logoutBtn" class="text-red-500 hover:text-red-700 font-semibold hidden transition-colors">Çıkış</button>
+            </div>
+        </div>
+    </div>
 </header>
 
-<main class="max-w-6xl mx-auto p-6">
-  <h2 class="text-2xl font-semibold mb-4">Ürünler</h2>
-  <div id="products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+<section class="bg-primary/90 text-white pt-10 pb-16">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+        <div>
+            <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 leading-tight">
+                Getir Kıbrıs'la<br><span class="text-secondary">Binlerce Ürün Kapında.</span>
+            </h2>
+            <p class="text-lg opacity-90 mb-6">Türkiye'deki ürünlere Kıbrıs'tan komisyonlu sipariş imkanı!</p>
+            <div class="flex gap-4">
+                <a href="#" class="bg-white text-primary px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl transition-shadow">
+                    <i class="ri-apple-fill ri-lg"></i> App Store
+                </a>
+                <a href="#" class="bg-getir-yellow text-gray-900 px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl transition-shadow">
+                    <i class="ri-google-play-fill ri-lg"></i> Google Play
+                </a>
+            </div>
+        </div>
+        <img src="https://picsum.photos/400/300?random=1" alt="Getir Kurye" class="hidden md:block w-96 h-auto object-cover rounded-xl shadow-2xl">
+    </div>
+</section>
+
+<main class="max-w-7xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-6 border-b pb-3">
+        <h2 class="text-3xl font-bold text-gray-800">Tüm Kategorilerde Fırsatlar</h2>
+        <select id="category-filter" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors">
+            <option value="all">Tüm Ürünler</option>
+            </select>
+    </div>
+
+    <div id="products" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        </div>
+
+    <div id="loading-indicator" class="text-center py-10 text-gray-500 font-medium hidden">
+        <i class="ri-loader-4-line ri-2x animate-spin"></i> Ürünler Yükleniyor...
+    </div>
 </main>
 
-<div id="msg" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded hidden"></div>
+<div id="msg" class="fixed bottom-4 right-4 z-[100] px-4 py-2 rounded-lg text-white font-medium shadow-xl hidden transition-all duration-300"></div>
+
+<footer class="mt-16 border-t bg-white py-8">
+    <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+        <p>&copy; 2024 Getir Kıbrıs. Tüm hakları saklıdır. | Powered by Firebase</p>
+        <p class="mt-2">Hizmet Şartları | Gizlilik Politikası</p>
+    </div>
+</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-// setDoc ve doc, sepet öğelerini güncellemek için gerekli.
 import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -50,21 +118,26 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
+// --- DOM Elementleri ---
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const userEmailSpan = document.getElementById("user-email");
 const productsDiv = document.getElementById("products");
 const msgDiv = document.getElementById("msg");
+const filterSelect = document.getElementById("category-filter");
+const loadingIndicator = document.getElementById("loading-indicator");
 
+let allProducts = []; // Tüm ürünleri tutacak global dizi
+
+// --- Yardımcı Fonksiyonlar ---
 function showMsg(text, isError=false){
   msgDiv.textContent=text;
-  // Hata durumuna göre arka plan rengini ayarla
-  msgDiv.className = `fixed bottom-4 right-4 px-4 py-2 rounded ${isError ? 'bg-red-600' : 'bg-green-600'}`;
+  msgDiv.className = `fixed bottom-4 right-4 z-[100] px-4 py-2 rounded-lg text-white font-medium shadow-xl transition-all duration-300 ${isError ? 'bg-red-600' : 'bg-green-600'}`;
   msgDiv.classList.remove("hidden");
   setTimeout(()=>msgDiv.classList.add("hidden"),3000);
 }
 
-// --- AUTH ---
+// --- AUTH MANTIK ---
 loginBtn.addEventListener("click", async ()=>{ 
   try{ await signInWithPopup(auth,provider); } 
   catch(e){ showMsg("Giriş hatası: "+e.message, true); } 
@@ -80,69 +153,140 @@ onAuthStateChanged(auth, user=>{
     loginBtn.classList.add("hidden");
     logoutBtn.classList.remove("hidden");
   }else{
-    userEmailSpan.textContent="";
+    userEmailSpan.textContent="Misafir";
     loginBtn.classList.remove("hidden");
     logoutBtn.classList.add("hidden");
   }
 });
 
-// --- Load products from Firestore ---
-async function loadProducts(){
-  productsDiv.innerHTML="Yükleniyor...";
-  // KRİTİK DÜZELTME: Doğru koleksiyon adı ("homeProducts") kullanıldı
-  const snap = await getDocs(collection(db,"homeProducts"));
-  productsDiv.innerHTML="";
+// --- ÜRÜN RENDER FONKSİYONU ---
+function renderProducts(productsToRender) {
+    productsDiv.innerHTML = ""; // Önceki ürünleri temizle
 
-  if (snap.empty) {
-    productsDiv.innerHTML = "<p class='text-gray-500'>Listelenecek aktif ürün bulunamadı.</p>";
-    return;
-  }
-  
-  snap.forEach(docSnap=>{
-    const d = docSnap.data();
-    if(!d.active) return; // sadece aktif ürünleri göster
+    if (productsToRender.length === 0) {
+        productsDiv.innerHTML = "<p class='col-span-full text-center py-10 text-gray-500'>Seçilen kategoride aktif ürün bulunamadı.</p>";
+        return;
+    }
 
-    const card = document.createElement("div");
-    card.className="bg-white p-4 rounded shadow flex flex-col";
-    card.innerHTML=`
-      <img src="${d.image}" class="w-full h-48 object-cover mb-2 rounded"/>
-      <h3 class="font-semibold text-lg">${d.name}</h3>
-      <p class="text-gray-600 mb-2">${d.description||""}</p>
-      <div class="font-bold text-blue-700 mb-2">${d.price} ₺</div>
-      <button class="bg-green-600 text-white px-3 py-1 rounded">Sepete Ekle</button>
-    `;
+    productsToRender.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product-card bg-white p-4 rounded-xl shadow-lg flex flex-col overflow-hidden";
+        
+        // KRİTİK NOT: d.image yerine p.image kullandık
+        card.innerHTML = `
+            <div class="h-40 overflow-hidden mb-4 rounded-lg bg-gray-100">
+                <img src="${p.image || 'https://picsum.photos/300/200'}" 
+                     alt="${p.name}" 
+                     class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]"
+                />
+            </div>
+            <span class="text-xs text-primary font-semibold uppercase mb-1">${p.category || 'GENEL'}</span>
+            <h3 class="font-bold text-base text-gray-800 truncate mb-1">${p.name}</h3>
+            <p class="text-sm text-gray-500 mb-3 line-clamp-2">${p.description || "Hızlı teslimat ve uygun fiyat garantisiyle."}</p>
+            
+            <div class="flex justify-between items-center mt-auto pt-3 border-t">
+                <span class="font-extrabold text-xl text-primary">${p.price} ₺</span>
+                <button data-id="${p.id}" class="add-to-cart-btn bg-getir-yellow text-primary px-4 py-2 rounded-lg font-semibold hover:bg-getir-yellow/80 transition-colors flex items-center gap-1 text-sm">
+                    <i class="ri-add-line"></i> Ekle
+                </button>
+            </div>
+        `;
+        productsDiv.appendChild(card);
+    });
 
-    const btn = card.querySelector("button");
-    // KRİTİK DÜZELTME: Sepet sayfasının beklediği alan adları ile ürün ekleniyor.
-    btn.addEventListener("click", async ()=>{
-      const user = auth.currentUser;
-      if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
-      
-      try{
-        // Sepet öğesi referansı: users/{userId}/cart/{productId}
-        const itemRef = doc(db, "users", user.uid, "cart", docSnap.id);
-        
-        await setDoc(itemRef, {
-          userId: user.uid,
-          // Sepet sayfanızın beklediği özel alan adları:
-          productLink: d.image || d.name, // Link beklediği için resim linkini veya adı gönderiyoruz
-          productPrice: parseFloat(d.price) || 0, // Fiyatı sayıya çevir
-          category: d.category || 'cosmetics', // Ürün kategorisi (Örn: 'furniture', 'electronics'). Eğer admin panelinde yoksa 'cosmetics' kullanıldı.
-          orderMethod: 'service', // Varsayılan sipariş yöntemi
-          
-          // Diğer zorunlu alanlar
-          quantity: 1, 
-          addedAt: new Date()
-        }, { merge: true });
-
-        showMsg("Ürün sepete eklendi!");
-      }catch(e){ showMsg("Hata: "+e.message, true);}
-    });
-    productsDiv.appendChild(card);
-  });
+    // Yeni eklenen butonlara event listener'ları ekle
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', handleAddToCart);
+    });
 }
 
-// Başlangıçta ürünleri yükle
+// --- KATEGORİ FİLTRELEME MANTIĞI ---
+function populateCategories() {
+    // Tüm ürünlerden benzersiz kategorileri al
+    const categories = [...new Set(allProducts.map(p => p.category).filter(c => c))];
+    
+    // Kategori seçeneklerini oluştur
+    const optionsHtml = categories.map(cat => 
+        `<option value="${cat}">${cat.toUpperCase()}</option>`
+    ).join('');
+    
+    filterSelect.innerHTML = `<option value="all">Tüm Ürünler</option>` + optionsHtml;
+
+    // Filtre değişince ürünleri yeniden render et
+    filterSelect.addEventListener('change', () => {
+        const selectedCategory = filterSelect.value;
+        let filteredProducts = allProducts;
+        
+        if (selectedCategory !== 'all') {
+            filteredProducts = allProducts.filter(p => p.category === selectedCategory);
+        }
+        
+        renderProducts(filteredProducts);
+    });
+}
+
+// --- ÜRÜN YÜKLEME (ANA) FONKSİYON ---
+async function loadProducts(){
+  loadingIndicator.classList.remove("hidden");
+  productsDiv.innerHTML = "";
+    
+  try {
+    const snap = await getDocs(collection(db,"homeProducts"));
+    
+    allProducts = snap.docs
+        .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
+        .filter(p => p.active); // sadece aktif ürünleri filtrele
+
+    populateCategories(); // Kategorileri doldur
+    renderProducts(allProducts); // Tüm ürünleri göster
+
+  } catch(e) {
+    showMsg("Ürünler yüklenirken hata oluştu: " + e.message, true);
+    productsDiv.innerHTML = "<p class='col-span-full text-center py-10 text-red-500'>Ürünler yüklenemedi. Sunucu hatası.</p>";
+  } finally {
+    loadingIndicator.classList.add("hidden");
+  }
+}
+
+// --- SEPETE EKLEME MANTIĞI ---
+async function handleAddToCart(event){
+    const user = auth.currentUser;
+    if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
+    
+    const btn = event.currentTarget;
+    const productId = btn.dataset.id;
+    const product = allProducts.find(p => p.id === productId);
+
+    if (!product) { showMsg("Ürün bulunamadı.", true); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i>'; // Loading göstergesi
+
+    try{
+        const itemRef = doc(db, "users", user.uid, "cart", productId);
+        
+        // Sepet sayfasının (sepet.html) beklediği zorunlu alanlar:
+        await setDoc(itemRef, {
+            userId: user.uid,
+            productLink: product.name, // Ürün adını link alanına kaydet
+            productPrice: parseFloat(product.price) || 0, // Fiyatı sayıya çevir
+            category: product.category || 'cosmetics', // Kategori alanı
+            orderMethod: 'service', // Varsayılan sipariş yöntemi
+            
+            quantity: 1, 
+            addedAt: new Date()
+        }, { merge: true });
+
+        showMsg(`"${product.name}" sepete eklendi!`);
+    }catch(e){ 
+        showMsg("Sepete eklenirken hata: "+e.message, true);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ri-add-line"></i> Ekle';
+    }
+}
+
+// Sayfa yüklendiğinde ürünleri yükle
 loadProducts();
 </script>
 </body>
