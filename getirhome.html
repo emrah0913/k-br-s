@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Getir Home | Getir Kıbrıs</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Getir Home | Getir Kıbrıs</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-<header class="bg-white shadow p-4 flex justify-between items-center">
-  <h1 class="text-xl font-bold text-blue-700">Getir Home</h1>
-  <div class="flex gap-4 items-center">
-    <span id="user-email" class="text-gray-600"></span>
-    <button id="googleSignIn" class="bg-blue-600 text-white px-4 py-2 rounded">Google ile Giriş Yap</button>
+<header class="bg-white shadow p-4">
+  <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <h1 class="text-xl font-bold text-blue-700">Getir Home</h1>
+    <div class="flex items-center gap-3">
+      <span id="user-email" class="text-gray-600"></span>
+      <button id="loginBtn" class="bg-blue-600 text-white px-3 py-1 rounded">Giriş Yap</button>
+      <button id="logoutBtn" class="bg-red-600 text-white px-3 py-1 rounded hidden">Çıkış Yap</button>
+    </div>
   </div>
 </header>
 
 <main class="max-w-6xl mx-auto p-6">
-  <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+  <h2 class="text-2xl font-semibold mb-4">Ürünler</h2>
+  <div id="products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
 </main>
 
-<footer class="text-center text-gray-400 py-8">
-  © 2025 Getir Kıbrıs
-</footer>
+<div id="msg" class="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded hidden"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -44,58 +46,79 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-const loginBtn = document.getElementById("googleSignIn");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 const userEmailSpan = document.getElementById("user-email");
-const productList = document.getElementById("productList");
+const productsDiv = document.getElementById("products");
+const msgDiv = document.getElementById("msg");
 
-let currentUser = null;
+function showMsg(text){
+  msgDiv.textContent=text;
+  msgDiv.classList.remove("hidden");
+  setTimeout(()=>msgDiv.classList.add("hidden"),3000);
+}
 
-loginBtn.addEventListener("click", async () => {
-  try { await signInWithPopup(auth, provider); }
-  catch(e){ alert("Giriş hatası: " + e.message); }
+// --- AUTH ---
+loginBtn.addEventListener("click", async ()=>{ 
+  try{ await signInWithPopup(auth,provider); } 
+  catch(e){ showMsg("Giriş hatası: "+e.message); } 
 });
 
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  userEmailSpan.textContent = user ? user.email : "";
+logoutBtn.addEventListener("click", async ()=>{ 
+  await signOut(auth); 
 });
 
-async function loadProducts() {
-  productList.innerHTML = "<p>Yükleniyor...</p>";
-  const snap = await getDocs(collection(db, "homeProducts"));
-  productList.innerHTML = "";
-  snap.forEach(docSnap => {
+onAuthStateChanged(auth, user=>{
+  if(user){
+    userEmailSpan.textContent=user.email;
+    loginBtn.classList.add("hidden");
+    logoutBtn.classList.remove("hidden");
+  }else{
+    userEmailSpan.textContent="";
+    loginBtn.classList.remove("hidden");
+    logoutBtn.classList.add("hidden");
+  }
+});
+
+// --- Load products from Firestore ---
+async function loadProducts(){
+  productsDiv.innerHTML="Yükleniyor...";
+  const snap = await getDocs(collection(db,"products"));
+  productsDiv.innerHTML="";
+  snap.forEach(docSnap=>{
     const d = docSnap.data();
-    const el = document.createElement("div");
-    el.className = "p-3 bg-white rounded flex gap-3";
-    el.innerHTML = `
-      <img src="${d.resimURL}" class="w-28 h-20 object-cover rounded" />
-      <div class="flex-1">
-        <div class="font-semibold">${d.urunAdi}</div>
-        <div class="text-sm text-gray-600">${d.aciklama || ''}</div>
-        <div class="text-sm text-blue-600 font-bold">${d.fiyat} ₺</div>
-      </div>
-      <div>
-        <button class="add-cart bg-green-600 text-white px-3 py-1 rounded">Sepete Ekle</button>
-      </div>
+    if(!d.active) return; // sadece aktif ürünleri göster
+    const card = document.createElement("div");
+    card.className="bg-white p-4 rounded shadow flex flex-col";
+    card.innerHTML=`
+      <img src="${d.image}" class="w-full h-48 object-cover mb-2 rounded"/>
+      <h3 class="font-semibold text-lg">${d.name}</h3>
+      <p class="text-gray-600 mb-2">${d.description||""}</p>
+      <div class="font-bold text-blue-700 mb-2">${d.price} ₺</div>
+      <button class="bg-green-600 text-white px-3 py-1 rounded">Sepete Ekle</button>
     `;
-    productList.appendChild(el);
-
-    el.querySelector(".add-cart").addEventListener("click", async () => {
-      if(!currentUser){ alert("Sepete eklemek için giriş yapın!"); return; }
+    const btn = card.querySelector("button");
+    btn.addEventListener("click", async ()=>{
+      const user = auth.currentUser;
+      if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!"); return;}
       try{
-        await addDoc(collection(db, "orders"), {
-          userId: currentUser.uid,
-          productId: docSnap.id,
-          quantity: 1,
-          createdAt: new Date()
+        await addDoc(collection(db,"carts"),{
+          userId:user.uid,
+          productId:docSnap.id,
+          name:d.name,
+          price:d.price,
+          image:d.image,
+          quantity:1,
+          addedAt:new Date()
         });
-        alert("Sepete eklendi!");
-      } catch(e){ alert("Sepete eklenemedi: " + e.message); }
+        showMsg("Ürün sepete eklendi!", false);
+      }catch(e){ showMsg("Hata: "+e.message);}
     });
+    productsDiv.appendChild(card);
   });
 }
 
+// Başlangıçta ürünleri yükle
 loadProducts();
 </script>
 </body>
