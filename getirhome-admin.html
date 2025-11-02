@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Getir Home Admin | Getir Kıbrıs</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .card { border-radius: 12px; box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Getir Home Admin | Getir Kıbrıs</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .card { border-radius: 12px; box-shadow: 0 6px 18px rgba(15,23,42,0.06); }
+</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
@@ -22,34 +22,87 @@
 </header>
 
 <main class="max-w-6xl mx-auto p-6">
-  <section id="login-screen" class="text-center py-12 hidden">
-    <h2 class="text-2xl mb-4">Admin Girişi</h2>
-    <button id="googleSignIn" class="bg-blue-600 text-white px-5 py-2 rounded">Google ile Giriş Yap</button>
-  </section>
 
-  <section id="admin-panel" class="hidden card bg-white p-6">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-2xl font-semibold">Yönetim Paneli</h2>
-        <p class="text-sm text-gray-500">Banner, Kategori ve Ürün yönetimi</p>
-      </div>
+<!-- Login Screen -->
+<section id="login-screen" class="text-center py-12 hidden">
+  <h2 class="text-2xl mb-4">Admin Girişi</h2>
+  <button id="googleSignIn" class="bg-blue-600 text-white px-5 py-2 rounded">Google ile Giriş Yap</button>
+</section>
+
+<!-- Admin Panel -->
+<section id="admin-panel" class="hidden card bg-white p-6">
+
+  <!-- Sekmeler -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-semibold">Yönetim Paneli</h2>
+      <p class="text-sm text-gray-500">Banner, Kategori ve Ürün yönetimi</p>
+    </div>
+    <div class="flex gap-2">
+      <button id="tabBanner" class="px-4 py-2 bg-blue-600 text-white rounded">Banner</button>
+      <button id="tabCategory" class="px-4 py-2 bg-gray-100 rounded">Kategori</button>
+      <button id="tabProduct" class="px-4 py-2 bg-gray-100 rounded">Ürün</button>
+    </div>
+  </div>
+
+  <!-- Banner Yönetimi -->
+  <div id="sectionBanner">
+    <h3 class="font-semibold mb-3">🖼 Banner Yönetimi</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+      <input id="bannerUrl" placeholder="Banner görsel URL" class="border p-2 rounded col-span-2" />
       <div class="flex gap-2">
-        <button id="tabBanner" class="px-4 py-2 bg-blue-600 text-white rounded">Banner</button>
-        <button id="tabCategory" class="px-4 py-2 bg-gray-100 rounded">Kategori</button>
-        <button id="tabProduct" class="px-4 py-2 bg-gray-100 rounded">Ürün</button>
+        <button id="addBannerBtn" class="bg-green-600 text-white px-4 py-2 rounded">Ekle</button>
+        <button id="refreshBannerBtn" class="bg-gray-200 px-4 py-2 rounded">Yenile</button>
       </div>
     </div>
+    <div id="bannerList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+  </div>
 
-    <!-- Banner, Kategori ve Ürün bölümleri buraya gelir (önceki kod ile aynı) -->
-    <!-- Burada yukarıda verdiğin admin CRUD mantığı aynen kullanılacak -->
-    <!-- Kod çok uzun olduğu için burayı aynen alabiliriz -->
-  </section>
+  <!-- Kategori Yönetimi -->
+  <div id="sectionCategory" class="hidden">
+    <h3 class="font-semibold mb-3">🗂 Kategori Yönetimi</h3>
+    <div class="flex gap-3 mb-4">
+      <input id="categoryName" placeholder="Kategori adı" class="border p-2 rounded w-full" />
+      <select id="parentCategory" class="border p-2 rounded">
+        <option value="">Üst Kategori</option>
+      </select>
+      <button id="addCategoryBtn" class="bg-green-600 text-white px-4 py-2 rounded">Ekle</button>
+    </div>
+    <div id="categoryList" class="space-y-2"></div>
+  </div>
 
-  <div id="msg" class="mt-4 text-sm text-red-600"></div>
+  <!-- Ürün Yönetimi -->
+  <div id="sectionProduct" class="hidden">
+    <h3 class="font-semibold mb-3">🛒 Ürün Yönetimi</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+      <input id="productName" placeholder="Ürün adı" class="border p-2 rounded" />
+      <input id="productPrice" placeholder="Fiyat (₺)" class="border p-2 rounded" />
+      <select id="productCategorySelect" class="border p-2 rounded">
+        <option value="">Kategori seç</option>
+      </select>
+      <input id="productDescription" placeholder="Ürün açıklaması" class="border p-2 rounded md:col-span-3" />
+      <input id="productImage" placeholder="Ana görsel URL" class="border p-2 rounded" />
+      <input id="productVideo" placeholder="Video URL (opsiyonel)" class="border p-2 rounded" />
+      <input id="productExtraImages" placeholder="Ek görseller (URL, virgül ile)" class="border p-2 rounded md:col-span-3" />
+      <input id="productActive" type="checkbox" class="mt-2" /> <label class="text-sm">Aktif</label>
+    </div>
+
+    <div class="flex gap-2 mb-6">
+      <button id="addProductBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Ürün Ekle</button>
+      <button id="refreshProductsBtn" class="bg-gray-200 px-4 py-2 rounded">Yenile</button>
+    </div>
+
+    <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+  </div>
+
+</section>
+
+<div id="msg" class="mt-4 text-sm text-red-600"></div>
 </main>
 
 <footer class="text-center text-gray-400 py-8">
-  © 2025 Getir Kıbrıs
+© 2025 Getir Kıbrıs
 </footer>
 
 <script type="module">
@@ -71,7 +124,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
-
 const ADMIN_EMAIL = "emirmob09@gmail.com";
 
 const loginScreen = document.getElementById("login-screen");
@@ -81,44 +133,60 @@ const adminEmailSpan = document.getElementById("admin-email");
 const logoutBtn = document.getElementById("logoutBtn");
 const msg = document.getElementById("msg");
 
-onAuthStateChanged(auth, async (user) => {
-  try {
-    if (!user) {
-      loginScreen.classList.remove("hidden");
-      adminPanel.classList.add("hidden");
-      logoutBtn.classList.add("hidden");
-      adminEmailSpan.textContent = "";
-      return;
-    }
+const tabBanner = document.getElementById("tabBanner");
+const tabCategory = document.getElementById("tabCategory");
+const tabProduct = document.getElementById("tabProduct");
+const sectionBanner = document.getElementById("sectionBanner");
+const sectionCategory = document.getElementById("sectionCategory");
+const sectionProduct = document.getElementById("sectionProduct");
 
-    if(user.email !== ADMIN_EMAIL){
-      alert("Bu panel sadece admin için açıktır.");
-      await signOut(auth);
-      window.location.href = "/getirhome.html";
-      return;
-    }
+const bannerUrl = document.getElementById("bannerUrl");
+const addBannerBtn = document.getElementById("addBannerBtn");
+const bannerList = document.getElementById("bannerList");
+const refreshBannerBtn = document.getElementById("refreshBannerBtn");
 
-    loginScreen.classList.add("hidden");
-    adminPanel.classList.remove("hidden");
-    logoutBtn.classList.remove("hidden");
-    adminEmailSpan.textContent = user.email;
+const categoryName = document.getElementById("categoryName");
+const parentCategory = document.getElementById("parentCategory");
+const addCategoryBtn = document.getElementById("addCategoryBtn");
+const categoryList = document.getElementById("categoryList");
 
-    // CRUD yükleme fonksiyonları buraya çağrılır (loadBanners, loadCategories, loadProducts)
-  } catch(e){
-    console.error(e);
-    msg.textContent = "Yetki kontrol hatası: " + e.message;
-  }
+const productName = document.getElementById("productName");
+const productPrice = document.getElementById("productPrice");
+const productCategorySelect = document.getElementById("productCategorySelect");
+const productImage = document.getElementById("productImage");
+const productVideo = document.getElementById("productVideo");
+const productExtraImages = document.getElementById("productExtraImages");
+const productDescription = document.getElementById("productDescription");
+const addProductBtn = document.getElementById("addProductBtn");
+const productList = document.getElementById("productList");
+const refreshProductsBtn = document.getElementById("refreshProductsBtn");
+const productActive = document.getElementById("productActive");
+
+// --- YARDIMCI ---
+function showMsg(text, isError=true){ msg.textContent=text; msg.style.color=isError?"#b91c1c":"#065f46"; if(text) setTimeout(()=>{msg.textContent="";},5000);}
+function activateTab(target){
+  [sectionBanner,sectionCategory,sectionProduct].forEach(s=>s.classList.add("hidden"));
+  [tabBanner,tabCategory,tabProduct].forEach(t=>t.classList.remove("bg-blue-600","text-white"));
+  if(target==="banner"){sectionBanner.classList.remove("hidden"); tabBanner.classList.add("bg-blue-600","text-white");}
+  if(target==="category"){sectionCategory.classList.remove("hidden"); tabCategory.classList.add("bg-blue-600","text-white");}
+  if(target==="product"){sectionProduct.classList.remove("hidden"); tabProduct.classList.add("bg-blue-600","text-white");}
+}
+tabBanner.addEventListener("click",()=>activateTab("banner"));
+tabCategory.addEventListener("click",()=>activateTab("category"));
+tabProduct.addEventListener("click",()=>activateTab("product"));
+
+// --- AUTH ---
+onAuthStateChanged(auth, async (user)=>{
+  try{
+    if(!user){ loginScreen.classList.remove("hidden"); adminPanel.classList.add("hidden"); logoutBtn.classList.add("hidden"); adminEmailSpan.textContent=""; return; }
+    if(user.email!==ADMIN_EMAIL){ alert("Bu panel sadece admin için."); await signOut(auth); window.location.href="/getirhome.html"; return; }
+    loginScreen.classList.add("hidden"); adminPanel.classList.remove("hidden"); logoutBtn.classList.remove("hidden"); adminEmailSpan.textContent=user.email;
+
+    await loadBanners();
+    await loadCategories();
+    await loadProducts();
+  }catch(e){ console.error(e); showMsg("Yetki hatası: "+e.message);}
 });
 
-googleSignIn.addEventListener("click", async () => {
-  try{ await signInWithPopup(auth, provider); }
-  catch(e){ alert("Giriş hatası: " + e.message); }
-});
-
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "/getirhome.html";
-});
-</script>
-</body>
-</html>
+googleSignIn.addEventListener("click",async()=>{ try{ await signInWithPopup(auth,provider);}catch(e){alert("Giriş hatası: "+e.message);} });
+logoutBtn.addEventListener("click",async()=>{ await signOut(auth); window.location.href="/getirhome
