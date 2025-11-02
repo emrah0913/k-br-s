@@ -32,9 +32,9 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+// setDoc ve doc, sepet öğelerini güncellemek için gerekli.
 import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-// --- Firebase Konfigürasyonu ---
 const firebaseConfig = {
   apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
   authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -50,22 +50,21 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// --- DOM Elementleri ---
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const userEmailSpan = document.getElementById("user-email");
 const productsDiv = document.getElementById("products");
 const msgDiv = document.getElementById("msg");
 
-// --- Yardımcı Fonksiyonlar ---
 function showMsg(text, isError=false){
   msgDiv.textContent=text;
+  // Hata durumuna göre arka plan rengini ayarla
   msgDiv.className = `fixed bottom-4 right-4 px-4 py-2 rounded ${isError ? 'bg-red-600' : 'bg-green-600'}`;
   msgDiv.classList.remove("hidden");
   setTimeout(()=>msgDiv.classList.add("hidden"),3000);
 }
 
-// --- AUTH MANTIK ---
+// --- AUTH ---
 loginBtn.addEventListener("click", async ()=>{ 
   try{ await signInWithPopup(auth,provider); } 
   catch(e){ showMsg("Giriş hatası: "+e.message, true); } 
@@ -87,10 +86,10 @@ onAuthStateChanged(auth, user=>{
   }
 });
 
-// --- ÜRÜN YÜKLEME VE SEPET MANTIĞI ---
+// --- Load products from Firestore ---
 async function loadProducts(){
   productsDiv.innerHTML="Yükleniyor...";
-  // Ürünler için doğru koleksiyon adı
+  // KRİTİK DÜZELTME: Doğru koleksiyon adı ("homeProducts") kullanıldı
   const snap = await getDocs(collection(db,"homeProducts"));
   productsDiv.innerHTML="";
 
@@ -114,7 +113,7 @@ async function loadProducts(){
     `;
 
     const btn = card.querySelector("button");
-    // KRİTİK DÜZELTME: Sepet sayfasının (sepet.html) beklediği alan adları ile ürün ekleniyor.
+    // KRİTİK DÜZELTME: Sepet sayfasının beklediği alan adları ile ürün ekleniyor.
     btn.addEventListener("click", async ()=>{
       const user = auth.currentUser;
       if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
@@ -125,10 +124,10 @@ async function loadProducts(){
         
         await setDoc(itemRef, {
           userId: user.uid,
-          // Sepet sayfanızın beklediği zorunlu alanlar:
-          productLink: d.name, // Link yerine ürün adını gönderiyoruz
+          // Sepet sayfanızın beklediği özel alan adları:
+          productLink: d.image || d.name, // Link beklediği için resim linkini veya adı gönderiyoruz
           productPrice: parseFloat(d.price) || 0, // Fiyatı sayıya çevir
-          category: d.category || 'cosmetics', // Ürün kategorisi (Varsayılan 'cosmetics' kullanıldı)
+          category: d.category || 'cosmetics', // Ürün kategorisi (Örn: 'furniture', 'electronics'). Eğer admin panelinde yoksa 'cosmetics' kullanıldı.
           orderMethod: 'service', // Varsayılan sipariş yöntemi
           
           // Diğer zorunlu alanlar
