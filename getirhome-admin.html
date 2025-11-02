@@ -23,16 +23,13 @@
 
 <main class="max-w-6xl mx-auto p-6">
 
-<!-- Login Screen -->
 <section id="login-screen" class="text-center py-12 hidden">
   <h2 class="text-2xl mb-4">Admin Girişi</h2>
   <button id="googleSignIn" class="bg-blue-600 text-white px-5 py-2 rounded">Google ile Giriş Yap</button>
 </section>
 
-<!-- Admin Panel -->
 <section id="admin-panel" class="hidden card bg-white p-6">
 
-  <!-- Sekmeler -->
   <div class="flex items-center justify-between mb-6">
     <div>
       <h2 class="text-2xl font-semibold">Yönetim Paneli</h2>
@@ -45,7 +42,6 @@
     </div>
   </div>
 
-  <!-- Banner Yönetimi -->
   <div id="sectionBanner">
     <h3 class="font-semibold mb-3">🖼 Banner Yönetimi</h3>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
@@ -58,7 +54,6 @@
     <div id="bannerList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
   </div>
 
-  <!-- Kategori Yönetimi -->
   <div id="sectionCategory" class="hidden">
     <h3 class="font-semibold mb-3">🗂 Kategori Yönetimi</h3>
     <div class="flex gap-3 mb-4">
@@ -71,7 +66,6 @@
     <div id="categoryList" class="space-y-2"></div>
   </div>
 
-  <!-- Ürün Yönetimi -->
   <div id="sectionProduct" class="hidden">
     <h3 class="font-semibold mb-3">🛒 Ürün Yönetimi</h3>
 
@@ -108,7 +102,8 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+// query modülünü ekledik (sorgu işlemi için gereklidir)
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -203,6 +198,13 @@ async function loadBanners(){
   bannerList.innerHTML="Yükleniyor...";
   const snap=await getDocs(collection(db,"banners"));
   bannerList.innerHTML="";
+  
+  // ✨ GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur
+  if(snap.empty){
+    bannerList.innerHTML="<p class='text-gray-500'>Yüklenecek banner bulunamadı.</p>";
+    return;
+  }
+  
   snap.forEach(docSnap=>{
     const d=docSnap.data();
     const el=document.createElement("div");
@@ -227,7 +229,14 @@ async function loadCategories(){
   parentCategory.innerHTML='<option value="">Üst Kategori</option>';
   productCategorySelect.innerHTML='<option value="">Kategori seç</option>';
   const snap=await getDocs(collection(db,"categories"));
-  categoryList.innerHTML=""; 
+  categoryList.innerHTML=""; 
+  
+  // ✨ GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur
+  if(snap.empty){
+    categoryList.innerHTML="<p class='text-gray-500'>Yüklenecek kategori bulunamadı.</p>";
+    return;
+  }
+  
   snap.forEach(docSnap=>{
     const d=docSnap.data();
     const el=document.createElement("div");
@@ -243,7 +252,7 @@ async function loadCategories(){
 // --- PRODUCT CRUD ---
 addProductBtn.addEventListener("click", async ()=>{
   const name=productName.value.trim();
-  const price=parseFloat(productPrice.value); 
+  const price=parseFloat(productPrice.value); 
   const category=productCategorySelect.value;
   const image=productImage.value.trim();
   const video=productVideo.value.trim();
@@ -264,10 +273,23 @@ async function loadProducts(){
   productList.innerHTML="Yükleniyor...";
   const snap=await getDocs(collection(db,"products"));
   productList.innerHTML="";
+  
+  // ✨ GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur
+  if(snap.empty){
+    productList.innerHTML="<p class='text-gray-500'>Yüklenecek ürün bulunamadı.</p>";
+    return;
+  }
+
   snap.forEach(docSnap=>{
     const d=docSnap.data();
     const el=document.createElement("div");
     el.className="p-3 bg-gray-100 rounded";
+    
+    // ✨ KRİTİK DÜZELTME: d.extraImages'ın varlığını ve bir dizi olduğunu kontrol et
+    const extraImagesHtml = (Array.isArray(d.extraImages) && d.extraImages.length > 0) 
+      ? d.extraImages.map(url => `<img src="${url}" class="w-20 h-20 object-cover inline-block mr-2 my-1 rounded">`).join("")
+      : ''; // Eğer tanımsızsa veya dizi değilse boş dize döndürür
+
     el.innerHTML=`
       <div class="font-semibold">${d.name} ${d.active?"(Aktif)":"(Pasif)"}</div>
       <div class="text-sm text-gray-600">${d.category}</div>
@@ -275,8 +297,7 @@ async function loadProducts(){
       <div class="text-blue-600 font-bold">${d.price} ₺</div>
       <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded" />
       ${d.video?`<video src="${d.video}" controls class="w-full h-36 my-2 rounded"></video>`:""}
-      ${d.extraImages.map(url=>`<img src="${url}" class="w-20 h-20 object-cover inline-block mr-2 my-1 rounded">`).join("")}
-      <button class="mt-2 bg-red-600 text-white px-2 py-1 rounded">Sil</button>
+      ${extraImagesHtml} <button class="mt-2 bg-red-600 text-white px-2 py-1 rounded">Sil</button>
     `;
     el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"products",docSnap.id)); await loadProducts(); showMsg("Ürün silindi",false); });
     productList.appendChild(el);
