@@ -176,7 +176,6 @@ onAuthStateChanged(auth, async (user)=>{
     if(user.email!==ADMIN_EMAIL){ alert("Bu panel sadece admin için."); await signOut(auth); window.location.href="/getirhome.html"; return; }
     loginScreen.classList.add("hidden"); adminPanel.classList.remove("hidden"); logoutBtn.classList.remove("hidden"); adminEmailSpan.textContent=user.email;
 
-    // Verilerin ilk yüklenmesi
     await loadBanners();
     await loadCategories();
     await loadProducts();
@@ -190,18 +189,18 @@ logoutBtn.addEventListener("click",async()=>{ await signOut(auth); window.locati
 addBannerBtn.addEventListener("click", async ()=>{
   const url=bannerUrl.value.trim();
   if(!url){ showMsg("URL boş olamaz"); return;}
-  // KRİTİK DÜZELTME: "banners" yerine "homeBanners" kullanıldı
+  // Düzeltme: "homeBanners"
   try{ await addDoc(collection(db,"homeBanners"),{url, createdAt:new Date()}); bannerUrl.value=""; await loadBanners(); showMsg("Banner eklendi!",false);}catch(e){ showMsg(e.message);}
 });
 refreshBannerBtn.addEventListener("click",loadBanners);
 
 async function loadBanners(){
   bannerList.innerHTML="Yükleniyor...";
-  // KRİTİK DÜZELTME: "banners" yerine "homeBanners" kullanıldı
+  // Düzeltme: "homeBanners"
   const snap=await getDocs(collection(db,"homeBanners"));
   bannerList.innerHTML="";
   
-  // GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur (Map hatasını önler)
+  // GÜVENLİK KONTROLÜ
   if(snap.empty){
     bannerList.innerHTML="<p class='text-gray-500'>Yüklenecek banner bulunamadı.</p>";
     return;
@@ -212,7 +211,7 @@ async function loadBanners(){
     const el=document.createElement("div");
     el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
     el.innerHTML=`<span>${d.url}</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
-    // KRİTİK DÜZELTME: Silme işlemi de "homeBanners" hedefler
+    // Düzeltme: "homeBanners"
     el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeBanners",docSnap.id)); await loadBanners(); showMsg("Silindi!",false); });
     bannerList.appendChild(el);
   });
@@ -222,7 +221,7 @@ async function loadBanners(){
 addCategoryBtn.addEventListener("click", async ()=>{
   const name=categoryName.value.trim(); if(!name){showMsg("Kategori adı boş"); return;}
   try{
-    // KRİTİK DÜZELTME: "categories" yerine "homeCategories" kullanıldı
+    // Düzeltme: "homeCategories"
     await addDoc(collection(db,"homeCategories"),{name,parent:parentCategory.value||null, createdAt:new Date()});
     categoryName.value=""; await loadCategories(); showMsg("Kategori eklendi",false);
   }catch(e){showMsg(e.message);}
@@ -232,11 +231,11 @@ async function loadCategories(){
   categoryList.innerHTML="Yükleniyor...";
   parentCategory.innerHTML='<option value="">Üst Kategori</option>';
   productCategorySelect.innerHTML='<option value="">Kategori seç</option>';
-  // KRİTİK DÜZELTME: "categories" yerine "homeCategories" kullanıldı
+  // Düzeltme: "homeCategories"
   const snap=await getDocs(collection(db,"homeCategories")); 
   categoryList.innerHTML=""; 
   
-  // GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur (Map hatasını önler)
+  // GÜVENLİK KONTROLÜ
   if(snap.empty){
     categoryList.innerHTML="<p class='text-gray-500'>Yüklenecek kategori bulunamadı.</p>";
     return;
@@ -247,7 +246,7 @@ async function loadCategories(){
     const el=document.createElement("div");
     el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
     el.innerHTML=`<span>${d.parent?d.parent+" > ":""}${d.name}</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
-    // KRİTİK DÜZELTME: Silme işlemi de "homeCategories" hedefler
+    // Düzeltme: "homeCategories"
     el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeCategories",docSnap.id)); await loadCategories(); showMsg("Silindi",false); });
     categoryList.appendChild(el);
     parentCategory.innerHTML+=`<option value="${d.name}">${d.name}</option>`;
@@ -269,7 +268,7 @@ addProductBtn.addEventListener("click", async ()=>{
 
   if(!name || !price || !category || !image){ showMsg("Ürün adı, fiyat, kategori ve ana görsel zorunlu"); return; }
   try{
-    // KRİTİK DÜZELTME: "products" yerine "homeProducts" kullanıldı
+    // Düzeltme: "homeProducts"
     await addDoc(collection(db,"homeProducts"),{name,price,category,image,video,extraImages,description:desc,active,createdAt:new Date()});
     productName.value=""; productPrice.value=""; productCategorySelect.value=""; productImage.value=""; productVideo.value=""; productExtraImages.value=""; productDescription.value=""; productActive.checked=false;
     await loadProducts(); showMsg("Ürün eklendi",false);
@@ -279,11 +278,11 @@ refreshProductsBtn.addEventListener("click",loadProducts);
 
 async function loadProducts(){
   productList.innerHTML="Yükleniyor...";
-  // KRİTİK DÜZELTME: "products" yerine "homeProducts" kullanıldı
+  // Düzeltme: "homeProducts"
   const snap=await getDocs(collection(db,"homeProducts")); 
   productList.innerHTML="";
   
-  // GÜVENLİK KONTROLÜ: Veri yoksa işlemi durdur (Map hatasını önler)
+  // GÜVENLİK KONTROLÜ
   if(snap.empty){
     productList.innerHTML="<p class='text-gray-500'>Yüklenecek ürün bulunamadı.</p>";
     return;
@@ -294,7 +293,7 @@ async function loadProducts(){
     const el=document.createElement("div");
     el.className="p-3 bg-gray-100 rounded";
     
-    // KRİTİK DÜZELTME: Map hatasını önler. Array değilse veya boşsa boş string döndürür.
+    // MAP HATASI DÜZELTMESİ (d.extraImages'ın dizi olup olmadığını kontrol eder)
     const extraImagesHtml = (Array.isArray(d.extraImages) && d.extraImages.length > 0) 
       ? d.extraImages.map(url => `<img src="${url}" class="w-20 h-20 object-cover inline-block mr-2 my-1 rounded">`).join("")
       : ''; 
@@ -309,7 +308,7 @@ async function loadProducts(){
       ${extraImagesHtml}
       <button class="mt-2 bg-red-600 text-white px-2 py-1 rounded">Sil</button>
     `;
-    // KRİTİK DÜZELTME: Silme işlemi de "homeProducts" hedefler
+    // Düzeltme: "homeProducts"
     el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeProducts",docSnap.id)); await loadProducts(); showMsg("Ürün silindi",false); });
     productList.appendChild(el);
   });
