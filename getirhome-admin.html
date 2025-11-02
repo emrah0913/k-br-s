@@ -132,7 +132,7 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const ADMIN_EMAIL = "emirmob09@gmail.com"; // BURAYI KENDİ ADMİN EMAIL'İNİZLE DEĞİŞTİRMEYİ UNUTMAYIN!
 
-// --- DOM Elementleri (Kısaltıldı) ---
+// --- DOM Elementleri ---
 const loginScreen = document.getElementById("login-screen");
 const googleSignIn = document.getElementById("googleSignIn");
 const adminPanel = document.getElementById("admin-panel");
@@ -140,9 +140,23 @@ const adminEmailSpan = document.getElementById("admin-email");
 const logoutBtn = document.getElementById("logoutBtn");
 const msg = document.getElementById("msg");
 
+// ... (Diğer DOM elementleri tanımlamaları)
 const tabBanner = document.getElementById("tabBanner");
+const tabCategory = document.getElementById("tabCategory");
 const tabProduct = document.getElementById("tabProduct");
+const sectionBanner = document.getElementById("sectionBanner");
+const sectionCategory = document.getElementById("sectionCategory");
 const sectionProduct = document.getElementById("sectionProduct");
+
+const bannerUrl = document.getElementById("bannerUrl");
+const addBannerBtn = document.getElementById("addBannerBtn");
+const bannerList = document.getElementById("bannerList");
+const refreshBannerBtn = document.getElementById("refreshBannerBtn");
+
+const categoryName = document.getElementById("categoryName");
+const parentCategory = document.getElementById("parentCategory");
+const addCategoryBtn = document.getElementById("addCategoryBtn");
+const categoryList = document.getElementById("categoryList");
 
 const productName = document.getElementById("productName");
 const productPrice = document.getElementById("productPrice");
@@ -157,10 +171,10 @@ const addProductBtn = document.getElementById("addProductBtn");
 const updateProductBtn = document.getElementById("updateProductBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const productList = document.getElementById("productList");
+const refreshProductsBtn = document.getElementById("refreshProductsBtn");
 const editingStatus = document.getElementById("editingStatus");
 const editingProductName = document.getElementById("editingProductName");
 const editingProductId = document.getElementById("editingProductId");
-// Diğer tüm elementler...
 
 let currentProducts = [];
 
@@ -190,35 +204,101 @@ function resetProductForm(isEditing = false) {
         editingStatus.classList.add("hidden");
     }
 }
-// ... Diğer fonksiyonlar (activateTab, Auth) burada devam ediyor ...
-// ... loadBanners ve loadCategories fonksiyonları burada devam ediyor ...
-// ... addProductBtn event listener'ı burada devam ediyor ...
 
-// --- PRODUCT DÜZENLEME MANTIĞI (GÜÇLENDİRİLMİŞ) ---
+function activateTab(target){
+  [sectionBanner,sectionCategory,sectionProduct].forEach(s=>s.classList.add("hidden"));
+  [tabBanner,tabCategory,tabProduct].forEach(t=>t.classList.remove("bg-blue-600","text-white"));
+  if(target==="banner"){sectionBanner.classList.remove("hidden"); tabBanner.classList.add("bg-blue-600","text-white");}
+  if(target==="category"){sectionCategory.classList.remove("hidden"); tabCategory.classList.add("bg-blue-600","text-white");}
+  if(target==="product"){sectionProduct.classList.remove("hidden"); tabProduct.classList.add("bg-blue-600","text-white"); resetProductForm(false);}
+}
+
+tabBanner.addEventListener("click",()=>activateTab("banner"));
+tabCategory.addEventListener("click",()=>activateTab("category"));
+tabProduct.addEventListener("click",()=>activateTab("product"));
+cancelEditBtn.addEventListener("click",()=>resetProductForm(false));
+
+// --- AUTH ---
+onAuthStateChanged(auth, async (user)=>{
+  try{
+    if(!user){ loginScreen.classList.remove("hidden"); adminPanel.classList.add("hidden"); logoutBtn.classList.add("hidden"); adminEmailSpan.textContent=""; return; }
+    if(user.email!==ADMIN_EMAIL){ alert("Bu panel sadece admin için."); await signOut(auth); window.location.href="/getirhome.html"; return; }
+    loginScreen.classList.add("hidden"); adminPanel.classList.remove("hidden"); logoutBtn.classList.remove("hidden"); adminEmailSpan.textContent=user.email;
+
+    await Promise.all([loadBanners(), loadCategories(), loadProducts()]);
+  }catch(e){ console.error(e); showMsg("Yetki hatası: "+e.message);}
+});
+
+googleSignIn.addEventListener("click",async()=>{ try{ await signInWithPopup(auth,provider);}catch(e){alert("Giriş hatası: "+e.message);} });
+logoutBtn.addEventListener("click",async()=>{ await signOut(auth); window.location.href="/getirhome.html"; });
+
+// --- BANNER CRUD (Basitleştirilmiş) ---
+addBannerBtn.addEventListener("click", async ()=>{
+  const url=bannerUrl.value.trim();
+  if(!url){ showMsg("URL boş olamaz"); return;}
+  try{ await addDoc(collection(db,"homeBanners"),{url, createdAt:new Date()}); bannerUrl.value=""; await loadBanners(); showMsg("Banner eklendi!",false);}catch(e){ showMsg(e.message);}
+});
+refreshBannerBtn.addEventListener("click",loadBanners);
+
+async function loadBanners(){
+  bannerList.innerHTML="Yükleniyor...";
+  const snap=await getDocs(collection(db,"homeBanners"));
+  bannerList.innerHTML="";
+  if(snap.empty){ bannerList.innerHTML="<p class='text-gray-500'>Yüklenecek banner bulunamadı.</p>"; return; }
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    const el=document.createElement("div");
+    el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
+    el.innerHTML=`<span>${d.url.substring(0, 50)}...</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeBanners",docSnap.id)); await loadBanners(); showMsg("Silindi!",false); });
+    bannerList.appendChild(el);
+  });
+}
+
+// --- CATEGORY CRUD (Basitleştirilmiş) ---
+addCategoryBtn.addEventListener("click", async ()=>{
+  const name=categoryName.value.trim(); if(!name){showMsg("Kategori adı boş"); return;}
+  try{
+    await addDoc(collection(db,"homeCategories"),{name,parent:parentCategory.value||null, createdAt:new Date()});
+    categoryName.value=""; await loadCategories(); showMsg("Kategori eklendi",false);
+  }catch(e){showMsg(e.message);}
+});
+
+async function loadCategories(){
+  categoryList.innerHTML="Yükleniyor...";
+  parentCategory.innerHTML='<option value="">Üst Kategori</option>';
+  productCategorySelect.innerHTML='<option value="">Kategori seç</option>';
+  const snap=await getDocs(collection(db,"homeCategories")); 
+  categoryList.innerHTML=""; 
+  if(snap.empty){ categoryList.innerHTML="<p class='text-gray-500'>Yüklenecek kategori bulunamadı.</p>"; return; }
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    const el=document.createElement("div");
+    el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
+    el.innerHTML=`<span>${d.parent?d.parent+" > ":""}${d.name}</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"homeCategories",docSnap.id)); await loadCategories(); showMsg("Silindi",false); });
+    categoryList.appendChild(el);
+    parentCategory.innerHTML+=`<option value="${d.name}">${d.name}</option>`;
+    productCategorySelect.innerHTML+=`<option value="${d.name}">${d.name}</option>`;
+  });
+}
+
+// --- PRODUCT DÜZENLEME MANTIĞI ---
 function editProduct(productId) {
     const product = currentProducts.find(p => p.id === productId);
 
     if (product) {
-        productName.value = product.name || '';
-        // Fiyatı string'e çevirip atıyoruz.
-        productPrice.value = (product.price !== undefined && product.price !== null) ? String(product.price) : ''; 
+        productName.value = product.name;
+        productPrice.value = product.price;
         productCategorySelect.value = product.category || '';
         productImage.value = product.image || '';
         productVideo.value = product.video || '';
-        
-        // Ek görselleri doğru şekilde string'e dönüştürme
-        if (Array.isArray(product.extraImages) && product.extraImages.length > 0) {
-            productExtraImages.value = product.extraImages.join(', ');
-        } else {
-            productExtraImages.value = '';
-        }
-
+        productExtraImages.value = (Array.isArray(product.extraImages) ? product.extraImages.join(', ') : '');
         productDescription.value = product.description || '';
         productActive.checked = product.active || false;
 
         editingProductId.value = productId;
         editingProductName.textContent = product.name;
-        
         resetProductForm(true); 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -226,17 +306,12 @@ function editProduct(productId) {
     }
 }
 
-// KRİTİK DÜZELTME: updateProductBtn olay dinleyicisi
 updateProductBtn.addEventListener("click", async () => {
     const productId = editingProductId.value;
-    if (!productId) {
-        showMsg("Hata: Güncellenecek ürün ID'si bulunamadı. Lütfen sayfayı yenileyin.", true);
-        return;
-    } 
+    if (!productId) return; 
 
     const name = productName.value.trim();
-    const priceInput = productPrice.value.trim(); 
-    const price = parseFloat(priceInput);
+    const price = parseFloat(productPrice.value);
     const category = productCategorySelect.value;
     const image = productImage.value.trim();
     const video = productVideo.value.trim();
@@ -244,98 +319,92 @@ updateProductBtn.addEventListener("click", async () => {
     const desc = productDescription.value.trim();
     const active = productActive.checked;
 
-    if (!name || isNaN(price) || price <= 0 || !category || !image) { 
-        showMsg("Zorunlu alanları (Ad, Geçerli Fiyat, Kategori, Görsel) doldurun.", true); 
-        return; 
-    }
-    
-    updateProductBtn.disabled = true;
-    updateProductBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Güncelleniyor...';
-
+    if (!name || !price || !category || !image) { showMsg("Zorunlu alanları doldurun", true); return; }
 
     try {
         const productRef = doc(db, "homeProducts", productId);
         await updateDoc(productRef, {
-            name, 
-            price, 
-            category, 
-            image, 
-            video, 
-            extraImages, 
-            description: desc, 
-            active,
+            name, price, category, image, video, extraImages, description: desc, active,
             updatedAt: new Date()
         });
-
         resetProductForm(false); 
         await loadProducts(); 
         showMsg("Ürün başarıyla güncellendi!", false);
-
     } catch (e) {
-        console.error("Firebase Güncelleme Hatası:", e);
-        showMsg("Güncelleme hatası oluştu: " + e.message + " (Yetki hatası olabilir)", true);
-    } finally {
-        updateProductBtn.disabled = false;
-        updateProductBtn.innerHTML = '<i class="ri-save-line"></i> Kaydet ve Güncelle';
+        showMsg("Güncelleme hatası: " + e.message, true);
     }
 });
 
 
-// loadProducts fonksiyonu Harita hatası için kontrol ile güncellendi
+// --- PRODUCT CRUD (ADD/DELETE/LOAD) ---
+addProductBtn.addEventListener("click", async ()=>{
+  if(editingProductId.value) return; 
+
+  const name=productName.value.trim();
+  const price=parseFloat(productPrice.value); 
+  const category=productCategorySelect.value;
+  const image=productImage.value.trim();
+  const video=productVideo.value.trim();
+  const extraImages=productExtraImages.value.trim().split(",").map(x=>x.trim()).filter(Boolean); 
+  const desc=productDescription.value.trim();
+  const active=productActive.checked;
+
+  if(!name || !price || !category || !image){ showMsg("Zorunlu alanları doldurun"); return; }
+  try{
+    await addDoc(collection(db,"homeProducts"),{name,price,category,image,video,extraImages,description:desc,active,createdAt:new Date()});
+    resetProductForm(false);
+    await loadProducts(); showMsg("Ürün eklendi",false);
+  }catch(e){ showMsg(e.message);}
+});
+refreshProductsBtn.addEventListener("click",loadProducts);
+
 async function loadProducts(){
   productList.innerHTML="<i class='ri-loader-4-line animate-spin'></i> Ürünler yükleniyor...";
-  try {
-        const snap=await getDocs(collection(db,"homeProducts")); 
-        productList.innerHTML="";
-        currentProducts = [];
+  const snap=await getDocs(collection(db,"homeProducts")); 
+  productList.innerHTML="";
+  currentProducts = [];
 
-        if(snap.empty){ productList.innerHTML="<p class='text-gray-500'>Yüklenecek ürün bulunamadı.</p>"; return; }
+  if(snap.empty){ productList.innerHTML="<p class='text-gray-500'>Yüklenecek ürün bulunamadı.</p>"; return; }
 
-        snap.forEach(docSnap=>{
-          const d=docSnap.data();
-            currentProducts.push({ id: docSnap.id, ...d });
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    currentProducts.push({ id: docSnap.id, ...d });
 
-            const el=document.createElement("div");
-            el.className="p-3 bg-white rounded shadow-md flex flex-col justify-between";
-            
-            // KRİTİK: extraImages kontrolü (Undefined hatasını engeller)
-            const extraImagesArray = Array.isArray(d.extraImages) ? d.extraImages : [];
-            const extraImagesHtml = extraImagesArray.length > 0
-              ? extraImagesArray.map(url => `<img src="${url}" class="w-16 h-16 object-cover inline-block mr-2 my-1 rounded border">`).join("")
-              : ''; 
+    const el=document.createElement("div");
+    el.className="p-3 bg-white rounded shadow-md flex flex-col justify-between";
+    
+    const extraImagesHtml = (Array.isArray(d.extraImages) && d.extraImages.length > 0) 
+      ? d.extraImages.map(url => `<img src="${url}" class="w-16 h-16 object-cover inline-block mr-2 my-1 rounded border">`).join("")
+      : ''; 
 
-            el.innerHTML=`
-              <div>
-                <div class="font-semibold text-lg">${d.name} <span class="text-xs ${d.active?"text-green-600":"text-red-600"}">${d.active?"(Aktif)":"(Pasif)"}</span></div>
-                <div class="text-sm text-gray-600">${d.category}</div>
-                <div class="text-sm my-1">${d.description||""}</div>
-                <div class="text-blue-600 font-bold">${(d.price || 0).toFixed(2)} ₺</div>
-                <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded border" />
-                ${extraImagesHtml}
-              </div>
-              <div class="flex gap-2 mt-3 pt-3 border-t">
-                    <button data-id="${docSnap.id}" class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"><i class="ri-edit-line"></i> Düzenle</button>
-                <button data-id="${docSnap.id}" class="delete-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"><i class="ri-delete-bin-line"></i> Sil</button>
-              </div>
-            `;
-            
-            el.querySelector(".delete-btn").addEventListener("click",async(e)=>{ 
-                const id = e.target.dataset.id;
-                await deleteDoc(doc(db,"homeProducts",id)); 
-                await loadProducts(); 
-                showMsg("Ürün silindi",false); 
-            });
+    el.innerHTML=`
+      <div>
+        <div class="font-semibold text-lg">${d.name} <span class="text-xs ${d.active?"text-green-600":"text-red-600"}">${d.active?"(Aktif)":"(Pasif)"}</span></div>
+        <div class="text-sm text-gray-600">${d.category}</div>
+        <div class="text-sm my-1">${d.description||""}</div>
+        <div class="text-blue-600 font-bold">${(d.price || 0).toFixed(2)} ₺</div>
+        <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded border" />
+        ${extraImagesHtml}
+      </div>
+      <div class="flex gap-2 mt-3 pt-3 border-t">
+            <button data-id="${docSnap.id}" class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"><i class="ri-edit-line"></i> Düzenle</button>
+        <button data-id="${docSnap.id}" class="delete-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"><i class="ri-delete-bin-line"></i> Sil</button>
+      </div>
+    `;
+    
+    el.querySelector(".delete-btn").addEventListener("click",async(e)=>{ 
+        const id = e.target.dataset.id;
+        await deleteDoc(doc(db,"homeProducts",id)); 
+        await loadProducts(); 
+        showMsg("Ürün silindi",false); 
+    });
 
-            el.querySelector(".edit-btn").addEventListener("click", (e) => {
-                editProduct(e.target.dataset.id);
-            });
+    el.querySelector(".edit-btn").addEventListener("click", (e) => {
+        editProduct(e.target.dataset.id);
+    });
 
-            productList.appendChild(el);
-        });
-    } catch (e) {
-        console.error("loadProducts Hata:", e);
-        productList.innerHTML = `<p class='text-red-600'>Ürünler yüklenemedi. Yetki veya bağlantı hatası: ${e.message}</p>`;
-    }
+    productList.appendChild(el);
+  });
 }
 </script>
 </body>
