@@ -189,4 +189,99 @@ onAuthStateChanged(auth, async (user)=>{
 });
 
 googleSignIn.addEventListener("click",async()=>{ try{ await signInWithPopup(auth,provider);}catch(e){alert("Giriş hatası: "+e.message);} });
-logoutBtn.addEventListener("click",async()=>{ await signOut(auth); window.location.href="/getirhome
+logoutBtn.addEventListener("click",async()=>{ await signOut(auth); window.location.href="/getirhome.html"; });
+
+// --- BANNER CRUD ---
+addBannerBtn.addEventListener("click", async ()=>{
+  const url=bannerUrl.value.trim();
+  if(!url){ showMsg("URL boş olamaz"); return;}
+  try{ await addDoc(collection(db,"banners"),{url, createdAt:new Date()}); bannerUrl.value=""; await loadBanners(); showMsg("Banner eklendi!",false);}catch(e){ showMsg(e.message);}
+});
+refreshBannerBtn.addEventListener("click",loadBanners);
+
+async function loadBanners(){
+  bannerList.innerHTML="Yükleniyor...";
+  const snap=await getDocs(collection(db,"banners"));
+  bannerList.innerHTML="";
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    const el=document.createElement("div");
+    el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
+    el.innerHTML=`<span>${d.url}</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"banners",docSnap.id)); await loadBanners(); showMsg("Silindi!",false); });
+    bannerList.appendChild(el);
+  });
+}
+
+// --- CATEGORY CRUD ---
+addCategoryBtn.addEventListener("click", async ()=>{
+  const name=categoryName.value.trim(); if(!name){showMsg("Kategori adı boş"); return;}
+  try{
+    await addDoc(collection(db,"categories"),{name,parent:parentCategory.value||null, createdAt:new Date()});
+    categoryName.value=""; await loadCategories(); showMsg("Kategori eklendi",false);
+  }catch(e){showMsg(e.message);}
+});
+
+async function loadCategories(){
+  categoryList.innerHTML="Yükleniyor...";
+  parentCategory.innerHTML='<option value="">Üst Kategori</option>';
+  productCategorySelect.innerHTML='<option value="">Kategori seç</option>';
+  const snap=await getDocs(collection(db,"categories"));
+  categoryList.innerHTML=""; 
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    const el=document.createElement("div");
+    el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
+    el.innerHTML=`<span>${d.parent?d.parent+" > ":""}${d.name}</span> <button class="bg-red-600 text-white px-2 py-1 rounded">Sil</button>`;
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"categories",docSnap.id)); await loadCategories(); showMsg("Silindi",false); });
+    categoryList.appendChild(el);
+    parentCategory.innerHTML+=`<option value="${d.name}">${d.name}</option>`;
+    productCategorySelect.innerHTML+=`<option value="${d.name}">${d.name}</option>`;
+  });
+}
+
+// --- PRODUCT CRUD ---
+addProductBtn.addEventListener("click", async ()=>{
+  const name=productName.value.trim();
+  const price=parseFloat(productPrice.value); 
+  const category=productCategorySelect.value;
+  const image=productImage.value.trim();
+  const video=productVideo.value.trim();
+  const extraImages=productExtraImages.value.trim().split(",").map(x=>x.trim()).filter(Boolean);
+  const desc=productDescription.value.trim();
+  const active=productActive.checked;
+
+  if(!name || !price || !category || !image){ showMsg("Ürün adı, fiyat, kategori ve ana görsel zorunlu"); return; }
+  try{
+    await addDoc(collection(db,"products"),{name,price,category,image,video,extraImages,description:desc,active,createdAt:new Date()});
+    productName.value=""; productPrice.value=""; productCategorySelect.value=""; productImage.value=""; productVideo.value=""; productExtraImages.value=""; productDescription.value=""; productActive.checked=false;
+    await loadProducts(); showMsg("Ürün eklendi",false);
+  }catch(e){ showMsg(e.message);}
+});
+refreshProductsBtn.addEventListener("click",loadProducts);
+
+async function loadProducts(){
+  productList.innerHTML="Yükleniyor...";
+  const snap=await getDocs(collection(db,"products"));
+  productList.innerHTML="";
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    const el=document.createElement("div");
+    el.className="p-3 bg-gray-100 rounded";
+    el.innerHTML=`
+      <div class="font-semibold">${d.name} ${d.active?"(Aktif)":"(Pasif)"}</div>
+      <div class="text-sm text-gray-600">${d.category}</div>
+      <div class="text-sm">${d.description||""}</div>
+      <div class="text-blue-600 font-bold">${d.price} ₺</div>
+      <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded" />
+      ${d.video?`<video src="${d.video}" controls class="w-full h-36 my-2 rounded"></video>`:""}
+      ${d.extraImages.map(url=>`<img src="${url}" class="w-20 h-20 object-cover inline-block mr-2 my-1 rounded">`).join("")}
+      <button class="mt-2 bg-red-600 text-white px-2 py-1 rounded">Sil</button>
+    `;
+    el.querySelector("button").addEventListener("click",async()=>{ await deleteDoc(doc(db,"products",docSnap.id)); await loadProducts(); showMsg("Ürün silindi",false); });
+    productList.appendChild(el);
+  });
+}
+</script>
+</body>
+</html>
