@@ -556,17 +556,20 @@
                 addedAt: new Date()
             }, { merge: true });
 
-            // **HATA DÜZELTMESİ BAŞLANGIÇ**
-            const productName = product.name || 'Bilinmeyen Ürün';
-            const variantName = selectedVariant ? (selectedVariant.name || 'Varyant') : '';
-            // Eğer varyant adı Standart ise gösterme (Çünkü detay sayfasında varyant yoksa Standart olarak atanıyor)
+            // **HATA DÜZELTMESİ: Ürün ve Varyant adlarını güvenli string'e dönüştür**
+            const productName = product.name ? String(product.name) : 'Bilinmeyen Ürün';
+            const variantName = selectedVariant ? (selectedVariant.name ? String(selectedVariant.name) : 'Varyant') : 'Standart';
+            
+            // Eğer varyant adı Standart ise gösterme
             const variantText = variantName && variantName !== 'Standart' ? ` (${variantName})` : '';
 
             showMsg(`"${productName}"${variantText} sepete eklendi!`);
             // **HATA DÜZELTMESİ SONU**
 
         }catch(e){ 
-            showMsg("Sepete eklenirken hata: "+e.message, true);
+            // Hata mesajı undefined ise bile düzgün bir metin göster
+            const errorMessage = e && e.message ? e.message : 'Bilinmeyen Hata Kodu';
+            showMsg("Sepete eklenirken hata: "+ errorMessage, true);
         } finally {
             btn.disabled = false;
             if (btn.id === 'detail-add-to-cart-btn') {
