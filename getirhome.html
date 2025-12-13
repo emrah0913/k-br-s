@@ -496,9 +496,6 @@
         renderPage(); 
 
         try {
-            // KRİTİK DÜZELTME: Anonim girişi kaldırarak direkt veri çekiyoruz.
-            // Bu, güvenlik kuralının anonim okumaya izin vermesi durumunda hatayı çözecektir.
-            
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             allProducts = productSnap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() })).filter(p => p.active); 
@@ -559,7 +556,15 @@
                 addedAt: new Date()
             }, { merge: true });
 
-            showMsg(`"${product.name}"${selectedVariant ? ` (${selectedVariant.name})` : ''} sepete eklendi!`);
+            // **HATA DÜZELTMESİ BAŞLANGIÇ**
+            const productName = product.name || 'Bilinmeyen Ürün';
+            const variantName = selectedVariant ? (selectedVariant.name || 'Varyant') : '';
+            // Eğer varyant adı Standart ise gösterme (Çünkü detay sayfasında varyant yoksa Standart olarak atanıyor)
+            const variantText = variantName && variantName !== 'Standart' ? ` (${variantName})` : '';
+
+            showMsg(`"${productName}"${variantText} sepete eklendi!`);
+            // **HATA DÜZELTMESİ SONU**
+
         }catch(e){ 
             showMsg("Sepete eklenirken hata: "+e.message, true);
         } finally {
