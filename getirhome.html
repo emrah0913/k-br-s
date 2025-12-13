@@ -91,10 +91,13 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, setDoc, doc, setLogLevel } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-    // --- Kullanıcının Sağladığı Firebase Konfigürasyonu ---
+    // Firestore için DEBUG seviyesini aç (Gerektiğinde)
+    // setLogLevel('debug'); 
+
+    // --- Firebase Konfigürasyonu (Admin ile aynı olmalı) ---
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -110,7 +113,7 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // --- DOM Elementleri ---
+    // --- GLOBAL STATE ---
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const userEmailSpan = document.getElementById("user-email");
@@ -121,10 +124,12 @@
 
     let allProducts = []; 
     let allCategories = []; 
-    let allBanners = []; // Yeni: Bannerları tutacak
+    let allBanners = []; 
     let productsLoaded = false;
+    let currentUserId = null;
 
-    // --- Yardımcı Fonksiyonlar (Mesaj Gösterme) ---
+
+    // --- YARDIMCI FONKSİYONLAR ---
     function showMsg(text, isError=false){
         msgDiv.textContent=text;
         msgDiv.className = `fixed bottom-4 right-4 z-[100] px-4 py-2 rounded-lg text-white font-medium shadow-xl transition-all duration-300 ${isError ? 'bg-red-600' : 'bg-green-600'}`;
@@ -132,23 +137,18 @@
         setTimeout(()=>msgDiv.classList.add("hidden"),3000);
     }
 
-    // URL'den video ID'sini çıkarıp iframe için uygun URL oluşturur
     function getEmbedUrl(url) {
         if (!url) return null;
-        
-        // YouTube URL'leri için
         const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
         const match = url.match(ytRegex);
         if (match) {
             const videoId = match[1] || match[2];
             return `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0`;
         }
-        
-        // Diğer video platformları veya sadece doğrudan linkler için basit dönüş
         return url;
     }
 
-    // --- Yönlendirme ve Sayfa Yönetimi MANTIĞI (HASH ROUTING) ---
+    // --- YÖNLENDİRME (HASH ROUTING) ---
     function navigate(path) {
         location.hash = path === '/' ? '' : path;
         renderPage(); 
@@ -158,7 +158,6 @@
 
     function getRouteParams() {
         const hash = window.location.hash.substring(1); 
-
         let view = 'home';
         let id = null;
 
@@ -170,20 +169,14 @@
         } else if (hash.length === 0 || hash === '/') {
             view = 'home';
         }
-
         return { view, id };
     }
 
     function renderPage() {
         const { view, id } = getRouteParams();
         
-        // --- HERO SECTION RENDER ---
-        if (view === 'home') {
-            heroSection.style.display = 'block';
-            renderHeroSection(); 
-        } else {
-            heroSection.style.display = 'none';
-        }
+        heroSection.style.display = view === 'home' ? 'block' : 'none';
+        if (view === 'home') renderHeroSection(); 
 
         appContainer.innerHTML = '';
         pageTitle.textContent = view === 'detail' ? 'Getir Kıbrıs - Ürün Detayı' : 'Getir Kıbrıs - Anasayfa';
@@ -205,7 +198,7 @@
     // --- DİNAMİK BANNER RENDER ---
     function renderHeroSection() {
         const randomBanner = allBanners[Math.floor(Math.random() * allBanners.length)];
-        const imageUrl = randomBanner ? randomBanner.url : 'https://picsum.photos/400/300?random=1';
+        const imageUrl = randomBanner && randomBanner.url ? randomBanner.url : 'https://picsum.photos/400/300?random=1';
 
         heroSection.innerHTML = `
             <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
@@ -223,12 +216,12 @@
                         </a>
                     </div>
                 </div>
-                <img src="${imageUrl}" alt="Getir Kurye" class="hidden md:block w-96 h-auto object-cover rounded-xl shadow-2xl">
+                <img src="${imageUrl}" alt="Getir Kurye" class="hidden md:block w-96 h-auto object-cover rounded-xl shadow-2xl" onerror="this.onerror=null; this.src='https://placehold.co/400x300/5D3EBC/FFFFFF?text=BANNER';">
             </div>
         `;
     }
 
-    // --- AUTH MANTIK (Aynı kaldı) ---
+    // --- AUTH MANTIK ---
     loginBtn.addEventListener("click", async ()=>{ 
         try{ await signInWithPopup(auth,provider); } 
         catch(e){ showMsg("Giriş hatası: "+e.message, true); } 
@@ -240,10 +233,12 @@
 
     onAuthStateChanged(auth, user=>{
         if(user){
+            currentUserId = user.uid;
             userEmailSpan.textContent=user.email;
             loginBtn.classList.add("hidden");
             logoutBtn.classList.remove("hidden");
         }else{
+            currentUserId = null;
             userEmailSpan.textContent="Misafir";
             loginBtn.classList.remove("hidden");
             logoutBtn.classList.add("hidden");
@@ -253,7 +248,7 @@
     // --- ÜRÜN KARTI RENDER FONKSİYONU ---
     function renderProductCards(productsToRender, productsListContainer) {
         
-        productsListContainer.innerHTML = ''; // Önceki ürünleri temizle
+        productsListContainer.innerHTML = ''; 
 
         const productGrid = document.createElement('div');
         productGrid.id = "products-grid";
@@ -298,18 +293,16 @@
 
         productsListContainer.appendChild(productGrid);
 
-        // Sepete Ekle butonlarına listener'ları ekle
-        productGrid.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
             btn.addEventListener('click', (event) => {
-                event.stopPropagation(); // Kart tıklamasını engelle
+                event.stopPropagation(); 
                 handleAddToCart(event);
             });
         });
     }
 
-    // --- KATEGORİ FİLTRELEME MANTIĞI (Anasayfa için) ---
+    // --- KATEGORİ FİLTRELEME MANTIĞI ---
     function populateCategories(filterSelect, productsListContainer) {
-        // allCategories, loadProducts'tan geliyor
         const categories = allCategories;
         
         const optionsHtml = categories.map(cat => 
@@ -359,25 +352,18 @@
         }
     }
 
-    // --- ÜRÜN DETAY SAYFASI RENDER FONKSİYONU (Görselleri ve Videoyu Gösteren Sayfa) ---
+    // --- ÜRÜN DETAY SAYFASI RENDER FONKSİYONU (Varyant, Görsel, Video) ---
     function renderDetailPage(productId) {
         const product = allProducts.find(p => p.id === productId);
 
         if (!product) {
-            appContainer.innerHTML = `
-                <div class="max-w-7xl mx-auto p-6">
-                    <div class="text-center py-20">
-                        <h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2>
-                        <button onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors">
-                            <i class="ri-arrow-left-line"></i> Anasayfaya Dön
-                        </button>
-                    </div>
-                </div>
-            `;
+            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><button onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</button></div></div>`;
             return;
         }
 
-        // Tüm görselleri birleştir: [ana görsel, ...ek görseller]
+        const initialPrice = parseFloat(product.price) || 0;
+        let currentPrice = initialPrice;
+
         const allImages = [product.image, ...(Array.isArray(product.extraImages) ? product.extraImages : [])].filter(Boolean);
 
         const imagesHtml = allImages.map((imgSrc, index) => `
@@ -395,6 +381,23 @@
                 <div class="video-container">
                     <iframe src="${videoEmbedUrl}" title="${product.name} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe>
                 </div>
+            </div>
+        ` : '';
+        
+        // --- VARYANT SEÇİMİ HTML'İ ---
+        const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+        const variantsHtml = hasVariants ? `
+            <div class="my-6">
+                <label for="variant-select" class="block text-sm font-medium text-gray-700 mb-2">Varyant Seçimi:</label>
+                <select id="variant-select" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors cursor-pointer">
+                    <option value="" data-offset="0">Lütfen bir seçenek belirleyin</option>
+                    ${product.variants.map((v, index) => {
+                        const offset = parseFloat(v.price_offset) || 0;
+                        const sign = offset >= 0 ? '+' : '';
+                        const offsetText = offset !== 0 ? ` (${sign}${offset.toFixed(2)} ₺)` : '';
+                        return `<option value="${index}" data-offset="${offset}">${v.name}${offsetText}</option>`;
+                    }).join('')}
+                </select>
             </div>
         ` : '';
 
@@ -419,10 +422,13 @@
                             <span class="text-sm text-primary font-bold uppercase">${product.category}</span>
                             <p class="text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
                             
+                            <!-- DİNAMİK FİYAT GÖSTERİMİ -->
                             <div class="my-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <span class="text-2xl font-extrabold text-primary">${(product.price || 0).toFixed(2)} ₺</span>
-                                <p class="text-sm text-gray-500 mt-1">Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
+                                <span id="dynamic-price" class="text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>
+                                <p class="text-sm text-gray-500 mt-1">Ana fiyat: ${initialPrice.toFixed(2)} ₺. Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
                             </div>
+
+                            ${variantsHtml}
 
                             <button data-id="${product.id}" id="detail-add-to-cart-btn" class="w-full bg-getir-yellow text-primary px-6 py-3 rounded-lg font-extrabold text-lg hover:bg-getir-yellow/80 transition-colors flex items-center justify-center gap-2 shadow-md">
                                 <i class="ri-shopping-cart-2-fill"></i> Sepete Ekle
@@ -443,16 +449,61 @@
                 </div>
             </div>
         `;
-        // Detay sayfasındaki Sepete Ekle butonuna listener ekle
-        document.getElementById('detail-add-to-cart-btn').addEventListener('click', handleAddToCart);
+
+        const priceEl = document.getElementById('dynamic-price');
+        const cartBtn = document.getElementById('detail-add-to-cart-btn');
+        let selectedVariant = null;
+
+        // Fiyatı güncelleme fonksiyonu
+        function updatePrice(offset = 0) {
+            currentPrice = initialPrice + offset;
+            priceEl.textContent = currentPrice.toFixed(2) + ' ₺';
+        }
+
+        if (hasVariants) {
+            const variantSelect = document.getElementById('variant-select');
+            cartBtn.disabled = true; // Başlangıçta varyant seçilmediği için butonu kilitle
+
+            variantSelect.addEventListener('change', (e) => {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                const variantIndex = selectedOption.value;
+
+                if (variantIndex !== "") {
+                    selectedVariant = product.variants[parseInt(variantIndex)];
+                    updatePrice(selectedVariant.price_offset);
+                    cartBtn.disabled = false;
+                } else {
+                    selectedVariant = null;
+                    updatePrice(0); // Ana fiyata dön
+                    cartBtn.disabled = true;
+                }
+            });
+        } else {
+            selectedVariant = { name: 'Standart', price_offset: 0 }; // Varyant yoksa varsayılanı ayarla
+        }
+
+        // Sepete Ekle butonuna listener ekle
+        cartBtn.addEventListener('click', (e) => {
+            if (hasVariants && !selectedVariant) {
+                showMsg("Lütfen bir ürün varyantı seçin.", true);
+                return;
+            }
+            // Sepete Ekleme işlemi için seçili varyantı (varsa) ve güncel fiyatı kullan
+            handleAddToCart(e, selectedVariant, currentPrice);
+        });
     }
 
     // --- ÜRÜN YÜKLEME (ANA) FONKSİYON - Tüm veriyi Firestore'dan çeker ---
     async function loadProducts(){
         productsLoaded = false;
-        renderPage(); // Yükleniyor ekranını göster
+        renderPage(); 
 
         try {
+            // Firestore'a anonim giriş yap (Kullanıcı giriş yapmamışsa)
+            if (!auth.currentUser) {
+                await signInAnonymously(auth);
+            }
+            
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             allProducts = productSnap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() })).filter(p => p.active); 
@@ -462,8 +513,7 @@
             allBanners = bannerSnap.docs.map(docSnap => docSnap.data());
 
             if (allBanners.length === 0) {
-                 // Varsayılan banner ekle eğer Firestore boşsa
-                allBanners.push({ url: 'https://picsum.photos/400/300?random=1' });
+                allBanners.push({ url: 'https://placehold.co/400x300/5D3EBC/FFFFFF?text=BANNER' });
             }
 
             // 3. Kategorileri Çek
@@ -474,12 +524,12 @@
         } catch(e) {
             showMsg("Veriler yüklenirken kritik hata oluştu: " + e.message, true);
         } finally {
-            renderPage(); // Veriler yüklendikten sonra ana içeriği render et
+            renderPage(); 
         }
     }
 
-    // --- SEPETE EKLEME MANTIĞI ---
-    async function handleAddToCart(event){
+    // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) ---
+    async function handleAddToCart(event, selectedVariant = null, calculatedPrice = null){
         const user = auth.currentUser;
         if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
         
@@ -492,25 +542,31 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Yükleniyor...'; 
 
+        const itemPrice = calculatedPrice !== null ? calculatedPrice : (parseFloat(product.price) || 0);
+        
+        // Sepet öğesi ID'sini benzersiz yapmak için varyant adını ekle
+        const variantSuffix = selectedVariant && selectedVariant.name ? `-${selectedVariant.name.replace(/\s/g, '_')}` : '';
+        const itemDocId = productId + variantSuffix;
+        const itemRef = doc(db, "users", user.uid, "cart", itemDocId);
+
         try{
-            // Firestore işlemi:
-            const itemRef = doc(db, "users", user.uid, "cart", productId);
             await setDoc(itemRef, {
                 userId: user.uid,
-                productLink: product.name, 
-                productPrice: parseFloat(product.price) || 0, 
+                productName: product.name,
+                productPrice: itemPrice, 
+                variant: selectedVariant ? selectedVariant.name : 'Standart', 
+                baseProductId: productId, 
                 category: product.category || 'cosmetics', 
                 orderMethod: 'service', 
                 quantity: 1, 
                 addedAt: new Date()
             }, { merge: true });
 
-            showMsg(`"${product.name}" sepete eklendi!`);
+            showMsg(`"${product.name}"${selectedVariant ? ` (${selectedVariant.name})` : ''} sepete eklendi!`);
         }catch(e){ 
             showMsg("Sepete eklenirken hata: "+e.message, true);
         } finally {
             btn.disabled = false;
-            // Buton metnini geri yükle (Anasayfa veya Detay butonu olabilir)
             if (btn.id === 'detail-add-to-cart-btn') {
                  btn.innerHTML = '<i class="ri-shopping-cart-2-fill"></i> Sepete Ekle';
             } else {
