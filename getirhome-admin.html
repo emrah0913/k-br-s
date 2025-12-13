@@ -80,8 +80,9 @@
     </div>
 
     <div id="product-form-area" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 border p-4 rounded-lg bg-gray-50">
+      <!-- TEMEL ALANLAR -->
       <input id="productName" placeholder="Ürün adı (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
-      <input id="productPrice" placeholder="Fiyat (₺) (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" type="number" step="0.01"/>
+      <input id="productPrice" placeholder="Ana Fiyat (₺) (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" type="number" step="0.01"/>
       <select id="productCategorySelect" class="border p-2 rounded focus:ring-primary focus:border-primary">
         <option value="">Kategori seç (Zorunlu)</option>
       </select>
@@ -89,7 +90,21 @@
       <input id="productImage" placeholder="Ana görsel URL (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
       <input id="productVideo" placeholder="Video URL (opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
       <input id="productExtraImages" placeholder="Ek görseller (URL, virgül ile ayırın)" class="border p-2 rounded md:col-span-3 focus:ring-primary focus:border-primary" />
-      <div class="flex items-center gap-2">
+      
+      <!-- YENİ: VARYANT YÖNETİMİ -->
+      <div class="md:col-span-3 p-3 mt-4 border rounded-lg bg-white">
+          <h4 class="font-semibold mb-3 text-gray-700">Varyant Yönetimi (Örn: Beden, Boyut)</h4>
+          <div id="variant-input-area" class="flex gap-2 mb-3">
+              <input id="variantName" placeholder="Varyant Adı (S, M, Kırmızı, 500gr)" class="border p-2 rounded w-full focus:ring-getir-yellow focus:border-getir-yellow" />
+              <input id="variantPriceOffset" placeholder="Fiyat Farkı (Örn: 10.50)" class="border p-2 rounded w-1/3 focus:ring-getir-yellow focus:border-getir-yellow" type="number" step="0.01" value="0"/>
+              <button id="addVariantBtn" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded flex items-center gap-1 transition-colors"><i class="ri-add-line"></i> Ekle</button>
+          </div>
+          <div id="variantList" class="space-y-2">
+              <p class="text-sm text-gray-500" id="no-variants-msg">Henüz varyant eklenmedi.</p>
+          </div>
+      </div>
+      <!-- AKTİF CHECKBOX -->
+      <div class="flex items-center gap-2 mt-4 md:col-span-3">
             <input id="productActive" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" /> 
             <label for="productActive" class="text-sm font-medium text-gray-700">Ürünü aktif olarak göster</label>
       </div>
@@ -178,6 +193,13 @@ const productExtraImages = document.getElementById("productExtraImages");
 const productDescription = document.getElementById("productDescription");
 const productActive = document.getElementById("productActive");
 
+// Varyant
+const variantName = document.getElementById("variantName");
+const variantPriceOffset = document.getElementById("variantPriceOffset");
+const addVariantBtn = document.getElementById("addVariantBtn");
+const variantList = document.getElementById("variantList");
+const noVariantsMsg = document.getElementById("no-variants-msg");
+
 const addProductBtn = document.getElementById("addProductBtn");
 const updateProductBtn = document.getElementById("updateProductBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
@@ -188,6 +210,7 @@ const editingProductName = document.getElementById("editingProductName");
 const editingProductId = document.getElementById("editingProductId");
 
 let currentProducts = [];
+let productVariants = []; // Aktif olarak düzenlenmekte olan/eklenmekte olan ürünün varyantları
 
 // Tailwind Primary rengini CSS değişkeni olarak tanımla
 document.documentElement.style.setProperty('--color-primary', '#5D3EBC');
@@ -200,6 +223,63 @@ function showMsg(text, isError=true){
     if(text) setTimeout(()=>{msg.textContent="";},5000);
 }
 
+// Yeni varyant listesini temizler ve render eder
+function renderVariants() {
+    variantList.innerHTML = '';
+    if (productVariants.length === 0) {
+        noVariantsMsg.classList.remove('hidden');
+        variantList.appendChild(noVariantsMsg);
+        return;
+    }
+    noVariantsMsg.classList.add('hidden');
+
+    productVariants.forEach((variant, index) => {
+        const el = document.createElement('div');
+        el.className = 'flex justify-between items-center p-2 rounded bg-gray-100 text-sm';
+        const priceText = variant.price_offset > 0 
+            ? `(Fark: +${variant.price_offset.toFixed(2)} ₺)` 
+            : variant.price_offset < 0 
+            ? `(Fark: ${variant.price_offset.toFixed(2)} ₺)`
+            : '(Fark: 0 ₺)';
+        
+        el.innerHTML = `
+            <span>${variant.name} <span class="text-gray-500">${priceText}</span></span>
+            <button data-index="${index}" class="remove-variant-btn text-red-600 hover:text-red-700 transition-colors"><i class="ri-delete-bin-line"></i> Sil</button>
+        `;
+        variantList.appendChild(el);
+    });
+
+    document.querySelectorAll('.remove-variant-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const indexToRemove = parseInt(e.currentTarget.dataset.index);
+            productVariants.splice(indexToRemove, 1);
+            renderVariants();
+        });
+    });
+}
+
+// Varyant Ekleme Butonu
+addVariantBtn.addEventListener('click', () => {
+    const name = variantName.value.trim();
+    const priceOffset = parseFloat(variantPriceOffset.value);
+
+    if (!name) {
+        showMsg("Varyant adı boş olamaz.", true);
+        return;
+    }
+    if (isNaN(priceOffset)) {
+        showMsg("Fiyat farkı geçerli bir sayı olmalıdır.", true);
+        return;
+    }
+
+    productVariants.push({ name, price_offset: priceOffset });
+
+    variantName.value = '';
+    variantPriceOffset.value = '0';
+    renderVariants();
+});
+
+
 function resetProductForm(isEditing = false) {
     productName.value = "";
     productPrice.value = "";
@@ -211,6 +291,8 @@ function resetProductForm(isEditing = false) {
     productActive.checked = false;
     editingProductId.value = "";
     editingProductName.textContent = "";
+    productVariants = []; // Reset varyant listesi
+    renderVariants(); // UI'da sıfırla
 
     if (isEditing) {
         addProductBtn.classList.add("hidden");
@@ -301,7 +383,7 @@ logoutBtn.addEventListener("click",async()=>{
   logoutBtn.classList.add("hidden"); 
 });
 
-// --- BANNER CRUD ---
+// --- BANNER CRUD (Aynı kaldı) ---
 addBannerBtn.addEventListener("click", async ()=>{
   const url=bannerUrl.value.trim();
   if(!url || !url.startsWith('http')){ showMsg("Geçerli bir görsel URL'si girin", true); return;}
@@ -348,7 +430,7 @@ async function loadBanners(){
   }
 }
 
-// --- CATEGORY CRUD ---
+// --- CATEGORY CRUD (Aynı kaldı) ---
 addCategoryBtn.addEventListener("click", async ()=>{
   const name=categoryName.value.trim(); 
   if(!name){showMsg("Kategori adı boş olamaz", true); return;}
@@ -409,12 +491,15 @@ function editProduct(productId) {
     const product = currentProducts.find(p => p.id === productId);
 
     if (product) {
+        // Varyantları yükle
+        productVariants = Array.isArray(product.variants) ? [...product.variants] : [];
+        renderVariants();
+
         productName.value = product.name || '';
         productPrice.value = product.price || '';
         productCategorySelect.value = product.category || '';
         productImage.value = product.image || '';
         productVideo.value = product.video || '';
-        // extraImages array ise join et, değilse boş bırak
         productExtraImages.value = (Array.isArray(product.extraImages) ? product.extraImages.join(', ') : '');
         productDescription.value = product.description || '';
         productActive.checked = product.active || false;
@@ -440,6 +525,8 @@ updateProductBtn.addEventListener("click", async () => {
     const extraImages = productExtraImages.value.trim().split(",").map(x => x.trim()).filter(Boolean);
     const desc = productDescription.value.trim();
     const active = productActive.checked;
+    // Varyantları al
+    const variants = productVariants;
 
     if (!name || isNaN(price) || !category || !image) { 
         showMsg("Ürün adı, fiyat, kategori ve ana görsel zorunludur.", true); 
@@ -449,7 +536,7 @@ updateProductBtn.addEventListener("click", async () => {
     try {
         const productRef = doc(db, "homeProducts", productId);
         await updateDoc(productRef, {
-            name, price, category, image, video, extraImages, description: desc, active,
+            name, price, category, image, video, extraImages, description: desc, active, variants,
             updatedAt: new Date()
         });
         resetProductForm(false); 
@@ -473,6 +560,7 @@ addProductBtn.addEventListener("click", async ()=>{
   const extraImages=productExtraImages.value.trim().split(",").map(x=>x.trim()).filter(Boolean); 
   const desc=productDescription.value.trim();
   const active=productActive.checked;
+  const variants = productVariants;
 
   if (!name || isNaN(price) || !category || !image) { 
     showMsg("Ürün adı, fiyat, kategori ve ana görsel zorunludur.", true); 
@@ -480,7 +568,7 @@ addProductBtn.addEventListener("click", async ()=>{
   }
   try{
     await addDoc(collection(db,"homeProducts"),{
-        name,price,category,image,video,extraImages,description:desc,active,createdAt:new Date()
+        name,price,category,image,video,extraImages,description:desc,active,variants,createdAt:new Date()
     });
     resetProductForm(false);
     await loadProducts(); 
@@ -512,6 +600,10 @@ async function loadProducts(){
         const extraImagesHtml = (Array.isArray(d.extraImages) && d.extraImages.length > 0) 
           ? d.extraImages.map(url => `<img src="${url}" class="w-16 h-16 object-cover inline-block mr-2 my-1 rounded border product-image-preview" onerror="this.onerror=null;this.src='https://placehold.co/40x40/ccc/fff?text=?'">`).join("")
           : ''; 
+        
+        const variantsHtml = (Array.isArray(d.variants) && d.variants.length > 0)
+            ? `<div class="text-xs text-purple-600 mt-2"><i class="ri-list-check"></i> ${d.variants.length} Varyant</div>`
+            : '';
 
         el.innerHTML=`
           <div>
@@ -522,6 +614,7 @@ async function loadProducts(){
             <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded border product-image-preview" onerror="this.onerror=null;this.src='https://placehold.co/300x144/ccc/fff?text=Gorsel+Yok';" />
             ${extraImagesHtml}
             ${d.video ? `<div class="text-xs text-blue-500 mt-2 flex items-center gap-1"><i class="ri-video-line"></i> Video Eklendi</div>` : ''}
+            ${variantsHtml}
           </div>
           <div class="flex gap-2 mt-3 pt-3 border-t">
             <button data-id="${docSnap.id}" class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors flex items-center gap-1"><i class="ri-edit-line"></i> Düzenle</button>
