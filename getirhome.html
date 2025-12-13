@@ -94,9 +94,6 @@
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
     import { getFirestore, collection, getDocs, setDoc, doc, setLogLevel } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-    // Firestore için DEBUG seviyesini aç (Gerektiğinde)
-    // setLogLevel('debug'); 
-
     // --- Firebase Konfigürasyonu (Admin ile aynı olmalı) ---
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -499,10 +496,8 @@
         renderPage(); 
 
         try {
-            // Firestore'a anonim giriş yap (Kullanıcı giriş yapmamışsa)
-            if (!auth.currentUser) {
-                await signInAnonymously(auth);
-            }
+            // KRİTİK DÜZELTME: Anonim girişi kaldırarak direkt veri çekiyoruz.
+            // Bu, güvenlik kuralının anonim okumaya izin vermesi durumunda hatayı çözecektir.
             
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
@@ -522,6 +517,7 @@
 
             productsLoaded = true;
         } catch(e) {
+            // Veri çekme hatası (Büyük ihtimalle güvenlik kuralı sorunu veya Firebase bağlantı hatası)
             showMsg("Veriler yüklenirken kritik hata oluştu: " + e.message, true);
         } finally {
             renderPage(); 
@@ -531,6 +527,7 @@
     // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) ---
     async function handleAddToCart(event, selectedVariant = null, calculatedPrice = null){
         const user = auth.currentUser;
+        // KRİTİK: Kullanıcı giriş yapmamışsa, sepet işlemi için uyarı ver ve durdur.
         if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
         
         const btn = event.currentTarget;
