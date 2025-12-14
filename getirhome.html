@@ -330,8 +330,18 @@
             const imageUrl = banner.url || null;
             const videoEmbedUrl = getEmbedUrl(imageUrl);
             
+            // Admin'den gelen metinleri al
+            const title = banner.title || 'Yeni Kampanya!';
+            const description = banner.description || 'Fırsatları kaçırmayın.';
+            const link = banner.link || null; // Tıklama için link
+
             let contentHtml = '';
             let contentClass = 'h-full';
+            
+            // Eğer link varsa slaytı tıklanabilir yapacak wrapper'ı tanımla
+            const linkWrapperStart = link ? `<a href="${link}" class="w-full h-full block" target="_blank" rel="noopener noreferrer">` : '<div class="w-full h-full">';
+            const linkWrapperEnd = link ? '</a>' : '</div>';
+
 
             if (videoEmbedUrl) {
                 // Eğer video URL'si varsa, video container kullan
@@ -339,8 +349,18 @@
                     <div class="video-container">
                         <iframe src="${videoEmbedUrl}" title="Banner Video ${index + 1}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
                     </div>
+                    <!-- Video üzerine metin bindirme (Metin linki üzerine binmez) -->
+                    <div class="absolute inset-0 flex items-center justify-start p-6 sm:p-12 bg-black/40 pointer-events-none">
+                        <div class="text-left max-w-lg">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold mb-2 leading-tight text-white drop-shadow-lg">
+                                ${title.split(' ').map((word, i) => i === 0 ? word : `<span class="text-secondary">${word}</span>`).join(' ')}
+                            </h2>
+                            <p class="text-sm sm:text-lg text-white drop-shadow">${description}</p>
+                            ${link ? `<span class="mt-4 inline-block bg-getir-yellow text-primary font-bold py-2 px-4 rounded-lg pointer-events-auto">Kampanyayı Gör</span>` : ''}
+                        </div>
+                    </div>
                 `;
-                contentClass = 'w-full'; // Video yüksekliği responsive olarak ayarlanacak
+                contentClass = 'w-full relative'; // Video yüksekliği responsive olarak ayarlanacak
             } else {
                 // Eğer resim URL'si varsa, resmi kullan
                 contentHtml = `
@@ -353,20 +373,24 @@
                     <div class="absolute inset-0 flex items-center justify-start p-6 sm:p-12 bg-black/30">
                         <div class="text-left max-w-lg">
                             <h2 class="text-3xl sm:text-4xl font-extrabold mb-2 leading-tight text-white drop-shadow-lg">
-                                Getir Kıbrıs'la<br><span class="text-secondary">Binlerce Ürün Kapında.</span>
+                                ${title.split(' ').map((word, i) => i === 0 ? word : `<span class="text-secondary">${word}</span>`).join(' ')}
                             </h2>
-                            <p class="text-sm sm:text-lg text-white drop-shadow">Türkiye'deki ürünlere Kıbrıs'tan komisyonlu sipariş imkanı!</p>
+                            <p class="text-sm sm:text-lg text-white drop-shadow">${description}</p>
+                            ${link ? `<span class="mt-4 inline-block bg-getir-yellow text-primary font-bold py-2 px-4 rounded-lg">Kampanyayı Gör</span>` : ''}
                         </div>
                     </div>
                 `;
                 contentClass = 'banner-content relative'; // Görsel yüksekliğini korumak için
             }
 
+            // Slaytın tamamını link ile sarmala
             return `
                 <div class="carousel-slide relative" data-index="${index}">
-                    <div class="${contentClass}">
-                        ${contentHtml}
-                    </div>
+                    ${linkWrapperStart}
+                        <div class="${contentClass}">
+                            ${contentHtml}
+                        </div>
+                    ${linkWrapperEnd}
                 </div>
             `;
         }).join('');
@@ -740,11 +764,21 @@
 
             // 2. Bannerları Çek
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
-            allBanners = bannerSnap.docs.map(docSnap => docSnap.data());
+            // Banner verilerini çekerken link, title, description alanlarını da ekliyoruz
+            allBanners = bannerSnap.docs.map(docSnap => ({
+                ...docSnap.data(),
+                title: docSnap.data().title || 'Yeni Kampanya!',
+                description: docSnap.data().description || 'Fırsatları kaçırmayın.',
+                link: docSnap.data().link || null,
+            }));
 
             if (allBanners.length === 0) {
                 // Varsayılan bir resim/video yoksa, statik bir uyarı ekle
-                allBanners.push({ url: 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%235D3EBC\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23FFD300\' text-anchor=\'middle\'%3eBANNER+ALANI%3c/text%3e%3c/svg%3e' });
+                allBanners.push({ 
+                    url: 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%235D3EBC\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23FFD300\' text-anchor=\'middle\'%3eBANNER+ALANI%3c/text%3e%3c/svg%3e',
+                    title: 'Veri Tabanında Banner Yok',
+                    description: 'Admin panelinden görsel ve metin ekleyin.'
+                });
             }
 
             // 3. Kategorileri Çek
