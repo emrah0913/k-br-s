@@ -507,10 +507,11 @@
             allProducts = productSnap.docs.map(docSnap => {
                 const data = docSnap.data();
                 
-                // Güvenli Ad Alma Fonksiyonu: Eğer değer 'undefined' stringi ise veya boşsa geç
-                const safeName = (data.name && data.name !== 'undefined' && data.name) ||
-                                 (data.title && data.title !== 'undefined' && data.title) ||
-                                 (data.productName && data.productName !== 'undefined' && data.productName) || 
+                // GÜÇLENDİRİLMİŞ GÜVENLİK: Firebase görüntüsüne göre 'name' alanı var.
+                // Eğer bu alanda bile 'undefined' stringi varsa, diğer alanları kontrol et.
+                const safeName = (data.name && data.name.trim() && data.name.toLowerCase() !== 'undefined' ? data.name : null) ||
+                                 (data.title && data.title.trim() && data.title.toLowerCase() !== 'undefined' ? data.title : null) ||
+                                 (data.productName && data.productName.trim() && data.productName.toLowerCase() !== 'undefined' ? data.productName : null) || 
                                  'HATA: AD BULUNAMADI - ID:' + docSnap.id;
 
                 return {
