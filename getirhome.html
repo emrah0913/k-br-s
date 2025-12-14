@@ -512,6 +512,7 @@
                 const name = data.name || 'İsimsiz Ürün';
 
                 // 2. Image Standardizasyonu: data.image yoksa data.extraImages?.image kullan
+                // NOT: extraImages'in bir Map yerine Array olarak geldiği varsayılmıştır (ekran görüntünüzdeki yapıya göre Map de olabilir).
                 const image = data.image || data.extraImages?.image || 'https://placehold.co/300x200';
                 
                 // Normalleştirilmiş ürünü döndür
@@ -575,12 +576,12 @@
         const itemRef = doc(db, "users", user.uid, "cart", itemDocId);
 
         try{
-            // NOTE: productName, loadProducts'ta güvenli bir string olarak ayarlandı
             const productName = String(product.name); 
             
             await setDoc(itemRef, {
                 userId: user.uid,
-                productName: productName, // Sepet kaydına doğru adı yaz
+                productName: productName, // İç tutarlılık için tutuldu
+                productLink: productName, // CRITICAL FIX: Sepet sayfasının beklediği link ve metin alanı
                 productPrice: itemPrice, 
                 variant: selectedVariant ? selectedVariant.name : 'Standart', 
                 baseProductId: productId, 
