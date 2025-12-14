@@ -55,8 +55,15 @@
 
 <header class="sticky top-0 w-full bg-white shadow-md z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <!-- Logo/Anasayfa Bağlantısı (Hash Routing) -->
-        <a href="#" onclick="navigate('/')" class="text-2xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Kıbrıs</a>
+        <!-- Yeni Logo/Anasayfa Bağlantıları Grubu -->
+        <div class="flex items-center space-x-4">
+            <!-- Getir Home (Mevcut Uygulama/Dosya Anasayfası) -->
+            <a href="#" onclick="navigate('/')" class="text-2xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Home</a>
+            
+            <!-- Getir Kıbrıs (index.html dosyasına yönlendirir) -->
+            <a href="index.html" class="text-2xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-4">Getir Kıbrıs</a>
+        </div>
+        
         <div class="flex items-center gap-4">
             <a href="/sepet.html" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors">
                 <i class="ri-shopping-cart-2-fill"></i> Sepetim
