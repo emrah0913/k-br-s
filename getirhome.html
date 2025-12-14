@@ -266,17 +266,19 @@
             };
             card.className = "product-card bg-white p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
             
-            // NOTE: p.name artık loadProducts fonksiyonunda güvenli bir şekilde oluşturuldu
+            // NOTE: p.name'i güvenli kullanıyoruz (p.name || 'Ürün Adı Yok')
+            const productNameDisplay = p.name || 'Ürün Adı Yok';
+
             card.innerHTML = `
                 <div class="h-40 overflow-hidden mb-4 rounded-lg bg-gray-100">
                     <img src="${p.image || 'https://placehold.co/300x200'}" 
-                        alt="${p.name}" 
+                        alt="${productNameDisplay}" 
                         class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]"
                         onerror="this.onerror=null; this.src='https://placehold.co/300x200/5D3EBC/FFFFFF?text=Gorsel+Yok';"
                     />
                 </div>
                 <span class="text-xs text-primary font-semibold uppercase mb-1">${p.category || 'GENEL'}</span>
-                <h3 class="font-bold text-base text-gray-800 truncate mb-1">${p.name}</h3>
+                <h3 class="font-bold text-base text-gray-800 truncate mb-1">${productNameDisplay}</h3>
                 <p class="text-sm text-gray-500 mb-3 line-clamp-2">${p.description || "Açıklama mevcut değil."}</p>
                 
                 <div class="flex justify-between items-center mt-auto pt-3 border-t">
@@ -358,6 +360,8 @@
             appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><button onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</button></div></div>`;
             return;
         }
+        
+        const productNameDisplay = product.name || 'Ürün Adı Yok'; // Güvenli kullanım
 
         const initialPrice = parseFloat(product.price) || 0;
         let currentPrice = initialPrice;
@@ -366,7 +370,7 @@
 
         const imagesHtml = allImages.map((imgSrc, index) => `
             <div class="w-full h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100">
-                <img src="${imgSrc}" alt="${product.name} Görsel ${index + 1}" class="w-full h-full object-cover"
+                <img src="${imgSrc}" alt="${productNameDisplay} Görsel ${index + 1}" class="w-full h-full object-cover"
                      onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';"
                 >
             </div>
@@ -377,7 +381,7 @@
             <div class="mb-8 mt-10">
                 <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ürün Tanıtım Videosu</h3>
                 <div class="video-container">
-                    <iframe src="${videoEmbedUrl}" title="${product.name} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe>
+                    <iframe src="${videoEmbedUrl}" title="${productNameDisplay} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe>
                 </div>
             </div>
         ` : '';
@@ -409,7 +413,7 @@
                     <div class="flex flex-col lg:flex-row gap-10">
                         <!-- Görsel Alanı (Gallery) -->
                         <div class="lg:w-1/2">
-                            <h2 class="text-4xl font-extrabold text-gray-800 mb-6">${product.name}</h2>
+                            <h2 class="text-4xl font-extrabold text-gray-800 mb-6">${productNameDisplay}</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 ${imagesHtml}
                             </div>
@@ -417,7 +421,7 @@
 
                         <!-- Detay Alanı -->
                         <div class="lg:w-1/2">
-                            <span class="text-sm text-primary font-bold uppercase">${product.category}</span>
+                            <span class="text-sm text-primary font-bold uppercase">${product.category || 'GENEL'}</span>
                             <p class="text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
                             
                             <!-- DİNAMİK FİYAT GÖSTERİMİ -->
@@ -500,16 +504,12 @@
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
-            // KRİTİK DÜZELTME: Veriyi çekerken standart bir 'name' alanı oluşturuyoruz.
-            allProducts = productSnap.docs.map(docSnap => {
-                const data = docSnap.data();
-                return {
-                    id: docSnap.id,
-                    // Standart 'name' alanını oluştur: name -> title -> productName sırasıyla kontrol et
-                    name: data.name || data.title || data.productName || 'İsimsiz Ürün',
-                    ...data
-                };
-            }).filter(p => p.active); 
+            // KRİTİK DÜZELTME: Sizin ilk kodunuzdaki gibi basitçe tüm veriyi çekiyoruz.
+            // Bu, Firestore'daki alan adı 'name' ise sorunu çözecektir.
+            allProducts = productSnap.docs.map(docSnap => ({ 
+                id: docSnap.id, 
+                ...docSnap.data() 
+            })).filter(p => p.active); 
 
             // 2. Bannerları Çek
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
@@ -540,7 +540,6 @@
         
         const btn = event.currentTarget;
         const productId = btn.dataset.id;
-        // NOTE: Ürün artık loadProducts'ta güvenli 'name' ile çekiliyor.
         const product = allProducts.find(p => p.id === productId); 
 
         if (!product) { showMsg("Ürün bulunamadı.", true); return; }
@@ -556,10 +555,12 @@
         const itemRef = doc(db, "users", user.uid, "cart", itemDocId);
 
         try{
-            // NOTE: product.name kullanımı artık güvenlidir.
+            // NOTE: product.name'in undefined olma ihtimalini kontrol ediyoruz
+            const productName = String(product.name || product.title || 'Bilinmeyen Ürün'); // Yedek kontrol eklendi
+            
             await setDoc(itemRef, {
                 userId: user.uid,
-                productName: product.name,
+                productName: productName, // Sepet kaydına doğru adı yaz
                 productPrice: itemPrice, 
                 variant: selectedVariant ? selectedVariant.name : 'Standart', 
                 baseProductId: productId, 
@@ -570,8 +571,6 @@
             }, { merge: true });
 
             // **MESAJ GÜNCELLEMESİ**
-            const productName = String(product.name || 'Bilinmeyen Ürün');
-            
             let variantText = '';
             if (selectedVariant && selectedVariant.name && String(selectedVariant.name) !== 'Standart') {
                 variantText = ` (${String(selectedVariant.name)})`;
