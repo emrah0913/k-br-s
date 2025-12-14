@@ -266,7 +266,7 @@
             };
             card.className = "product-card bg-white p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
             
-            // NOTE: p.name'i güvenli kullanıyoruz (p.name || 'Ürün Adı Yok')
+            // NOTE: Artık 'name' alanının güvenli bir şekilde okunacağını varsayıyoruz (loadProducts'ta standartlaştırdık)
             const productNameDisplay = p.name || 'Ürün Adı Yok';
 
             card.innerHTML = `
@@ -360,8 +360,8 @@
             appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><button onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</button></div></div>`;
             return;
         }
-        
-        const productNameDisplay = product.name || 'Ürün Adı Yok'; // Güvenli kullanım
+
+        const productNameDisplay = product.name || 'Ürün Adı Yok';
 
         const initialPrice = parseFloat(product.price) || 0;
         let currentPrice = initialPrice;
@@ -504,12 +504,16 @@
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
-            // KRİTİK DÜZELTME: Sizin ilk kodunuzdaki gibi basitçe tüm veriyi çekiyoruz.
-            // Bu, Firestore'daki alan adı 'name' ise sorunu çözecektir.
-            allProducts = productSnap.docs.map(docSnap => ({ 
-                id: docSnap.id, 
-                ...docSnap.data() 
-            })).filter(p => p.active); 
+            // KRİTİK: Veriyi çekerken standart bir 'name' alanı oluşturuyoruz.
+            allProducts = productSnap.docs.map(docSnap => {
+                const data = docSnap.data();
+                return {
+                    id: docSnap.id,
+                    // Standart 'name' alanını oluştur: name -> title -> productName sırasıyla kontrol et
+                    name: String(data.name || data.title || data.productName || 'HATA: AD BULUNAMADI - ID:' + docSnap.id),
+                    ...data
+                };
+            }).filter(p => p.active); 
 
             // 2. Bannerları Çek
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
@@ -525,7 +529,6 @@
 
             productsLoaded = true;
         } catch(e) {
-            // Veri çekme hatası (Büyük ihtimalle güvenlik kuralı sorunu veya Firebase bağlantı hatası)
             showMsg("Veriler yüklenirken kritik hata oluştu: " + e.message, true);
         } finally {
             renderPage(); 
@@ -535,7 +538,6 @@
     // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) ---
     async function handleAddToCart(event, selectedVariant = null, calculatedPrice = null){
         const user = auth.currentUser;
-        // KRİTİK: Kullanıcı giriş yapmamışsa, sepet işlemi için uyarı ver ve durdur.
         if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
         
         const btn = event.currentTarget;
@@ -549,14 +551,13 @@
 
         const itemPrice = calculatedPrice !== null ? calculatedPrice : (parseFloat(product.price) || 0);
         
-        // Sepet öğesi ID'sini benzersiz yapmak için varyant adını ekle
         const variantSuffix = selectedVariant && selectedVariant.name ? `-${String(selectedVariant.name).replace(/\s/g, '_')}` : '';
         const itemDocId = productId + variantSuffix;
         const itemRef = doc(db, "users", user.uid, "cart", itemDocId);
 
         try{
-            // NOTE: product.name'in undefined olma ihtimalini kontrol ediyoruz
-            const productName = String(product.name || product.title || 'Bilinmeyen Ürün'); // Yedek kontrol eklendi
+            // NOTE: productName, loadProducts'ta güvenli bir string olarak ayarlandı
+            const productName = String(product.name); 
             
             await setDoc(itemRef, {
                 userId: user.uid,
@@ -570,13 +571,12 @@
                 addedAt: new Date()
             }, { merge: true });
 
-            // **MESAJ GÜNCELLEMESİ**
+            // **MESAJ GÜNCELLEMESİ (undefined hatası önlendi)**
             let variantText = '';
             if (selectedVariant && selectedVariant.name && String(selectedVariant.name) !== 'Standart') {
                 variantText = ` (${String(selectedVariant.name)})`;
             }
 
-            console.log(`[SEPET LOG] Ürün Adı: ${productName}, Varyant: ${variantText || 'Yok'}`);
             showMsg(`"${productName}"${variantText} sepete eklendi!`);
             // **MESAJ GÜNCELLEMESİ SONU**
 
