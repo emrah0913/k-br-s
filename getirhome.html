@@ -503,20 +503,19 @@
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
-            // KRİTİK: Veriyi çekerken standart bir 'name' alanı oluşturuyoruz.
+            // KRİTİK DÜZELTME: Sadece 'name' alanına güveniyoruz ve güçlü bir fallback ekliyoruz.
             allProducts = productSnap.docs.map(docSnap => {
                 const data = docSnap.data();
                 
-                // GÜÇLENDİRİLMİŞ GÜVENLİK: Firebase görüntüsüne göre 'name' alanı var.
-                // Eğer bu alanda bile 'undefined' stringi varsa, diğer alanları kontrol et.
-                const safeName = (data.name && data.name.trim() && data.name.toLowerCase() !== 'undefined' ? data.name : null) ||
-                                 (data.title && data.title.trim() && data.title.toLowerCase() !== 'undefined' ? data.title : null) ||
-                                 (data.productName && data.productName.trim() && data.productName.toLowerCase() !== 'undefined' ? data.productName : null) || 
-                                 'HATA: AD BULUNAMADI - ID:' + docSnap.id;
+                // GÜVENLİK: Eğer data.name boşsa veya "undefined" stringi ise HATA mesajı kullan.
+                const rawName = data.name;
+                const safeName = (rawName && String(rawName).trim() && String(rawName).toLowerCase() !== 'undefined') 
+                                 ? rawName 
+                                 : (data.title || data.productName || 'HATA: AD BOŞ - ID:' + docSnap.id);
 
                 return {
                     id: docSnap.id,
-                    name: String(safeName),
+                    name: String(safeName), // Standart 'name' alanını oluştur
                     ...data
                 };
             }).filter(p => p.active); 
@@ -577,7 +576,7 @@
                 addedAt: new Date()
             }, { merge: true });
 
-            // **MESAJ GÜNCELLEMESİ (undefined hatası önlendi)**
+            // **MESAJ GÜNCELLEMESİ**
             let variantText = '';
             if (selectedVariant && selectedVariant.name && String(selectedVariant.name) !== 'Standart') {
                 variantText = ` (${String(selectedVariant.name)})`;
