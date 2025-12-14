@@ -33,7 +33,8 @@
     /* Product card için hover efekti sadece anasayfada görünmeli */
     #products-grid .product-card { transition: all 0.2s; }
     #products-grid .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05); }
-    /* Video embed responsive */
+    
+    /* Video embed responsive (16:9 oranını korur) */
     .video-container {
         position: relative;
         width: 100%;
@@ -48,19 +49,41 @@
         width: 100%;
         height: 100%;
     }
+    
     /* --- CAROUSEL STYLES --- */
     .carousel-container {
         position: relative;
         overflow: hidden;
+        /* Yüksekliği otomatik ayarla */
+        height: auto; 
     }
     .carousel-wrapper {
         display: flex;
         transition: transform 0.5s ease-in-out;
         width: 100%;
+        height: auto;
     }
     .carousel-slide {
-        flex: 0 0 100%; /* Her slaytın tam genişliği almasını sağlar */
+        flex: 0 0 100%; 
         min-width: 100%;
+        height: auto; 
+    }
+    .banner-content {
+        /* Yeni: Artık min/max yükseklik kısıtlaması yok, içerik boyutuna göre ayarlanacak. */
+        height: auto;
+        min-height: 200px; /* Çok kısa olmaması için minimum yükseklik kalsın */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #5D3EBC; /* Görsel yüklenemezse arka plan rengi */
+    }
+
+    /* Görselin kırpılmasını önler, kenarlarda boşluk kalmasına izin verir. */
+    .banner-image-contain {
+        width: 100%;
+        height: auto;
+        max-height: 480px; /* Maksimum yükseklik sınırı */
+        object-fit: contain; /* KIRPILMAYI ENGELLEYEN KRİTİK AYAR */
     }
 </style>
 
@@ -161,15 +184,18 @@
         setTimeout(()=>msgDiv.classList.add("hidden"),3000);
     }
 
+    // Youtube URL'lerini embed formatına çevirir
     function getEmbedUrl(url) {
         if (!url) return null;
+        // Basit bir regex ile YouTube video ID'sini bulur (watch?v= veya youtu.be/ formatları için)
         const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
         const match = url.match(ytRegex);
         if (match) {
             const videoId = match[1] || match[2];
-            return `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0`;
+            // autoplay=1 ekliyoruz ki video otomatik başlasın
+            return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&mute=1`;
         }
-        return url;
+        return null; // Başka bir URL formatıysa null döndür
     }
 
     // --- YÖNLENDİRME (HASH ROUTING) ---
@@ -284,7 +310,9 @@
         if (autoSlideInterval) clearInterval(autoSlideInterval);
         
         // Otomatik kaydırma başlat (5 saniyede bir)
-        autoSlideInterval = setInterval(() => changeSlide(1), 5000); 
+        if (totalSlides > 1) {
+            autoSlideInterval = setInterval(() => changeSlide(1), 5000); 
+        }
 
         showSlide(0); // İlk slaytı göster
     }
@@ -299,13 +327,26 @@
 
         // Bütün Banner'ları slayt olarak hazırla
         const slidesHtml = allBanners.map((banner, index) => {
-            const imageUrl = banner && banner.url ? banner.url : 'https://placehold.co/1200x400/5D3EBC/FFFFFF?text=BANNER';
+            const imageUrl = banner.url || null;
+            const videoEmbedUrl = getEmbedUrl(imageUrl);
             
-            return `
-                <div class="carousel-slide h-full relative" data-index="${index}">
-                    <img src="${imageUrl}" 
+            let contentHtml = '';
+            let contentClass = 'h-full';
+
+            if (videoEmbedUrl) {
+                // Eğer video URL'si varsa, video container kullan
+                contentHtml = `
+                    <div class="video-container">
+                        <iframe src="${videoEmbedUrl}" title="Banner Video ${index + 1}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+                    </div>
+                `;
+                contentClass = 'w-full'; // Video yüksekliği responsive olarak ayarlanacak
+            } else {
+                // Eğer resim URL'si varsa, resmi kullan
+                contentHtml = `
+                    <img src="${imageUrl || 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23a78bfa\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%23fff\' text-anchor=\'middle\'%3eBANNER%2bYOK%3c/text%3e%3c/svg%3e'}" 
                         alt="Promosyon Banner ${index + 1}" 
-                        class="w-full h-full object-cover" 
+                        class="banner-image-contain" 
                         onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23e5e7eb\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%239ca3af\' text-anchor=\'middle\'%3eGörsel+Yüklenemedi%3c/text%3e%3c/svg%3e';"
                     />
                     <!-- Marka Metinleri (Görselin üzerine bindirilmiş) -->
@@ -317,14 +358,23 @@
                             <p class="text-sm sm:text-lg text-white drop-shadow">Türkiye'deki ürünlere Kıbrıs'tan komisyonlu sipariş imkanı!</p>
                         </div>
                     </div>
+                `;
+                contentClass = 'banner-content relative'; // Görsel yüksekliğini korumak için
+            }
+
+            return `
+                <div class="carousel-slide relative" data-index="${index}">
+                    <div class="${contentClass}">
+                        ${contentHtml}
+                    </div>
                 </div>
             `;
         }).join('');
 
         // Carousel Ana Yapısı
         heroSection.innerHTML = `
-            <div id="banner-carousel" class="max-w-7xl mx-auto px-0 sm:px-4 carousel-container h-64 sm:h-96">
-                <div id="carousel-wrapper" class="carousel-wrapper h-full">
+            <div id="banner-carousel" class="max-w-7xl mx-auto px-0 sm:px-4 carousel-container">
+                <div id="carousel-wrapper" class="carousel-wrapper">
                     ${slidesHtml}
                 </div>
                 
@@ -693,8 +743,8 @@
             allBanners = bannerSnap.docs.map(docSnap => docSnap.data());
 
             if (allBanners.length === 0) {
-                // Banner için placeholder kullanmaya devam edilebilir, bu ürün görseli değildir.
-                allBanners.push({ url: 'https://placehold.co/400x300/5D3EBC/FFFFFF?text=BANNER' });
+                // Varsayılan bir resim/video yoksa, statik bir uyarı ekle
+                allBanners.push({ url: 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%235D3EBC\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23FFD300\' text-anchor=\'middle\'%3eBANNER+ALANI%3c/text%3e%3c/svg%3e' });
             }
 
             // 3. Kategorileri Çek
