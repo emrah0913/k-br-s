@@ -151,6 +151,9 @@
         renderPage(); 
     }
 
+    // KRİTİK DÜZELTME: `Maps` fonksiyonunu global kapsama açıyoruz.
+    window.navigate = navigate;
+
     window.onhashchange = renderPage; 
 
     function getRouteParams() {
@@ -262,13 +265,20 @@
             // NOTE: p.name artık güvenlidir
             const productNameDisplay = p.name || 'Ürün Adı Yok';
 
+            // GÖRSEL KONTROLÜ: Eğer p.image boşsa, harici bir URL yüklemeyen iç DIV kullan
+            const imageHtml = p.image ?
+                `<img src="${p.image}" 
+                    alt="${productNameDisplay}" 
+                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]"
+                    onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23e5e7eb\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%239ca3af\' text-anchor=\'middle\'%3eGörsel+Yüklenemedi%3c/text%3e%3c/svg%3e';"
+                    />`
+                :
+                `<div class="w-full h-full flex items-center justify-center text-gray-500 bg-gray-200 text-sm font-semibold">GÖRSEL YOK</div>`;
+
+
             card.innerHTML = `
                 <div class="h-40 overflow-hidden mb-4 rounded-lg bg-gray-100">
-                    <img src="${p.image || 'https://placehold.co/300x200'}" 
-                        alt="${productNameDisplay}" 
-                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]"
-                        onerror="this.onerror=null; this.src='https://placehold.co/300x200/5D3EBC/FFFFFF?text=Gorsel+Yok';"
-                    />
+                    ${imageHtml}
                 </div>
                 <span class="text-xs text-primary font-semibold uppercase mb-1">${p.category || 'GENEL'}</span>
                 <h3 class="font-bold text-base text-gray-800 truncate mb-1">${productNameDisplay}</h3>
@@ -350,7 +360,7 @@
         const product = allProducts.find(p => p.id === productId);
 
         if (!product) {
-            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><button onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</button></div></div>`;
+            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><a href="#" onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</a></div></div>`;
             return;
         }
 
@@ -359,15 +369,30 @@
         const initialPrice = parseFloat(product.price) || 0;
         let currentPrice = initialPrice;
 
-        const allImages = [product.image, ...(Array.isArray(product.extraImages) ? product.extraImages : [])].filter(Boolean);
+        // SADECE GÖRSEL URL'LERİNİ AL (null olanları filtrele)
+        const validImages = [product.image, ...(Array.isArray(product.extraImages) ? product.extraImages : [])].filter(img => img && typeof img === 'string');
+        
+        // GÖRSEL HTML'İNİ OLUŞTUR
+        let imagesHtml = '';
+        if (validImages.length > 0) {
+            imagesHtml = validImages.map((imgSrc, index) => `
+                <div class="w-full h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100">
+                    <img src="${imgSrc}" alt="${productNameDisplay} Görsel ${index + 1}" class="w-full h-full object-cover"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23e5e7eb\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%239ca3af\' text-anchor=\'middle\'%3eGörsel+Yüklenemedi%3c/text%3e%3c/svg%3e';"
+                    >
+                </div>
+            `).join('');
+        } else {
+            imagesHtml = `
+                <div class="w-full h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100 bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
+                    <i class="ri-image-line ri-2x mr-2"></i> Ürün Görseli Yok
+                </div>
+            `;
+        }
+        
+        // GÖRSEL ALANINI DÜZENLE
+        const imageGalleryHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${imagesHtml}</div>`;
 
-        const imagesHtml = allImages.map((imgSrc, index) => `
-            <div class="w-full h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100">
-                <img src="${imgSrc}" alt="${productNameDisplay} Görsel ${index + 1}" class="w-full h-full object-cover"
-                     onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';"
-                >
-            </div>
-        `).join('');
 
         const videoEmbedUrl = getEmbedUrl(product.video);
         const videoHtml = videoEmbedUrl ? `
@@ -398,18 +423,17 @@
 
         appContainer.innerHTML = `
             <div class="max-w-7xl mx-auto p-6">
-                <button onclick="navigate('/')" class="text-primary hover:text-primary/80 font-semibold mb-6 flex items-center gap-2 transition-colors">
+                <!-- Buradaki butonu A etiketi ile değiştirdim ve navigate('/') ile Anasayfaya dönüşü garantiledim -->
+                <a href="#" onclick="navigate('/')" class="text-primary hover:text-primary/80 font-semibold mb-6 flex items-center gap-2 transition-colors">
                     <i class="ri-arrow-left-line"></i> Tüm Ürünlere Geri Dön
-                </button>
+                </a>
                 
                 <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl">
                     <div class="flex flex-col lg:flex-row gap-10">
                         <!-- Görsel Alanı (Gallery) -->
                         <div class="lg:w-1/2">
                             <h2 class="text-4xl font-extrabold text-gray-800 mb-6">${productNameDisplay}</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                ${imagesHtml}
-                            </div>
+                            ${imageGalleryHtml}
                         </div>
 
                         <!-- Detay Alanı -->
@@ -504,9 +528,8 @@
                 // 1. Name Standardizasyonu: Eğer name boşsa 'İsimsiz Ürün' kullan
                 const name = data.name || 'İsimsiz Ürün';
 
-                // 2. Image Standardizasyonu: data.image yoksa data.extraImages?.image kullan
-                // NOT: extraImages'in bir Map yerine Array olarak geldiği varsayılmıştır (ekran görüntünüzdeki yapıya göre Map de olabilir).
-                const image = data.image || data.extraImages?.image || 'https://placehold.co/300x200';
+                // 2. Image Standardizasyonu: data.image yoksa data.extraImages?.image kullan. Harici fallback yok!
+                const image = data.image || data.extraImages?.image || null;
                 
                 // Normalleştirilmiş ürünü döndür
                 return {
@@ -515,7 +538,7 @@
                     price: data.price || 0,
                     category: data.category || 'genel',
                     description: data.description || '',
-                    image: image, // Standart görsel alanı
+                    image: image, // Standart görsel alanı (null olabilir)
                     extraImages: data.extraImages || [],
                     video: data.video || '',
                     variants: data.variants || [],
@@ -533,6 +556,7 @@
             allBanners = bannerSnap.docs.map(docSnap => docSnap.data());
 
             if (allBanners.length === 0) {
+                // Banner için placeholder kullanmaya devam edilebilir, bu ürün görseli değildir.
                 allBanners.push({ url: 'https://placehold.co/400x300/5D3EBC/FFFFFF?text=BANNER' });
             }
 
