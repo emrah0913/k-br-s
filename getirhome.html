@@ -266,6 +266,7 @@
             };
             card.className = "product-card bg-white p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
             
+            // NOTE: p.name artık loadProducts fonksiyonunda güvenli bir şekilde oluşturuldu
             card.innerHTML = `
                 <div class="h-40 overflow-hidden mb-4 rounded-lg bg-gray-100">
                     <img src="${p.image || 'https://placehold.co/300x200'}" 
@@ -498,7 +499,17 @@
         try {
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
-            allProducts = productSnap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() })).filter(p => p.active); 
+            
+            // KRİTİK DÜZELTME: Veriyi çekerken standart bir 'name' alanı oluşturuyoruz.
+            allProducts = productSnap.docs.map(docSnap => {
+                const data = docSnap.data();
+                return {
+                    id: docSnap.id,
+                    // Standart 'name' alanını oluştur: name -> title -> productName sırasıyla kontrol et
+                    name: data.name || data.title || data.productName || 'İsimsiz Ürün',
+                    ...data
+                };
+            }).filter(p => p.active); 
 
             // 2. Bannerları Çek
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
@@ -529,7 +540,8 @@
         
         const btn = event.currentTarget;
         const productId = btn.dataset.id;
-        const product = allProducts.find(p => p.id === productId);
+        // NOTE: Ürün artık loadProducts'ta güvenli 'name' ile çekiliyor.
+        const product = allProducts.find(p => p.id === productId); 
 
         if (!product) { showMsg("Ürün bulunamadı.", true); return; }
 
@@ -539,11 +551,12 @@
         const itemPrice = calculatedPrice !== null ? calculatedPrice : (parseFloat(product.price) || 0);
         
         // Sepet öğesi ID'sini benzersiz yapmak için varyant adını ekle
-        const variantSuffix = selectedVariant && selectedVariant.name ? `-${selectedVariant.name.replace(/\s/g, '_')}` : '';
+        const variantSuffix = selectedVariant && selectedVariant.name ? `-${String(selectedVariant.name).replace(/\s/g, '_')}` : '';
         const itemDocId = productId + variantSuffix;
         const itemRef = doc(db, "users", user.uid, "cart", itemDocId);
 
         try{
+            // NOTE: product.name kullanımı artık güvenlidir.
             await setDoc(itemRef, {
                 userId: user.uid,
                 productName: product.name,
@@ -556,11 +569,9 @@
                 addedAt: new Date()
             }, { merge: true });
 
-            // **HATA DÜZELTMESİ VE KONTROL**
-            // 1. Ürün adını al, boşsa 'Bilinmeyen Ürün' kullan
+            // **MESAJ GÜNCELLEMESİ**
             const productName = String(product.name || 'Bilinmeyen Ürün');
             
-            // 2. Varyant adını al ve 'Standart' değilse göster
             let variantText = '';
             if (selectedVariant && selectedVariant.name && String(selectedVariant.name) !== 'Standart') {
                 variantText = ` (${String(selectedVariant.name)})`;
@@ -568,7 +579,7 @@
 
             console.log(`[SEPET LOG] Ürün Adı: ${productName}, Varyant: ${variantText || 'Yok'}`);
             showMsg(`"${productName}"${variantText} sepete eklendi!`);
-            // **HATA DÜZELTMESİ SONU**
+            // **MESAJ GÜNCELLEMESİ SONU**
 
         }catch(e){ 
             const errorMessage = e && e.message ? e.message : 'Bilinmeyen Hata Kodu';
