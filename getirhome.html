@@ -556,18 +556,21 @@
                 addedAt: new Date()
             }, { merge: true });
 
-            // **HATA DÜZELTMESİ: Ürün ve Varyant adlarını güvenli string'e dönüştür**
-            const productName = product.name ? String(product.name) : 'Bilinmeyen Ürün';
-            const variantName = selectedVariant ? (selectedVariant.name ? String(selectedVariant.name) : 'Varyant') : 'Standart';
+            // **HATA DÜZELTMESİ VE KONTROL**
+            // 1. Ürün adını al, boşsa 'Bilinmeyen Ürün' kullan
+            const productName = String(product.name || 'Bilinmeyen Ürün');
             
-            // Eğer varyant adı Standart ise gösterme
-            const variantText = variantName && variantName !== 'Standart' ? ` (${variantName})` : '';
+            // 2. Varyant adını al ve 'Standart' değilse göster
+            let variantText = '';
+            if (selectedVariant && selectedVariant.name && String(selectedVariant.name) !== 'Standart') {
+                variantText = ` (${String(selectedVariant.name)})`;
+            }
 
+            console.log(`[SEPET LOG] Ürün Adı: ${productName}, Varyant: ${variantText || 'Yok'}`);
             showMsg(`"${productName}"${variantText} sepete eklendi!`);
             // **HATA DÜZELTMESİ SONU**
 
         }catch(e){ 
-            // Hata mesajı undefined ise bile düzgün bir metin göster
             const errorMessage = e && e.message ? e.message : 'Bilinmeyen Hata Kodu';
             showMsg("Sepete eklenirken hata: "+ errorMessage, true);
         } finally {
