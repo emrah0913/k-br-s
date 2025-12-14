@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title id="page-title">Getir Home - Anasayfa</title>
+<title id="page-title">Getir Kıbrıs - Anasayfa</title>
 <meta name="description" content="Kıbrıs'ın en büyük online alışveriş platformu. Binlerce ürünü kapına teslim al.">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -48,6 +48,20 @@
         width: 100%;
         height: 100%;
     }
+    /* --- CAROUSEL STYLES --- */
+    .carousel-container {
+        position: relative;
+        overflow: hidden;
+    }
+    .carousel-wrapper {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+        width: 100%;
+    }
+    .carousel-slide {
+        flex: 0 0 100%; /* Her slaytın tam genişliği almasını sağlar */
+        min-width: 100%;
+    }
 </style>
 
 </head>
@@ -78,9 +92,9 @@
     </div>
 </header>
 
-<!-- HERO SECTION - Dinamik Olarak Buraya Yüklenecek -->
-<section id="hero-section" class="bg-primary/90 text-white pt-10 pb-16">
-    <!-- İçerik JS tarafından yüklenecek -->
+<!-- HERO SECTION - Dinamik Olarak Buraya Yüklenecek (CAROUSEL) -->
+<section id="hero-section" class="bg-primary/90 text-white">
+    <!-- İçerik JS tarafından carousel olarak yüklenecek -->
 </section>
 
 <!-- ANA İÇERİK BÖLÜMÜ - Anasayfa veya Detay Sayfası burada yüklenecek -->
@@ -132,7 +146,12 @@
     let allBanners = []; 
     let productsLoaded = false;
     let currentUserId = null;
-
+    
+    // --- CAROUSEL STATE ---
+    let currentSlide = 0;
+    let carouselWrapper;
+    let totalSlides;
+    let autoSlideInterval;
 
     // --- YARDIMCI FONKSİYONLAR ---
     function showMsg(text, isError=false){
@@ -181,6 +200,9 @@
     }
 
     function renderPage() {
+        // Otomatik kaydırmayı durdur
+        if (autoSlideInterval) clearInterval(autoSlideInterval);
+        
         const { view, id } = getRouteParams();
         
         heroSection.style.display = view === 'home' ? 'block' : 'none';
@@ -203,27 +225,128 @@
         }
     }
 
-    // --- DİNAMİK BANNER RENDER ---
-    function renderHeroSection() {
-        const randomBanner = allBanners[Math.floor(Math.random() * allBanners.length)];
-        const imageUrl = randomBanner && randomBanner.url ? randomBanner.url : 'https://picsum.photos/400/300?random=1';
+    // --- CAROUSEL MANTIĞI ---
 
-        heroSection.innerHTML = `
-            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-                <div class="text-center md:text-left mb-8 md:mb-0">
-                    <!-- RESPONSIVE BAŞLIK -->
-                    <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-3 leading-tight">
-                        Getir Home ile<br><span class="text-secondary">Binlerce Ürün Kapında.</span>
-                    </h2>
-                    <p class="text-base sm:text-lg opacity-90 mb-6">Gümrük Nakliye Dahil Kapınıza Teslim Fiyatlar!</p>
-                    <!-- Uygulama mağazası bağlantıları kaldırıldı -->
-                </div>
-                <!-- RESPONSIVE GÖRSEL -->
-                <img src="${imageUrl}" alt="Getir Kurye" class="w-2/3 sm:w-1/2 md:w-96 h-auto object-cover rounded-xl shadow-2xl" onerror="this.onerror=null; this.src='https://placehold.co/400x300/5D3EBC/FFFFFF?text=BANNER';">
-            </div>
-        `;
+    function showSlide(index) {
+        if (totalSlides === 0) return;
+        
+        if (index >= totalSlides) {
+            currentSlide = 0;
+        } else if (index < 0) {
+            currentSlide = totalSlides - 1;
+        } else {
+            currentSlide = index;
+        }
+
+        const offset = -currentSlide * 100;
+        if (carouselWrapper) {
+            carouselWrapper.style.transform = `translateX(${offset}%)`;
+        }
+
+        // Noktaları (dots) güncelle
+        document.querySelectorAll('.carousel-dot').forEach(dot => {
+            dot.classList.remove('opacity-100');
+            dot.classList.add('opacity-50');
+        });
+        const activeDot = document.querySelector(`.carousel-dot[data-slide="${currentSlide}"]`);
+        if (activeDot) {
+            activeDot.classList.remove('opacity-50');
+            activeDot.classList.add('opacity-100');
+        }
     }
 
+    function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+    }
+    
+    function initCarousel() {
+        carouselWrapper = document.getElementById('carousel-wrapper');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const dotsContainer = document.getElementById('carousel-dots');
+        totalSlides = allBanners.length;
+
+        if (!carouselWrapper || totalSlides === 0) return;
+
+        prevBtn.addEventListener('click', () => changeSlide(-1));
+        nextBtn.addEventListener('click', () => changeSlide(1));
+        
+        if (dotsContainer) {
+            dotsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('carousel-dot')) {
+                    const index = parseInt(e.target.dataset.slide);
+                    showSlide(index);
+                }
+            });
+        }
+        
+        // Önceki interval'ı temizle
+        if (autoSlideInterval) clearInterval(autoSlideInterval);
+        
+        // Otomatik kaydırma başlat (5 saniyede bir)
+        autoSlideInterval = setInterval(() => changeSlide(1), 5000); 
+
+        showSlide(0); // İlk slaytı göster
+    }
+
+
+    // --- DİNAMİK BANNER RENDER (CAROUSEL) ---
+    function renderHeroSection() {
+        if (allBanners.length === 0) {
+            heroSection.innerHTML = ''; 
+            return;
+        }
+
+        // Bütün Banner'ları slayt olarak hazırla
+        const slidesHtml = allBanners.map((banner, index) => {
+            const imageUrl = banner && banner.url ? banner.url : 'https://placehold.co/1200x400/5D3EBC/FFFFFF?text=BANNER';
+            
+            return `
+                <div class="carousel-slide h-full relative" data-index="${index}">
+                    <img src="${imageUrl}" 
+                        alt="Promosyon Banner ${index + 1}" 
+                        class="w-full h-full object-cover" 
+                        onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23e5e7eb\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%239ca3af\' text-anchor=\'middle\'%3eGörsel+Yüklenemedi%3c/text%3e%3c/svg%3e';"
+                    />
+                    <!-- Marka Metinleri (Görselin üzerine bindirilmiş) -->
+                    <div class="absolute inset-0 flex items-center justify-start p-6 sm:p-12 bg-black/30">
+                        <div class="text-left max-w-lg">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold mb-2 leading-tight text-white drop-shadow-lg">
+                                Getir Kıbrıs'la<br><span class="text-secondary">Binlerce Ürün Kapında.</span>
+                            </h2>
+                            <p class="text-sm sm:text-lg text-white drop-shadow">Türkiye'deki ürünlere Kıbrıs'tan komisyonlu sipariş imkanı!</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Carousel Ana Yapısı
+        heroSection.innerHTML = `
+            <div id="banner-carousel" class="max-w-7xl mx-auto px-0 sm:px-4 carousel-container h-64 sm:h-96">
+                <div id="carousel-wrapper" class="carousel-wrapper h-full">
+                    ${slidesHtml}
+                </div>
+                
+                <!-- Navigation Arrows -->
+                <button id="prev-btn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg z-10 transition-colors hidden sm:block">
+                    <i class="ri-arrow-left-s-line ri-xl"></i>
+                </button>
+                <button id="next-btn" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg z-10 transition-colors hidden sm:block">
+                    <i class="ri-arrow-right-s-line ri-xl"></i>
+                </button>
+
+                <!-- Indicators (Dots) -->
+                <div id="carousel-dots" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+                    ${allBanners.map((_, index) => `<button data-slide="${index}" class="w-2 h-2 rounded-full bg-white opacity-50 hover:opacity-100 transition-opacity carousel-dot"></button>`).join('')}
+                </div>
+            </div>
+        `;
+        
+        // Carousel'ü başlat
+        initCarousel();
+    }
+    
     // --- AUTH MANTIK ---
     loginBtn.addEventListener("click", async ()=>{ 
         try{ await signInWithPopup(auth,provider); } 
