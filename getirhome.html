@@ -56,22 +56,23 @@
 <header class="sticky top-0 w-full bg-white shadow-md z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <!-- Yeni Logo/Anasayfa Bağlantıları Grubu -->
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2 sm:space-x-4">
             <!-- Getir Home (Mevcut Uygulama/Dosya Anasayfası) -->
-            <a href="#" onclick="navigate('/')" class="text-2xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Home</a>
+            <a href="#" onclick="navigate('/')" class="text-xl sm:text-2xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Home</a>
             
             <!-- Getir Kıbrıs (index.html dosyasına yönlendirir) -->
-            <a href="index.html" class="text-2xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-4">Getir Kıbrıs</a>
+            <a href="index.html" class="text-xl sm:text-2xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-2 sm:pl-4">Getir Kıbrıs</a>
         </div>
         
-        <div class="flex items-center gap-4">
-            <a href="/sepet.html" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-colors">
-                <i class="ri-shopping-cart-2-fill"></i> Sepetim
+        <div class="flex items-center gap-2 sm:gap-4">
+            <a href="/sepet.html" class="bg-primary hover:bg-primary/90 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold flex items-center gap-1 sm:gap-2 transition-colors text-sm">
+                <i class="ri-shopping-cart-2-fill text-base sm:text-lg"></i> <span class="hidden sm:inline">Sepetim</span>
             </a>
-            <div class="h-8 w-px bg-gray-200"></div> <div class="flex items-center gap-3">
-                <span id="user-email" class="text-sm font-medium text-gray-600 truncate max-w-[100px]">Misafir</span>
-                <button id="loginBtn" class="text-primary hover:text-primary/80 font-semibold transition-colors">Giriş</button>
-                <button id="logoutBtn" class="text-red-500 hover:text-red-700 font-semibold hidden transition-colors">Çıkış</button>
+            <div class="h-6 sm:h-8 w-px bg-gray-200"></div> 
+            <div class="flex items-center gap-3">
+                <span id="user-email" class="text-xs sm:text-sm font-medium text-gray-600 truncate max-w-[50px] sm:max-w-[100px]">Misafir</span>
+                <button id="loginBtn" class="text-primary hover:text-primary/80 font-semibold transition-colors text-sm">Giriş</button>
+                <button id="logoutBtn" class="text-red-500 hover:text-red-700 font-semibold hidden transition-colors text-sm">Çıkış</button>
             </div>
         </div>
     </div>
@@ -208,15 +209,17 @@
         const imageUrl = randomBanner && randomBanner.url ? randomBanner.url : 'https://picsum.photos/400/300?random=1';
 
         heroSection.innerHTML = `
-            <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-                <div>
-                    <h2 class="text-4xl lg:text-5xl font-extrabold mb-3 leading-tight">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-center md:text-left mb-8 md:mb-0">
+                    <!-- RESPONSIVE BAŞLIK -->
+                    <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-3 leading-tight">
                         Getir Kıbrıs'la<br><span class="text-secondary">Binlerce Ürün Kapında.</span>
                     </h2>
-                    <p class="text-lg opacity-90 mb-6">Türkiye'deki ürünlere Kıbrıs'tan komisyonlu sipariş imkanı!</p>
+                    <p class="text-base sm:text-lg opacity-90 mb-6">Türkiye'deki ürünlere Kıbrıs'tan komisyonlu sipariş imkanı!</p>
                     <!-- Uygulama mağazası bağlantıları kaldırıldı -->
                 </div>
-                <img src="${imageUrl}" alt="Getir Kurye" class="hidden md:block w-96 h-auto object-cover rounded-xl shadow-2xl" onerror="this.onerror=null; this.src='https://placehold.co/400x300/5D3EBC/FFFFFF?text=BANNER';">
+                <!-- RESPONSIVE GÖRSEL -->
+                <img src="${imageUrl}" alt="Getir Kurye" class="w-2/3 sm:w-1/2 md:w-96 h-auto object-cover rounded-xl shadow-2xl" onerror="this.onerror=null; this.src='https://placehold.co/400x300/5D3EBC/FFFFFF?text=BANNER';">
             </div>
         `;
     }
@@ -252,7 +255,8 @@
 
         const productGrid = document.createElement('div');
         productGrid.id = "products-grid";
-        productGrid.className = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6";
+        // RESPONSIVE GRID DÜZELTME: Mobilde 2, tablette 3, masaüstünde 4/5 sütun
+        productGrid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6";
 
         if (productsToRender.length === 0) {
             productGrid.innerHTML = "<p class='col-span-full text-center py-10 text-gray-500'>Seçilen kategoride aktif ürün bulunamadı.</p>";
@@ -267,7 +271,7 @@
                 e.preventDefault(); 
                 navigate(`/detail?id=${p.id}`); 
             };
-            card.className = "product-card bg-white p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
+            card.className = "product-card bg-white p-3 sm:p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
             
             // NOTE: p.name artık güvenlidir
             const productNameDisplay = p.name || 'Ürün Adı Yok';
@@ -284,16 +288,17 @@
 
 
             card.innerHTML = `
-                <div class="h-40 overflow-hidden mb-4 rounded-lg bg-gray-100">
+                <div class="h-32 sm:h-40 overflow-hidden mb-3 sm:mb-4 rounded-lg bg-gray-100">
                     ${imageHtml}
                 </div>
                 <span class="text-xs text-primary font-semibold uppercase mb-1">${p.category || 'GENEL'}</span>
-                <h3 class="font-bold text-base text-gray-800 truncate mb-1">${productNameDisplay}</h3>
-                <p class="text-sm text-gray-500 mb-3 line-clamp-2">${p.description || "Açıklama mevcut değil."}</p>
+                <!-- RESPONSIVE YAZI BOYUTU -->
+                <h3 class="font-bold text-sm sm:text-base text-gray-800 truncate mb-1">${productNameDisplay}</h3>
+                <p class="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">${p.description || "Açıklama mevcut değil."}</p>
                 
-                <div class="flex justify-between items-center mt-auto pt-3 border-t">
-                    <span class="font-extrabold text-xl text-primary">${(p.price || 0).toFixed(2)} ₺</span>
-                    <button data-id="${p.id}" class="add-to-cart-btn bg-getir-yellow text-primary px-4 py-2 rounded-lg font-semibold hover:bg-getir-yellow/80 transition-colors flex items-center gap-1 text-sm">
+                <div class="flex justify-between items-center mt-auto pt-2 border-t">
+                    <span class="font-extrabold text-base sm:text-xl text-primary">${(p.price || 0).toFixed(2)} ₺</span>
+                    <button data-id="${p.id}" class="add-to-cart-btn bg-getir-yellow text-primary px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-getir-yellow/80 transition-colors flex items-center gap-1 text-xs sm:text-sm">
                         <i class="ri-add-line"></i> Ekle
                     </button>
                 </div>
@@ -336,12 +341,12 @@
     // --- ANASAYFA RENDER FONKSİYONU ---
     function renderHomePage() {
         const homeContent = document.createElement('div');
-        homeContent.className = "max-w-7xl mx-auto p-6";
+        homeContent.className = "max-w-7xl mx-auto p-4 sm:p-6";
 
         homeContent.innerHTML = `
-            <div class="flex justify-between items-center mb-6 border-b pb-3">
-                <h2 class="text-3xl font-bold text-gray-800">Tüm Kategorilerde Fırsatlar</h2>
-                <select id="category-filter-home" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 border-b pb-3">
+                <h2 class="text-xl sm:text-3xl font-bold text-gray-800 mb-2 sm:mb-0">Tüm Kategorilerde Fırsatlar</h2>
+                <select id="category-filter-home" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors text-sm">
                     <option value="all">Yükleniyor...</option>
                 </select>
             </div>
@@ -383,7 +388,7 @@
         let imagesHtml = '';
         if (validImages.length > 0) {
             imagesHtml = validImages.map((imgSrc, index) => `
-                <div class="w-full h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100">
+                <div class="w-full h-64 sm:h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100">
                     <img src="${imgSrc}" alt="${productNameDisplay} Görsel ${index + 1}" class="w-full h-full object-cover"
                          onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23e5e7eb\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%239ca3af\' text-anchor=\'middle\'%3eGörsel+Yüklenemedi%3c/text%3e%3c/svg%3e';"
                     >
@@ -391,20 +396,21 @@
             `).join('');
         } else {
             imagesHtml = `
-                <div class="w-full h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100 bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
+                <div class="w-full h-64 sm:h-80 rounded-xl overflow-hidden shadow-lg border border-gray-100 bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
                     <i class="ri-image-line ri-2x mr-2"></i> Ürün Görseli Yok
                 </div>
             `;
         }
         
         // GÖRSEL ALANINI DÜZENLE
-        const imageGalleryHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${imagesHtml}</div>`;
+        // RESPONSIVE GRID DÜZELTME
+        const imageGalleryHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${imagesHtml}</div>`;
 
 
         const videoEmbedUrl = getEmbedUrl(product.video);
         const videoHtml = videoEmbedUrl ? `
             <div class="mb-8 mt-10">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ürün Tanıtım Videosu</h3>
+                <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Ürün Tanıtım Videosu</h3>
                 <div class="video-container">
                     <iframe src="${videoEmbedUrl}" title="${productNameDisplay} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe>
                 </div>
@@ -414,9 +420,9 @@
         // --- VARYANT SEÇİMİ HTML'İ ---
         const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
         const variantsHtml = hasVariants ? `
-            <div class="my-6">
+            <div class="my-4 sm:my-6">
                 <label for="variant-select" class="block text-sm font-medium text-gray-700 mb-2">Varyant Seçimi:</label>
-                <select id="variant-select" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors cursor-pointer">
+                <select id="variant-select" class="w-full p-2 sm:p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors cursor-pointer text-sm">
                     <option value="" data-offset="0">Lütfen bir seçenek belirleyin</option>
                     ${product.variants.map((v, index) => {
                         const offset = parseFloat(v.price_offset) || 0;
@@ -429,40 +435,41 @@
         ` : '';
 
         appContainer.innerHTML = `
-            <div class="max-w-7xl mx-auto p-6">
+            <div class="max-w-7xl mx-auto p-4 sm:p-6">
                 <!-- Buradaki butonu A etiketi ile değiştirdim ve navigate('/') ile Anasayfaya dönüşü garantiledim -->
-                <a href="#" onclick="navigate('/')" class="text-primary hover:text-primary/80 font-semibold mb-6 flex items-center gap-2 transition-colors">
+                <a href="#" onclick="navigate('/')" class="text-primary hover:text-primary/80 font-semibold mb-6 flex items-center gap-2 transition-colors text-sm sm:text-base">
                     <i class="ri-arrow-left-line"></i> Tüm Ürünlere Geri Dön
                 </a>
                 
                 <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl">
-                    <div class="flex flex-col lg:flex-row gap-10">
+                    <div class="flex flex-col lg:flex-row gap-8 sm:gap-10">
                         <!-- Görsel Alanı (Gallery) -->
                         <div class="lg:w-1/2">
-                            <h2 class="text-4xl font-extrabold text-gray-800 mb-6">${productNameDisplay}</h2>
+                            <!-- RESPONSIVE BAŞLIK -->
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6">${productNameDisplay}</h2>
                             ${imageGalleryHtml}
                         </div>
 
                         <!-- Detay Alanı -->
                         <div class="lg:w-1/2">
-                            <span class="text-sm text-primary font-bold uppercase">${product.category || 'GENEL'}</span>
-                            <p class="text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
+                            <span class="text-xs sm:text-sm text-primary font-bold uppercase">${product.category || 'GENEL'}</span>
+                            <p class="text-base sm:text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
                             
                             <!-- DİNAMİK FİYAT GÖSTERİMİ -->
-                            <div class="my-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <span id="dynamic-price" class="text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>
-                                <p class="text-sm text-gray-500 mt-1">Ana fiyat: ${initialPrice.toFixed(2)} ₺. Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
+                            <div class="my-4 sm:my-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                <span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>
+                                <p class="text-xs sm:text-sm text-gray-500 mt-1">Ana fiyat: ${initialPrice.toFixed(2)} ₺. Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
                             </div>
 
                             ${variantsHtml}
 
-                            <button data-id="${product.id}" id="detail-add-to-cart-btn" class="w-full bg-getir-yellow text-primary px-6 py-3 rounded-lg font-extrabold text-lg hover:bg-getir-yellow/80 transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <button data-id="${product.id}" id="detail-add-to-cart-btn" class="w-full bg-getir-yellow text-primary px-6 py-3 rounded-lg font-extrabold text-base sm:text-lg hover:bg-getir-yellow/80 transition-colors flex items-center justify-center gap-2 shadow-md">
                                 <i class="ri-shopping-cart-2-fill"></i> Sepete Ekle
                             </button>
 
-                            <div class="mt-8 pt-4 border-t border-gray-200">
-                                <h4 class="font-semibold text-gray-700 mb-2">Ek Bilgiler</h4>
-                                <ul class="text-sm text-gray-500 space-y-1">
+                            <div class="mt-6 sm:mt-8 pt-4 border-t border-gray-200">
+                                <h4 class="font-semibold text-sm sm:text-base text-gray-700 mb-2">Ek Bilgiler</h4>
+                                <ul class="text-xs sm:text-sm text-gray-500 space-y-1">
                                     <li><i class="ri-check-line text-green-500"></i> Hızlı Teslimat Garantisi (${product.active ? 'Aktif' : 'Pasif'})</li>
                                     <li><i class="ri-check-line text-green-500"></i> Güvenli Ödeme</li>
                                     <li><i class="ri-check-line text-green-500"></i> İade İmkanı (Koşullu)</li>
