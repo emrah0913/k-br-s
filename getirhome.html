@@ -503,22 +503,19 @@
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
-            let firstDocLogged = false; // İlk belgeyi kaydetmek için bayrak
-
             // KRİTİK: Veriyi çekerken standart bir 'name' alanı oluşturuyoruz.
             allProducts = productSnap.docs.map(docSnap => {
                 const data = docSnap.data();
-
-                // HATA AYIKLAMA LOG'U: Sadece ilk ürünün ham verisini konsola yazdır
-                if (!firstDocLogged) {
-                    console.log("[DEBUG] Firestore Raw Data Check (First Product):", data);
-                    firstDocLogged = true;
-                }
                 
+                // Güvenli Ad Alma Fonksiyonu: Eğer değer 'undefined' stringi ise veya boşsa geç
+                const safeName = (data.name && data.name !== 'undefined' && data.name) ||
+                                 (data.title && data.title !== 'undefined' && data.title) ||
+                                 (data.productName && data.productName !== 'undefined' && data.productName) || 
+                                 'HATA: AD BULUNAMADI - ID:' + docSnap.id;
+
                 return {
                     id: docSnap.id,
-                    // Standart 'name' alanını oluştur: name -> title -> productName sırasıyla kontrol et
-                    name: String(data.name || data.title || data.productName || 'HATA: AD BULUNAMADI - ID:' + docSnap.id),
+                    name: String(safeName),
                     ...data
                 };
             }).filter(p => p.active); 
