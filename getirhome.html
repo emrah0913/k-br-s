@@ -266,6 +266,7 @@
             };
             card.className = "product-card bg-white p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
             
+            // NOTE: p.name artık güvenlidir
             const productNameDisplay = p.name || 'Ürün Adı Yok';
 
             card.innerHTML = `
@@ -503,22 +504,35 @@
             // 1. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
-            // KRİTİK DÜZELTME: Sadece 'name' alanına güveniyoruz ve güçlü bir fallback ekliyoruz.
+            // KRİTİK: Veri standardı yokluğunu çözen, önerilen normalleştirme mantığı
             allProducts = productSnap.docs.map(docSnap => {
                 const data = docSnap.data();
-                
-                // GÜVENLİK: Eğer data.name boşsa veya "undefined" stringi ise HATA mesajı kullan.
-                const rawName = data.name;
-                const safeName = (rawName && String(rawName).trim() && String(rawName).toLowerCase() !== 'undefined') 
-                                 ? rawName 
-                                 : (data.title || data.productName || 'HATA: AD BOŞ - ID:' + docSnap.id);
 
+                // 1. Name Standardizasyonu: Eğer name boşsa 'İsimsiz Ürün' kullan
+                const name = data.name || 'İsimsiz Ürün';
+
+                // 2. Image Standardizasyonu: data.image yoksa data.extraImages?.image kullan
+                const image = data.image || data.extraImages?.image || 'https://placehold.co/300x200';
+                
+                // Normalleştirilmiş ürünü döndür
                 return {
                     id: docSnap.id,
-                    name: String(safeName), // Standart 'name' alanını oluştur
-                    ...data
+                    name: String(name),
+                    price: data.price || 0,
+                    category: data.category || 'genel',
+                    description: data.description || '',
+                    image: image, // Standart görsel alanı
+                    extraImages: data.extraImages || [],
+                    video: data.video || '',
+                    variants: data.variants || [],
+                    active: data.active === true
                 };
             }).filter(p => p.active); 
+            
+            // Debug için konsola bas
+            if (allProducts.length > 0) {
+                 console.log("[DEBUG] Standardized Product Data Example:", allProducts[0]);
+            }
 
             // 2. Bannerları Çek
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
