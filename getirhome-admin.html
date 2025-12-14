@@ -106,22 +106,26 @@
         <input type="hidden" id="editingProductId" />
     </div>
 
-    <div id="product-form-area" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 border p-4 rounded-lg bg-gray-50">
+    <!-- GELİŞMİŞ ÜRÜN FORM ALANI (md:grid-cols-4) -->
+    <div id="product-form-area" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 border p-4 rounded-lg bg-gray-50">
       <!-- TEMEL ALANLAR -->
-      <input id="productName" placeholder="Ürün adı (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
-      <input id="productPrice" placeholder="Ana Fiyat (₺) (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" type="number" step="0.01"/>
-      <select id="productCategorySelect" class="border p-2 rounded focus:ring-primary focus:border-primary">
+      <input id="productName" placeholder="Ürün adı (Zorunlu)" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary" />
+      <select id="productCategorySelect" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2">
         <option value="">Kategori seç (Zorunlu)</option>
       </select>
-      <input id="productDescription" placeholder="Ürün açıklaması" class="border p-2 rounded md:col-span-3 focus:ring-primary focus:border-primary" />
+      <input id="productDescription" placeholder="Ürün açıklaması" class="border p-2 rounded md:col-span-4 focus:ring-primary focus:border-primary" />
       
+      <!-- Fiyat Alanları (Yeni) -->
+      <input id="productPrice" placeholder="Ana Fiyat (₺) (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" type="number" step="0.01"/>
+      <input id="productOldPrice" placeholder="Eski/Liste Fiyatı (₺) (Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" type="number" step="0.01"/>
+      
       <!-- Ana Medya Alanları -->
-      <input id="productImage" placeholder="Ana görsel URL (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
-      <input id="productVideo" placeholder="Video URL (YouTube/MP4 - Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary md:col-span-2" /> 
+      <input id="productImage" placeholder="Ana görsel URL (Zorunlu) (PNG/WEBP Önerilir)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" />
+      <input id="productVideo" placeholder="Video URL (YouTube/MP4 - Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" /> 
 
-      <!-- YENİ: Ek Görsel Yönetimi Alanı -->
-      <div class="md:col-span-3 p-3 mt-4 border rounded-lg bg-white">
-          <h4 class="font-semibold mb-3 text-gray-700">Ek Görsel URL'leri (Maksimum 5)</h4>
+      <!-- Ek Görsel Yönetimi Alanı -->
+      <div class="md:col-span-4 p-3 mt-4 border rounded-lg bg-white">
+          <h4 class="font-semibold mb-3 text-gray-700">Ek Görsel URL'leri</h4>
           <div id="extraImagesContainer" class="space-y-2">
               <!-- Dinamik olarak buraya eklenecek -->
           </div>
@@ -131,7 +135,7 @@
       </div>
 
       <!-- YENİ: VARYANT YÖNETİMİ -->
-      <div class="md:col-span-3 p-3 mt-4 border rounded-lg bg-white">
+      <div class="md:col-span-4 p-3 mt-4 border rounded-lg bg-white">
           <h4 class="font-semibold mb-3 text-gray-700">Varyant Yönetimi (Örn: Beden, Boyut)</h4>
           <div id="variant-input-area" class="flex gap-2 mb-3">
               <input id="variantName" placeholder="Varyant Adı (S, M, Kırmızı, 500gr)" class="border p-2 rounded w-full focus:ring-getir-yellow focus:border-getir-yellow" />
@@ -143,11 +147,10 @@
           </div>
       </div>
       <!-- AKTİF CHECKBOX -->
-      <div class="flex items-center gap-2 mt-4 md:col-span-3">
+      <div class="flex items-center gap-2 mt-4 md:col-span-4">
             <input id="productActive" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" /> 
             <label for="productActive" class="text-sm font-medium text-gray-700">Ürünü aktif olarak göster</label>
       </div>
-      
     </div>
 
     <div class="flex gap-2 mb-6">
@@ -230,10 +233,13 @@ const categoryList = document.getElementById("categoryList");
 // Ürün
 const productName = document.getElementById("productName");
 const productPrice = document.getElementById("productPrice");
+// YENİ FİYAT ALANI
+const productOldPrice = document.getElementById("productOldPrice");
+
 const productCategorySelect = document.getElementById("productCategorySelect");
 const productImage = document.getElementById("productImage");
 const productVideo = document.getElementById("productVideo");
-// GÜNCELLENDİ: extraImages inputu yerine container kullanılıyor
+// Dinamik Ek Görsel Konteyneri
 const extraImagesContainer = document.getElementById("extraImagesContainer");
 const addExtraImageBtn = document.getElementById("addExtraImageBtn");
 
@@ -257,7 +263,7 @@ const editingProductName = document.getElementById("editingProductName");
 const editingProductId = document.getElementById("editingProductId");
 
 let currentProducts = [];
-let productVariants = []; // Aktif olarak düzenlenmekte olan/eklenmekte olan ürünün varyantları
+let productVariants = []; 
 
 // Başlangıçta Banner sekmesini aktif yap
 tabBanner.classList.add("bg-[--color-primary]", "text-white"); 
@@ -270,7 +276,7 @@ function showMsg(text, isError=true){ 
 }
 
 // --- EK GÖRSEL YÖNETİMİ BAŞLANGIÇ ---
-const MAX_EXTRA_IMAGES = 5;
+// MAX_EXTRA_IMAGES kaldırıldı, artık sınırsız (yine de performans için 5-10 önerilir)
 
 function updateExtraImageIndices() {
     // Ekran üzerinde kalan elemanların sıra numarasını (1. Resim, 2. Resim) günceller
@@ -286,10 +292,6 @@ function updateExtraImageIndices() {
 
 function addExtraImageInput(initialValue = '') {
     const currentCount = extraImagesContainer.children.length;
-    if (currentCount >= MAX_EXTRA_IMAGES) {
-        showMsg(`Maksimum ${MAX_EXTRA_IMAGES} ek görsel ekleyebilirsiniz.`, true);
-        return;
-    }
 
     const index = currentCount + 1;
     const inputWrapper = document.createElement('div');
@@ -395,16 +397,16 @@ addVariantBtn.addEventListener('click', () => {
 function resetProductForm(isEditing = false) {
     productName.value = "";
     productPrice.value = "";
+    productOldPrice.value = ""; // YENİ: Eski fiyatı sıfırla
     productCategorySelect.value = "";
     productImage.value = "";
     productVideo.value = "";
-    // ESKİ: productExtraImages.value kaldırıldı
     productDescription.value = "";
     productActive.checked = false;
     editingProductId.value = "";
     editingProductName.textContent = "";
     
-    // YENİ: Ek resim konteynerini temizle
+    // Ek resim konteynerini temizle
     extraImagesContainer.innerHTML = '';
 
     productVariants = []; // Reset varyant listesi
@@ -641,6 +643,7 @@ function editProduct(productId) {
         // 3. Tekil alanları doldur
         productName.value = product.name || '';
         productPrice.value = product.price || '';
+        productOldPrice.value = product.old_price || ''; // YENİ: Eski fiyatı yükle
         productCategorySelect.value = product.category || '';
         productImage.value = product.image || '';
         productVideo.value = product.video || '';
@@ -667,10 +670,14 @@ updateProductBtn.addEventListener("click", async () => {
 
     const name = productName.value.trim();
     const price = parseFloat(productPrice.value);
+    // YENİ: Eski fiyatı al, eğer boşsa null kaydet
+    const oldPriceRaw = productOldPrice.value.trim();
+    const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
+
     const category = productCategorySelect.value;
     const image = productImage.value.trim();
     const video = productVideo.value.trim();
-    // GÜNCELLENDİ: Dinamik olarak topla
+    // Dinamik olarak topla
     const extraImages = collectExtraImages(); 
     const desc = productDescription.value.trim();
     const active = productActive.checked;
@@ -680,11 +687,16 @@ updateProductBtn.addEventListener("click", async () => {
         showMsg("Ürün adı, fiyat, kategori ve ana görsel zorunludur.", true); 
         return; 
     }
+    
+    if (oldPrice !== null && isNaN(oldPrice)) {
+        showMsg("Eski fiyat geçerli bir sayı olmalıdır.", true);
+        return;
+    }
 
     try {
         const productRef = doc(db, "homeProducts", productId);
         await updateDoc(productRef, {
-            name, price, category, image, video, extraImages, description: desc, active, variants,
+            name, price, old_price: oldPrice, category, image, video, extraImages, description: desc, active, variants,
             updatedAt: new Date()
         });
         resetProductForm(false); 
@@ -702,10 +714,14 @@ addProductBtn.addEventListener("click", async ()=>{
 
   const name=productName.value.trim();
   const price=parseFloat(productPrice.value); 
+  // YENİ: Eski fiyatı al, eğer boşsa null kaydet
+    const oldPriceRaw = productOldPrice.value.trim();
+    const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
+    
   const category=productCategorySelect.value;
   const image=productImage.value.trim();
   const video=productVideo.value.trim();
-  // GÜNCELLENDİ: Dinamik olarak topla
+  // Dinamik olarak topla
   const extraImages = collectExtraImages(); 
   const desc=productDescription.value.trim();
   const active=productActive.checked;
@@ -715,9 +731,15 @@ addProductBtn.addEventListener("click", async ()=>{
     showMsg("Ürün adı, fiyat, kategori ve ana görsel zorunludur.", true); 
     return; 
   }
+    
+    if (oldPrice !== null && isNaN(oldPrice)) {
+        showMsg("Eski fiyat geçerli bir sayı olmalıdır.", true);
+        return;
+    }
+
   try{
     await addDoc(collection(db,"homeProducts"),{
-        name,price,category,image,video,extraImages,description:desc,active,variants,createdAt:new Date()
+        name,price,old_price: oldPrice, category, image, video, extraImages, description:desc, active, variants, createdAt:new Date()
     });
     resetProductForm(false);
     await loadProducts(); 
@@ -742,29 +764,40 @@ async function loadProducts(){
       snap.forEach(docSnap=>{
         const d=docSnap.data();
         currentProducts.push({ id: docSnap.id, ...d });
+        
+        // Fiyat Gösterimi Mantığı (Üstü çizili fiyat eklendi)
+        const currentPrice = d.price || 0;
+        const oldPrice = d.old_price || 0;
+        
+        let priceHtml;
+        if (oldPrice > currentPrice) {
+            priceHtml = `<div class="flex items-end gap-2">
+                <span class="font-extrabold text-xl text-primary">${currentPrice.toFixed(2)} ₺</span>
+                <span class="text-sm text-gray-400 line-through">${oldPrice.toFixed(2)} ₺</span>
+            </div>`;
+        } else {
+            priceHtml = `<span class="font-extrabold text-xl text-primary">${currentPrice.toFixed(2)} ₺</span>`;
+        }
+        // Fiyat Gösterimi Bitişi
 
         const el=document.createElement("div");
         el.className="p-3 bg-white rounded shadow-md flex flex-col justify-between";
         
-        const extraImagesHtml = (Array.isArray(d.extraImages) && d.extraImages.length > 0) 
-          ? d.extraImages.map(url => `<img src="${url}" class="w-16 h-16 object-cover inline-block mr-2 my-1 rounded border product-image-preview" onerror="this.onerror=null;this.src='https://placehold.co/40x40/ccc/fff?text=?'">`).join("")
-          : ''; 
-        
-        const variantsHtml = (Array.isArray(d.variants) && d.variants.length > 0)
-            ? `<div class="text-xs text-purple-600 mt-2"><i class="ri-list-check"></i> ${d.variants.length} Varyant</div>`
-            : '';
-        
-        const extraImagesCount = Array.isArray(d.extraImages) ? d.extraImages.length : 0;
+        const extraImagesCount = Array.isArray(d.extraImages) ? d.extraImages.length : 0;
         const extraImagesCountHtml = extraImagesCount > 0 
             ? `<div class="text-xs text-gray-500 mt-2 flex items-center gap-1"><i class="ri-image-2-line"></i> ${extraImagesCount} Ek Görsel</div>`
             : '';
+
+        const variantsHtml = (Array.isArray(d.variants) && d.variants.length > 0)
+            ? `<div class="text-xs text-purple-600 mt-2"><i class="ri-list-check"></i> ${d.variants.length} Varyant</div>`
+            : '';
 
         el.innerHTML=`
           <div>
             <div class="font-semibold text-lg">${d.name} <span class="text-xs ${d.active?"text-green-600":"text-red-600"}">${d.active?"(Aktif)":"(Pasif)"}</span></div>
             <div class="text-sm text-gray-600">${d.category}</div>
             <div class="text-sm my-1">${d.description||""}</div>
-            <div class="text-primary font-bold text-xl">${(d.price || 0).toFixed(2)} ₺</div>
+            <div class="text-primary font-bold text-xl">${priceHtml}</div>
             <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded border product-image-preview" onerror="this.onerror=null;this.src='https://placehold.co/300x144/ccc/fff?text=Gorsel+Yok';" />
             
             ${extraImagesCountHtml}
