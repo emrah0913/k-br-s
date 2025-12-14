@@ -34,7 +34,7 @@
     #products-grid .product-card { transition: all 0.2s; }
     #products-grid .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05); }
     
-    /* Video embed responsive (16:9 oranını korur) */
+    /* Video embed/player responsive (16:9 oranını korur) */
     .video-container {
         position: relative;
         width: 100%;
@@ -42,19 +42,19 @@
         height: 0;
         overflow: hidden;
     }
-    .video-container iframe {
+    .video-container iframe, .video-container video {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
+        object-fit: cover; /* Video kırpılabilir ama alanı doldurur */
     }
     
     /* --- CAROUSEL STYLES --- */
     .carousel-container {
         position: relative;
         overflow: hidden;
-        /* Yüksekliği otomatik ayarla */
         height: auto; 
     }
     .carousel-wrapper {
@@ -69,21 +69,20 @@
         height: auto; 
     }
     .banner-content {
-        /* Yeni: Artık min/max yükseklik kısıtlaması yok, içerik boyutuna göre ayarlanacak. */
         height: auto;
-        min-height: 200px; /* Çok kısa olmaması için minimum yükseklik kalsın */
+        min-height: 200px; 
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #5D3EBC; /* Görsel yüklenemezse arka plan rengi */
+        background-color: #5D3EBC; 
     }
 
     /* Görselin kırpılmasını önler, kenarlarda boşluk kalmasına izin verir. */
     .banner-image-contain {
         width: 100%;
         height: auto;
-        max-height: 480px; /* Maksimum yükseklik sınırı */
-        object-fit: contain; /* KIRPILMAYI ENGELLEYEN KRİTİK AYAR */
+        max-height: 480px; 
+        object-fit: contain; 
     }
 </style>
 
@@ -184,20 +183,70 @@
         setTimeout(()=>msgDiv.classList.add("hidden"),3000);
     }
 
-    // Youtube URL'lerini embed formatına çevirir
-    function getEmbedUrl(url) {
-        if (!url) return null;
-        // Basit bir regex ile YouTube video ID'sini bulur (watch?v= veya youtu.be/ formatları için)
-        const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
-        const match = url.match(ytRegex);
-        if (match) {
-            const videoId = match[1] || match[2];
-            // autoplay=1 ekliyoruz ki video otomatik başlasın
-            return `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&mute=1`;
+    /**
+     * Banner URL'sini analiz eder ve uygun HTML kodunu (resim, YouTube iframe veya video etiketi) döndürür.
+     */
+    function getBannerMediaHtml(url, title, index) {
+        if (!url || !url.startsWith('http')) { // URL geçerli değilse
+            return {
+                html: `<div class="w-full h-full flex items-center justify-center text-white text-lg font-bold">GEÇERSİZ BANNER URL'Sİ</div>`,
+                isImage: true 
+            };
         }
-        return null; // Başka bir URL formatıysa null döndür
-    }
+        
+        // 1. YouTube Video Check (<iframe>)
+        const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
+        const ytMatch = url.match(ytRegex);
+        
+        if (ytMatch) {
+            const videoId = ytMatch[1] || ytMatch[2];
+            // Otomatik oynatma, sessiz ve controls=1 eklendi
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&mute=1&playsinline=1`;
+            
+            return {
+                html: `
+                    <div class="video-container">
+                        <iframe src="${embedUrl}" title="${title} Video ${index + 1}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen frameborder="0" class="w-full h-full"></iframe>
+                    </div>
+                `,
+                isImage: false
+            };
+        }
+        
+        // 2. Direct Video File Check (<video>)
+        const videoExtensions = ['.mp4', '.webm', '.ogg'];
+        const isDirectVideo = videoExtensions.some(ext => url.toLowerCase().includes(ext));
 
+        if (isDirectVideo) {
+            return {
+                html: `
+                    <div class="video-container">
+                        <video src="${url}" title="${title} Video ${index + 1}" 
+                               autoplay loop muted playsinline 
+                               class="w-full h-full object-cover">
+                            Tarayıcınız video etiketini desteklemiyor.
+                        </video>
+                    </div>
+                `,
+                isImage: false
+            };
+        }
+
+        // 3. Image (Default)
+        return {
+            html: `
+                <img src="${url}" 
+                    alt="Promosyon Banner ${index + 1}" 
+                    class="banner-image-contain" 
+                    onerror="this.onerror=null; this.src='https://placehold.co/1200x480/A78BFA/FFFFFF?text=Gorsel+Yuklenemedi';"
+                />
+            `,
+            isImage: true
+        };
+    }
+    
     // --- YÖNLENDİRME (HASH ROUTING) ---
     function navigate(path) {
         location.hash = path === '/' ? '' : path;
@@ -327,68 +376,46 @@
 
         // Bütün Banner'ları slayt olarak hazırla
         const slidesHtml = allBanners.map((banner, index) => {
-            const imageUrl = banner.url || null;
-            const videoEmbedUrl = getEmbedUrl(imageUrl);
+            const url = banner.url || null;
             
-            // Admin'den gelen metinleri al
-            const title = banner.title || 'Yeni Kampanya!';
-            const description = banner.description || 'Fırsatları kaçırmayın.';
-            const link = banner.link || null; // Tıklama için link
+            // Admin'den gelen metinleri al (Artık boş string olabilir)
+            const title = banner.title || ''; 
+            const description = banner.description || ''; 
+            const link = banner.link || null; 
 
-            let contentHtml = '';
-            let contentClass = 'h-full';
+            // Yeni fonksiyon ile medya içeriğini al
+            const { html: mediaHtml, isImage } = getBannerMediaHtml(url, title, index);
             
             // Eğer link varsa slaytı tıklanabilir yapacak wrapper'ı tanımla
-            const linkWrapperStart = link ? `<a href="${link}" class="w-full h-full block" target="_blank" rel="noopener noreferrer">` : '<div class="w-full h-full">';
-            const linkWrapperEnd = link ? '</a>' : '</div>';
-
-
-            if (videoEmbedUrl) {
-                // Eğer video URL'si varsa, video container kullan
-                contentHtml = `
-                    <div class="video-container">
-                        <iframe src="${videoEmbedUrl}" title="Banner Video ${index + 1}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
-                    </div>
-                    <!-- Video üzerine metin bindirme (Metin linki üzerine binmez) -->
-                    <div class="absolute inset-0 flex items-center justify-start p-6 sm:p-12 bg-black/40 pointer-events-none">
+            const isVideo = !isImage;
+            const linkWrapperStart = link && !isVideo ? `<a href="${link}" class="w-full h-full block" target="_blank" rel="noopener noreferrer">` : '<div class="w-full h-full">';
+            const linkWrapperEnd = link && !isVideo ? '</a>' : '</div>';
+            
+            // Metin Bindirme Katmanı
+            let textLayerHtml = '';
+            // Metin veya link varsa overlay'i göster
+            if (title.trim().length > 0 || description.trim().length > 0 || link) {
+                const overlayClass = isVideo ? 'bg-black/40' : 'bg-black/30';
+                textLayerHtml = `
+                    <div class="absolute inset-0 flex items-center justify-start p-6 sm:p-12 ${overlayClass} ${isVideo ? 'pointer-events-none' : ''}">
                         <div class="text-left max-w-lg">
                             <h2 class="text-3xl sm:text-4xl font-extrabold mb-2 leading-tight text-white drop-shadow-lg">
                                 ${title.split(' ').map((word, i) => i === 0 ? word : `<span class="text-secondary">${word}</span>`).join(' ')}
                             </h2>
                             <p class="text-sm sm:text-lg text-white drop-shadow">${description}</p>
-                            ${link ? `<span class="mt-4 inline-block bg-getir-yellow text-primary font-bold py-2 px-4 rounded-lg pointer-events-auto">Kampanyayı Gör</span>` : ''}
+                            ${link ? `<span class="mt-4 inline-block bg-getir-yellow text-primary font-bold py-2 px-4 rounded-lg ${isVideo ? 'pointer-events-auto' : ''}">Kampanyayı Gör</span>` : ''}
                         </div>
                     </div>
                 `;
-                contentClass = 'w-full relative'; // Video yüksekliği responsive olarak ayarlanacak
-            } else {
-                // Eğer resim URL'si varsa, resmi kullan
-                contentHtml = `
-                    <img src="${imageUrl || 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23a78bfa\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%23fff\' text-anchor=\'middle\'%3eBANNER%2bYOK%3c/text%3e%3c/svg%3e'}" 
-                        alt="Promosyon Banner ${index + 1}" 
-                        class="banner-image-contain" 
-                        onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23e5e7eb\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%239ca3af\' text-anchor=\'middle\'%3eGörsel+Yüklenemedi%3c/text%3e%3c/svg%3e';"
-                    />
-                    <!-- Marka Metinleri (Görselin üzerine bindirilmiş) -->
-                    <div class="absolute inset-0 flex items-center justify-start p-6 sm:p-12 bg-black/30">
-                        <div class="text-left max-w-lg">
-                            <h2 class="text-3xl sm:text-4xl font-extrabold mb-2 leading-tight text-white drop-shadow-lg">
-                                ${title.split(' ').map((word, i) => i === 0 ? word : `<span class="text-secondary">${word}</span>`).join(' ')}
-                            </h2>
-                            <p class="text-sm sm:text-lg text-white drop-shadow">${description}</p>
-                            ${link ? `<span class="mt-4 inline-block bg-getir-yellow text-primary font-bold py-2 px-4 rounded-lg">Kampanyayı Gör</span>` : ''}
-                        </div>
-                    </div>
-                `;
-                contentClass = 'banner-content relative'; // Görsel yüksekliğini korumak için
             }
-
-            // Slaytın tamamını link ile sarmala
+            
+            // Slaytın tamamını link/div ile sarmala
             return `
                 <div class="carousel-slide relative" data-index="${index}">
                     ${linkWrapperStart}
-                        <div class="${contentClass}">
-                            ${contentHtml}
+                        <div class="banner-content relative">
+                            ${mediaHtml}
+                            ${textLayerHtml}
                         </div>
                     ${linkWrapperEnd}
                 </div>
@@ -604,7 +631,21 @@
         const imageGalleryHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${imagesHtml}</div>`;
 
 
-        const videoEmbedUrl = getEmbedUrl(product.video);
+        // Ürün Detay sayfasında sadece YouTube embed URL'si alıyoruz
+        const videoEmbedUrl = (() => {
+            const url = product.video;
+            if (!url) return null;
+            const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
+            const match = url.match(ytRegex);
+            if (match) {
+                const videoId = match[1] || match[2];
+                // Detay sayfasında otomatik oynatmayı kapatıp kontrol bırakalım
+                return `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0`;
+            }
+            // Doğrudan video dosyası ise de oynatılabilir, ancak iframe'e atılırsa hata verir.
+            return null; 
+        })();
+
         const videoHtml = videoEmbedUrl ? `
             <div class="mb-8 mt-10">
                 <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Ürün Tanıtım Videosu</h3>
@@ -767,8 +808,9 @@
             // Banner verilerini çekerken link, title, description alanlarını da ekliyoruz
             allBanners = bannerSnap.docs.map(docSnap => ({
                 ...docSnap.data(),
-                title: docSnap.data().title || 'Yeni Kampanya!',
-                description: docSnap.data().description || 'Fırsatları kaçırmayın.',
+                // Metin varsayılanlarını boş bıraktık. Admin boş bırakırsa metin gösterilmez.
+                title: docSnap.data().title || '', 
+                description: docSnap.data().description || '',
                 link: docSnap.data().link || null,
             }));
 
@@ -776,8 +818,9 @@
                 // Varsayılan bir resim/video yoksa, statik bir uyarı ekle
                 allBanners.push({ 
                     url: 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%235D3EBC\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23FFD300\' text-anchor=\'middle\'%3eBANNER+ALANI%3c/text%3e%3c/svg%3e',
-                    title: 'Veri Tabanında Banner Yok',
-                    description: 'Admin panelinden görsel ve metin ekleyin.'
+                    title: 'Veri Tabanında Banner Yok', // Bu metin görünebilir
+                    description: 'Admin panelinden görsel ve metin ekleyin.',
+                    link: null
                 });
             }
 
