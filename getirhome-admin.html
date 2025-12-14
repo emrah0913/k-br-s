@@ -73,8 +73,8 @@
     <h3 class="font-semibold mb-3 border-b pb-2 text-gray-700">🖼 Banner Yönetimi</h3>
     <!-- GÜNCELLENMİŞ BANNER EKLEME FORMU -->
     <div id="banner-form-area" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 p-4 border rounded-lg bg-gray-50">
-      <input id="bannerUrl" placeholder="Görsel/Video URL (Zorunlu)" class="border p-2 rounded col-span-3 focus:ring-primary focus:border-primary" />
-      <input id="bannerTitle" placeholder="Başlık" class="border p-2 rounded col-span-1 focus:ring-primary focus:border-primary" />
+      <input id="bannerUrl" placeholder="Görsel/Video URL (Zorunlu) - YouTube veya MP4/WebM Linki" class="border p-2 rounded col-span-3 focus:ring-primary focus:border-primary" />
+      <input id="bannerTitle" placeholder="Başlık (Zorunlu)" class="border p-2 rounded col-span-1 focus:ring-primary focus:border-primary" />
       <input id="bannerDescription" placeholder="Açıklama" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary" />
       <input id="bannerLink" placeholder="Link (Örn: #/detail?id=...) (Opsiyonel)" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary" />
       <div class="flex gap-2 col-span-1">
@@ -114,10 +114,22 @@
         <option value="">Kategori seç (Zorunlu)</option>
       </select>
       <input id="productDescription" placeholder="Ürün açıklaması" class="border p-2 rounded md:col-span-3 focus:ring-primary focus:border-primary" />
+      
+      <!-- Ana Medya Alanları -->
       <input id="productImage" placeholder="Ana görsel URL (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
-      <input id="productVideo" placeholder="Video URL (opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
-      <input id="productExtraImages" placeholder="Ek görseller (URL, virgül ile ayırın)" class="border p-2 rounded md:col-span-3 focus:ring-primary focus:border-primary" />
-      
+      <input id="productVideo" placeholder="Video URL (YouTube/MP4 - Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary md:col-span-2" /> 
+
+      <!-- YENİ: Ek Görsel Yönetimi Alanı -->
+      <div class="md:col-span-3 p-3 mt-4 border rounded-lg bg-white">
+          <h4 class="font-semibold mb-3 text-gray-700">Ek Görsel URL'leri (Maksimum 5)</h4>
+          <div id="extraImagesContainer" class="space-y-2">
+              <!-- Dinamik olarak buraya eklenecek -->
+          </div>
+          <button id="addExtraImageBtn" type="button" class="mt-3 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm transition-colors flex items-center gap-1">
+              <i class="ri-image-add-line"></i> Yeni Görsel Alanı Ekle
+          </button>
+      </div>
+
       <!-- YENİ: VARYANT YÖNETİMİ -->
       <div class="md:col-span-3 p-3 mt-4 border rounded-lg bg-white">
           <h4 class="font-semibold mb-3 text-gray-700">Varyant Yönetimi (Örn: Beden, Boyut)</h4>
@@ -201,11 +213,9 @@ const sectionProduct = document.getElementById("sectionProduct");
 
 // Banner
 const bannerUrl = document.getElementById("bannerUrl");
-// YENİ BANNER ALANLARI
 const bannerTitle = document.getElementById("bannerTitle");
 const bannerDescription = document.getElementById("bannerDescription");
 const bannerLink = document.getElementById("bannerLink");
-// BİTİŞ
 
 const addBannerBtn = document.getElementById("addBannerBtn");
 const bannerList = document.getElementById("bannerList");
@@ -223,7 +233,10 @@ const productPrice = document.getElementById("productPrice");
 const productCategorySelect = document.getElementById("productCategorySelect");
 const productImage = document.getElementById("productImage");
 const productVideo = document.getElementById("productVideo");
-const productExtraImages = document.getElementById("productExtraImages");
+// GÜNCELLENDİ: extraImages inputu yerine container kullanılıyor
+const extraImagesContainer = document.getElementById("extraImagesContainer");
+const addExtraImageBtn = document.getElementById("addExtraImageBtn");
+
 const productDescription = document.getElementById("productDescription");
 const productActive = document.getElementById("productActive");
 
@@ -246,8 +259,6 @@ const editingProductId = document.getElementById("editingProductId");
 let currentProducts = [];
 let productVariants = []; // Aktif olarak düzenlenmekte olan/eklenmekte olan ürünün varyantları
 
-// Tailwind Primary rengini CSS değişkeni olarak tanımla
-// NOT: Admin sayfasında artık CSS :root tanımı var.
 // Başlangıçta Banner sekmesini aktif yap
 tabBanner.classList.add("bg-[--color-primary]", "text-white"); 
 
@@ -257,6 +268,72 @@ function showMsg(text, isError=true){ 
     msg.style.color=isError?"#b91c1c":"#065f46"; 
     if(text) setTimeout(()=>{msg.textContent="";},5000);
 }
+
+// --- EK GÖRSEL YÖNETİMİ BAŞLANGIÇ ---
+const MAX_EXTRA_IMAGES = 5;
+
+function updateExtraImageIndices() {
+    // Ekran üzerinde kalan elemanların sıra numarasını (1. Resim, 2. Resim) günceller
+    const inputs = extraImagesContainer.querySelectorAll('.extra-image-url');
+    inputs.forEach((input, index) => {
+        const indexDisplay = index + 1;
+        // Label'ı güncelle
+        input.closest('.flex').querySelector('span').textContent = `${indexDisplay}. Resim:`;
+        // Placeholder'ı güncelle
+        input.placeholder = `Ek Görsel URL ${indexDisplay}`;
+    });
+}
+
+function addExtraImageInput(initialValue = '') {
+    const currentCount = extraImagesContainer.children.length;
+    if (currentCount >= MAX_EXTRA_IMAGES) {
+        showMsg(`Maksimum ${MAX_EXTRA_IMAGES} ek görsel ekleyebilirsiniz.`, true);
+        return;
+    }
+
+    const index = currentCount + 1;
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'flex gap-2 items-center';
+    inputWrapper.innerHTML = `
+        <span class="text-sm font-medium text-gray-600 w-16 flex-shrink-0">${index}. Resim:</span>
+        <input type="url" 
+               class="extra-image-url border p-2 rounded w-full focus:ring-primary focus:border-primary text-sm" 
+               placeholder="Ek Görsel URL ${index}" 
+               value="${initialValue}" />
+        <button type="button" class="remove-extra-image-btn text-red-600 hover:text-red-700 p-1 rounded transition-colors flex-shrink-0" title="Sil">
+            <i class="ri-delete-bin-line"></i>
+        </button>
+    `;
+
+    extraImagesContainer.appendChild(inputWrapper);
+
+    inputWrapper.querySelector('.remove-extra-image-btn').addEventListener('click', () => {
+        inputWrapper.remove();
+        // Silme sonrası index numaralarını güncelle
+        updateExtraImageIndices();
+    });
+    
+    // UI'daki index numaralarını hemen güncelle (yeni eklenince)
+    updateExtraImageIndices();
+}
+
+function collectExtraImages() {
+    // Tüm dinamik inputlardan URL'leri toplayıp dizi (array) olarak döndürür
+    const inputs = extraImagesContainer.querySelectorAll('.extra-image-url');
+    const urls = [];
+    inputs.forEach(input => {
+        const url = input.value.trim();
+        if (url) {
+            urls.push(url);
+        }
+    });
+    return urls;
+}
+
+// Event Listener for adding new input
+addExtraImageBtn.addEventListener('click', () => addExtraImageInput());
+// --- EK GÖRSEL YÖNETİMİ BİTİŞ ---
+
 
 // Yeni varyant listesini temizler ve render eder
 function renderVariants() {
@@ -321,11 +398,15 @@ function resetProductForm(isEditing = false) {
     productCategorySelect.value = "";
     productImage.value = "";
     productVideo.value = "";
-    productExtraImages.value = "";
+    // ESKİ: productExtraImages.value kaldırıldı
     productDescription.value = "";
     productActive.checked = false;
     editingProductId.value = "";
     editingProductName.textContent = "";
+    
+    // YENİ: Ek resim konteynerini temizle
+    extraImagesContainer.innerHTML = '';
+
     productVariants = []; // Reset varyant listesi
     renderVariants(); // UI'da sıfırla
 
@@ -549,22 +630,31 @@ function editProduct(productId) {
     const product = currentProducts.find(p => p.id === productId);
 
     if (product) {
-        // Varyantları yükle
+        
+        // 1. Formu temizle ve düzenleme moduna geçir
+        resetProductForm(true); 
+
+        // 2. Temel ve Varyant verilerini yükle
         productVariants = Array.isArray(product.variants) ? [...product.variants] : [];
         renderVariants();
-
+        
+        // 3. Tekil alanları doldur
         productName.value = product.name || '';
         productPrice.value = product.price || '';
         productCategorySelect.value = product.category || '';
         productImage.value = product.image || '';
         productVideo.value = product.video || '';
-        productExtraImages.value = (Array.isArray(product.extraImages) ? product.extraImages.join(', ') : '');
         productDescription.value = product.description || '';
         productActive.checked = product.active || false;
+        
+        // 4. Dinamik Ek Görsel alanlarını doldur
+        const existingExtraImages = Array.isArray(product.extraImages) ? product.extraImages : [];
+        existingExtraImages.forEach(url => {
+            addExtraImageInput(url);
+        });
 
         editingProductId.value = productId;
         editingProductName.textContent = product.name;
-        resetProductForm(true); 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
         showMsg("Düzenlenecek ürün bulunamadı.", true);
@@ -580,10 +670,10 @@ updateProductBtn.addEventListener("click", async () => {
     const category = productCategorySelect.value;
     const image = productImage.value.trim();
     const video = productVideo.value.trim();
-    const extraImages = productExtraImages.value.trim().split(",").map(x => x.trim()).filter(Boolean);
+    // GÜNCELLENDİ: Dinamik olarak topla
+    const extraImages = collectExtraImages(); 
     const desc = productDescription.value.trim();
     const active = productActive.checked;
-    // Varyantları al
     const variants = productVariants;
 
     if (!name || isNaN(price) || !category || !image) { 
@@ -615,7 +705,8 @@ addProductBtn.addEventListener("click", async ()=>{
   const category=productCategorySelect.value;
   const image=productImage.value.trim();
   const video=productVideo.value.trim();
-  const extraImages=productExtraImages.value.trim().split(",").map(x=>x.trim()).filter(Boolean); 
+  // GÜNCELLENDİ: Dinamik olarak topla
+  const extraImages = collectExtraImages(); 
   const desc=productDescription.value.trim();
   const active=productActive.checked;
   const variants = productVariants;
@@ -662,6 +753,11 @@ async function loadProducts(){
         const variantsHtml = (Array.isArray(d.variants) && d.variants.length > 0)
             ? `<div class="text-xs text-purple-600 mt-2"><i class="ri-list-check"></i> ${d.variants.length} Varyant</div>`
             : '';
+        
+        const extraImagesCount = Array.isArray(d.extraImages) ? d.extraImages.length : 0;
+        const extraImagesCountHtml = extraImagesCount > 0 
+            ? `<div class="text-xs text-gray-500 mt-2 flex items-center gap-1"><i class="ri-image-2-line"></i> ${extraImagesCount} Ek Görsel</div>`
+            : '';
 
         el.innerHTML=`
           <div>
@@ -670,7 +766,8 @@ async function loadProducts(){
             <div class="text-sm my-1">${d.description||""}</div>
             <div class="text-primary font-bold text-xl">${(d.price || 0).toFixed(2)} ₺</div>
             <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded border product-image-preview" onerror="this.onerror=null;this.src='https://placehold.co/300x144/ccc/fff?text=Gorsel+Yok';" />
-            ${extraImagesHtml}
+            
+            ${extraImagesCountHtml}
             ${d.video ? `<div class="text-xs text-blue-500 mt-2 flex items-center gap-1"><i class="ri-video-line"></i> Video Eklendi</div>` : ''}
             ${variantsHtml}
           </div>
