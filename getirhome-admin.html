@@ -96,6 +96,7 @@
       <button id="addCategoryBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors">Ekle</button>
     </div>
     <div id="categoryList" class="space-y-2"></div>
+    <button onclick="loadCategories()" class="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded transition-colors"><i class="ri-refresh-line"></i> Yenile</button>
   </div>
 
   <div id="sectionProduct" class="hidden">
@@ -108,7 +109,7 @@
     </div>
 
     <!-- GELİŞMİŞ ÜRÜN FORM ALANI (md:grid-cols-4) -->
-    <div id="product-form-area" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 border p-4 rounded-lg bg-gray-50">
+    <div id="product-form-area" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 p-4 border rounded-lg bg-gray-50">
       <!-- TEMEL ALANLAR -->
       <input id="productName" placeholder="Ürün adı (Zorunlu)" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary" />
       <select id="productCategorySelect" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2">
@@ -137,17 +138,43 @@
 
       <!-- YENİ: VARYANT YÖNETİMİ (Görsel/Video Eklendi) -->
       <div class="md:col-span-4 p-3 mt-4 border rounded-lg bg-white">
-          <h4 class="font-semibold mb-3 text-gray-700">Varyant Yönetimi (Görsel/Video Desteği)</h4>
-          <!-- Varyant Giriş Alanı -->
-          <div id="variant-input-area" class="grid grid-cols-1 md:grid-cols-6 gap-2 mb-3 items-end">
+          <h4 class="font-semibold mb-3 text-gray-700">Varyant Yönetimi (Gelişmiş Medya Desteği)</h4>
+          
+          <!-- Varyant Temel Giriş Alanı -->
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-2 mb-3 items-end border-b pb-3">
               <input id="variantName" placeholder="Varyant Adı (Zorunlu)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" />
               <input id="variantPriceOffset" placeholder="Fiyat Farkı (₺)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" type="number" step="0.01" value="0"/>
-              <input id="variantImage" placeholder="Görsel URL (Ops.)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" type="url" />
-              <input id="variantVideo" placeholder="Video URL (Ops.)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" type="url" />
-              <div class="col-span-6 md:col-span-2 flex justify-end">
-                <button id="addVariantBtn" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded flex items-center gap-1 transition-colors w-full"><i class="ri-add-line"></i> Varyant Ekle</button>
+          </div>
+
+          <!-- Dinamik Medya Alanları (YENİ) -->
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-2 mt-4">
+              <!-- Ek Görsel Yönetimi (Varyant) -->
+              <div class="col-span-3 p-2 border rounded bg-gray-50">
+                  <h5 class="text-sm font-semibold mb-2 flex items-center gap-1"><i class="ri-image-line"></i> Varyant Ek Görselleri</h5>
+                  <div id="variantImagesContainer" class="space-y-1">
+                      <!-- Dinamik Görsel Inputları Buraya Gelecek -->
+                  </div>
+                  <button id="addVariantImageBtn" type="button" class="mt-2 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded flex items-center gap-1 w-full justify-center">
+                      <i class="ri-image-add-line"></i> Görsel URL Ekle
+                  </button>
               </div>
-          </div>
+
+              <!-- Ek Video Yönetimi (Varyant) -->
+              <div class="col-span-3 p-2 border rounded bg-gray-50">
+                  <h5 class="text-sm font-semibold mb-2 flex items-center gap-1"><i class="ri-video-line"></i> Varyant Ek Videoları</h5>
+                  <div id="variantVideosContainer" class="space-y-1">
+                      <!-- Dinamik Video Inputları Buraya Gelecek -->
+                  </div>
+                  <button id="addVariantVideoBtn" type="button" class="mt-2 text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded flex items-center gap-1 w-full justify-center">
+                      <i class="ri-video-add-line"></i> Video URL Ekle
+                  </button>
+              </div>
+          </div>
+          
+          <div class="col-span-6 flex justify-end mt-4 border-t pt-3">
+              <button id="addVariantBtn" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded flex items-center gap-1 transition-colors w-full md:w-auto"><i class="ri-add-line"></i> Varyantı Listeye Ekle</button>
+          </div>
+
           <!-- Eklenen Varyant Listesi -->
           <div id="variantList" class="space-y-2 mt-4">
               <p class="text-sm text-gray-500" id="no-variants-msg">Henüz varyant eklenmedi.</p>
@@ -251,11 +278,13 @@ const addExtraImageBtn = document.getElementById("addExtraImageBtn");
 const productDescription = document.getElementById("productDescription");
 const productActive = document.getElementById("productActive");
 
-// Varyant (GÜNCELLENDİ)
+// Varyant (GÜNCELLENDİ: Yeni dinamik medya alanları)
 const variantName = document.getElementById("variantName");
 const variantPriceOffset = document.getElementById("variantPriceOffset");
-const variantImage = document.getElementById("variantImage");
-const variantVideo = document.getElementById("variantVideo");
+const variantImagesContainer = document.getElementById("variantImagesContainer");
+const variantVideosContainer = document.getElementById("variantVideosContainer");
+const addVariantImageBtn = document.getElementById("addVariantImageBtn");
+const addVariantVideoBtn = document.getElementById("addVariantVideoBtn");
 const addVariantBtn = document.getElementById("addVariantBtn");
 const variantList = document.getElementById("variantList");
 const noVariantsMsg = document.getElementById("no-variants-msg");
@@ -282,7 +311,7 @@ function showMsg(text, isError=true){ 
     if(text) setTimeout(()=>{msg.textContent="";},5000);
 }
 
-// --- EK GÖRSEL YÖNETİMİ BAŞLANGIÇ ---
+// --- ANA ÜRÜN EK GÖRSEL YÖNETİMİ ---
 
 function updateExtraImageIndices() {
     const inputs = extraImagesContainer.querySelectorAll('.extra-image-url');
@@ -333,7 +362,59 @@ function collectExtraImages() {
 }
 
 addExtraImageBtn.addEventListener('click', () => addExtraImageInput());
-// --- EK GÖRSEL YÖNETİMİ BİTİŞ ---
+// --- ANA ÜRÜN EK GÖRSEL YÖNETİMİ BİTİŞ ---
+
+// --- VARYANT MEDYA YÖNETİMİ BAŞLANGIÇ ---
+
+/**
+ * Dinamik olarak bir varyant medya URL input alanı ekler.
+ */
+function addVariantMediaInput(container, type, initialValue = '') {
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'flex gap-2 items-center';
+    
+    const placeholderText = type === 'image' ? 'Görsel URL (PNG/WEBP)' : 'Video URL (YouTube/MP4)';
+    const iconClass = type === 'image' ? 'ri-image-line' : 'ri-video-line';
+
+    inputWrapper.innerHTML = `
+        <i class="${iconClass} text-gray-500 text-sm"></i>
+        <input type="url" 
+               class="variant-media-url border p-1 rounded w-full focus:ring-getir-yellow focus:border-getir-yellow text-xs" 
+               placeholder="${placeholderText}" 
+               data-type="${type}"
+               value="${initialValue}" />
+        <button type="button" class="remove-variant-media-btn text-red-600 hover:text-red-700 p-1 rounded transition-colors flex-shrink-0" title="Sil">
+            <i class="ri-delete-bin-line text-sm"></i>
+        </button>
+    `;
+
+    container.appendChild(inputWrapper);
+
+    inputWrapper.querySelector('.remove-variant-media-btn').addEventListener('click', () => {
+        inputWrapper.remove();
+    });
+}
+
+/**
+ * Belirtilen tipten (image veya video) tüm varyant medya URL'lerini toplar.
+ */
+function collectVariantMedia(container) {
+    const inputs = container.querySelectorAll('.variant-media-url');
+    const urls = [];
+    inputs.forEach(input => {
+        const url = input.value.trim();
+        if (url) {
+            urls.push(url);
+        }
+    });
+    return urls;
+}
+
+// Event Listeners for adding variant media inputs
+addVariantImageBtn.addEventListener('click', () => addVariantMediaInput(variantImagesContainer, 'image'));
+addVariantVideoBtn.addEventListener('click', () => addVariantMediaInput(variantVideosContainer, 'video'));
+
+// --- VARYANT MEDYA YÖNETİMİ BİTİŞ ---
 
 
 // Yeni varyant listesini temizler ve render eder
@@ -355,10 +436,13 @@ function renderVariants() {
             ? `(Fark: ${variant.price_offset.toFixed(2)} ₺)`
             : '(Fark: 0 ₺)';
         
-        // YENİ: Varyant medya ikonları
+        // YENİ: Varyant medya ikonları (array uzunluğunu kontrol et)
+        const imageCount = Array.isArray(variant.extraImages) ? variant.extraImages.length : 0;
+        const videoCount = Array.isArray(variant.extraVideos) ? variant.extraVideos.length : 0;
+
         const mediaIcons = `
-            ${variant.image ? '<i class="ri-image-line text-green-500 ml-2" title="Varyant Görseli Eklendi"></i>' : ''}
-            ${variant.video ? '<i class="ri-video-line text-blue-500 ml-1" title="Varyant Videosu Eklendi"></i>' : ''}
+            ${imageCount > 0 ? `<i class="ri-image-line text-green-500 ml-2" title="${imageCount} Görsel Eklendi">(${imageCount})</i>` : ''}
+            ${videoCount > 0 ? `<i class="ri-video-line text-blue-500 ml-1" title="${videoCount} Video Eklendi">(${videoCount})</i>` : ''}
         `;
 
         el.innerHTML = `
@@ -381,8 +465,10 @@ function renderVariants() {
 addVariantBtn.addEventListener('click', () => {
     const name = variantName.value.trim();
     const priceOffset = parseFloat(variantPriceOffset.value);
-    const image = variantImage.value.trim(); // YENİ
-    const video = variantVideo.value.trim(); // YENİ
+    
+    // YENİ: Dinamik olarak varyant medyalarını topla
+    const extraImages = collectVariantMedia(variantImagesContainer);
+    const extraVideos = collectVariantMedia(variantVideosContainer);
 
     if (!name) {
         showMsg("Varyant adı boş olamaz.", true);
@@ -393,13 +479,13 @@ addVariantBtn.addEventListener('click', () => {
         return;
     }
 
-    // YENİ: Varyantı görsel ve video ile kaydet
-    productVariants.push({ name, price_offset: priceOffset, image: image || null, video: video || null });
+    // YENİ: Varyantı medya dizileri ile kaydet
+    productVariants.push({ name, price_offset: priceOffset, extraImages, extraVideos });
 
     variantName.value = '';
     variantPriceOffset.value = '0';
-    variantImage.value = '';
-    variantVideo.value = '';
+    variantImagesContainer.innerHTML = ''; // Temizle
+    variantVideosContainer.innerHTML = ''; // Temizle
     renderVariants();
 });
 
@@ -419,11 +505,11 @@ function resetProductForm(isEditing = false) {
     // Ek resim konteynerini temizle
     extraImagesContainer.innerHTML = '';
 
-    // Varyant giriş alanlarını temizle
+    // Varyant giriş alanlarını ve medyalarını temizle
     variantName.value = '';
     variantPriceOffset.value = '0';
-    variantImage.value = '';
-    variantVideo.value = '';
+    variantImagesContainer.innerHTML = ''; 
+    variantVideosContainer.innerHTML = ''; 
 
 
     productVariants = []; // Reset varyant listesi
