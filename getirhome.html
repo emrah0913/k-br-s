@@ -991,7 +991,7 @@
         }
     }
 
-    // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) (Aynı Kaldı) ---
+    // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) ---
     async function handleAddToCart(event, selectedVariant = null, calculatedPrice = null){
         const user = auth.currentUser;
         if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
@@ -1007,19 +1007,28 @@
 
         const itemPrice = calculatedPrice !== null ? calculatedPrice : (parseFloat(product.price) || 0);
         
-        const variantSuffix = selectedVariant && selectedVariant.name ? `-${String(selectedVariant.name).replace(/\s/g, '_')}` : '';
+        // **DÜZELTME BAŞLANGICI**
+        // 1. Varyant adını doğru şekilde çek
+        const variantName = selectedVariant && selectedVariant.name && String(selectedVariant.name).trim() !== '' 
+                             ? String(selectedVariant.name) 
+                             : 'Standart';
+
+        // 2. Sepet doküman ID'sini varyant adına göre oluştur
+        const variantSuffix = variantName !== 'Standart' ? `-${variantName.replace(/\s/g, '_')}` : '';
         const itemDocId = productId + variantSuffix;
         const itemRef = doc(db, "users", user.uid, "cart", itemDocId);
+        // **DÜZELTME SONU**
 
         try{
             const productName = String(product.name); 
             
             await setDoc(itemRef, {
                 userId: user.uid,
-                productName: productName, // İç tutarlılık için tutuldu
-                productLink: productName, // Sepet sayfasının beklediği link ve metin alanı
+                productName: productName,
+                productLink: productName, 
                 productPrice: itemPrice, 
-                variant: selectedVariant ? selectedVariant.name : 'Standart', 
+                // CRITICAL: Varyant adını set et
+                variant: variantName, 
                 baseProductId: productId, 
                 category: product.category || 'cosmetics', 
                 orderMethod: 'service', 
@@ -1029,8 +1038,8 @@
 
             // **MESAJ GÜNCELLEMESİ**
             let variantText = '';
-            if (selectedVariant && selectedVariant.name && String(selectedVariant.name) !== 'Standart') {
-                variantText = ` (${String(selectedVariant.name)})`;
+            if (variantName !== 'Standart') {
+                variantText = ` (${variantName})`;
             }
 
             showMsg(`"${productName}"${variantText} sepete eklendi!`);
