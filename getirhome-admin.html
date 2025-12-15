@@ -44,6 +44,7 @@
       <span id="admin-email" class="text-gray-600"></span>
       <button id="logoutBtn" class="text-sm text-red-600 hidden">Çıkış Yap</button>
     </div>
+    <a href="#" onclick="showMsg('Bu link müşteriye açık Getir Home sayfasına yönlendirecektir. Henüz bu link belirlenmedi.', false)" class="text-sm text-primary hover:text-primary/80 font-medium">Siteyi Gör</a>
   </div>
 </header>
 
@@ -115,7 +116,7 @@
       </select>
       <input id="productDescription" placeholder="Ürün açıklaması" class="border p-2 rounded md:col-span-4 focus:ring-primary focus:border-primary" />
       
-      <!-- Fiyat Alanları (Yeni) -->
+      <!-- Fiyat Alanları -->
       <input id="productPrice" placeholder="Ana Fiyat (₺) (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" type="number" step="0.01"/>
       <input id="productOldPrice" placeholder="Eski/Liste Fiyatı (₺) (Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" type="number" step="0.01"/>
       
@@ -134,15 +135,21 @@
           </button>
       </div>
 
-      <!-- YENİ: VARYANT YÖNETİMİ -->
+      <!-- YENİ: VARYANT YÖNETİMİ (Görsel/Video Eklendi) -->
       <div class="md:col-span-4 p-3 mt-4 border rounded-lg bg-white">
-          <h4 class="font-semibold mb-3 text-gray-700">Varyant Yönetimi (Örn: Beden, Boyut)</h4>
-          <div id="variant-input-area" class="flex gap-2 mb-3">
-              <input id="variantName" placeholder="Varyant Adı (S, M, Kırmızı, 500gr)" class="border p-2 rounded w-full focus:ring-getir-yellow focus:border-getir-yellow" />
-              <input id="variantPriceOffset" placeholder="Fiyat Farkı (Örn: 10.50)" class="border p-2 rounded w-1/3 focus:ring-getir-yellow focus:border-getir-yellow" type="number" step="0.01" value="0"/>
-              <button id="addVariantBtn" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded flex items-center gap-1 transition-colors"><i class="ri-add-line"></i> Ekle</button>
+          <h4 class="font-semibold mb-3 text-gray-700">Varyant Yönetimi (Görsel/Video Desteği)</h4>
+          <!-- Varyant Giriş Alanı -->
+          <div id="variant-input-area" class="grid grid-cols-1 md:grid-cols-6 gap-2 mb-3 items-end">
+              <input id="variantName" placeholder="Varyant Adı (Zorunlu)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" />
+              <input id="variantPriceOffset" placeholder="Fiyat Farkı (₺)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" type="number" step="0.01" value="0"/>
+              <input id="variantImage" placeholder="Görsel URL (Ops.)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" type="url" />
+              <input id="variantVideo" placeholder="Video URL (Ops.)" class="border p-2 rounded col-span-3 focus:ring-getir-yellow focus:border-getir-yellow" type="url" />
+              <div class="col-span-6 md:col-span-2 flex justify-end">
+                <button id="addVariantBtn" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded flex items-center gap-1 transition-colors w-full"><i class="ri-add-line"></i> Varyant Ekle</button>
+              </div>
           </div>
-          <div id="variantList" class="space-y-2">
+          <!-- Eklenen Varyant Listesi -->
+          <div id="variantList" class="space-y-2 mt-4">
               <p class="text-sm text-gray-500" id="no-variants-msg">Henüz varyant eklenmedi.</p>
           </div>
       </div>
@@ -233,22 +240,22 @@ const categoryList = document.getElementById("categoryList");
 // Ürün
 const productName = document.getElementById("productName");
 const productPrice = document.getElementById("productPrice");
-// YENİ FİYAT ALANI
 const productOldPrice = document.getElementById("productOldPrice");
 
 const productCategorySelect = document.getElementById("productCategorySelect");
 const productImage = document.getElementById("productImage");
 const productVideo = document.getElementById("productVideo");
-// Dinamik Ek Görsel Konteyneri
 const extraImagesContainer = document.getElementById("extraImagesContainer");
 const addExtraImageBtn = document.getElementById("addExtraImageBtn");
 
 const productDescription = document.getElementById("productDescription");
 const productActive = document.getElementById("productActive");
 
-// Varyant
+// Varyant (GÜNCELLENDİ)
 const variantName = document.getElementById("variantName");
 const variantPriceOffset = document.getElementById("variantPriceOffset");
+const variantImage = document.getElementById("variantImage");
+const variantVideo = document.getElementById("variantVideo");
 const addVariantBtn = document.getElementById("addVariantBtn");
 const variantList = document.getElementById("variantList");
 const noVariantsMsg = document.getElementById("no-variants-msg");
@@ -276,16 +283,12 @@ function showMsg(text, isError=true){ 
 }
 
 // --- EK GÖRSEL YÖNETİMİ BAŞLANGIÇ ---
-// MAX_EXTRA_IMAGES kaldırıldı, artık sınırsız (yine de performans için 5-10 önerilir)
 
 function updateExtraImageIndices() {
-    // Ekran üzerinde kalan elemanların sıra numarasını (1. Resim, 2. Resim) günceller
     const inputs = extraImagesContainer.querySelectorAll('.extra-image-url');
     inputs.forEach((input, index) => {
         const indexDisplay = index + 1;
-        // Label'ı güncelle
         input.closest('.flex').querySelector('span').textContent = `${indexDisplay}. Resim:`;
-        // Placeholder'ı güncelle
         input.placeholder = `Ek Görsel URL ${indexDisplay}`;
     });
 }
@@ -311,16 +314,13 @@ function addExtraImageInput(initialValue = '') {
 
     inputWrapper.querySelector('.remove-extra-image-btn').addEventListener('click', () => {
         inputWrapper.remove();
-        // Silme sonrası index numaralarını güncelle
         updateExtraImageIndices();
     });
     
-    // UI'daki index numaralarını hemen güncelle (yeni eklenince)
     updateExtraImageIndices();
 }
 
 function collectExtraImages() {
-    // Tüm dinamik inputlardan URL'leri toplayıp dizi (array) olarak döndürür
     const inputs = extraImagesContainer.querySelectorAll('.extra-image-url');
     const urls = [];
     inputs.forEach(input => {
@@ -332,7 +332,6 @@ function collectExtraImages() {
     return urls;
 }
 
-// Event Listener for adding new input
 addExtraImageBtn.addEventListener('click', () => addExtraImageInput());
 // --- EK GÖRSEL YÖNETİMİ BİTİŞ ---
 
@@ -355,9 +354,15 @@ function renderVariants() {
             : variant.price_offset < 0 
             ? `(Fark: ${variant.price_offset.toFixed(2)} ₺)`
             : '(Fark: 0 ₺)';
-        
+        
+        // YENİ: Varyant medya ikonları
+        const mediaIcons = `
+            ${variant.image ? '<i class="ri-image-line text-green-500 ml-2" title="Varyant Görseli Eklendi"></i>' : ''}
+            ${variant.video ? '<i class="ri-video-line text-blue-500 ml-1" title="Varyant Videosu Eklendi"></i>' : ''}
+        `;
+
         el.innerHTML = `
-            <span>${variant.name} <span class="text-gray-500">${priceText}</span></span>
+            <span>${variant.name} <span class="text-gray-500">${priceText}</span> ${mediaIcons}</span>
             <button data-index="${index}" class="remove-variant-btn text-red-600 hover:text-red-700 transition-colors"><i class="ri-delete-bin-line"></i> Sil</button>
         `;
         variantList.appendChild(el);
@@ -376,6 +381,8 @@ function renderVariants() {
 addVariantBtn.addEventListener('click', () => {
     const name = variantName.value.trim();
     const priceOffset = parseFloat(variantPriceOffset.value);
+    const image = variantImage.value.trim(); // YENİ
+    const video = variantVideo.value.trim(); // YENİ
 
     if (!name) {
         showMsg("Varyant adı boş olamaz.", true);
@@ -386,10 +393,13 @@ addVariantBtn.addEventListener('click', () => {
         return;
     }
 
-    productVariants.push({ name, price_offset: priceOffset });
+    // YENİ: Varyantı görsel ve video ile kaydet
+    productVariants.push({ name, price_offset: priceOffset, image: image || null, video: video || null });
 
     variantName.value = '';
     variantPriceOffset.value = '0';
+    variantImage.value = '';
+    variantVideo.value = '';
     renderVariants();
 });
 
@@ -397,7 +407,7 @@ addVariantBtn.addEventListener('click', () => {
 function resetProductForm(isEditing = false) {
     productName.value = "";
     productPrice.value = "";
-    productOldPrice.value = ""; // YENİ: Eski fiyatı sıfırla
+    productOldPrice.value = ""; 
     productCategorySelect.value = "";
     productImage.value = "";
     productVideo.value = "";
@@ -408,6 +418,13 @@ function resetProductForm(isEditing = false) {
     
     // Ek resim konteynerini temizle
     extraImagesContainer.innerHTML = '';
+
+    // Varyant giriş alanlarını temizle
+    variantName.value = '';
+    variantPriceOffset.value = '0';
+    variantImage.value = '';
+    variantVideo.value = '';
+
 
     productVariants = []; // Reset varyant listesi
     renderVariants(); // UI'da sıfırla
@@ -643,7 +660,7 @@ function editProduct(productId) {
         // 3. Tekil alanları doldur
         productName.value = product.name || '';
         productPrice.value = product.price || '';
-        productOldPrice.value = product.old_price || ''; // YENİ: Eski fiyatı yükle
+        productOldPrice.value = product.old_price || ''; 
         productCategorySelect.value = product.category || '';
         productImage.value = product.image || '';
         productVideo.value = product.video || '';
@@ -670,14 +687,12 @@ updateProductBtn.addEventListener("click", async () => {
 
     const name = productName.value.trim();
     const price = parseFloat(productPrice.value);
-    // YENİ: Eski fiyatı al, eğer boşsa null kaydet
     const oldPriceRaw = productOldPrice.value.trim();
     const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
 
     const category = productCategorySelect.value;
     const image = productImage.value.trim();
     const video = productVideo.value.trim();
-    // Dinamik olarak topla
     const extraImages = collectExtraImages(); 
     const desc = productDescription.value.trim();
     const active = productActive.checked;
@@ -714,14 +729,13 @@ addProductBtn.addEventListener("click", async ()=>{
 
   const name=productName.value.trim();
   const price=parseFloat(productPrice.value); 
-  // YENİ: Eski fiyatı al, eğer boşsa null kaydet
+  
     const oldPriceRaw = productOldPrice.value.trim();
     const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
     
   const category=productCategorySelect.value;
   const image=productImage.value.trim();
   const video=productVideo.value.trim();
-  // Dinamik olarak topla
   const extraImages = collectExtraImages(); 
   const desc=productDescription.value.trim();
   const active=productActive.checked;
