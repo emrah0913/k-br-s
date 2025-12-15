@@ -908,12 +908,18 @@
         renderPage(); 
 
         try {
-            // Firestore'a anonim giriş yap (Kullanıcı giriş yapmamışsa)
+            // 1. Anonim Giriş Yapmayı Deneyin (Başarısız olsa bile devam etmeli, okuma kuralı izin verirse çalışır)
             if (!auth.currentUser) {
-                await signInAnonymously(auth);
+                try {
+                    await signInAnonymously(auth);
+                } catch(e) {
+                    // ANONİM GİRİŞ BAŞARISIZ OLURSA, KULLANICIYA SADECE UYARI VER VE DEVAM ET
+                    console.warn("Anonim giriş başarısız oldu (Güvenlik Kuralı Kısıtlaması olabilir):", e.message);
+                    // Hata "auth/admin-restricted-operation" ise, bu noktada değil, ürün çekme aşamasında tetiklenecektir.
+                }
             }
             
-            // 1. Ürünleri Çek
+            // 2. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
             // KRİTİK: Veri standardı yokluğunu çözen, önerilen normalleştirme mantığı
@@ -953,7 +959,7 @@
                 };
             }).filter(p => p.active); 
             
-            // 2. Bannerları Çek (Aynı Kaldı)
+            // 3. Bannerları Çek (Aynı Kaldı)
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
             allBanners = bannerSnap.docs.map(docSnap => ({
                 ...docSnap.data(),
@@ -971,13 +977,15 @@
                 });
             }
 
-            // 3. Kategorileri Çek (Aynı Kaldı)
+            // 4. Kategorileri Çek (Aynı Kaldı)
             const categorySnap = await getDocs(collection(db, "homeCategories"));
             allCategories = [...new Set(categorySnap.docs.map(docSnap => docSnap.data().name).filter(Boolean))];
 
             productsLoaded = true;
         } catch(e) {
-            showMsg("Veriler yüklenirken kritik hata oluştu: " + e.message, true);
+            // Hata ayrıntılarını konsola ve kullanıcıya göster
+            console.error("loadProducts sırasında kritik hata:", e);
+            showMsg(`Ürünler yüklenirken kritik hata oluştu: ${e.message}`, true);
         } finally {
             renderPage(); 
         }
