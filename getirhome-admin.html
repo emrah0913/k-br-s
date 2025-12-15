@@ -121,9 +121,15 @@
       <input id="productPrice" placeholder="Ana Fiyat (₺) (Zorunlu)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" type="number" step="0.01"/>
       <input id="productOldPrice" placeholder="Eski/Liste Fiyatı (₺) (Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" type="number" step="0.01"/>
       
-      <!-- Ana Medya Alanları -->
-      <input id="productImage" placeholder="Ana görsel URL (Zorunlu) (PNG/WEBP Önerilir)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" />
-      <input id="productVideo" placeholder="Video URL (YouTube/MP4 - Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary col-span-2" /> 
+      <!-- Ana Medya Alanları (GÜNCELLENDİ: Önizleme Eklendi) -->
+      <div class="col-span-2 flex flex-col gap-1">
+          <input id="productImage" placeholder="Ana görsel URL (Zorunlu) (PNG/WEBP Önerilir)" class="border p-2 rounded focus:ring-primary focus:border-primary" />
+          <img id="productImagePreview" class="w-full h-24 object-contain rounded border bg-white" src="https://placehold.co/300x96/f0f0f0/666?text=Ana+Gorsel+Onizlemesi" onerror="this.src='https://placehold.co/300x96/f0f0f0/666?text=Ana+Gorsel+Onizlemesi'"/>
+      </div>
+      <div class="col-span-2 flex flex-col gap-1">
+          <input id="productVideo" placeholder="Video URL (YouTube/MP4 - Opsiyonel)" class="border p-2 rounded focus:ring-primary focus:border-primary" /> 
+          <span class="text-xs text-gray-500 mt-1"><i class="ri-video-line"></i> Video ekliyorsanız önizleme listede görünür.</span>
+      </div>
 
       <!-- Ek Görsel Yönetimi Alanı -->
       <div class="md:col-span-4 p-3 mt-4 border rounded-lg bg-white">
@@ -272,6 +278,7 @@ const productOldPrice = document.getElementById("productOldPrice");
 const productCategorySelect = document.getElementById("productCategorySelect");
 const productImage = document.getElementById("productImage");
 const productVideo = document.getElementById("productVideo");
+const productImagePreview = document.getElementById("productImagePreview"); // YENİ
 const extraImagesContainer = document.getElementById("extraImagesContainer");
 const addExtraImageBtn = document.getElementById("addExtraImageBtn");
 
@@ -311,14 +318,29 @@ function showMsg(text, isError=true){ 
     if(text) setTimeout(()=>{msg.textContent="";},5000);
 }
 
+// --- MEDYA ÖNİZLEME GÜNCELLEME İŞLEYİCİSİ ---
+function updateImagePreview(inputElement, previewElement) {
+    const url = inputElement.value.trim();
+    if (url) {
+        previewElement.src = url;
+    } else {
+        previewElement.src = 'https://placehold.co/300x96/f0f0f0/666?text=Ana+Gorsel+Onizlemesi';
+    }
+}
+
+// Ana görsel için dinleyici
+productImage.addEventListener('input', () => {
+    updateImagePreview(productImage, productImagePreview);
+});
+
 // --- ANA ÜRÜN EK GÖRSEL YÖNETİMİ ---
 
 function updateExtraImageIndices() {
-    const inputs = extraImagesContainer.querySelectorAll('.extra-image-url');
-    inputs.forEach((input, index) => {
+    const wrappers = extraImagesContainer.querySelectorAll('.dynamic-image-wrapper');
+    wrappers.forEach((wrapper, index) => {
         const indexDisplay = index + 1;
-        input.closest('.flex').querySelector('span').textContent = `${indexDisplay}. Resim:`;
-        input.placeholder = `Ek Görsel URL ${indexDisplay}`;
+        wrapper.querySelector('span').textContent = `${indexDisplay}. Resim:`;
+        wrapper.querySelector('input').placeholder = `Ek Görsel URL ${indexDisplay}`;
     });
 }
 
@@ -327,8 +349,19 @@ function addExtraImageInput(initialValue = '') {
 
     const index = currentCount + 1;
     const inputWrapper = document.createElement('div');
-    inputWrapper.className = 'flex gap-2 items-center';
+    inputWrapper.className = 'flex gap-2 items-center dynamic-image-wrapper';
+    
+    // Varsayılan önizleme URL'si
+    const defaultPreviewUrl = 'https://placehold.co/40x40/f0f0f0/666?text=?';
+    const initialPreviewUrl = initialValue || defaultPreviewUrl;
+
+
     inputWrapper.innerHTML = `
+        <div class="flex-shrink-0">
+            <img class="image-preview-thumb w-10 h-10 object-cover rounded border" 
+                 src="${initialPreviewUrl}" 
+                 onerror="this.src='${defaultPreviewUrl}'" alt="Preview"/>
+        </div>
         <span class="text-sm font-medium text-gray-600 w-16 flex-shrink-0">${index}. Resim:</span>
         <input type="url" 
                class="extra-image-url border p-2 rounded w-full focus:ring-primary focus:border-primary text-sm" 
@@ -340,6 +373,18 @@ function addExtraImageInput(initialValue = '') {
     `;
 
     extraImagesContainer.appendChild(inputWrapper);
+
+    const urlInput = inputWrapper.querySelector('.extra-image-url');
+    const previewThumb = inputWrapper.querySelector('.image-preview-thumb');
+    
+    urlInput.addEventListener('input', (e) => {
+        const url = e.target.value.trim();
+        if (url) {
+            previewThumb.src = url;
+        } else {
+            previewThumb.src = defaultPreviewUrl;
+        }
+    });
 
     inputWrapper.querySelector('.remove-extra-image-btn').addEventListener('click', () => {
         inputWrapper.remove();
@@ -375,9 +420,19 @@ function addVariantMediaInput(container, type, initialValue = '') {
     
     const placeholderText = type === 'image' ? 'Görsel URL (PNG/WEBP)' : 'Video URL (YouTube/MP4)';
     const iconClass = type === 'image' ? 'ri-image-line' : 'ri-video-line';
+    const defaultPreviewUrl = 'https://placehold.co/40x40/f0f0f0/666?text=?';
+    const initialPreviewUrl = initialValue || defaultPreviewUrl;
+
+
+    // YENİ: Görsel için önizleme eklenir. Video için sadece ikon kalır.
+    const previewHtml = type === 'image' ? 
+        `<img class="variant-image-preview-thumb w-8 h-8 object-cover rounded border flex-shrink-0" 
+             src="${initialPreviewUrl}" 
+             onerror="this.src='${defaultPreviewUrl}'" alt="Preview"/>` :
+        `<i class="${iconClass} text-gray-500 text-lg flex-shrink-0 w-8 h-8 flex items-center justify-center"></i>`; // Icon for video
 
     inputWrapper.innerHTML = `
-        <i class="${iconClass} text-gray-500 text-sm"></i>
+        ${previewHtml}
         <input type="url" 
                class="variant-media-url border p-1 rounded w-full focus:ring-getir-yellow focus:border-getir-yellow text-xs" 
                placeholder="${placeholderText}" 
@@ -389,6 +444,22 @@ function addVariantMediaInput(container, type, initialValue = '') {
     `;
 
     container.appendChild(inputWrapper);
+
+    // YENİ: Dinamik önizleme güncelleme
+    if (type === 'image') {
+        const urlInput = inputWrapper.querySelector('.variant-media-url');
+        const previewThumb = inputWrapper.querySelector('.variant-image-preview-thumb');
+        
+        urlInput.addEventListener('input', (e) => {
+            const url = e.target.value.trim();
+            if (url) {
+                previewThumb.src = url;
+            } else {
+                previewThumb.src = defaultPreviewUrl;
+            }
+        });
+    }
+
 
     inputWrapper.querySelector('.remove-variant-media-btn').addEventListener('click', () => {
         inputWrapper.remove();
@@ -436,7 +507,7 @@ function renderVariants() {
             ? `(Fark: ${variant.price_offset.toFixed(2)} ₺)`
             : '(Fark: 0 ₺)';
         
-        // YENİ: Varyant medya ikonları (array uzunluğunu kontrol et)
+        // Varyant medya ikonları (array uzunluğunu kontrol et)
         const imageCount = Array.isArray(variant.extraImages) ? variant.extraImages.length : 0;
         const videoCount = Array.isArray(variant.extraVideos) ? variant.extraVideos.length : 0;
 
@@ -466,7 +537,7 @@ addVariantBtn.addEventListener('click', () => {
     const name = variantName.value.trim();
     const priceOffset = parseFloat(variantPriceOffset.value);
     
-    // YENİ: Dinamik olarak varyant medyalarını topla
+    // Dinamik olarak varyant medyalarını topla
     const extraImages = collectVariantMedia(variantImagesContainer);
     const extraVideos = collectVariantMedia(variantVideosContainer);
 
@@ -479,7 +550,7 @@ addVariantBtn.addEventListener('click', () => {
         return;
     }
 
-    // YENİ: Varyantı medya dizileri ile kaydet
+    // Varyantı medya dizileri ile kaydet
     productVariants.push({ name, price_offset: priceOffset, extraImages, extraVideos });
 
     variantName.value = '';
@@ -496,6 +567,7 @@ function resetProductForm(isEditing = false) {
     productOldPrice.value = ""; 
     productCategorySelect.value = "";
     productImage.value = "";
+    productImagePreview.src = 'https://placehold.co/300x96/f0f0f0/666?text=Ana+Gorsel+Onizlemesi'; // Önizlemeyi sıfırla
     productVideo.value = "";
     productDescription.value = "";
     productActive.checked = false;
@@ -749,6 +821,9 @@ function editProduct(productId) {
         productOldPrice.value = product.old_price || ''; 
         productCategorySelect.value = product.category || '';
         productImage.value = product.image || '';
+        // YENİ: Önizlemeyi güncelle
+        productImagePreview.src = product.image || 'https://placehold.co/300x96/f0f0f0/666?text=Ana+Gorsel+Onizlemesi';
+
         productVideo.value = product.video || '';
         productDescription.value = product.description || '';
         productActive.checked = product.active || false;
@@ -924,7 +999,7 @@ async function loadProducts(){
             <div class="text-primary font-bold text-xl">${priceHtml}</div>
             
             <!-- Ana Görsel -->
-            <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded border product-image-preview" onerror="this.onerror=null;this.src='https://placehold.co/300x144/ccc/fff?text=Ana+Gorsel+Yok';" />
+            <img src="${d.image}" class="w-full h-36 object-cover my-2 rounded border product-image-preview" onerror="this.onerror=null;this.src='https://placehold.co/300x144/ccc/fff?text=Gorsel+Yok';" />
             
             <!-- Diğer Görsel/Video Bilgileri -->
             <div class="mt-2 flex items-center flex-wrap">
