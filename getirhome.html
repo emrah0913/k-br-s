@@ -34,9 +34,7 @@
     #products-grid .product-card { transition: all 0.2s; }
     #products-grid .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05); }
     
-    /* --- ÜRÜN DETAY GÖRSEL VE VİDEO SİSTEMİ BAŞLANGIÇ --- */
-    
-    /* Video kapsayıcısı: 16:9 en boy oranını korur (Mobil için kritik) */
+    /* Video embed/player responsive (16:9 oranını korur) */
     .video-container {
         position: relative;
         width: 100%;
@@ -50,27 +48,10 @@
         left: 0;
         width: 100%;
         height: 100%;
-        object-fit: contain; /* ÖNEMLİ: Video içeriğini kırmadan sığdırır */
+        object-fit: cover; /* Video kırpılabilir ama alanı doldurur */
     }
     
-    /* Ürün Detay Ana Medya Görseli: Kırpılmayı önleyen kural */
-    #main-media-display img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain !important; /* Görseli kırmadan sığdırır */
-    }
-    
-    /* Ana gösterim alanı içinde video oynatıldığında */
-    #main-media-display .video-container {
-        /* Kapsayıcının (h-96) tüm alanını kullan */
-        height: 100%;
-        padding-bottom: 0; 
-    }
-    
-    /* --- ÜRÜN DETAY GÖRSEL VE VİDEO SİSTEMİ BİTİŞ --- */
-    
-    
-    /* --- CAROUSEL STYLES (Bannerlar için) --- */
+    /* --- CAROUSEL STYLES --- */
     .carousel-container {
         position: relative;
         overflow: hidden;
@@ -584,7 +565,7 @@
         initCarousel();
     }
     
-    // --- AUTH MANTIĞI (Aynı Kaldı) ---
+    // --- AUTH MANTIK (Aynı Kaldı) ---
     loginBtn.addEventListener("click", async ()=>{ 
         try{ await signInWithPopup(auth,provider); } 
         catch(e){ showMsg("Giriş hatası: "+e.message, true); } 
@@ -673,8 +654,7 @@
                 <p class="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">${p.description || "Açıklama mevcut değil."}</p>
                 
                 <div class="flex justify-between items-center mt-auto pt-2 border-t">
-                    ${priceHtml} 
-                    <button data-id="${p.id}" class="add-to-cart-btn bg-getir-yellow text-primary px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-getir-yellow/80 transition-colors flex items-center gap-1 text-xs sm:text-sm">
+                    ${priceHtml} <button data-id="${p.id}" class="add-to-cart-btn bg-getir-yellow text-primary px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-getir-yellow/80 transition-colors flex items-center gap-1 text-xs sm:text-sm">
                         <i class="ri-add-line"></i> Ekle
                     </button>
                 </div>
@@ -946,7 +926,7 @@
         handleCategorySelect(currentActiveCategory, currentSearchTerm);
     }
     
-    // --- ÜRÜN DETAY SAYFASI RENDER (Güncellenmiş) ---
+    // --- ÜRÜN DETAY SAYFASI RENDER (İndirim ve Benzer Ürünler Eklendi) ---
     
     function updateProductMedia(productName, images, videos) {
         const mainDisplay = document.getElementById('main-media-display');
@@ -969,10 +949,8 @@
         let initialMainContent = '';
         
         if (firstMedia.isVideo) {
-             // Video için object-fit: contain kuralı CSS'te tanımlandı
              initialMainContent = `<div class="video-container"><iframe src="${firstMedia.embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
         } else {
-            // Görsel için object-fit: contain kuralı CSS'te tanımlandı
             initialMainContent = `<img id="current-main-image" src="${firstMedia.url}" alt="${productName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
         }
         mainDisplay.innerHTML = initialMainContent;
@@ -997,11 +975,10 @@
                 thumb.classList.add('border-primary');
                 
                 if (type === 'image') {
-                    // Kırpılmayı önlemek için CSS'teki 'object-fit: contain' kuralına güveniyoruz.
                     mainDisplay.innerHTML = `<img id="current-main-image" src="${rawUrl}" alt="${productName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
                 } else if (type === 'video') {
                     const embedUrl = getEmbedUrl(rawUrl);
-                    mainDisplay.innerHTML = `<div class="video-container"><iframe src="${embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
+                     mainDisplay.innerHTML = `<div class="video-container"><iframe src="${embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
                 }
             });
         });
@@ -1012,7 +989,7 @@
         const product = allProducts.find(p => p.id === productId);
 
         if (!product) {
-            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-4 sm:p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><a href="#" onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</a></div></div>`;
+            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><a href="#" onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</a></div></div>`;
             return;
         }
 
@@ -1118,7 +1095,7 @@
             
             // Eğer varyant seçiliyse, eski fiyat gösterimini kaldır (basit tutmak için)
             priceEl.innerHTML = currentCalculatedPrice.toFixed(2) + ' ₺';
-            priceEl.closest('.flex')?.innerHTML = `<span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${currentCalculatedPrice.toFixed(2)} ₺</span>`;
+            priceEl.closest('.flex').innerHTML = `<span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${currentCalculatedPrice.toFixed(2)} ₺</span>`;
         }
 
         if (hasVariants) {
@@ -1182,14 +1159,14 @@
     }
 
 
-    // --- ÜRÜN VE VERİ YÜKLEME (Hata Yönetimi Basitleştirildi) ---
+    // --- ÜRÜN VE VERİ YÜKLEME (Aynı Kaldı) ---
     async function loadProducts(){
         productsLoaded = false;
-        renderPage(); // Yükleniyor... mesajını gösterir
+        renderPage(); 
 
         try {
             if (!auth.currentUser) {
-                await signInAnonymously(auth); 
+                try { await signInAnonymously(auth); } catch(e) { console.warn("Anonim giriş başarısız oldu:", e.message); }
             }
             
             // 1. Kategorileri Çek
@@ -1219,7 +1196,7 @@
                     id: docSnap.id,
                     name: data.name || 'İsimsiz Ürün',
                     price: parseFloat(data.price) || 0,
-                    old_price: parseFloat(data.old_price) || 0, 
+                    old_price: parseFloat(data.old_price) || 0, // ÖNEMLİ: old_price çekiliyor
                     category: data.category || 'genel',
                     hierarchy: hierarchy,
                     description: data.description || '',
@@ -1247,10 +1224,9 @@
             productsLoaded = true;
         } catch(e) {
             console.error("loadProducts sırasında kritik hata:", e);
-            // Hata mesajını kullanıcıya göster
-            showMsg(`Ürünler yüklenirken kritik hata oluştu: Firebase bağlantısı başarısız. Hata: ${e.message}`, true);
+            showMsg(`Ürünler yüklenirken kritik hata oluştu: ${e.message}`, true);
         } finally {
-            renderPage(); // Başarılı veya hatalı (ürünler boş) olsa da arayüzü çiz
+            renderPage(); 
         }
     }
 
