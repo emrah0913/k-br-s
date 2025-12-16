@@ -1012,7 +1012,7 @@
         const product = allProducts.find(p => p.id === productId);
 
         if (!product) {
-            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><a href="#" onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</a></div></div>`;
+            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-4 sm:p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><a href="#" onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</a></div></div>`;
             return;
         }
 
@@ -1182,14 +1182,14 @@
     }
 
 
-    // --- ÜRÜN VE VERİ YÜKLEME (Aynı Kaldı) ---
+    // --- ÜRÜN VE VERİ YÜKLEME (Hata Yönetimi Basitleştirildi) ---
     async function loadProducts(){
         productsLoaded = false;
-        renderPage(); 
+        renderPage(); // Yükleniyor... mesajını gösterir
 
         try {
             if (!auth.currentUser) {
-                try { await signInAnonymously(auth); } catch(e) { console.warn("Anonim giriş başarısız oldu:", e.message); }
+                await signInAnonymously(auth); 
             }
             
             // 1. Kategorileri Çek
@@ -1219,7 +1219,7 @@
                     id: docSnap.id,
                     name: data.name || 'İsimsiz Ürün',
                     price: parseFloat(data.price) || 0,
-                    old_price: parseFloat(data.old_price) || 0, // ÖNEMLİ: old_price çekiliyor
+                    old_price: parseFloat(data.old_price) || 0, 
                     category: data.category || 'genel',
                     hierarchy: hierarchy,
                     description: data.description || '',
@@ -1247,9 +1247,10 @@
             productsLoaded = true;
         } catch(e) {
             console.error("loadProducts sırasında kritik hata:", e);
-            showMsg(`Ürünler yüklenirken kritik hata oluştu: ${e.message}`, true);
+            // Hata mesajını kullanıcıya göster
+            showMsg(`Ürünler yüklenirken kritik hata oluştu: Firebase bağlantısı başarısız. Hata: ${e.message}`, true);
         } finally {
-            renderPage(); 
+            renderPage(); // Başarılı veya hatalı (ürünler boş) olsa da arayüzü çiz
         }
     }
 
