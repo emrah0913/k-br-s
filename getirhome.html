@@ -152,7 +152,7 @@
         <div class="flex items-center space-x-2 sm:space-x-4">
             <a href="#" onclick="navigate('/')" class="text-lg sm:text-xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Home</a>
             
-            <a href="index.html" class="text-lg sm:text-xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-2 sm:pl-4 hidden sm:block">Getir Kıbrıs</a>
+            <a href="index.html" class="text-lg sm:text-xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-2 sm:pl-4 block">Getir Kıbrıs</a>
         </div>
         
         <div class="flex items-center gap-2 sm:gap-4">
@@ -223,6 +223,7 @@
     let currentActiveCategory = 'all'; 
     let currentSelectedVariant = null;
     let currentCalculatedPrice = 0; 
+    let currentSearchTerm = ''; // YENİ: Arama terimini tutar
 
     let currentSlide = 0;
     let carouselWrapper;
@@ -255,7 +256,6 @@
 
     /**
      * Tıklandığında alt menüyü açıp kapar ve ikonu döndürür.
-     * Yaprak (Leaf) kategori ise direkt filtrelemeyi tetikler.
      */
     window.toggleCategoryAccordion = function(element, isLeafCategory, categoryName) {
         if (isLeafCategory) {
@@ -269,7 +269,6 @@
         const toggleIcon = element.querySelector('.toggle-icon');
 
         if (childUl) {
-            // Sadece alt menüyü aç/kapa
             childUl.classList.toggle('hidden');
             if(toggleIcon) toggleIcon.classList.toggle('rotated');
         }
@@ -308,9 +307,11 @@
              const urlParams = new URLSearchParams(queryString);
              const categoryName = urlParams.get('name');
              currentActiveCategory = categoryName || 'all';
+             currentSearchTerm = ''; // Kategori değiştiğinde aramayı sıfırla
         } else if (hash.length === 0 || hash === '/') {
             view = 'home';
             currentActiveCategory = 'all';
+            currentSearchTerm = ''; // Anasayfada aramayı sıfırla
         }
         return { view, id };
     }
@@ -577,7 +578,7 @@
         productGrid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6";
 
         if (productsToRender.length === 0) {
-            productGrid.innerHTML = "<p class='col-span-full text-center py-10 text-gray-500'>Seçilen kategoride aktif ürün bulunamadı.</p>";
+            productGrid.innerHTML = "<p class='col-span-full text-center py-10 text-gray-500'>Filtre/Arama sonucunda aktif ürün bulunamadı.</p>";
             productsListContainer.appendChild(productGrid);
             return;
         }
@@ -647,7 +648,6 @@
         
         const isLeafCategory = !hasChildren;
         
-        // KRİTİK: Kategori görselini al
         const categoryImage = category.image || 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'30\' fill=\'%235D3EBC\' text-anchor=\'middle\'\/\>\<\/svg\>';
         
         // Toggle butonu/link yapısı
@@ -674,7 +674,6 @@
         `;
         
         if (hasChildren) {
-            // Varsayılan olarak gizli (hidden) olarak başlıyoruz
             html += `<ul class="category-children hidden ml-2 mt-1 mb-2 border-l border-gray-200">`;
             children.sort((a, b) => a.name.localeCompare(b.name)).forEach(child => {
                 html += renderCategoryMenuItem(child, level + 1);
@@ -696,7 +695,6 @@
 
         if (!menuContainer || !mobileMenuContainer) return;
 
-        // Tüm Ürünler linki (Görsel kullanmaz)
         const allProductsLink = `<a href="#/category?name=all" class="category-link block p-2 rounded-lg text-sm mb-2 text-white bg-primary hover:bg-primary/90 transition-colors font-semibold ${currentActiveCategory === 'all' ? 'active' : ''}" onclick="handleCategorySelect('all'); event.preventDefault(); if (window.innerWidth < 1024) toggleMobileMenu();">
             <i class="ri-grid-line mr-2"></i> Tüm Ürünler
         </a>`;
@@ -716,7 +714,6 @@
         menuContainer.innerHTML = menuHtml;
         mobileMenuContainer.innerHTML = mobileHtml;
         
-        // Menü yüklendikten sonra mevcut aktif kategoriye odaklanmak için
         if(currentActiveCategory !== 'all') {
             const activeLink = document.querySelector(`.category-link.active`);
             if (activeLink && activeLink.tagName === 'BUTTON') {
@@ -733,9 +730,15 @@
         }
     }
 
-    window.handleCategorySelect = function(categoryName) {
+    /**
+     * Kategori seçimi veya arama sonrası ana filtreleme ve render işlemini yapar.
+     */
+    window.handleCategorySelect = function(categoryName, searchTerm = currentSearchTerm) {
         currentActiveCategory = categoryName;
+        currentSearchTerm = searchTerm;
+        const normalizedSearchTerm = searchTerm.toLowerCase();
 
+        // 1. Kategoriye Göre Filtrele
         let filteredProducts = allProducts;
         
         if (categoryName !== 'all') {
@@ -744,11 +747,21 @@
             });
         }
         
+        // 2. Arama Terimine Göre Filtrele (Arama terimi boş değilse uygula)
+        if (normalizedSearchTerm) {
+            filteredProducts = filteredProducts.filter(p => {
+                const name = (p.name || '').toLowerCase();
+                const description = (p.description || '').toLowerCase();
+                return name.includes(normalizedSearchTerm) || description.includes(normalizedSearchTerm);
+            });
+        }
+        
         const productsListContainer = document.getElementById("products-list-container");
         if (productsListContainer) {
             renderProductCards(filteredProducts, productsListContainer);
         }
         
+        // Arayüz güncellemeleri
         document.querySelectorAll('.category-link').forEach(link => {
             link.classList.remove('active');
             if (link.outerHTML.includes(`'${categoryName}'`)) {
@@ -758,11 +771,26 @@
         
         const pageTitleElement = document.querySelector('.lg\\:flex-grow h2');
         if(pageTitleElement) {
-             pageTitleElement.innerHTML = `${categoryName === 'all' ? 'Tüm Ürünler' : categoryName} <span class="text-sm text-gray-500 font-normal">(${filteredProducts.length} ürün)</span>`;
+             const baseTitle = currentSearchTerm ? `Arama: "${currentSearchTerm}"` : (categoryName === 'all' ? 'Tüm Ürünler' : categoryName);
+             pageTitleElement.innerHTML = `${baseTitle} <span class="text-sm text-gray-500 font-normal">(${filteredProducts.length} ürün)</span>`;
+        }
+        
+        // Arama çubuğunu senkronize et (Eğer varsa)
+        const searchInput = document.getElementById('product-search-input');
+        if (searchInput && searchInput.value !== currentSearchTerm) {
+            searchInput.value = currentSearchTerm;
         }
     }
 
-    // --- ANASAYFA RENDER (Aynı Kaldı) ---
+    // YENİ: Arama çubuğu girişi için işleyici
+    window.handleSearchInput = function(event) {
+        const searchTerm = event.target.value.trim();
+        // Sadece kategori filtresini koruyarak arama yap
+        handleCategorySelect(currentActiveCategory, searchTerm);
+    };
+
+
+    // --- ANASAYFA RENDER (Arama Çubuğu Eklendi) ---
     function renderHomePage() {
         const homeContent = document.createElement('div');
         homeContent.className = "max-w-7xl mx-auto p-4 sm:p-6";
@@ -780,6 +808,14 @@
                 </div>
 
                 <div class="lg:flex-grow">
+                    
+                    <div class="relative mb-6">
+                        <input type="text" id="product-search-input" placeholder="Ürün adı veya açıklaması ile ara..." 
+                               class="w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors text-base"
+                               oninput="handleSearchInput(event)" value="${currentSearchTerm}">
+                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+
                     <div class="flex justify-between items-center mb-6 border-b pb-3">
                         <h2 class="text-xl sm:text-3xl font-bold text-gray-800 mb-2 sm:mb-0">
                             Ürünler Yükleniyor...
@@ -796,7 +832,8 @@
         appContainer.appendChild(homeContent);
 
         renderCategoryMenu();
-        handleCategorySelect(currentActiveCategory);
+        // Hem kategori hem de arama terimiyle filtreleme yap
+        handleCategorySelect(currentActiveCategory, currentSearchTerm);
     }
     
     // --- ÜRÜN DETAY SAYFASI RENDER (Aynı Kaldı) ---
