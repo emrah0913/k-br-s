@@ -78,25 +78,39 @@
             <input id="bannerDescription" placeholder="Açıklama" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary" />
             <input id="bannerLink" placeholder="Link (Örn: #/detail?id=...) (Opsiyonel)" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary" />
             <div class="flex gap-2 col-span-1">
-                <button id="addBannerBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-1/2 transition-colors">Ekle</button>
-                <button id="refreshBannerBtn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded w-1/2 transition-colors">Yenile</button>
+                <button id="addBannerBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full transition-colors">Ekle</button>
             </div>
         </div>
+        <button id="refreshBannerBtn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded transition-colors mb-4"><i class="ri-refresh-line"></i> Yenile</button>
         <div id="bannerList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
     </div>
 
     <div id="sectionCategory" class="hidden">
         <h3 class="font-semibold mb-3 border-b pb-2 text-gray-700">🗂 Kategori Yönetimi</h3>
+        
+        <div id="categoryEditingStatus" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 mb-4 hidden" role="alert">
+            <p class="font-bold">Düzenleme Modu:</p>
+            <p id="editingCategoryNameDisplay"></p>
+            <input type="hidden" id="editingCategoryId" />
+        </div>
+
         <div id="category-form-area" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 p-4 border rounded-lg bg-gray-50">
             <input id="categoryName" placeholder="Kategori adı (Zorunlu)" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary" />
             <select id="parentCategory" class="border p-2 rounded col-span-2 focus:ring-primary focus:border-primary">
                 <option value="">Üst Kategori Yok</option>
             </select>
             <input id="categoryImage" placeholder="Kategori Görsel URL (Opsiyonel)" class="border p-2 rounded col-span-3 focus:ring-primary focus:border-primary" />
-            <button id="addCategoryBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors col-span-1">Ekle</button>
+            
+            <div class="flex gap-2 col-span-1">
+                <button id="addCategoryBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors w-full"><i class="ri-add-line"></i> Ekle</button>
+                <button id="updateCategoryBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition-colors hidden w-full"><i class="ri-save-line"></i> Güncelle</button>
+                <button id="cancelCategoryEditBtn" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded hidden transition-colors w-full"><i class="ri-close-line"></i> İptal</button>
+            </div>
         </div>
+        
+        <button onclick="loadCategories()" class="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded transition-colors mb-4"><i class="ri-refresh-line"></i> Yenile</button>
         <div id="categoryList" class="space-y-2"></div>
-        <button onclick="loadCategories()" class="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded transition-colors"><i class="ri-refresh-line"></i> Yenile</button>
+        
     </div>
 
     <div id="sectionProduct" class="hidden">
@@ -202,7 +216,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebas
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-// Firestore için DEBUG seviyesini aç (İsteğe bağlı, hataları görmeyi kolaylaştırır)
+// Firestore için DEBUG seviyesini aç (İsteğe bağlı)
 // setLogLevel('debug');
 
 const firebaseConfig = {
@@ -223,7 +237,6 @@ const provider = new GoogleAuthProvider();
 // !!! KRİTİK: BURAYI KENDİ ADMİN EMAIL'İNİZLE DEĞİŞTİRMEYİN!
 const ADMIN_EMAIL = "emirmob09@gmail.com"; 
 
-// Admin kategori verilerini tutmak için yeni global değişken
 let allAdminCategories = {}; 
 
 // --- DOM Elementleri ---
@@ -255,9 +268,14 @@ const refreshBannerBtn = document.getElementById("refreshBannerBtn");
 // Kategori
 const categoryName = document.getElementById("categoryName");
 const parentCategory = document.getElementById("parentCategory");
-const categoryImage = document.getElementById("categoryImage"); // YENİ
+const categoryImage = document.getElementById("categoryImage"); 
 const addCategoryBtn = document.getElementById("addCategoryBtn");
+const updateCategoryBtn = document.getElementById("updateCategoryBtn"); // YENİ
+const cancelCategoryEditBtn = document.getElementById("cancelCategoryEditBtn"); // YENİ
 const categoryList = document.getElementById("categoryList");
+const categoryEditingStatus = document.getElementById("categoryEditingStatus"); // YENİ
+const editingCategoryNameDisplay = document.getElementById("editingCategoryNameDisplay"); // YENİ
+const editingCategoryId = document.getElementById("editingCategoryId"); // YENİ
 
 // Ürün
 const productName = document.getElementById("productName");
@@ -297,7 +315,6 @@ const editingProductId = document.getElementById("editingProductId");
 let currentProducts = [];
 let productVariants = []; 
 
-// Başlangıçta Banner sekmesini aktif yap
 tabBanner.classList.add("bg-[--color-primary]", "text-white"); 
 
 // --- YARDIMCI VE UI MANTIĞI ---
@@ -306,6 +323,10 @@ function showMsg(text, isError=true){
     msg.style.color=isError?"#b91c1c":"#065f46"; 
     if(text) setTimeout(()=>{msg.textContent="";},5000);
 }
+
+// ... Diğer yardımcı fonksiyonlar (updateImagePreview, addExtraImageInput, collectExtraImages, VARYANT MANTIĞI) aynı kalır ...
+
+// --- YARDIMCI VE UI MANTIĞI ---
 
 // --- MEDYA ÖNİZLEME GÜNCELLEME İŞLEYİCİSİ ---
 function updateImagePreview(inputElement, previewElement) {
@@ -317,7 +338,6 @@ function updateImagePreview(inputElement, previewElement) {
     }
 }
 
-// Ana görsel için dinleyici
 productImage.addEventListener('input', () => {
     updateImagePreview(productImage, productImagePreview);
 });
@@ -395,13 +415,9 @@ function collectExtraImages() {
 }
 
 addExtraImageBtn.addEventListener('click', () => addExtraImageInput());
-// --- ANA ÜRÜN EK GÖRSEL YÖNETİMİ BİTİŞ ---
 
-// --- VARYANT MEDYA YÖNETİMİ BAŞLANGIÇ (Aynı Kaldı) ---
+// --- VARYANT MEDYA YÖNETİMİ BAŞLANGIÇ ---
 
-/**
- * Dinamik olarak bir varyant medya URL input alanı ekler.
- */
 function addVariantMediaInput(container, type, initialValue = '') {
     const inputWrapper = document.createElement('div');
     inputWrapper.className = 'flex gap-2 items-center';
@@ -452,9 +468,6 @@ function addVariantMediaInput(container, type, initialValue = '') {
     });
 }
 
-/**
- * Belirtilen tipten (image veya video) tüm varyant medya URL'lerini toplar.
- */
 function collectVariantMedia(container) {
     const inputs = container.querySelectorAll('.variant-media-url');
     const urls = [];
@@ -467,14 +480,10 @@ function collectVariantMedia(container) {
     return urls;
 }
 
-// Event Listeners for adding variant media inputs
 addVariantImageBtn.addEventListener('click', () => addVariantMediaInput(variantImagesContainer, 'image'));
 addVariantVideoBtn.addEventListener('click', () => addVariantMediaInput(variantVideosContainer, 'video'));
 
-// --- VARYANT MEDYA YÖNETİMİ BİTİŞ ---
-
-
-// Yeni varyant listesini temizler ve render eder (Aynı Kaldı)
+// Yeni varyant listesini temizler ve render eder
 function renderVariants() {
     variantList.innerHTML = '';
     if (productVariants.length === 0) {
@@ -517,7 +526,6 @@ function renderVariants() {
     });
 }
 
-// Varyant Ekleme Butonu (Aynı Kaldı)
 addVariantBtn.addEventListener('click', () => {
     const name = variantName.value.trim();
     const priceOffset = parseFloat(variantPriceOffset.value);
@@ -543,7 +551,30 @@ addVariantBtn.addEventListener('click', () => {
     renderVariants();
 });
 
+// --- KATEGORİ FORMUNU SIFIRLA VE DÜZENLEME MODUNU AYARLA (YENİ) ---
 
+function resetCategoryForm(isEditing = false) {
+    categoryName.value = "";
+    parentCategory.value = "";
+    categoryImage.value = "";
+    editingCategoryId.value = "";
+    editingCategoryNameDisplay.textContent = "";
+
+    if (isEditing) {
+        addCategoryBtn.classList.add("hidden");
+        updateCategoryBtn.classList.remove("hidden");
+        cancelCategoryEditBtn.classList.remove("hidden");
+        categoryEditingStatus.classList.remove("hidden");
+    } else {
+        addCategoryBtn.classList.remove("hidden");
+        updateCategoryBtn.classList.add("hidden");
+        cancelCategoryEditBtn.classList.add("hidden");
+        categoryEditingStatus.classList.add("hidden");
+    }
+}
+cancelCategoryEditBtn.addEventListener("click", () => resetCategoryForm(false));
+
+// --- GENEL FORM RESET (ÜRÜN) ---
 function resetProductForm(isEditing = false) {
     productName.value = "";
     productPrice.value = "";
@@ -597,7 +628,7 @@ function activateTab(target){
         sectionCategory.classList.remove("hidden"); 
         tabCategory.classList.add("bg-[--color-primary]","text-white");
         tabCategory.classList.remove("bg-gray-100");
-        categoryImage.value = ""; // Kategori görsel alanını temizle
+        resetCategoryForm(false); // Kategori formunu sıfırla
         loadCategories();
     }
     if(target==="product"){
@@ -725,22 +756,23 @@ async function loadBanners(){
     }
 }
 
-// --- CATEGORY CRUD (Görsel Desteği Eklendi) ---
+// --- CATEGORY CRUD (Ekleme, Güncelleme, Düzenleme, Silme) ---
+
+// Kategori Ekleme
 addCategoryBtn.addEventListener("click", async ()=>{
     const name=categoryName.value.trim(); 
     const parent = parentCategory.value || null;
-    const imageUrl = categoryImage.value.trim() || null; // YENİ: Görsel URL'sini al
+    const imageUrl = categoryImage.value.trim() || null; 
 
     if(!name){showMsg("Kategori adı boş olamaz", true); return;}
     try{
         await addDoc(collection(db,"homeCategories"),{
             name,
             parent, 
-            image: imageUrl, // Firestore'a kaydet
+            image: imageUrl, 
             createdAt:new Date()
         });
-        categoryName.value=""; 
-        categoryImage.value=""; // Alanı temizle
+        resetCategoryForm(false);
         await loadCategories(); 
         showMsg("Kategori başarıyla eklendi", false);
     }catch(e){
@@ -748,7 +780,53 @@ addCategoryBtn.addEventListener("click", async ()=>{
     }
 });
 
-// YARDIMCI FONKSİYON: Tam hiyerarşi yolunu hesaplar (Aynı Kaldı)
+// Kategori Güncelleme
+updateCategoryBtn.addEventListener("click", async () => {
+    const categoryId = editingCategoryId.value;
+    const name = categoryName.value.trim();
+    const parent = parentCategory.value || null;
+    const imageUrl = categoryImage.value.trim() || null;
+
+    if (!categoryId) return;
+    if (!name) { showMsg("Kategori adı boş olamaz", true); return; }
+
+    try {
+        const categoryRef = doc(db, "homeCategories", categoryId);
+        await updateDoc(categoryRef, {
+            name,
+            parent,
+            image: imageUrl,
+            updatedAt: new Date()
+        });
+        resetCategoryForm(false);
+        await loadCategories();
+        showMsg("Kategori başarıyla güncellendi", false);
+    } catch (e) {
+        showMsg("Güncelleme hatası: " + e.message, true);
+    }
+});
+
+// Kategori Düzenleme Moduna Geçiş
+function editCategory(categoryId) {
+    const category = Object.values(allAdminCategories).find(c => c.id === categoryId);
+
+    if (category) {
+        resetCategoryForm(true); // Düzenleme moduna geç
+
+        categoryName.value = category.name;
+        parentCategory.value = category.parent || "";
+        categoryImage.value = category.image || "";
+        
+        editingCategoryId.value = categoryId;
+        editingCategoryNameDisplay.textContent = category.name;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        showMsg("Düzenlenecek kategori bulunamadı.", true);
+    }
+}
+
+
+// YARDIMCI FONKSİYON: Tam hiyerarşi yolunu hesaplar 
 function getCategoryHierarchyPath(categoryName) {
     if (!categoryName) return [];
     
@@ -787,23 +865,32 @@ async function loadCategories(){
             
             // UI listesini oluştur (Görsel ve Parent bilgisiyle)
             const el=document.createElement("div");
-            el.className="flex items-center justify-between bg-gray-100 p-2 rounded";
+            el.className="flex justify-between items-center bg-gray-100 p-2 rounded";
             
-            // Kategori Listeleme Kartı HTML
             el.innerHTML=`
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-grow min-w-0">
                     <img src="${d.image || 'https://placehold.co/32x32/5D3EBC/FFFFFF?text=?'}" class="w-8 h-8 object-cover rounded flex-shrink-0" onerror="this.onerror=null;this.src='https://placehold.co/32x32/5D3EBC/FFFFFF?text=?'" />
-                    <span>${d.parent?d.parent+" > ":""}${d.name}</span> 
+                    <span class="truncate">${d.parent?d.parent+" > ":""}${d.name}</span> 
                 </div>
-                <button data-id="${catId}" class="delete-category-btn bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-sm transition-colors">Sil</button>
+                <div class="flex gap-2">
+                    <button data-id="${catId}" class="edit-category-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-sm transition-colors flex items-center gap-1"><i class="ri-edit-line"></i> Düzenle</button>
+                    <button data-id="${catId}" class="delete-category-btn bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-sm transition-colors flex items-center gap-1"><i class="ri-delete-bin-line"></i> Sil</button>
+                </div>
             `;
-
+            
+            // Silme İşlemi
             el.querySelector(".delete-category-btn").addEventListener("click",async(e)=>{ 
                 const id = e.target.dataset.id;
                 await deleteDoc(doc(db,"homeCategories",id)); 
                 await loadCategories(); 
                 showMsg("Kategori silindi", false); 
             });
+            
+            // Düzenleme İşlemi
+            el.querySelector(".edit-category-btn").addEventListener("click",(e)=>{
+                editCategory(e.currentTarget.dataset.id);
+            });
+
             categoryList.appendChild(el);
         });
 
@@ -874,7 +961,6 @@ updateProductBtn.addEventListener("click", async () => {
     const active = productActive.checked;
     const variants = productVariants;
     
-    // KRİTİK: Hiyerarşiyi kaydet!
     const hierarchy = getCategoryHierarchyPath(category);
 
 
@@ -921,7 +1007,6 @@ addProductBtn.addEventListener("click", async ()=>{
     const active=productActive.checked;
     const variants = productVariants;
 
-    // KRİTİK: Hiyerarşiyi kaydet!
     const hierarchy = getCategoryHierarchyPath(category);
 
 
