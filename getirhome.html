@@ -74,7 +74,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #5D3EBC; 
+        background-color: '#5D3EBC'; 
     }
 
     /* Görselin kırpılmasını önler, kenarlarda boşluk kalmasına izin verir. */
@@ -91,7 +91,7 @@
     }
     /* Aktif varyant butonu için stil */
     .variant-button.active {
-        border-color: #5D3EBC; /* primary color */
+        border-color: '#5D3EBC'; /* primary color */
         box-shadow: 0 0 0 3px #5D3EBC40; /* Hafif bir glow efekti */
     }
     
@@ -120,6 +120,15 @@
     }
     .toggle-icon {
         transition: transform 0.2s ease-in-out;
+    }
+    
+    /* Kategori Görsel Boyutu */
+    .category-thumb {
+        width: 20px; 
+        height: 20px;
+        object-fit: cover;
+        border-radius: 4px;
+        flex-shrink: 0;
     }
 </style>
 
@@ -208,7 +217,7 @@
     const mobileMenu = document.getElementById("mobile-menu");
 
     let allProducts = []; 
-    let allCategories = {}; 
+    let allCategories = {}; // {name: {id, name, parent, image}}
     let allBanners = []; 
     let productsLoaded = false;
     let currentActiveCategory = 'all'; 
@@ -243,32 +252,27 @@
         
         return path;
     }
-    
+
     /**
      * Tıklandığında alt menüyü açıp kapar ve ikonu döndürür.
+     * Yaprak (Leaf) kategori ise direkt filtrelemeyi tetikler.
      */
     window.toggleCategoryAccordion = function(element, isLeafCategory, categoryName) {
         if (isLeafCategory) {
-            // Eğer yaprak kategoriyse (alt kategorisi yoksa), filtrelemeyi yap
             handleCategorySelect(categoryName);
-            // Mobilde kapat
             if (window.innerWidth < 1024) toggleMobileMenu(); 
             return;
         }
 
-        // Değilse, sadece açıp kapama işlemini yap
         const parentLi = element.closest('li');
         const childUl = parentLi.querySelector('.category-children');
         const toggleIcon = element.querySelector('.toggle-icon');
 
         if (childUl) {
+            // Sadece alt menüyü aç/kapa
             childUl.classList.toggle('hidden');
-            toggleIcon.classList.toggle('rotated');
+            if(toggleIcon) toggleIcon.classList.toggle('rotated');
         }
-        
-        // Üst kategoriye tıklandığında, hiyerarşi kırılabileceği için 'all' hariç aktiflik durumunu temizle.
-        // Ama kullanıcı görseldeki gibi üst klasöre tıkladığında listeyi açıp sadece en alt öğeyi seçsin ister.
-        // Bu yüzden burada filtreleme yapmayıp, sadece menüyü açıp kapatıyoruz.
     }
 
 
@@ -343,7 +347,7 @@
         }
     }
     
-    // --- KARGO VE BANNER MANTIĞI ---
+    // --- KARGO VE BANNER MANTIĞI (Aynı Kaldı) ---
 
     function getEmbedUrl(url) {
         if (!url) return null;
@@ -627,7 +631,7 @@
         });
     }
     
-    // --- HİYERARŞİK KATEGORİ MENÜ MANTIĞI ---
+    // --- HİYERARŞİK KATEGORİ MENÜ MANTIĞI (Görsel Entegrasyonu) ---
 
     function renderCategoryMenuItem(category, level = 0) {
         const filterValue = category.name;
@@ -641,8 +645,10 @@
         const children = Object.values(allCategories).filter(cat => cat.parent === category.name);
         const hasChildren = children.length > 0;
         
-        // Yaprak (Leaf) kategorisi mi? Alt kategorisi yoksa (hasChildren == false) filtreleme yapar
         const isLeafCategory = !hasChildren;
+        
+        // KRİTİK: Kategori görselini al
+        const categoryImage = category.image || 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'30\' fill=\'%235D3EBC\' text-anchor=\'middle\'\/\>\<\/svg\>';
         
         // Toggle butonu/link yapısı
         let html = `
@@ -652,7 +658,12 @@
                    onclick="toggleCategoryAccordion(this, ${isLeafCategory}, '${filterValue}');">
                     
                     <span class="flex items-center">
-                        <i class="${hasChildren ? 'ri-folder-line' : 'ri-arrow-right-s-line'} mr-2 text-base"></i> 
+                        <img src="${categoryImage}" 
+                            alt="${category.name}" 
+                            class="category-thumb mr-2" 
+                            onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23ffffff\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'30\' fill=\'%235D3EBC\' text-anchor=\'middle\'\/\>\<\/svg\>';"
+                        />
+                        
                         ${category.name}
                     </span>
                     
@@ -685,7 +696,7 @@
 
         if (!menuContainer || !mobileMenuContainer) return;
 
-        // Tüm Ürünler linki (Bu da bir yaprak kategori gibi filtreleme yapar)
+        // Tüm Ürünler linki (Görsel kullanmaz)
         const allProductsLink = `<a href="#/category?name=all" class="category-link block p-2 rounded-lg text-sm mb-2 text-white bg-primary hover:bg-primary/90 transition-colors font-semibold ${currentActiveCategory === 'all' ? 'active' : ''}" onclick="handleCategorySelect('all'); event.preventDefault(); if (window.innerWidth < 1024) toggleMobileMenu();">
             <i class="ri-grid-line mr-2"></i> Tüm Ürünler
         </a>`;
@@ -709,14 +720,12 @@
         if(currentActiveCategory !== 'all') {
             const activeLink = document.querySelector(`.category-link.active`);
             if (activeLink && activeLink.tagName === 'BUTTON') {
-                // Aktif olan yaprak kategorinin üst menülerini aç (Sadece masaüstü için)
                 if (window.innerWidth >= 1024) {
                     let parentUl = activeLink.closest('.category-children');
                     while(parentUl) {
                         parentUl.classList.remove('hidden');
                         const toggleIcon = parentUl.previousElementSibling.querySelector('.toggle-icon');
                         if (toggleIcon) toggleIcon.classList.add('rotated');
-                        // Bir üst seviyeye çık
                         parentUl = parentUl.closest('ul')?.closest('li')?.querySelector('.category-children');
                     }
                 }
@@ -731,7 +740,6 @@
         
         if (categoryName !== 'all') {
             filteredProducts = allProducts.filter(p => {
-                // Ürünün hiyerarşi dizisinde seçili kategori var mı?
                 return p.hierarchy && p.hierarchy.includes(categoryName);
             });
         }
@@ -743,7 +751,6 @@
         
         document.querySelectorAll('.category-link').forEach(link => {
             link.classList.remove('active');
-            // Butonun onclick içindeki kategori adını kontrol et
             if (link.outerHTML.includes(`'${categoryName}'`)) {
                  link.classList.add('active');
             }
@@ -793,9 +800,207 @@
     }
     
     // --- ÜRÜN DETAY SAYFASI RENDER (Aynı Kaldı) ---
-    // (updateProductMedia ve renderDetailPage fonksiyonları yukarıda tam olarak mevcuttur)
+    
+    function updateProductMedia(productName, images, videos) {
+        const mainDisplay = document.getElementById('main-media-display');
+        const thumbnailGallery = document.getElementById('thumbnail-gallery');
+        
+        const mediaList = [];
+        images.forEach(url => mediaList.push({ url, isVideo: false }));
+        videos.forEach(rawUrl => {
+            const embedUrl = getEmbedUrl(rawUrl);
+            if (embedUrl) { mediaList.push({ url: rawUrl, embedUrl, isVideo: true }); }
+        });
 
-    // --- ÜRÜN VE VERİ YÜKLEME (Aynı Kaldı) ---
+        if (mediaList.length === 0) {
+            mainDisplay.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-500">Görüntülenecek Medya Yok</div>`;
+            thumbnailGallery.innerHTML = '';
+            return;
+        }
+        
+        const firstMedia = mediaList[0];
+        let initialMainContent = '';
+        
+        if (firstMedia.isVideo) {
+             initialMainContent = `<div class="video-container"><iframe src="${firstMedia.embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
+        } else {
+            initialMainContent = `<img id="current-main-image" src="${firstMedia.url}" alt="${productName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
+        }
+        mainDisplay.innerHTML = initialMainContent;
+
+        thumbnailGallery.innerHTML = mediaList.map((media, index) => {
+            const isVideo = media.isVideo;
+            const url = isVideo ? 'https://placehold.co/60x60/5D3EBC/FFFFFF?text=VIDEO' : media.url;
+            return `
+                <div class="media-thumb-wrapper w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer relative ${index === 0 ? 'border-primary' : 'border-gray-200'}" data-url="${media.url}" data-type="${isVideo ? 'video' : 'image'}">
+                    <img src="${url}" alt="Thumb ${index + 1}" class="w-full h-full object-cover ${isVideo ? 'opacity-50' : ''}" onerror="this.onerror=null; this.src='https://placehold.co/60x60/5D3EBC/FFFFFF?text=Gorsel';">
+                    ${isVideo ? '<i class="ri-play-fill ri-xl text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>' : ''}
+                </div>
+            `;
+        }).join('');
+
+        document.querySelectorAll('.media-thumb-wrapper').forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                const rawUrl = thumb.dataset.url;
+                const type = thumb.dataset.type;
+
+                document.querySelectorAll('.media-thumb-wrapper').forEach(t => t.classList.remove('border-primary'));
+                thumb.classList.add('border-primary');
+                
+                if (type === 'image') {
+                    mainDisplay.innerHTML = `<img id="current-main-image" src="${rawUrl}" alt="${productName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
+                } else if (type === 'video') {
+                    const embedUrl = getEmbedUrl(rawUrl);
+                     mainDisplay.innerHTML = `<div class="video-container"><iframe src="${embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
+                }
+            });
+        });
+    }
+
+
+    function renderDetailPage(productId) {
+        const product = allProducts.find(p => p.id === productId);
+
+        if (!product) {
+            appContainer.innerHTML = `<div class="max-w-7xl mx-auto p-6"><div class="text-center py-20"><h2 class="text-4xl font-bold text-red-500 mb-4">Ürün Bulunamadı :(</h2><a href="#" onclick="navigate('/')" class="mt-6 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"><i class="ri-arrow-left-line"></i> Anasayfaya Dön</a></div></div>`;
+            return;
+        }
+
+        const productNameDisplay = product.name || 'Ürün Adı Yok';
+        const initialPrice = parseFloat(product.price) || 0;
+        currentCalculatedPrice = initialPrice; 
+
+        const baseImages = [product.image, ...(Array.isArray(product.extraImages) ? product.extraImages : [])].filter(Boolean);
+        const baseVideos = product.video ? [product.video] : []; 
+
+        const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+        
+        const variantsHtml = hasVariants ? `
+            <div id="variant-selector-ui" class="my-4 sm:my-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Varyant Seçimi:</label>
+                <div id="variant-buttons" class="flex flex-wrap gap-3">
+                    </div>
+                <p class="text-xs text-red-500 mt-2" id="variant-warning">Lütfen bir varyant seçiniz.</p>
+            </div>
+        ` : '';
+
+        appContainer.innerHTML = `
+            <div class="max-w-7xl mx-auto p-4 sm:p-6">
+                <a href="#" onclick="navigate('/')" class="text-primary hover:text-primary/80 font-semibold mb-6 flex items-center gap-2 transition-colors text-sm sm:text-base">
+                    <i class="ri-arrow-left-line"></i> Tüm Ürünlere Geri Dön
+                </a>
+                
+                <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl">
+                    <div class="flex flex-col lg:flex-row gap-8 sm:gap-10">
+                        <div class="lg:w-1/2">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6 hidden lg:block">${productNameDisplay}</h2>
+                            
+                            <div id="main-media-display" class="h-96 rounded-xl overflow-hidden shadow-xl bg-gray-200 mb-4 relative">
+                            </div>
+
+                            <div id="thumbnail-gallery" class="flex gap-2 overflow-x-auto pb-2">
+                            </div>
+                        </div>
+
+                        <div class="lg:w-1/2">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6 lg:hidden">${productNameDisplay}</h2>
+                            <span class="text-xs sm:text-sm text-primary font-bold uppercase">${product.category || 'GENEL'}</span>
+                            <p class="text-base sm:text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
+                            
+                            <div class="my-4 sm:my-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                <span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>
+                                <p class="text-xs sm:text-sm text-gray-500 mt-1">Ana fiyat: ${initialPrice.toFixed(2)} ₺. Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
+                            </div>
+
+                            ${variantsHtml}
+
+                            <button data-id="${product.id}" id="detail-add-to-cart-btn" class="w-full bg-getir-yellow text-primary px-6 py-3 rounded-lg font-extrabold text-base sm:text-lg hover:bg-getir-yellow/80 transition-colors flex items-center justify-center gap-2 shadow-md">
+                                <i class="ri-shopping-cart-2-fill"></i> Sepete Ekle
+                            </button>
+
+                            <div class="mt-6 sm:mt-8 pt-4 border-t border-gray-200">
+                                <h4 class="font-semibold text-sm sm:text-base text-gray-700 mb-2">Ek Bilgiler</h4>
+                                <ul class="text-xs sm:text-sm text-gray-500 space-y-1">
+                                    <li><i class="ri-check-line text-green-500"></i> Hızlı Teslimat Garantisi (${product.active ? 'Aktif' : 'Pasif'})</li>
+                                    <li><i class="ri-check-line text-green-500"></i> Güvenli Ödeme</li>
+                                    <li><i class="ri-check-line text-green-500"></i> İade İmkanı (Koşullu)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const priceEl = document.getElementById('dynamic-price');
+        const cartBtn = document.getElementById('detail-add-to-cart-btn');
+        const variantButtonsDiv = document.getElementById('variant-buttons');
+        const variantWarning = document.getElementById('variant-warning');
+
+        function updatePriceAndGlobal(offset = 0) {
+            currentCalculatedPrice = initialPrice + offset;
+            priceEl.textContent = currentCalculatedPrice.toFixed(2) + ' ₺';
+        }
+
+        if (hasVariants) {
+            cartBtn.disabled = true; 
+            variantWarning.style.display = 'block';
+
+            const allVariants = product.variants;
+            
+            variantButtonsDiv.innerHTML = allVariants.map((v, index) => {
+                const variantImage = Array.isArray(v.extraImages) && v.extraImages.length > 0 ? v.extraImages[0] : product.image || 'https://placehold.co/60x60/5D3EBC/FFFFFF?text=V'; 
+                const offset = parseFloat(v.price_offset) || 0;
+                const offsetText = offset !== 0 ? ` (${offset >= 0 ? '+' : ''}${offset.toFixed(2)} ₺)` : '';
+                
+                return `
+                    <button type="button" class="variant-button p-1 border-2 border-gray-200 rounded-full hover:border-primary transition-all duration-200 focus:outline-none" data-index="${index}" title="${v.name}${offsetText}">
+                        <img src="${variantImage}" alt="${v.name}" class="w-12 h-12 object-cover rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/60x60/5D3EBC/FFFFFF?text=V';">
+                    </button>
+                `;
+            }).join('');
+            
+            document.querySelectorAll('.variant-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    const selectedVariantData = product.variants[index];
+                    const offset = parseFloat(selectedVariantData.price_offset) || 0;
+                    
+                    document.querySelectorAll('.variant-button').forEach(btn => btn.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    
+                    updatePriceAndGlobal(offset);
+                    
+                    const images = [product.image, ...(selectedVariantData.extraImages || [])].filter(Boolean);
+                    const videos = [...(product.video ? [product.video] : []), ...(selectedVariantData.extraVideos || [])].filter(Boolean);
+                    
+                    updateProductMedia(product.name, images, videos);
+                    
+                    currentSelectedVariant = selectedVariantData;
+                    cartBtn.disabled = false;
+                    variantWarning.style.display = 'none';
+                });
+            });
+            updateProductMedia(product.name, baseImages, baseVideos);
+
+        } else {
+            currentSelectedVariant = { name: 'Standart', price_offset: 0 }; 
+            cartBtn.disabled = false;
+            updateProductMedia(product.name, baseImages, baseVideos);
+            if (variantWarning) variantWarning.style.display = 'none';
+        }
+
+        cartBtn.addEventListener('click', (e) => {
+            if (hasVariants && !currentSelectedVariant) {
+                showMsg("Lütfen bir ürün varyantı seçin.", true);
+                return;
+            }
+            handleAddToCart(e, currentSelectedVariant, currentCalculatedPrice);
+        });
+    }
+
+
+    // --- ÜRÜN VE VERİ YÜKLEME ---
     async function loadProducts(){
         productsLoaded = false;
         renderPage(); 
@@ -805,14 +1010,17 @@
                 try { await signInAnonymously(auth); } catch(e) { console.warn("Anonim giriş başarısız oldu:", e.message); }
             }
             
+            // 1. Kategorileri Çek
             const categorySnap = await getDocs(collection(db, "homeCategories"));
             const tempCategoryMap = {};
             categorySnap.docs.forEach(docSnap => {
                  const d = docSnap.data();
-                 tempCategoryMap[d.name] = { id: docSnap.id, name: d.name, parent: d.parent || null };
+                 // KRİTİK: image alanını çekiyoruz
+                 tempCategoryMap[d.name] = { id: docSnap.id, name: d.name, parent: d.parent || null, image: d.image || null }; 
             });
             allCategories = tempCategoryMap;
 
+            // 2. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
             allProducts = productSnap.docs.map(docSnap => {
@@ -842,6 +1050,7 @@
                 };
             }).filter(p => p.active); 
             
+            // 3. Bannerları Çek
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
             allBanners = bannerSnap.docs.map(docSnap => ({
                 ...docSnap.data(),
