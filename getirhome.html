@@ -101,12 +101,9 @@
 
 <header class="sticky top-0 w-full bg-white shadow-md z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <!-- Yeni Logo/Anasayfa Bağlantıları Grubu -->
         <div class="flex items-center space-x-2 sm:space-x-4">
-            <!-- Getir Home (Mevcut Uygulama/Dosya Anasayfası) -->
             <a href="#" onclick="navigate('/')" class="text-lg sm:text-xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Home</a>
             
-            <!-- Getir Kıbrıs (index.html dosyasına yönlendirir) -->
             <a href="index.html" class="text-lg sm:text-xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-2 sm:pl-4">Getir Kıbrıs</a>
         </div>
         
@@ -124,15 +121,11 @@
     </div>
 </header>
 
-<!-- HERO SECTION - Dinamik Olarak Buraya Yüklenecek (CAROUSEL) -->
 <section id="hero-section" class="bg-primary/90 text-white">
-    <!-- İçerik JS tarafından carousel olarak yüklenecek -->
-</section>
+    </section>
 
-<!-- ANA İÇERİK BÖLÜMÜ - Anasayfa veya Detay Sayfası burada yüklenecek -->
 <main id="app-container">
-    <!-- JS ile içerik buraya yüklenecek -->
-</main>
+    </main>
 
 <div id="msg" class="fixed bottom-4 right-4 z-[100] px-4 py-2 rounded-lg text-white font-medium shadow-xl hidden transition-all duration-300"></div>
 
@@ -174,7 +167,8 @@
     const pageTitle = document.getElementById("page-title");
 
     let allProducts = []; 
-    let allCategories = []; 
+    // KRİTİK DEĞİŞİKLİK: Kategorileri artık tam obje olarak tutuyoruz
+    let allCategories = {}; 
     let allBanners = []; 
     let productsLoaded = false;
     let currentUserId = null;
@@ -556,7 +550,6 @@
                     ${slidesHtml}
                 </div>
                 
-                <!-- Navigation Arrows -->
                 <button id="prev-btn" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg z-10 transition-colors hidden sm:block">
                     <i class="ri-arrow-left-s-line ri-xl"></i>
                 </button>
@@ -564,7 +557,6 @@
                     <i class="ri-arrow-right-s-line ri-xl"></i>
                 </button>
 
-                <!-- Indicators (Dots) -->
                 <div id="carousel-dots" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
                     ${allBanners.map((_, index) => `<button data-slide="${index}" class="w-2 h-2 rounded-full bg-white opacity-50 hover:opacity-100 transition-opacity carousel-dot"></button>`).join('')}
                 </div>
@@ -643,7 +635,6 @@
                     ${imageHtml}
                 </div>
                 <span class="text-xs text-primary font-semibold uppercase mb-1">${p.category || 'GENEL'}</span>
-                <!-- RESPONSIVE YAZI BOYUTU -->
                 <h3 class="font-bold text-sm sm:text-base text-gray-800 truncate mb-1">${productNameDisplay}</h3>
                 <p class="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">${p.description || "Açıklama mevcut değil."}</p>
                 
@@ -667,13 +658,37 @@
         });
     }
 
-    // --- KATEGORİ FİLTRELEME MANTIĞI (Aynı Kaldı) ---
-    function populateCategories(filterSelect, productsListContainer) {
-        const categories = allCategories;
+    // --- YENİ YARDIMCI FONKSİYON: Tam hiyerarşi yolunu hesaplar ---
+    function getCategoryHierarchyPath(categoryName) {
+        if (!categoryName) return [];
         
-        const optionsHtml = categories.map(cat => 
-            `<option value="${cat}">${cat.toUpperCase()}</option>`
-        ).join('');
+        const path = [];
+        let currentCategoryName = categoryName;
+
+        // Kategori adı haritada bulunduğu sürece döngüyü sürdür
+        while (currentCategoryName && allCategories[currentCategoryName]) {
+            path.unshift(currentCategoryName); // Başa ekle
+            currentCategoryName = allCategories[currentCategoryName].parent; // Üst kategoriye geç
+        }
+        
+        return path;
+    }
+
+
+    // --- KATEGORİ FİLTRELEME MANTIĞI (Hiyerarşi Güncellemesi Yapıldı) ---
+    function populateCategories(filterSelect, productsListContainer) {
+        // allCategories artık bir obje olduğu için değerlerini alıyoruz
+        const categories = Object.values(allCategories);
+        
+        // Kategori listesini alfabetik olarak sıralayalım
+        categories.sort((a, b) => a.name.localeCompare(b.name));
+
+        const optionsHtml = categories.map(cat => {
+            // Hiyerarşik yolu hesapla: Örn: 'Gıda > Atıştırmalık'
+            const path = getCategoryHierarchyPath(cat.name).join(' > ');
+            // Option value'su kategori adı olarak kalmalı (ürünleri filtrelemek için)
+            return `<option value="${cat.name}">${path}</option>`;
+        }).join('');
         
         filterSelect.innerHTML = `<option value="all">Tüm Ürünler</option>` + optionsHtml;
 
@@ -682,7 +697,11 @@
             let filteredProducts = allProducts;
             
             if (selectedCategory !== 'all') {
-                filteredProducts = allProducts.filter(p => p.category === selectedCategory);
+                // Seçilen kategoriyi ve altındaki tüm ürünleri filtrelemek için:
+                filteredProducts = allProducts.filter(p => {
+                    // Ürünün hiyerarşi dizisinde seçili kategori var mı?
+                    return p.hierarchy && p.hierarchy.includes(selectedCategory);
+                });
             }
             
             renderProductCards(filteredProducts, productsListContainer);
@@ -714,11 +733,12 @@
         
         if (allProducts.length > 0) {
             populateCategories(filterSelect, productsListContainer);
+            // Başlangıçta tüm ürünleri göster
             renderProductCards(allProducts, productsListContainer);
         }
     }
 
-    // --- ÜRÜN DETAY SAYFASI RENDER FONKSİYONU (Varyant, Görsel, Video) ---
+    // --- ÜRÜN DETAY SAYFASI RENDER FONKSİYONU (Varyant, Görsel, Video) (Aynı Kaldı) ---
     function renderDetailPage(productId) {
         const product = allProducts.find(p => p.id === productId);
 
@@ -745,8 +765,7 @@
             <div id="variant-selector-ui" class="my-4 sm:my-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Varyant Seçimi:</label>
                 <div id="variant-buttons" class="flex flex-wrap gap-3">
-                    <!-- Variant buttons will be rendered here by JS -->
-                </div>
+                    </div>
                 <p class="text-xs text-red-500 mt-2" id="variant-warning">Lütfen bir varyant seçiniz.</p>
             </div>
         ` : '';
@@ -760,30 +779,22 @@
                 
                 <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl">
                     <div class="flex flex-col lg:flex-row gap-8 sm:gap-10">
-                        <!-- Media Area (Gallery & Main Display) -->
                         <div class="lg:w-1/2">
                             <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6">${productNameDisplay}</h2>
                             
-                            <!-- Main Image/Video Display -->
                             <div id="main-media-display" class="h-96 rounded-xl overflow-hidden shadow-xl bg-gray-200 mb-4 relative">
-                                <!-- Main media goes here -->
-                            </div>
+                                </div>
 
-                            <!-- Thumbnail Gallery -->
                             <div id="thumbnail-gallery" class="flex gap-2 overflow-x-auto pb-2">
-                                <!-- Thumbnails go here -->
-                            </div>
+                                </div>
                             
-                            <!-- Video Section (UpdateProductMedia tarafından yönetilecek, burada boş kalmalı) -->
                             <div id="product-video-section" class="mt-8 hidden"></div>
                         </div>
 
-                        <!-- Detail & Variants Area -->
                         <div class="lg:w-1/2">
                             <span class="text-xs sm:text-sm text-primary font-bold uppercase">${product.category || 'GENEL'}</span>
                             <p class="text-base sm:text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
                             
-                            <!-- DİNAMİK FİYAT GÖSTERİMİ -->
                             <div class="my-4 sm:my-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                                 <span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>
                                 <p class="text-xs sm:text-sm text-gray-500 mt-1">Ana fiyat: ${initialPrice.toFixed(2)} ₺. Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
@@ -915,11 +926,19 @@
                 } catch(e) {
                     // ANONİM GİRİŞ BAŞARISIZ OLURSA, KULLANICIYA SADECE UYARI VER VE DEVAM ET
                     console.warn("Anonim giriş başarısız oldu (Güvenlik Kuralı Kısıtlaması olabilir):", e.message);
-                    // Hata "auth/admin-restricted-operation" ise, bu noktada değil, ürün çekme aşamasında tetiklenecektir.
                 }
             }
             
-            // 2. Ürünleri Çek
+            // 2. Kategorileri Çek (Hiyerarşiyi oluşturmak için önce çekilmeli)
+            const categorySnap = await getDocs(collection(db, "homeCategories"));
+            const tempCategoryMap = {};
+            categorySnap.docs.forEach(docSnap => {
+                 const d = docSnap.data();
+                 tempCategoryMap[d.name] = { id: docSnap.id, name: d.name, parent: d.parent || null };
+            });
+            allCategories = tempCategoryMap;
+
+            // 3. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
             // KRİTİK: Veri standardı yokluğunu çözen, önerilen normalleştirme mantığı
@@ -943,13 +962,17 @@
                     extraVideos: Array.isArray(v.extraVideos) ? v.extraVideos.filter(vid => vid && typeof vid === 'string') : []
                 })) : [];
                 
+                // 5. KRİTİK: Hiyerarşi yolu (hierarchy) artık Firestore'da tutuluyor (Admin'den geliyor), bunu çekmeliyiz.
+                const hierarchy = Array.isArray(data.hierarchy) ? data.hierarchy : [];
+
                 // Normalleştirilmiş ürünü döndür
                 return {
                     id: docSnap.id,
                     name: String(name),
                     price: parseFloat(data.price) || 0,
                     old_price: parseFloat(data.old_price) || 0, // Eski fiyat ekliyorum
-                    category: data.category || 'genel',
+                    category: data.category || 'genel', // Sadece son kategori adı
+                    hierarchy: hierarchy, // Tüm hiyerarşi yolu (Filtreleme için kritik)
                     description: data.description || '',
                     image: image, // Standart görsel alanı (null olabilir)
                     extraImages: extraImages,
@@ -959,7 +982,7 @@
                 };
             }).filter(p => p.active); 
             
-            // 3. Bannerları Çek (Aynı Kaldı)
+            // 4. Bannerları Çek (Aynı Kaldı)
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
             allBanners = bannerSnap.docs.map(docSnap => ({
                 ...docSnap.data(),
@@ -977,9 +1000,6 @@
                 });
             }
 
-            // 4. Kategorileri Çek (Aynı Kaldı)
-            const categorySnap = await getDocs(collection(db, "homeCategories"));
-            allCategories = [...new Set(categorySnap.docs.map(docSnap => docSnap.data().name).filter(Boolean))];
 
             productsLoaded = true;
         } catch(e) {
@@ -991,7 +1011,7 @@
         }
     }
 
-    // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) ---
+    // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) (Aynı Kaldı) ---
     async function handleAddToCart(event, selectedVariant = null, calculatedPrice = null){
         const user = auth.currentUser;
         if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
