@@ -53,41 +53,50 @@
         object-fit: contain; /* Video içeriğini kırmadan sığdır */
     }
 
-    /* Ürün Detay Ana Medya Alanı */
+    /* Ürün Detay Ana Medya Alanı Kapsayıcısı */
     #main-media-display {
-        /* Yüksekliği mobil/masaüstü için ayarla, görselin kırpılmasını önlemek için */
-        height: 300px; /* Mobil ve küçük ekranlar için varsayılan */
+        /* Sadece sabit yüksekliği kaldırıp, görselin kırpılmasını önlemek için min-height verelim */
+        min-height: 250px; /* Görsel yüklenene kadar veya mobil için minimum yükseklik */
+        padding-bottom: 75%; /* 4:3 En Boy Oranı (Alternatif bir sığdırma yöntemi) */
+        height: 0;
+        position: relative;
         display: flex; /* İçindeki görseli/videoyu ortalamak için */
         align-items: center;
         justify-content: center;
+        overflow: hidden; /* Kontrol */
     }
     @media (min-width: 1024px) {
         #main-media-display {
-            height: 450px; /* Masaüstü için daha büyük */
+            padding-bottom: 0; /* Masaüstünde tekrar sabit yüksekliğe izin ver */
+            height: 450px; 
         }
     }
     
-    /* Ürün Detay Görselleri: İçeriği kırmadan alana sığdır */
-    #main-media-display img, 
-    #main-media-display .video-container {
-        max-height: 100%;
-        max-width: 100%;
-        width: auto; 
-        height: auto;
-    }
+    /* Ürün Detay Ana Görseli: İçeriği kırmadan alana sığdır */
     #current-main-image {
-        object-fit: contain !important; /* Görseli zorla sığdır */
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
+        object-fit: contain !important; /* Görseli zorla sığdır */
+        padding: 5px; /* Opsiyonel: Kenarlarda küçük boşluk bırakabilir */
+    }
+    
+    /* Video Kapsayıcısı İçin Özelleştirme (Main display içinde) */
+    #main-media-display .video-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding-bottom: 0; /* Ana kapsayıcı padding'i yönettiği için sıfırla */
     }
 
     /* --- VİDEO VE GÖRSEL BOYUTLANDIRMA KRİTİK DÜZELTMELERİ BİTİŞ --- */
     
-    /* --- Diğer Stiller (Aynı Kaldı) --- */
     
-    /* Product card için hover efekti sadece anasayfada görünmeli */
-    #products-grid .product-card { transition: all 0.2s; }
-    #products-grid .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05); }
+    /* --- Diğer Stiller (Aynı Kaldı) --- */
     
     /* Ürün Detay Medya Stil Kısımları */
     .media-thumb-wrapper {
@@ -140,11 +149,11 @@
         display: flex;
         overflow-x: scroll;
         scroll-snap-type: x mandatory;
-        padding-bottom: 10px; /* Kaydırma çubuğu için boşluk */
+        padding-bottom: 10px; 
     }
     .related-products-scroll > a {
         flex: 0 0 auto;
-        width: 180px; /* Her kartın genişliği */
+        width: 180px; 
         margin-right: 16px;
         scroll-snap-align: start;
     }
@@ -242,13 +251,13 @@
     const mobileMenu = document.getElementById("mobile-menu");
 
     let allProducts = []; 
-    let allCategories = {}; // {name: {id, name, parent, image}}
+    let allCategories = {}; 
     let allBanners = []; 
     let productsLoaded = false;
     let currentActiveCategory = 'all'; 
     let currentSelectedVariant = null;
     let currentCalculatedPrice = 0; 
-    let currentSearchTerm = ''; // Arama terimini tutar
+    let currentSearchTerm = ''; 
 
     let currentSlide = 0;
     let carouselWrapper;
@@ -951,9 +960,10 @@
         let initialMainContent = '';
         
         if (firstMedia.isVideo) {
+             // Video için en-boy oranı koruyan container kullanılır
              initialMainContent = `<div class="video-container"><iframe src="${firstMedia.embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
         } else {
-             // KIRPILMAYI ÖNLEMEK İÇİN CSS'TE object-fit: contain kullandık
+             // Görsel için object-fit: contain (CSS'te tanımlı) kullanılır
             initialMainContent = `<img id="current-main-image" src="${firstMedia.url}" alt="${productName}" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
         }
         mainDisplay.innerHTML = initialMainContent;
@@ -978,10 +988,12 @@
                 thumb.classList.add('border-primary');
                 
                 if (type === 'image') {
+                    // Kırpılmayı önlemek için object-contain kullanılır
                     mainDisplay.innerHTML = `<img id="current-main-image" src="${rawUrl}" alt="${productName}" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
                 } else if (type === 'video') {
                     const embedUrl = getEmbedUrl(rawUrl);
-                     mainDisplay.innerHTML = `<div class="video-container"><iframe src="${embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
+                    // Video için en-boy oranı koruyan container kullanılır
+                    mainDisplay.innerHTML = `<div class="video-container"><iframe src="${embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
                 }
             });
         });
@@ -1043,7 +1055,7 @@
                         <div class="lg:w-1/2">
                             <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6 hidden lg:block">${productNameDisplay}</h2>
                             
-                            <div id="main-media-display" class="h-96 rounded-xl overflow-hidden shadow-xl bg-gray-200 mb-4 relative">
+                            <div id="main-media-display" class="rounded-xl overflow-hidden shadow-xl bg-gray-200 mb-4 relative">
                             </div>
 
                             <div id="thumbnail-gallery" class="flex gap-2 overflow-x-auto pb-2">
@@ -1096,7 +1108,7 @@
         function updatePriceAndGlobal(offset = 0) {
             currentCalculatedPrice = initialPrice + offset;
             
-            // Eğer varyant seçiliyse, sadece güncel fiyatı göster (varyant fiyatı hesaplandı)
+            // Eğer varyant seçiliyse, eski fiyat gösterimini kaldır (varyant fiyatı hesaplandı)
             priceEl.innerHTML = currentCalculatedPrice.toFixed(2) + ' ₺';
             priceEl.closest('.flex')?.innerHTML = `<span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${currentCalculatedPrice.toFixed(2)} ₺</span>`;
         }
