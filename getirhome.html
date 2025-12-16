@@ -130,6 +130,27 @@
         border-radius: 4px;
         flex-shrink: 0;
     }
+    
+    /* Benzer Ürünler Kaydırma Alanı */
+    .related-products-scroll {
+        display: flex;
+        overflow-x: scroll;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px; /* Kaydırma çubuğu için boşluk */
+    }
+    .related-products-scroll > a {
+        flex: 0 0 auto;
+        width: 180px; /* Her kartın genişliği */
+        margin-right: 16px;
+        scroll-snap-align: start;
+    }
+    .related-products-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+    .related-products-scroll::-webkit-scrollbar-thumb {
+        background-color: #5D3EBC;
+        border-radius: 10px;
+    }
 </style>
 
 </head>
@@ -650,6 +671,59 @@
             });
         });
     }
+
+    /**
+     * Benzer ürünleri yatay kaydırmalı carousel olarak render eder.
+     */
+    function renderRelatedProducts(currentProduct) {
+        // Aynı kategorideki tüm ürünleri al, mevcut ürünü hariç tut
+        const relatedProducts = allProducts.filter(p => 
+            p.category === currentProduct.category && p.id !== currentProduct.id
+        ).slice(0, 10); // İlk 10 tanesini al
+
+        const container = document.getElementById('related-products-container');
+        if (!container) return;
+
+        if (relatedProducts.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 text-sm">Bu kategoride başka benzer ürün bulunmamaktadır.</p>';
+            return;
+        }
+
+        const cardsHtml = relatedProducts.map(p => {
+            const imageHtml = p.image ?
+                `<img src="${p.image}" alt="${p.name}" class="w-full h-24 object-cover rounded-md" onerror="this.onerror=null; this.src='https://placehold.co/180x96/e5e7eb/9ca3af?text=Gorsel+Yok';" />`
+                : `<div class="w-full h-24 flex items-center justify-center bg-gray-200 rounded-md text-xs text-gray-500">GÖRSEL YOK</div>`;
+            
+            const currentPrice = (p.price || 0).toFixed(2);
+            const oldPrice = (p.old_price || 0).toFixed(2);
+            const showDiscount = p.old_price > p.price;
+
+            let priceDisplay = `<span class="font-bold text-sm text-primary">${currentPrice} ₺</span>`;
+            if (showDiscount) {
+                priceDisplay = `
+                    <div class="flex flex-col items-start">
+                        <span class="text-xs text-gray-400 line-through">${oldPrice} ₺</span>
+                        <span class="font-bold text-sm text-primary">${currentPrice} ₺</span>
+                    </div>
+                `;
+            }
+
+            return `
+                <a href="#/detail?id=${p.id}" class="product-card bg-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex-shrink-0" onclick="navigate('/detail?id=${p.id}'); event.preventDefault();">
+                    <div class="h-24 overflow-hidden mb-2">${imageHtml}</div>
+                    <h4 class="font-medium text-sm text-gray-800 truncate mb-1">${p.name}</h4>
+                    ${priceDisplay}
+                </a>
+            `;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="related-products-scroll py-2">
+                ${cardsHtml}
+            </div>
+        `;
+    }
+
     
     // --- HİYERARŞİK KATEGORİ MENÜ MANTIĞI (Aynı Kaldı) ---
 
@@ -852,7 +926,7 @@
         handleCategorySelect(currentActiveCategory, currentSearchTerm);
     }
     
-    // --- ÜRÜN DETAY SAYFASI RENDER (Aynı Kaldı) ---
+    // --- ÜRÜN DETAY SAYFASI RENDER (İndirim ve Benzer Ürünler Eklendi) ---
     
     function updateProductMedia(productName, images, videos) {
         const mainDisplay = document.getElementById('main-media-display');
@@ -928,6 +1002,24 @@
 
         const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
         
+        // YENİ: İndirim fiyatı gösterimi
+        const oldPrice = parseFloat(product.old_price) || 0;
+        const showDiscount = oldPrice > initialPrice;
+
+        let basePriceHtml = `<span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>`;
+        
+        if (showDiscount && !hasVariants) {
+             basePriceHtml = `
+                <div class="flex items-end gap-3">
+                    <span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>
+                    <span class="text-base text-gray-400 line-through">${oldPrice.toFixed(2)} ₺</span>
+                </div>
+            `;
+        } else if (hasVariants) {
+             // Varyant varsa, sadece ana fiyatı göster (varyant seçildikçe JS ile güncellenecek)
+             basePriceHtml = `<span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>`;
+        }
+
         const variantsHtml = hasVariants ? `
             <div id="variant-selector-ui" class="my-4 sm:my-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Varyant Seçimi:</label>
@@ -961,8 +1053,8 @@
                             <p class="text-base sm:text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
                             
                             <div class="my-4 sm:my-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${initialPrice.toFixed(2)} ₺</span>
-                                <p class="text-xs sm:text-sm text-gray-500 mt-1">Ana fiyat: ${initialPrice.toFixed(2)} ₺. Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
+                                ${basePriceHtml}
+                                <p class="text-xs sm:text-sm text-gray-500 mt-1">Komisyon dahil tahmini Kıbrıs fiyatıdır.</p>
                             </div>
 
                             ${variantsHtml}
@@ -982,6 +1074,14 @@
                         </div>
                     </div>
                 </div>
+
+                <div id="related-products-section" class="mt-8">
+                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Benzer Ürünler</h3>
+                    <div id="related-products-container" class="w-full">
+                        <i class="ri-loader-4-line animate-spin text-primary"></i> Yükleniyor...
+                    </div>
+                </div>
+
             </div>
         `;
 
@@ -992,7 +1092,10 @@
 
         function updatePriceAndGlobal(offset = 0) {
             currentCalculatedPrice = initialPrice + offset;
-            priceEl.textContent = currentCalculatedPrice.toFixed(2) + ' ₺';
+            
+            // Eğer varyant seçiliyse, eski fiyat gösterimini kaldır (basit tutmak için)
+            priceEl.innerHTML = currentCalculatedPrice.toFixed(2) + ' ₺';
+            priceEl.closest('.flex').innerHTML = `<span id="dynamic-price" class="text-xl sm:text-2xl font-extrabold text-primary">${currentCalculatedPrice.toFixed(2)} ₺</span>`;
         }
 
         if (hasVariants) {
@@ -1050,6 +1153,9 @@
             }
             handleAddToCart(e, currentSelectedVariant, currentCalculatedPrice);
         });
+        
+        // Benzer ürünleri render et
+        renderRelatedProducts(product);
     }
 
 
