@@ -94,17 +94,48 @@
         border-color: #5D3EBC; /* primary color */
         box-shadow: 0 0 0 3px #5D3EBC40; /* Hafif bir glow efekti */
     }
+    
+    /* Hiyerarşik Menü Aktifliği */
+    .category-link.active {
+        background-color: #5D3EBC10; /* Primary'nin hafif tonu */
+        color: #5D3EBC;
+        font-weight: 600;
+    }
+
+    /* Mobile Sidebar styles */
+    #mobile-menu-overlay {
+        transition: opacity 0.3s ease-in-out;
+    }
+    #mobile-menu {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    /* Kategori menüsü hiyerarşi boşlukları için yardımcı sınıflar */
+    .pl-8 { padding-left: 2rem !important; }
+    .pl-12 { padding-left: 3rem !important; }
 </style>
 
 </head>
 <body class="bg-gray-50 min-h-screen">
 
+<div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-[90] hidden opacity-0" onclick="toggleMobileMenu()"></div>
+<div id="mobile-menu" class="fixed top-0 left-0 w-64 h-full bg-white z-[100] shadow-2xl transform -translate-x-full overflow-y-auto p-4">
+    <div class="flex justify-between items-center mb-4 pb-2 border-b">
+        <h3 class="text-xl font-bold text-primary">Kategoriler</h3>
+        <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-700"><i class="ri-close-line ri-lg"></i></button>
+    </div>
+    <div id="mobile-category-menu">
+        </div>
+</div>
+
 <header class="sticky top-0 w-full bg-white shadow-md z-50">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <button id="menu-toggle-btn" onclick="toggleMobileMenu()" class="lg:hidden text-primary p-2 mr-2"><i class="ri-menu-line ri-xl"></i></button>
+
         <div class="flex items-center space-x-2 sm:space-x-4">
             <a href="#" onclick="navigate('/')" class="text-lg sm:text-xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Home</a>
             
-            <a href="index.html" class="text-lg sm:text-xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-2 sm:pl-4">Getir Kıbrıs</a>
+            <a href="index.html" class="text-lg sm:text-xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-2 sm:pl-4 hidden sm:block">Getir Kıbrıs</a>
         </div>
         
         <div class="flex items-center gap-2 sm:gap-4">
@@ -139,7 +170,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, setDoc, doc, setLogLevel } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
     // --- Firebase Konfigürasyonu (Admin ile aynı olmalı) ---
     const firebaseConfig = {
@@ -157,7 +188,7 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // --- GLOBAL STATE ---
+    // --- GLOBAL STATE ve DOM Elementleri ---
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const userEmailSpan = document.getElementById("user-email");
@@ -165,24 +196,21 @@
     const heroSection = document.getElementById("hero-section");
     const msgDiv = document.getElementById("msg");
     const pageTitle = document.getElementById("page-title");
+    const mobileMenuOverlay = document.getElementById("mobile-menu-overlay");
+    const mobileMenu = document.getElementById("mobile-menu");
 
     let allProducts = []; 
-    // KRİTİK DEĞİŞİKLİK: Kategorileri artık tam obje olarak tutuyoruz
     let allCategories = {}; 
     let allBanners = []; 
     let productsLoaded = false;
-    let currentUserId = null;
-    
-    // Detay sayfası için global durum takibi
+    let currentActiveCategory = 'all'; 
     let currentSelectedVariant = null;
     let currentCalculatedPrice = 0; 
 
-    // --- CAROUSEL STATE ---
     let currentSlide = 0;
     let carouselWrapper;
     let totalSlides;
     let autoSlideInterval;
-
 
     // --- YARDIMCI FONKSİYONLAR ---
     function showMsg(text, isError=false){
@@ -191,97 +219,39 @@
         msgDiv.classList.remove("hidden");
         setTimeout(()=>msgDiv.classList.add("hidden"),3000);
     }
-
-    /**
-     * URL'den YouTube video kimliğini çıkarır veya düz URL'yi döndürür.
-     */
-    function getEmbedUrl(url) {
-        if (!url) return null;
-        // YouTube URL'lerini embed formatına çevir
-        const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
-        const match = url.match(ytRegex);
-        if (match) {
-            const videoId = match[1] || match[2];
-            return `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0`;
-        }
-        // MP4/WebM vb. direkt URL'leri destekler
-        return url;
-    }
-
-    /**
-     * Banner URL'sini analiz eder ve uygun HTML kodunu (resim, YouTube iframe veya video etiketi) döndürür.
-     */
-    function getBannerMediaHtml(url, title, index) {
-        if (!url || !url.startsWith('http')) { 
-            return {
-                html: `<div class="w-full h-full flex items-center justify-center text-white text-lg font-bold">GEÇERSİZ BANNER URL'Sİ</div>`,
-                isImage: true 
-            };
-        }
-        
-        // 1. YouTube Video Check (<iframe>)
-        const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
-        const ytMatch = url.match(ytRegex);
-        
-        if (ytMatch) {
-            const videoId = ytMatch[1] || ytMatch[2];
-            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&mute=1&playsinline=1`;
-            
-            return {
-                html: `
-                    <div class="video-container">
-                        <iframe src="${embedUrl}" title="${title} Video ${index + 1}" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                allowfullscreen frameborder="0" class="w-full h-full"></iframe>
-                    </div>
-                `,
-                isImage: false
-            };
-        }
-        
-        // 2. Direct Video File Check (<video>)
-        const videoExtensions = ['.mp4', '.webm', '.ogg'];
-        const isDirectVideo = videoExtensions.some(ext => url.toLowerCase().includes(ext));
-
-        if (isDirectVideo) {
-            return {
-                html: `
-                    <div class="video-container">
-                        <video src="${url}" title="${title} Video ${index + 1}" 
-                               autoplay loop muted playsinline 
-                               class="w-full h-full object-cover">
-                            Tarayıcınız video etiketini desteklemiyor.
-                        </video>
-                    </div>
-                `,
-                isImage: false
-            };
-        }
-
-        // 3. Image (Default)
-        return {
-            html: `
-                <img src="${url}" 
-                    alt="Promosyon Banner ${index + 1}" 
-                    class="banner-image-contain" 
-                    onerror="this.onerror=null; this.src='https://placehold.co/1200x480/A78BFA/FFFFFF?text=Gorsel+Yuklenemedi';"
-                />
-            `,
-            isImage: true
-        };
-    }
     
-    // KRİTİK DÜZELTME: `Maps` fonksiyonunu global kapsama açıyoruz.
     window.navigate = navigate;
 
-    // --- YÖNLENDİRME (HASH ROUTING) ---
-    function navigate(path) {
-        location.hash = path === '/' ? '' : path;
-        renderPage(); 
+    function getCategoryHierarchyPath(categoryName) {
+        if (!categoryName) return [];
+        
+        const path = [];
+        let currentCategoryName = categoryName;
+
+        while (currentCategoryName && allCategories[currentCategoryName]) {
+            path.unshift(currentCategoryName); 
+            currentCategoryName = allCategories[currentCategoryName].parent; 
+        }
+        
+        return path;
     }
 
-    window.onhashchange = renderPage; 
+    // --- MOBİL MENÜ MANTIĞI ---
+    window.toggleMobileMenu = function() {
+        const isOpen = mobileMenu.classList.contains('translate-x-0');
+        if (isOpen) {
+            mobileMenu.classList.remove('translate-x-0');
+            mobileMenu.classList.add('-translate-x-full');
+            mobileMenuOverlay.classList.add('hidden', 'opacity-0');
+        } else {
+            mobileMenu.classList.remove('-translate-x-full');
+            mobileMenu.classList.add('translate-x-0');
+            mobileMenuOverlay.classList.remove('hidden');
+            setTimeout(() => mobileMenuOverlay.classList.remove('opacity-0'), 10);
+        }
+    }
 
+    // --- YÖNLENDİRME (HASH ROUTING) ---
     function getRouteParams() {
         const hash = window.location.hash.substring(1); 
         let view = 'home';
@@ -292,14 +262,27 @@
             const queryString = hash.substring('/detail'.length); 
             const urlParams = new URLSearchParams(queryString);
             id = urlParams.get('id');
+        } else if (hash.startsWith('/category')) {
+             view = 'home';
+             const queryString = hash.substring('/category'.length);
+             const urlParams = new URLSearchParams(queryString);
+             const categoryName = urlParams.get('name');
+             currentActiveCategory = categoryName || 'all';
         } else if (hash.length === 0 || hash === '/') {
             view = 'home';
+            currentActiveCategory = 'all';
         }
         return { view, id };
     }
 
+    function navigate(path) {
+        location.hash = path === '/' ? '' : path;
+        renderPage(); 
+    }
+
+    window.onhashchange = renderPage; 
+
     function renderPage() {
-        // Otomatik kaydırmayı durdur
         if (autoSlideInterval) clearInterval(autoSlideInterval);
         
         const { view, id } = getRouteParams();
@@ -324,135 +307,74 @@
         }
     }
     
-    // --- MEDYA YÖNETİMİ FONKSİYONLARI ---
+    // --- KARGO VE BANNER MANTIĞI ---
 
-    /**
-     * 1. Ana medya gösterimini (mainDisplay) ve küçük resim galerisini (thumbnailGallery) günceller.
-     * 2. Bu fonksiyon, BASE üründen veya seçilen VARYANT'tan gelen medya listesini işler.
-     * @param {string} productName Ürün adı
-     * @param {string[]} images Sadece görsel URL'lerinin dizisi
-     * @param {string[]} videos Sadece video URL'lerinin dizisi
-     */
-    function updateProductMedia(productName, images, videos) {
-        const mainDisplay = document.getElementById('main-media-display');
-        const thumbnailGallery = document.getElementById('thumbnail-gallery');
-        const videoSection = document.getElementById('product-video-section');
-        
-        // 1. Tüm medya listesini oluştur
-        const mediaList = [];
-        
-        // Görselleri ekle
-        images.forEach(url => mediaList.push({ url, isVideo: false }));
-        
-        // Videoları ekle (embed URL'si hesaplanarak)
-        videos.forEach(rawUrl => {
-            const embedUrl = getEmbedUrl(rawUrl);
-            if (embedUrl) {
-                 mediaList.push({ url: rawUrl, embedUrl, isVideo: true });
-            }
-        });
-
-        if (mediaList.length === 0) {
-            mainDisplay.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-500">Görüntülenecek Medya Yok</div>`;
-            thumbnailGallery.innerHTML = '';
-            videoSection.innerHTML = '';
-            return;
+    function getEmbedUrl(url) {
+        if (!url) return null;
+        const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
+        const match = url.match(ytRegex);
+        if (match) {
+            const videoId = match[1] || match[2];
+            return `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&rel=0`;
         }
-        
-        // 2. Ana Gösterimi Yükle (İlk öğe)
-        const firstMedia = mediaList[0];
-        let initialMainContent = '';
-        
-        if (firstMedia.isVideo) {
-             initialMainContent = `
-                <div class="video-container">
-                    <iframe src="${firstMedia.embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe>
-                </div>
-             `;
-        } else {
-            initialMainContent = `
-                <img id="current-main-image" src="${firstMedia.url}" alt="${productName}" class="w-full h-full object-cover"
-                     onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';"
-                >
-            `;
-        }
-        mainDisplay.innerHTML = initialMainContent;
-
-        // 3. Thumbnail Galerisini Doldur
-        thumbnailGallery.innerHTML = mediaList.map((media, index) => {
-            const isVideo = media.isVideo;
-            const url = isVideo ? 'https://placehold.co/60x60/5D3EBC/FFFFFF?text=VIDEO' : media.url;
-            return `
-                <div class="media-thumb-wrapper w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer relative ${index === 0 ? 'border-primary' : 'border-gray-200'}" data-url="${media.url}" data-type="${isVideo ? 'video' : 'image'}">
-                    <img src="${url}" alt="Thumb ${index + 1}" class="w-full h-full object-cover ${isVideo ? 'opacity-50' : ''}"
-                        onerror="this.onerror=null; this.src='https://placehold.co/60x60/5D3EBC/FFFFFF?text=Gorsel';"
-                    >
-                    ${isVideo ? '<i class="ri-play-fill ri-xl text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>' : ''}
-                </div>
-            `;
-        }).join('');
-
-        // 4. Thumbnail click listener
-        document.querySelectorAll('.media-thumb-wrapper').forEach(thumb => {
-            thumb.addEventListener('click', () => {
-                const rawUrl = thumb.dataset.url;
-                const type = thumb.dataset.type;
-
-                // Border'ları sıfırla ve aktifi işaretle
-                document.querySelectorAll('.media-thumb-wrapper').forEach(t => t.classList.remove('border-primary'));
-                thumb.classList.add('border-primary');
-                
-                // Ana Gösterimi Güncelle
-                if (type === 'image') {
-                    mainDisplay.innerHTML = `<img id="current-main-image" src="${rawUrl}" alt="${productName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
-                } else if (type === 'video') {
-                    const embedUrl = getEmbedUrl(rawUrl);
-                     mainDisplay.innerHTML = `
-                        <div class="video-container">
-                            <iframe src="${embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe>
-                        </div>
-                     `;
-                }
-            });
-        });
-        
-        // 5. Video Section'ı Temizle/Gizle (Medya galerisinde zaten görünüyor)
-        videoSection.style.display = 'none';
-        videoSection.innerHTML = '';
+        return url;
     }
 
-    // --- CAROUSEL MANTIĞI (Aynı Kaldı) ---
-
-    function showSlide(index) {
-        if (totalSlides === 0) return;
+    function getBannerMediaHtml(url, title, index) {
+        if (!url || !url.startsWith('http')) { 
+            return {
+                html: `<div class="w-full h-full flex items-center justify-center text-white text-lg font-bold">GEÇERSİZ BANNER URL'Sİ</div>`,
+                isImage: true 
+            };
+        }
         
-        if (index >= totalSlides) {
-            currentSlide = 0;
-        } else if (index < 0) {
-            currentSlide = totalSlides - 1;
-        } else {
-            currentSlide = index;
+        const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\w+\/|watch\?.*v=))([^&]+)|(?:youtu\.be\/)([^&]+)/;
+        const ytMatch = url.match(ytRegex);
+        
+        if (ytMatch) {
+            const videoId = ytMatch[1] || ytMatch[2];
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&mute=1&playsinline=1`;
+            
+            return {
+                html: `
+                    <div class="video-container">
+                        <iframe src="${embedUrl}" title="${title} Video ${index + 1}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen frameborder="0" class="w-full h-full"></iframe>
+                    </div>
+                `,
+                isImage: false
+            };
+        }
+        
+        const videoExtensions = ['.mp4', '.webm', '.ogg'];
+        const isDirectVideo = videoExtensions.some(ext => url.toLowerCase().includes(ext));
+
+        if (isDirectVideo) {
+            return {
+                html: `
+                    <div class="video-container">
+                        <video src="${url}" title="${title} Video ${index + 1}" 
+                               autoplay loop muted playsinline 
+                               class="w-full h-full object-cover">
+                            Tarayıcınız video etiketini desteklemiyor.
+                        </video>
+                    </div>
+                `,
+                isImage: false
+            };
         }
 
-        const offset = -currentSlide * 100;
-        if (carouselWrapper) {
-            carouselWrapper.style.transform = `translateX(${offset}%)`;
-        }
-
-        // Noktaları (dots) güncelle
-        document.querySelectorAll('.carousel-dot').forEach(dot => {
-            dot.classList.remove('opacity-100');
-            dot.classList.add('opacity-50');
-        });
-        const activeDot = document.querySelector(`.carousel-dot[data-slide="${currentSlide}"]`);
-        if (activeDot) {
-            activeDot.classList.remove('opacity-50');
-            activeDot.classList.add('opacity-100');
-        }
-    }
-
-    function changeSlide(direction) {
-        showSlide(currentSlide + direction);
+        return {
+            html: `
+                <img src="${url}" 
+                    alt="Promosyon Banner ${index + 1}" 
+                    class="banner-image-contain" 
+                    onerror="this.onerror=null; this.src='https://placehold.co/1200x480/A78BFA/FFFFFF?text=Gorsel+Yuklenemedi';"
+                />
+            `,
+            isImage: true
+        };
     }
     
     function initCarousel() {
@@ -476,45 +398,62 @@
             });
         }
         
-        // Önceki interval'ı temizle
         if (autoSlideInterval) clearInterval(autoSlideInterval);
         
-        // Otomatik kaydırma başlat (5 saniyede bir)
         if (totalSlides > 1) {
             autoSlideInterval = setInterval(() => changeSlide(1), 5000); 
         }
 
-        showSlide(0); // İlk slaytı göster
+        showSlide(0); 
     }
-
-
-    // --- DİNAMİK BANNER RENDER (CAROUSEL) (Aynı Kaldı) ---
-    function renderHeroSection() {
-        if (allBanners.length === 0) {
-            heroSection.innerHTML = ''; 
-            return;
+    
+    function showSlide(index) {
+        if (totalSlides === 0) return;
+        
+        if (index >= totalSlides) {
+            currentSlide = 0;
+        } else if (index < 0) {
+            currentSlide = totalSlides - 1;
+        } else {
+            currentSlide = index;
         }
 
-        // Bütün Banner'ları slayt olarak hazırla
+        const offset = -currentSlide * 100;
+        if (carouselWrapper) {
+            carouselWrapper.style.transform = `translateX(${offset}%)`;
+        }
+
+        document.querySelectorAll('.carousel-dot').forEach(dot => {
+            dot.classList.remove('opacity-100');
+            dot.classList.add('opacity-50');
+        });
+        const activeDot = document.querySelector(`.carousel-dot[data-slide="${currentSlide}"]`);
+        if (activeDot) {
+            activeDot.classList.remove('opacity-50');
+            activeDot.classList.add('opacity-100');
+        }
+    }
+
+    function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+    }
+
+    function renderHeroSection() {
+        if (allBanners.length === 0) { heroSection.innerHTML = ''; return; }
+
         const slidesHtml = allBanners.map((banner, index) => {
             const url = banner.url || null;
-            
-            // Admin'den gelen metinleri al (Artık boş string olabilir)
             const title = banner.title || ''; 
             const description = banner.description || ''; 
             const link = banner.link || null; 
 
-            // Yeni fonksiyon ile medya içeriğini al
             const { html: mediaHtml, isImage } = getBannerMediaHtml(url, title, index);
             
-            // Eğer link varsa slaytı tıklanabilir yapacak wrapper'ı tanımla
             const isVideo = !isImage;
             const linkWrapperStart = link && !isVideo ? `<a href="${link}" class="w-full h-full block" target="_blank" rel="noopener noreferrer">` : '<div class="w-full h-full">';
             const linkWrapperEnd = link && !isVideo ? '</a>' : '</div>';
             
-            // Metin Bindirme Katmanı
             let textLayerHtml = '';
-            // Metin veya link varsa overlay'i göster
             if (title.trim().length > 0 || description.trim().length > 0 || link) {
                 const overlayClass = isVideo ? 'bg-black/40' : 'bg-black/30';
                 textLayerHtml = `
@@ -530,7 +469,6 @@
                 `;
             }
             
-            // Slaytın tamamını link/div ile sarmala
             return `
                 <div class="carousel-slide relative" data-index="${index}">
                     ${linkWrapperStart}
@@ -543,7 +481,6 @@
             `;
         }).join('');
 
-        // Carousel Ana Yapısı
         heroSection.innerHTML = `
             <div id="banner-carousel" class="max-w-7xl mx-auto px-0 sm:px-4 carousel-container">
                 <div id="carousel-wrapper" class="carousel-wrapper">
@@ -563,11 +500,10 @@
             </div>
         `;
         
-        // Carousel'ü başlat
         initCarousel();
     }
     
-    // --- AUTH MANTIK (Aynı Kaldı) ---
+    // --- AUTH MANTIK ---
     loginBtn.addEventListener("click", async ()=>{ 
         try{ await signInWithPopup(auth,provider); } 
         catch(e){ showMsg("Giriş hatası: "+e.message, true); } 
@@ -591,14 +527,13 @@
         }
     });
 
-    // --- ÜRÜN KARTI RENDER FONKSİYONU (Aynı Kaldı) ---
+    // --- ÜRÜN KARTI RENDER ---
     function renderProductCards(productsToRender, productsListContainer) {
         
         productsListContainer.innerHTML = ''; 
 
         const productGrid = document.createElement('div');
         productGrid.id = "products-grid";
-        // RESPONSIVE GRID DÜZELTME: Mobilde 2, tablette 3, masaüstünde 4/5 sütun
         productGrid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6";
 
         if (productsToRender.length === 0) {
@@ -616,10 +551,8 @@
             };
             card.className = "product-card bg-white p-3 sm:p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
             
-            // NOTE: p.name artık güvenlidir
             const productNameDisplay = p.name || 'Ürün Adı Yok';
 
-            // GÖRSEL KONTROLÜ: Eğer p.image boşsa, harici bir URL yüklemeyen iç DIV kullan
             const imageHtml = p.image ?
                 `<img src="${p.image}" 
                     alt="${productNameDisplay}" 
@@ -657,88 +590,208 @@
             });
         });
     }
+    
+    // --- HİYERARŞİK KATEGORİ MENÜ MANTIĞI ---
 
-    // --- YENİ YARDIMCI FONKSİYON: Tam hiyerarşi yolunu hesaplar ---
-    function getCategoryHierarchyPath(categoryName) {
-        if (!categoryName) return [];
+    function renderCategoryMenuItem(category, level = 0) {
+        const filterValue = category.name;
         
-        const path = [];
-        let currentCategoryName = categoryName;
+        // Hiyerarşik seviyeye göre padding ayarla
+        let paddingClass = 'pl-4'; // level 0
+        if (level === 1) paddingClass = 'pl-8';
+        if (level >= 2) paddingClass = 'pl-12';
+        
+        const isActive = filterValue === currentActiveCategory;
+        const linkClass = `category-link block p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer text-sm mb-1 ${isActive ? 'active' : ''} ${paddingClass}`;
+        const icon = level === 0 ? 'ri-folder-open-line' : 'ri-arrow-right-s-line';
 
-        // Kategori adı haritada bulunduğu sürece döngüyü sürdür
-        while (currentCategoryName && allCategories[currentCategoryName]) {
-            path.unshift(currentCategoryName); // Başa ekle
-            currentCategoryName = allCategories[currentCategoryName].parent; // Üst kategoriye geç
+        let html = `
+            <li>
+                <a href="#/category?name=${encodeURIComponent(filterValue)}" 
+                   class="${linkClass}" 
+                   onclick="${level === 0 ? 'toggleMobileMenu();' : ''} handleCategorySelect('${filterValue}'); event.preventDefault();">
+                    <i class="${icon} mr-2"></i> 
+                    ${category.name}
+                </a>
+            </li>
+        `;
+
+        const children = Object.values(allCategories).filter(cat => cat.parent === category.name).sort((a, b) => a.name.localeCompare(b.name));
+
+        if (children.length > 0) {
+            html += `<ul class="ml-2 mt-1 mb-2 border-l border-gray-200">`;
+            children.forEach(child => {
+                html += renderCategoryMenuItem(child, level + 1);
+            });
+            html += `</ul>`;
+        }
+
+        return html;
+    }
+
+    function renderCategoryMenu() {
+        // Sadece en üst seviye kategorileri bul
+        const categories = Object.values(allCategories)
+            .filter(cat => !cat.parent)
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        const menuContainer = document.getElementById('category-menu-desktop');
+        const mobileMenuContainer = document.getElementById('mobile-category-menu');
+
+        if (!menuContainer || !mobileMenuContainer) return;
+
+        const allProductsLink = `<a href="#/category?name=all" class="category-link block p-2 rounded-lg text-sm mb-2 text-white bg-primary hover:bg-primary/90 transition-colors font-semibold ${currentActiveCategory === 'all' ? 'active' : ''}" onclick="handleCategorySelect('all'); event.preventDefault();">
+            <i class="ri-grid-line mr-2"></i> Tüm Ürünler
+        </a>`;
+        
+        let menuHtml = allProductsLink + '<ul class="space-y-1">';
+        let mobileHtml = allProductsLink + '<ul class="space-y-1">';
+
+        categories.forEach(cat => {
+            const itemHtml = renderCategoryMenuItem(cat, 0);
+            menuHtml += itemHtml;
+            mobileHtml += itemHtml;
+        });
+
+        menuHtml += `</ul>`;
+        mobileHtml += `</ul>`;
+
+        menuContainer.innerHTML = menuHtml;
+        mobileMenuContainer.innerHTML = mobileHtml;
+        
+        document.querySelectorAll('#mobile-category-menu .category-link').forEach(link => {
+            link.addEventListener('click', () => { toggleMobileMenu(); });
+        });
+    }
+
+    window.handleCategorySelect = function(categoryName) {
+        currentActiveCategory = categoryName;
+
+        let filteredProducts = allProducts;
+        
+        if (categoryName !== 'all') {
+            filteredProducts = allProducts.filter(p => {
+                // Ürünün hiyerarşi dizisinde seçili kategori var mı?
+                return p.hierarchy && p.hierarchy.includes(categoryName);
+            });
         }
         
-        return path;
-    }
-
-
-    // --- KATEGORİ FİLTRELEME MANTIĞI (Hiyerarşi Güncellemesi Yapıldı) ---
-    function populateCategories(filterSelect, productsListContainer) {
-        // allCategories artık bir obje olduğu için değerlerini alıyoruz
-        const categories = Object.values(allCategories);
-        
-        // Kategori listesini alfabetik olarak sıralayalım
-        categories.sort((a, b) => a.name.localeCompare(b.name));
-
-        const optionsHtml = categories.map(cat => {
-            // Hiyerarşik yolu hesapla: Örn: 'Gıda > Atıştırmalık'
-            const path = getCategoryHierarchyPath(cat.name).join(' > ');
-            // Option value'su kategori adı olarak kalmalı (ürünleri filtrelemek için)
-            return `<option value="${cat.name}">${path}</option>`;
-        }).join('');
-        
-        filterSelect.innerHTML = `<option value="all">Tüm Ürünler</option>` + optionsHtml;
-
-        filterSelect.onchange = () => {
-            const selectedCategory = filterSelect.value;
-            let filteredProducts = allProducts;
-            
-            if (selectedCategory !== 'all') {
-                // Seçilen kategoriyi ve altındaki tüm ürünleri filtrelemek için:
-                filteredProducts = allProducts.filter(p => {
-                    // Ürünün hiyerarşi dizisinde seçili kategori var mı?
-                    return p.hierarchy && p.hierarchy.includes(selectedCategory);
-                });
-            }
-            
+        const productsListContainer = document.getElementById("products-list-container");
+        if (productsListContainer) {
             renderProductCards(filteredProducts, productsListContainer);
-        };
+        }
+        
+        document.querySelectorAll('.category-link').forEach(link => {
+            link.classList.remove('active');
+            const linkName = link.href.substring(link.href.indexOf('name=') + 5);
+            if (decodeURIComponent(linkName) === categoryName) {
+                 link.classList.add('active');
+            }
+        });
+        
+        // Başlıkta seçili kategoriyi göster
+        const pageTitleElement = document.querySelector('.lg\\:flex-grow h2');
+        if(pageTitleElement) {
+             pageTitleElement.innerHTML = `${categoryName === 'all' ? 'Tüm Ürünler' : categoryName} <span class="text-sm text-gray-500 font-normal">(${filteredProducts.length} ürün)</span>`;
+        }
     }
 
-    // --- ANASAYFA RENDER FONKSİYONU (Aynı Kaldı) ---
+    // --- ANASAYFA RENDER ---
     function renderHomePage() {
         const homeContent = document.createElement('div');
         homeContent.className = "max-w-7xl mx-auto p-4 sm:p-6";
 
         homeContent.innerHTML = `
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 border-b pb-3">
-                <h2 class="text-xl sm:text-3xl font-bold text-gray-800 mb-2 sm:mb-0">Tüm Kategorilerde Fırsatlar</h2>
-                <select id="category-filter-home" class="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition-colors text-sm">
-                    <option value="all">Yükleniyor...</option>
-                </select>
-            </div>
-            <div id="products-list-container">
-                <div id="loading-indicator-home" class="text-center py-10 text-gray-500 font-medium ${allProducts.length > 0 ? 'hidden' : ''}">
-                    <i class="ri-loader-4-line ri-2x animate-spin"></i> Ürünler Yükleniyor...
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="lg:w-64 flex-shrink-0 hidden lg:block">
+                    <div class="bg-white p-4 rounded-xl shadow-lg sticky top-24">
+                        <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+                            <i class="ri-list-settings-line"></i> Ürün Kategorileri
+                        </h2>
+                        <div id="category-menu-desktop" class="space-y-1">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="lg:flex-grow">
+                    <div class="flex justify-between items-center mb-6 border-b pb-3">
+                        <h2 class="text-xl sm:text-3xl font-bold text-gray-800 mb-2 sm:mb-0">
+                            Ürünler Yükleniyor...
+                        </h2>
+                    </div>
+                    <div id="products-list-container">
+                        <div id="loading-indicator-home" class="text-center py-10 text-gray-500 font-medium ${allProducts.length > 0 ? 'hidden' : ''}">
+                            <i class="ri-loader-4-line ri-2x animate-spin"></i> Ürünler Yükleniyor...
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         appContainer.appendChild(homeContent);
 
-        const filterSelect = document.getElementById("category-filter-home");
-        const productsListContainer = document.getElementById("products-list-container");
+        renderCategoryMenu();
+        handleCategorySelect(currentActiveCategory);
+    }
+    
+    // --- ÜRÜN DETAY SAYFASI RENDER ---
+    
+    function updateProductMedia(productName, images, videos) {
+        const mainDisplay = document.getElementById('main-media-display');
+        const thumbnailGallery = document.getElementById('thumbnail-gallery');
         
-        if (allProducts.length > 0) {
-            populateCategories(filterSelect, productsListContainer);
-            // Başlangıçta tüm ürünleri göster
-            renderProductCards(allProducts, productsListContainer);
+        const mediaList = [];
+        images.forEach(url => mediaList.push({ url, isVideo: false }));
+        videos.forEach(rawUrl => {
+            const embedUrl = getEmbedUrl(rawUrl);
+            if (embedUrl) { mediaList.push({ url: rawUrl, embedUrl, isVideo: true }); }
+        });
+
+        if (mediaList.length === 0) {
+            mainDisplay.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-500">Görüntülenecek Medya Yok</div>`;
+            thumbnailGallery.innerHTML = '';
+            return;
         }
+        
+        const firstMedia = mediaList[0];
+        let initialMainContent = '';
+        
+        if (firstMedia.isVideo) {
+             initialMainContent = `<div class="video-container"><iframe src="${firstMedia.embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
+        } else {
+            initialMainContent = `<img id="current-main-image" src="${firstMedia.url}" alt="${productName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
+        }
+        mainDisplay.innerHTML = initialMainContent;
+
+        thumbnailGallery.innerHTML = mediaList.map((media, index) => {
+            const isVideo = media.isVideo;
+            const url = isVideo ? 'https://placehold.co/60x60/5D3EBC/FFFFFF?text=VIDEO' : media.url;
+            return `
+                <div class="media-thumb-wrapper w-16 h-16 rounded-lg overflow-hidden border-2 cursor-pointer relative ${index === 0 ? 'border-primary' : 'border-gray-200'}" data-url="${media.url}" data-type="${isVideo ? 'video' : 'image'}">
+                    <img src="${url}" alt="Thumb ${index + 1}" class="w-full h-full object-cover ${isVideo ? 'opacity-50' : ''}" onerror="this.onerror=null; this.src='https://placehold.co/60x60/5D3EBC/FFFFFF?text=Gorsel';">
+                    ${isVideo ? '<i class="ri-play-fill ri-xl text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>' : ''}
+                </div>
+            `;
+        }).join('');
+
+        document.querySelectorAll('.media-thumb-wrapper').forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                const rawUrl = thumb.dataset.url;
+                const type = thumb.dataset.type;
+
+                document.querySelectorAll('.media-thumb-wrapper').forEach(t => t.classList.remove('border-primary'));
+                thumb.classList.add('border-primary');
+                
+                if (type === 'image') {
+                    mainDisplay.innerHTML = `<img id="current-main-image" src="${rawUrl}" alt="${productName}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/5D3EBC/FFFFFF?text=Gorsel+Yok';">`;
+                } else if (type === 'video') {
+                    const embedUrl = getEmbedUrl(rawUrl);
+                     mainDisplay.innerHTML = `<div class="video-container"><iframe src="${embedUrl}" title="${productName} Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="rounded-xl shadow-xl"></iframe></div>`;
+                }
+            });
+        });
     }
 
-    // --- ÜRÜN DETAY SAYFASI RENDER FONKSİYONU (Varyant, Görsel, Video) (Aynı Kaldı) ---
+
     function renderDetailPage(productId) {
         const product = allProducts.find(p => p.id === productId);
 
@@ -748,19 +801,14 @@
         }
 
         const productNameDisplay = product.name || 'Ürün Adı Yok';
-
         const initialPrice = parseFloat(product.price) || 0;
-        currentCalculatedPrice = initialPrice; // Başlangıç fiyatını ata
+        currentCalculatedPrice = initialPrice; 
 
-        // BASE MEDIA SETUP
-        // Base ürüne ait tüm görseller (Ana + Ek)
         const baseImages = [product.image, ...(Array.isArray(product.extraImages) ? product.extraImages : [])].filter(Boolean);
-        // Base ürüne ait video (Sadece Ana video)
         const baseVideos = product.video ? [product.video] : []; 
 
         const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
         
-        // VARYANT SEÇİM HTML'i (Şimdi butonlar ile)
         const variantsHtml = hasVariants ? `
             <div id="variant-selector-ui" class="my-4 sm:my-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Varyant Seçimi:</label>
@@ -770,7 +818,6 @@
             </div>
         ` : '';
 
-        // Detay Sayfası HTML Yapısı
         appContainer.innerHTML = `
             <div class="max-w-7xl mx-auto p-4 sm:p-6">
                 <a href="#" onclick="navigate('/')" class="text-primary hover:text-primary/80 font-semibold mb-6 flex items-center gap-2 transition-colors text-sm sm:text-base">
@@ -780,18 +827,17 @@
                 <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl">
                     <div class="flex flex-col lg:flex-row gap-8 sm:gap-10">
                         <div class="lg:w-1/2">
-                            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6">${productNameDisplay}</h2>
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6 hidden lg:block">${productNameDisplay}</h2>
                             
                             <div id="main-media-display" class="h-96 rounded-xl overflow-hidden shadow-xl bg-gray-200 mb-4 relative">
-                                </div>
+                            </div>
 
                             <div id="thumbnail-gallery" class="flex gap-2 overflow-x-auto pb-2">
-                                </div>
-                            
-                            <div id="product-video-section" class="mt-8 hidden"></div>
+                            </div>
                         </div>
 
                         <div class="lg:w-1/2">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 sm:mb-6 lg:hidden">${productNameDisplay}</h2>
                             <span class="text-xs sm:text-sm text-primary font-bold uppercase">${product.category || 'GENEL'}</span>
                             <p class="text-base sm:text-xl text-gray-600 my-4">${product.description || 'Bu ürün için detaylı açıklama bulunmamaktadır.'}</p>
                             
@@ -820,116 +866,85 @@
             </div>
         `;
 
-        // UI Elementleri
         const priceEl = document.getElementById('dynamic-price');
         const cartBtn = document.getElementById('detail-add-to-cart-btn');
         const variantButtonsDiv = document.getElementById('variant-buttons');
         const variantWarning = document.getElementById('variant-warning');
 
-        // Fiyatı ve currentCalculatedPrice'ı güncelleme fonksiyonu
         function updatePriceAndGlobal(offset = 0) {
             currentCalculatedPrice = initialPrice + offset;
             priceEl.textContent = currentCalculatedPrice.toFixed(2) + ' ₺';
         }
 
         if (hasVariants) {
-            // İlk yüklemede butonu kilitle
             cartBtn.disabled = true; 
             variantWarning.style.display = 'block';
 
-            // Varyant butonlarını render et
             const allVariants = product.variants;
             
             variantButtonsDiv.innerHTML = allVariants.map((v, index) => {
-                // Varyantın kendi görseli varsa onu kullan, yoksa ana ürün görseline fallback
-                const variantImage = Array.isArray(v.extraImages) && v.extraImages.length > 0 
-                    ? v.extraImages[0] 
-                    : product.image || 'https://placehold.co/60x60/5D3EBC/FFFFFF?text=V'; 
-
+                const variantImage = Array.isArray(v.extraImages) && v.extraImages.length > 0 ? v.extraImages[0] : product.image || 'https://placehold.co/60x60/5D3EBC/FFFFFF?text=V'; 
                 const offset = parseFloat(v.price_offset) || 0;
                 const offsetText = offset !== 0 ? ` (${offset >= 0 ? '+' : ''}${offset.toFixed(2)} ₺)` : '';
                 
                 return `
-                    <button 
-                        type="button"
-                        class="variant-button p-1 border-2 border-gray-200 rounded-full hover:border-primary transition-all duration-200 focus:outline-none" 
-                        data-index="${index}"
-                        title="${v.name}${offsetText}">
+                    <button type="button" class="variant-button p-1 border-2 border-gray-200 rounded-full hover:border-primary transition-all duration-200 focus:outline-none" data-index="${index}" title="${v.name}${offsetText}">
                         <img src="${variantImage}" alt="${v.name}" class="w-12 h-12 object-cover rounded-full" onerror="this.onerror=null; this.src='https://placehold.co/60x60/5D3EBC/FFFFFF?text=V';">
                     </button>
                 `;
             }).join('');
             
-            // Buton dinleyicilerini ekle
             document.querySelectorAll('.variant-button').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const index = parseInt(e.currentTarget.dataset.index);
                     const selectedVariantData = product.variants[index];
                     const offset = parseFloat(selectedVariantData.price_offset) || 0;
                     
-                    // UI Güncelleme (Border)
                     document.querySelectorAll('.variant-button').forEach(btn => btn.classList.remove('active'));
                     e.currentTarget.classList.add('active');
                     
-                    // Fiyatı Güncelle
                     updatePriceAndGlobal(offset);
                     
-                    // Medyayı Güncelle (Varyantın kendi medyasını kullan)
-                    // Görseller: Ana görsel + Varyantın ek görselleri
                     const images = [product.image, ...(selectedVariantData.extraImages || [])].filter(Boolean);
-                    // Videolar: Ana video + Varyantın ek videoları
                     const videos = [...(product.video ? [product.video] : []), ...(selectedVariantData.extraVideos || [])].filter(Boolean);
                     
                     updateProductMedia(product.name, images, videos);
                     
-                    // Sepete Ekle butonu için seçili varyantı ayarla
                     currentSelectedVariant = selectedVariantData;
                     cartBtn.disabled = false;
                     variantWarning.style.display = 'none';
                 });
             });
-
-            // NOT: Varsayılan olarak BASE ürüne ait görselleri yükle (Varyant seçilene kadar)
-            // Bu, varyant seçilmediği sürece BASE ürünün görsellerini gösterir.
             updateProductMedia(product.name, baseImages, baseVideos);
 
         } else {
-            // Varyant yoksa:
             currentSelectedVariant = { name: 'Standart', price_offset: 0 }; 
             cartBtn.disabled = false;
-            // BASE ürüne ait görselleri yükle
             updateProductMedia(product.name, baseImages, baseVideos);
             if (variantWarning) variantWarning.style.display = 'none';
         }
 
-        // Sepete Ekle butonuna listener ekle
         cartBtn.addEventListener('click', (e) => {
             if (hasVariants && !currentSelectedVariant) {
                 showMsg("Lütfen bir ürün varyantı seçin.", true);
                 return;
             }
-            // currentSelectedVariant ve currentCalculatedPrice kullanılarak sepete ekleme
             handleAddToCart(e, currentSelectedVariant, currentCalculatedPrice);
         });
     }
 
-    // --- ÜRÜN YÜKLEME (ANA) FONKSİYON - Tüm veriyi Firestore'dan çeker ---
+
+    // --- ÜRÜN VE VERİ YÜKLEME ---
     async function loadProducts(){
         productsLoaded = false;
         renderPage(); 
 
         try {
-            // 1. Anonim Giriş Yapmayı Deneyin (Başarısız olsa bile devam etmeli, okuma kuralı izin verirse çalışır)
             if (!auth.currentUser) {
-                try {
-                    await signInAnonymously(auth);
-                } catch(e) {
-                    // ANONİM GİRİŞ BAŞARISIZ OLURSA, KULLANICIYA SADECE UYARI VER VE DEVAM ET
-                    console.warn("Anonim giriş başarısız oldu (Güvenlik Kuralı Kısıtlaması olabilir):", e.message);
-                }
+                try { await signInAnonymously(auth); } catch(e) { console.warn("Anonim giriş başarısız oldu:", e.message); }
             }
             
-            // 2. Kategorileri Çek (Hiyerarşiyi oluşturmak için önce çekilmeli)
+            // 1. Kategorileri Çek
             const categorySnap = await getDocs(collection(db, "homeCategories"));
             const tempCategoryMap = {};
             categorySnap.docs.forEach(docSnap => {
@@ -938,23 +953,11 @@
             });
             allCategories = tempCategoryMap;
 
-            // 3. Ürünleri Çek
+            // 2. Ürünleri Çek
             const productSnap = await getDocs(collection(db, "homeProducts"));
             
-            // KRİTİK: Veri standardı yokluğunu çözen, önerilen normalleştirme mantığı
             allProducts = productSnap.docs.map(docSnap => {
                 const data = docSnap.data();
-
-                // 1. Name Standardizasyonu: Eğer name boşsa 'İsimsiz Ürün' kullan
-                const name = data.name || 'İsimsiz Ürün';
-
-                // 2. Image Standardizasyonu: Ana görseli String'e zorla
-                const image = data.image && typeof data.image === 'string' ? data.image : null;
-                
-                // 3. Ek görselleri standardize et
-                const extraImages = Array.isArray(data.extraImages) ? data.extraImages.filter(img => img && typeof img === 'string') : [];
-                
-                // 4. Varyantları standardize et
                 const variants = Array.isArray(data.variants) ? data.variants.map(v => ({
                     name: String(v.name || 'Varyant'),
                     price_offset: parseFloat(v.price_offset) || 0,
@@ -962,27 +965,25 @@
                     extraVideos: Array.isArray(v.extraVideos) ? v.extraVideos.filter(vid => vid && typeof vid === 'string') : []
                 })) : [];
                 
-                // 5. KRİTİK: Hiyerarşi yolu (hierarchy) artık Firestore'da tutuluyor (Admin'den geliyor), bunu çekmeliyiz.
                 const hierarchy = Array.isArray(data.hierarchy) ? data.hierarchy : [];
 
-                // Normalleştirilmiş ürünü döndür
                 return {
                     id: docSnap.id,
-                    name: String(name),
+                    name: data.name || 'İsimsiz Ürün',
                     price: parseFloat(data.price) || 0,
-                    old_price: parseFloat(data.old_price) || 0, // Eski fiyat ekliyorum
-                    category: data.category || 'genel', // Sadece son kategori adı
-                    hierarchy: hierarchy, // Tüm hiyerarşi yolu (Filtreleme için kritik)
+                    old_price: parseFloat(data.old_price) || 0, 
+                    category: data.category || 'genel',
+                    hierarchy: hierarchy,
                     description: data.description || '',
-                    image: image, // Standart görsel alanı (null olabilir)
-                    extraImages: extraImages,
-                    video: data.video || '', // Ana video
+                    image: data.image && typeof data.image === 'string' ? data.image : null,
+                    extraImages: Array.isArray(data.extraImages) ? data.extraImages.filter(img => img && typeof img === 'string') : [],
+                    video: data.video || '', 
                     variants: variants,
                     active: data.active === true
                 };
             }).filter(p => p.active); 
             
-            // 4. Bannerları Çek (Aynı Kaldı)
+            // 3. Bannerları Çek
             const bannerSnap = await getDocs(collection(db, "homeBanners"));
             allBanners = bannerSnap.docs.map(docSnap => ({
                 ...docSnap.data(),
@@ -992,18 +993,11 @@
             }));
 
             if (allBanners.length === 0) {
-                allBanners.push({ 
-                    url: 'data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%235D3EBC\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'12\' fill=\'%23FFD300\' text-anchor=\'middle\'%3eBANNER+ALANI%3c/text%3e%3c/svg%3e',
-                    title: 'Veri Tabanında Banner Yok', 
-                    description: 'Admin panelinden görsel ve metin ekleyin.',
-                    link: null
-                });
+                 allBanners.push({ url: 'data:image/svg+xml;charset=UTF-8,%3csvg.../svg%3e', title: 'Veri Yok', description: 'Admin panelini kontrol edin.', link: null });
             }
-
 
             productsLoaded = true;
         } catch(e) {
-            // Hata ayrıntılarını konsola ve kullanıcıya göster
             console.error("loadProducts sırasında kritik hata:", e);
             showMsg(`Ürünler yüklenirken kritik hata oluştu: ${e.message}`, true);
         } finally {
@@ -1011,7 +1005,7 @@
         }
     }
 
-    // --- SEPETE EKLEME MANTIĞI (Varyant Desteği Eklendi) (Aynı Kaldı) ---
+    // --- SEPETE EKLEME MANTIĞI ---
     async function handleAddToCart(event, selectedVariant = null, calculatedPrice = null){
         const user = auth.currentUser;
         if(!user){ showMsg("Sepete eklemek için giriş yapmalısınız!", true); return;}
@@ -1027,17 +1021,11 @@
 
         const itemPrice = calculatedPrice !== null ? calculatedPrice : (parseFloat(product.price) || 0);
         
-        // **DÜZELTME BAŞLANGICI**
-        // 1. Varyant adını doğru şekilde çek
-        const variantName = selectedVariant && selectedVariant.name && String(selectedVariant.name).trim() !== '' 
-                             ? String(selectedVariant.name) 
-                             : 'Standart';
+        const variantName = selectedVariant && selectedVariant.name && String(selectedVariant.name).trim() !== '' ? String(selectedVariant.name) : 'Standart';
 
-        // 2. Sepet doküman ID'sini varyant adına göre oluştur
         const variantSuffix = variantName !== 'Standart' ? `-${variantName.replace(/\s/g, '_')}` : '';
         const itemDocId = productId + variantSuffix;
         const itemRef = doc(db, "users", user.uid, "cart", itemDocId);
-        // **DÜZELTME SONU**
 
         try{
             const productName = String(product.name); 
@@ -1047,7 +1035,6 @@
                 productName: productName,
                 productLink: productName, 
                 productPrice: itemPrice, 
-                // CRITICAL: Varyant adını set et
                 variant: variantName, 
                 baseProductId: productId, 
                 category: product.category || 'cosmetics', 
@@ -1056,14 +1043,10 @@
                 addedAt: new Date()
             }, { merge: true });
 
-            // **MESAJ GÜNCELLEMESİ**
             let variantText = '';
-            if (variantName !== 'Standart') {
-                variantText = ` (${variantName})`;
-            }
+            if (variantName !== 'Standart') { variantText = ` (${variantName})`; }
 
             showMsg(`"${productName}"${variantText} sepete eklendi!`);
-            // **MESAJ GÜNCELLEMESİ SONU**
 
         }catch(e){ 
             const errorMessage = e && e.message ? e.message : 'Bilinmeyen Hata Kodu';
@@ -1077,6 +1060,7 @@
             }
         }
     }
+
 
     // Uygulamayı başlat
     loadProducts();
