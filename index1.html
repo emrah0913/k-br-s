@@ -782,14 +782,21 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
     };
 
     // KARGO FİYAT LİSTESİ (Admin'den gelecek şekilde kurgulandı)
+  // KARGO FİYAT LİSTESİ VE FONKSİYONLARI
     let cargoPrices = [
         { name: "Bulaşık Makinesi", price: 1500 },
         { name: "Buzdolabı", price: 2500 },
-        { name: "Koli (Orta Boy)", price: 300 },
-        { name: "Motosiklet", price: 5000 }
+        { name: "Çamaşır Makinesi", price: 1400 },
+        { name: "Koli (Küçük)", price: 150 },
+        { name: "Koli (Orta)", price: 300 },
+        { name: "Koli (Büyük)", price: 500 },
+        { name: "Televizyon (55 inç)", price: 1200 },
+        { name: "Motosiklet", price: 5000 },
+        { name: "Kombi", price: 1000 },
+        { name: "Valiz/Çanta", price: 250 }
     ];
 
-    // Listeyi Datalist'e doldur
+    // Datalist'i doldur
     const datalist = document.getElementById('cargo-items-list');
     cargoPrices.forEach(item => {
         let opt = document.createElement('option');
@@ -797,12 +804,68 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
         datalist.appendChild(opt);
     });
 
-    // Arama ve Fiyat Getirme
+    // Arama ve Fiyat Gösterme
     cargoSearchInput.oninput = () => {
         const found = cargoPrices.find(x => x.name.toLowerCase() === cargoSearchInput.value.toLowerCase());
         const resultBox = document.getElementById('cargo-result-box');
         if(found) {
             document.getElementById('cargo-final-price').textContent = found.price + " ₺";
+            resultBox.classList.remove('hidden');
+        } else {
+            resultBox.classList.add('hidden');
+        }
+    };
+
+    // KARGOYU SEPETE EKLEME (FIREBASE)
+    const addCargoBtn = document.getElementById('add-cargo-btn');
+    addCargoBtn.onclick = async () => {
+        const user = auth.currentUser;
+        if (!user) {
+            window.showAuthRequiredModal();
+            return;
+        }
+
+        const itemName = cargoSearchInput.value;
+        const direction = document.getElementById('cargo-direction').value;
+        const foundItem = cargoPrices.find(x => x.name.toLowerCase() === itemName.toLowerCase());
+
+        if (!foundItem) {
+            showToast('Lütfen listeden bir eşya seçin.', 'error');
+            return;
+        }
+
+        const cargoData = {
+            productLink: "Kargo/Eşya Taşıma Hizmeti",
+            productPrice: foundItem.price,
+            category: "Lojistik",
+            direction: direction === 'tr-kktc' ? "Türkiye -> Kıbrıs" : "Kıbrıs -> Türkiye",
+            itemName: itemName,
+            orderMethod: "cargo_service", // Sepet sayfasında ayırmak için önemli
+            quantity: 1,
+            addedAt: new Date()
+        };
+
+        try {
+            addCargoBtn.disabled = true;
+            addCargoBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Ekleniyor...';
+            
+            await addDoc(collection(db, 'users', user.uid, 'cart'), cargoData);
+            
+            showToast('Taşıma hizmeti sepete eklendi!');
+            cargoSearchInput.value = '';
+            document.getElementById('cargo-result-box').classList.add('hidden');
+            
+            // Sepet sayfasına yönlendir
+            setTimeout(() => { window.location.href = 'sepet.html'; }, 800);
+            
+        } catch (error) {
+            console.error("Hata:", error);
+            showToast('Hata oluştu: ' + error.message, 'error');
+        } finally {
+            addCargoBtn.disabled = false;
+            addCargoBtn.textContent = 'Sepete Ekle';
+        }
+    };
             resultBox.classList.remove('hidden');
         } else {
             resultBox.classList.add('hidden');
