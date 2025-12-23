@@ -43,7 +43,6 @@
         .tab-active { background-color: #5d3ebc; color: white; font-weight: 800; box-shadow: 0 10px 15px -3px rgba(93, 62, 188, 0.3); }
         .tab-inactive { color: #6b7280; font-weight: 600; background-color: #f3f4f6; }
         
-        /* Ürün Slider Yapısı */
         .product-slider { 
             display: flex;
             overflow-x: auto; 
@@ -198,7 +197,6 @@
         <!-- Kampanya Vitrini -->
         <h2 class="text-2xl font-black text-gray-800 mb-6 text-center border-b-4 border-primary inline-block pb-2 tracking-tighter uppercase">🛒 Popüler Fırsatlar</h2>
         <div class="product-slider px-2 mb-16">
-            <!-- Ürün 1 -->
             <div class="product-card bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100 flex-shrink-0">
                 <img src="https://cdn.dsmcdn.com/ty1339/product/media/images/prod/QC/20240531/13/4f260764-0e89-3345-85d3-c78b2860a122/1_org_zoom.jpg" class="w-full h-48 object-contain p-4" loading="lazy">
                 <div class="p-5 text-center">
@@ -207,7 +205,6 @@
                     <a href="https://www.trendyol.com/good-night/legom-aktivite-koltugu-yatak-cok-amacli-p-833506385" target="_blank" class="block w-full text-center bg-primary text-white text-[10px] font-black py-3 rounded-xl uppercase">Satın Al</a>
                 </div>
             </div>
-            <!-- Ürün 2 -->
             <div class="product-card bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100 flex-shrink-0">
                 <img src="https://cdn.dsmcdn.com/ty1583/prod/QC/20241008/22/36a5c729-891b-369b-9235-de1c4459aab2/1_org_zoom.jpg" class="w-full h-48 object-contain p-4" loading="lazy">
                 <div class="p-5 text-center">
@@ -216,7 +213,6 @@
                     <a href="https://www.trendyol.com/star-shoes/3-lu-kislik-ev-terligi-kislik-terlik-misafir-terligi-p-864790548" target="_blank" class="block w-full text-center bg-primary text-white text-[10px] font-black py-3 rounded-xl uppercase">Satın Al</a>
                 </div>
             </div>
-            <!-- Ürün 3 -->
             <div class="product-card bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100 flex-shrink-0">
                 <img src="https://cdn.dsmcdn.com/ty1613/prod/QC/20241208/02/3f26a3f7-9329-3fbf-976d-40355be6ec72/1_org_zoom.jpg" class="w-full h-48 object-contain p-4" loading="lazy">
                 <div class="p-5 text-center">
@@ -225,7 +221,6 @@
                     <a href="https://www.trendyol.com/lia-blanco-s/kadin-siyah-oversize-sisme-kislik-mont-dik-yaka-p-856865482" target="_blank" class="block w-full text-center bg-primary text-white text-[10px] font-black py-3 rounded-xl uppercase">Satın Al</a>
                 </div>
             </div>
-            <!-- Ürün 4 -->
             <div class="product-card bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100 flex-shrink-0">
                 <img src="https://cdn.dsmcdn.com/ty1521/product/media/images/prod/QC/20240903/19/2055f782-17d7-358f-bf14-480a25545b92/1_org_zoom.jpg" class="w-full h-48 object-contain p-4" loading="lazy">
                 <div class="p-5 text-center">
@@ -315,7 +310,7 @@
 
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-dark/80 hidden items-center justify-center z-[100] p-4 backdrop-blur-md">
-        <div class="bg-white w-full max-w-sm rounded-[40px] p-10 text-center shadow-2xl">
+        <div class="bg-white w-full max-sm:w-[90%] max-w-sm rounded-[40px] p-10 text-center shadow-2xl">
             <h3 id="login-title" class="text-xl font-black mb-4 uppercase tracking-tighter text-gray-800">Hoş Geldiniz</h3>
             <p id="login-desc" class="text-xs text-gray-500 mb-8 font-medium">Sipariş vermek ve takibini yapmak için Google ile giriş yapın.</p>
             <button id="google-login-btn" class="w-full py-4 bg-gray-100 hover:bg-gray-200 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-colors">
@@ -351,8 +346,10 @@
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
             } else {
-                // Misafir olarak girişi hemen başlatıyoruz.
-                await signInAnonymously(auth).catch(() => console.log("Misafir girişi başlatıldı."));
+                // Not: Hata alıyorsanız Firebase Console > Authentication > Sign-in Method > Anonymous aktif edilmelidir.
+                await signInAnonymously(auth).catch((err) => {
+                    console.warn("Anonim giriş hatası (Konsolda kapalı olabilir):", err.message);
+                });
             }
         } catch (error) {
             console.error("Yetkilendirme hatası:", error);
@@ -405,7 +402,10 @@
                     await signInWithPopup(auth, new GoogleAuthProvider());
                     document.getElementById('login-modal').classList.add('hidden');
                     showToast("Giriş yapıldı!");
-                } catch (e) { showToast("Giriş başarısız."); }
+                } catch (e) { 
+                    console.error("Giriş hatası:", e);
+                    showToast("Giriş başarısız."); 
+                }
             };
         }
 
@@ -467,7 +467,6 @@
 
     async function addToCart() {
         const user = auth.currentUser;
-        // Misafirse veya giriş yapmamışsa modalı aç
         if(!user || user.isAnonymous) { 
             showLoginModal("Sepete Ekle", "Hesapladığınız bu siparişi sepetinize eklemek için lütfen Google ile giriş yapın.");
             return; 
@@ -478,6 +477,7 @@
 
         try {
             showToast("Ekleniyor...");
+            // Rule 1: /artifacts/{appId}/users/{userId}/{collectionName}
             await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'cart'), {
                 productLink: document.getElementById('product-link').value,
                 price: parseFloat(document.getElementById('product-price').value),
@@ -490,29 +490,45 @@
             showToast("Sepete eklendi!");
             resetCalculator();
         } catch (e) {
-            console.error(e);
-            showToast("Hata: Sepete eklenemedi.");
+            console.error("Sepet ekleme hatası:", e);
+            if(e.code === 'permission-denied') {
+                showToast("Yetki hatası: Lütfen giriş yapın.");
+            } else {
+                showToast("Hata: Sepete eklenemedi.");
+            }
         }
     }
 
     function listenToCart(uid) {
-        onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'cart'), (snap) => {
+        if(!uid) return;
+        // Rule 1: /artifacts/{appId}/users/{userId}/{collectionName}
+        const cartRef = collection(db, 'artifacts', appId, 'users', uid, 'cart');
+        onSnapshot(cartRef, (snap) => {
             const count = snap.size;
             cartBadge.textContent = count;
             cartBadge.classList.toggle('hidden', count === 0);
-        }, (err) => console.log("Sepet dinleme hatası."));
+        }, (err) => {
+            console.warn("Sepet dinleme hatası:", err.message);
+        });
     }
 
     async function loadPricingSettings() {
         try {
-            const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'pricing'));
-            if (snap.exists()) pricingSettings = snap.data();
-        } catch (e) { console.log("Ayarlar yüklenemedi, varsayılanlar kullanılıyor."); }
+            // Rule 1: /artifacts/{appId}/public/data/{collectionName}
+            const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'pricing');
+            const snap = await getDoc(settingsRef);
+            if (snap.exists()) {
+                pricingSettings = snap.data();
+            }
+        } catch (e) { 
+            console.warn("Ayarlar yüklenemedi, varsayılanlar kullanılıyor."); 
+        }
         populateCategories();
     }
 
     function populateCategories() {
         const sel = document.getElementById('product-category');
+        if(!sel) return;
         const names = { shopping: "Giyim & Tekstil", furniture: "Mobilya & Büyük Eşya", personal: "Paket & Kargo", electronics: "Elektronik & Küçük Ev", hobby: "Spor & Hobi", industrial: "Sanayi & Diğer" };
         sel.innerHTML = '<option value="" disabled selected>Kategori Seçin</option>' + 
             Object.keys(pricingSettings.categoryRates).map(k => `<option value="${k}">${names[k] || k}</option>`).join('');
@@ -527,6 +543,7 @@
     }
 
     function showToast(msg) {
+        if(!toast) return;
         toast.innerText = msg;
         toast.classList.replace('opacity-0', 'opacity-100');
         setTimeout(() => toast.classList.replace('opacity-100', 'opacity-0'), 3000);
