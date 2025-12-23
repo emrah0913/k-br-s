@@ -43,7 +43,6 @@
         .tab-active { background-color: #5d3ebc; color: white; font-weight: 800; box-shadow: 0 10px 15px -3px rgba(93, 62, 188, 0.3); }
         .tab-inactive { color: #6b7280; font-weight: 600; background-color: #f3f4f6; }
         
-        /* Kampanya Slider */
         .product-slider { 
             display: flex;
             overflow-x: auto; 
@@ -110,12 +109,6 @@
                 <p class="text-indigo-50 mb-6 text-sm opacity-95 font-medium leading-relaxed">
                     Trendyol, Amazon ve tüm sitelerden alışverişinizi yapın, biz kapınıza getirelim. Mobilya, elektronik veya tekstil fark etmez, tek sepette yönetin.
                 </p>
-                <div class="flex flex-wrap gap-3">
-                    <div class="bg-white/10 px-4 py-2 rounded-2xl backdrop-blur-md border border-white/20 flex items-center gap-2">
-                        <i class="ri-list-check text-secondary"></i>
-                        <span class="text-[11px] font-bold uppercase">Çoklu Eşya Listesi</span>
-                    </div>
-                </div>
             </div>
             <i class="ri-archive-stack-line absolute -bottom-10 -right-10 text-white/5 text-[280px] rotate-6 pointer-events-none"></i>
         </section>
@@ -153,9 +146,8 @@
                 <p class="text-xs text-gray-400 font-bold uppercase mt-1 text-primary tracking-widest">Gümrük, Nakliye ve Sigorta Dahil</p>
             </div>
 
-            <!-- Yön Seçimi -->
             <div class="mb-8">
-                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center">Yön Seçin</label>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center">Hangi Yönde Taşıma?</label>
                 <div class="grid grid-cols-2 gap-3 p-2 bg-gray-50 rounded-[24px]">
                     <button id="dir-tr-cy" class="dir-btn py-4 rounded-2xl text-[11px] font-black uppercase transition-all tracking-tight tab-active">Türkiye → Kıbrıs</button>
                     <button id="dir-cy-tr" class="dir-btn py-4 rounded-2xl text-[11px] font-black uppercase transition-all tracking-tight text-gray-400">Kıbrıs → Türkiye</button>
@@ -180,16 +172,14 @@
                 </div>
 
                 <div id="group-dims" class="space-y-5 hidden">
-                    <div class="relative">
-                        <div class="relative group">
-                            <i class="ri-search-2-line absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors"></i>
-                            <input type="text" id="search-input" class="w-full p-5 pl-14 bg-white border-2 border-gray-100 focus:border-primary rounded-3xl outline-none text-sm font-semibold shadow-sm" placeholder="Taşınacak eşyayı arayıp ekleyin...">
-                            <div id="search-results" class="search-results absolute w-full bg-white hidden"></div>
-                        </div>
+                    <div class="relative group">
+                        <i class="ri-search-2-line absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="search-input" class="w-full p-5 pl-14 bg-white border-2 border-gray-100 focus:border-primary rounded-3xl outline-none text-sm font-semibold shadow-sm" placeholder="Eşya adını yazın...">
+                        <div id="search-results" class="search-results absolute w-full bg-white hidden"></div>
                     </div>
                     <div id="items-list-container" class="space-y-3 pt-2"></div>
                     <div id="empty-list-msg" class="text-center py-8 border-2 border-dashed border-gray-100 rounded-[32px] text-gray-300">
-                        <p class="text-xs font-bold uppercase tracking-widest">Listeniz Boş</p>
+                        <p class="text-xs font-bold uppercase tracking-widest">Henüz eşya eklenmedi</p>
                     </div>
                 </div>
 
@@ -211,7 +201,7 @@
                 </div>
 
                 <div id="category-selector-container">
-                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Sipariş Kategorisi</label>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Kategori</label>
                     <select id="product-category" class="calc-input w-full p-5 bg-gray-50 border-2 border-transparent focus:border-primary/10 rounded-3xl outline-none text-sm font-semibold transition-all">
                         <option value="" disabled selected>Kategori Seçin</option>
                     </select>
@@ -254,7 +244,7 @@
 
         <!-- Alışveriş Siteleri Grid -->
         <div class="px-2 mb-16">
-            <h3 class="text-lg font-black mb-8 uppercase tracking-widest text-gray-300">En Çok Sipariş Verilen Mağazalar</h3>
+            <h3 class="text-lg font-black mb-8 uppercase tracking-widest text-gray-300">Mağazalar</h3>
             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-5">
                 <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-3xl shadow-sm p-4 h-28 flex items-center justify-center border border-gray-50 hover:shadow-md transition-all">
                     <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" class="max-h-12 object-contain grayscale hover:grayscale-0 transition-all">
@@ -282,18 +272,17 @@
             <h3 class="text-xl font-black mb-6 text-gray-800 uppercase tracking-tighter text-center">Nasıl Çalışıyoruz?</h3>
             <div class="relative w-full overflow-hidden rounded-[40px] shadow-2xl bg-black border-4 border-white" style="padding-top: 56.25%;">
                 <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/YYNLzJJKTXs" title="Tanıtım Videosu" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                <div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"></div>
             </div>
         </div>
 
         <!-- Bilgi Bölümü -->
         <div class="bg-white p-8 rounded-[40px] shadow-sm border border-gray-100">
             <h3 class="text-xl font-black mb-6 text-primary tracking-tighter flex items-center gap-2">
-                <i class="ri-map-pin-user-fill"></i> Depo & İletişim Bilgilerimiz
+                <i class="ri-map-pin-user-fill"></i> Depo & İletişim
             </h3>
             <div class="grid sm:grid-cols-2 gap-8">
                 <div class="bg-gray-50 p-6 rounded-3xl border border-gray-100">
-                    <h4 class="font-black text-[10px] uppercase mb-4 text-primary tracking-widest">Türkiye Kabul Deposu (Adres)</h4>
+                    <h4 class="font-black text-[10px] uppercase mb-4 text-primary tracking-widest">Türkiye Kabul Deposu</h4>
                     <p class="text-[11px] text-gray-600 leading-relaxed font-medium">
                         <strong>Adres:</strong> Bozyurt Mah. Kanal Üstü 3281 sk. No:3, Nazilli/Aydın<br>
                         <strong>Telefon:</strong> +90 547 190 19 88<br>
@@ -301,7 +290,7 @@
                     </p>
                 </div>
                 <div class="bg-gray-50 p-6 rounded-3xl border border-gray-100">
-                    <h4 class="font-black text-[10px] uppercase mb-4 text-primary tracking-widest">Kıbrıs Teslim Deposu (Lefkoşa)</h4>
+                    <h4 class="font-black text-[10px] uppercase mb-4 text-primary tracking-widest">Kıbrıs Teslimat</h4>
                     <p class="text-[11px] text-gray-600 leading-relaxed font-medium">
                         <strong>Adres:</strong> Alayköy Sanayi Bölgesi 1.Etap, 8.Sokak, Lefkoşa<br>
                         <strong>Telefon:</strong> +90 533 860 71 82<br>
@@ -309,13 +298,9 @@
                     </p>
                 </div>
             </div>
-            <div class="mt-8 text-center">
-                <p class="text-[11px] text-gray-400 font-bold uppercase">Aydın - Lefkoşa Hattı | Profesyonel Lojistik</p>
-            </div>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="mt-20 px-4 pb-16 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest border-t pt-10">
         <div class="flex justify-center gap-6 mb-8">
             <a href="gizlilik.html" class="hover:text-primary transition-colors">Gizlilik</a>
@@ -325,19 +310,16 @@
         <p>&copy; 2024 Getir Kıbrıs. Tüm Hakları Saklıdır.</p>
     </footer>
 
-    <!-- WhatsApp -->
     <a href="https://wa.me/905471901988" target="_blank" class="fixed bottom-10 right-10 bg-[#25D366] w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-white text-4xl z-50 hover:scale-110 transition-transform">
         <i class="ri-whatsapp-line"></i>
     </a>
 
-    <!-- Toast -->
     <div id="toast" class="fixed bottom-32 left-1/2 -translate-x-1/2 bg-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest opacity-0 transition-all z-[200] shadow-2xl pointer-events-none border border-white/10"></div>
 
-    <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-dark/80 hidden items-center justify-center z-[100] p-4 backdrop-blur-md">
         <div class="bg-white w-full max-w-sm rounded-[40px] p-10 text-center shadow-2xl">
             <h3 class="text-xl font-black mb-4 uppercase tracking-tighter text-gray-800">Giriş Yap</h3>
-            <p class="text-xs text-gray-500 mb-8 font-medium">Sipariş vermek ve sepetinizi yönetmek için giriş yapın.</p>
+            <p class="text-xs text-gray-500 mb-8 font-medium">Sepetinizi yönetmek için Google ile giriş yapın.</p>
             <button id="google-login-btn" class="w-full py-4 bg-gray-100 hover:bg-gray-200 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-colors">
                 <i class="ri-google-fill text-red-500"></i> Google İle Giriş
             </button>
@@ -352,7 +334,6 @@
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Firebase Config - Fixed with mandatory rules
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", authDomain: "kibris-6b4f7.firebaseapp.com", projectId: "kibris-6b4f7", storageBucket: "kibris-6b4f7.firebasestorage.app", messagingSenderId: "141262926171", appId: "1:141262926171:web:07226845e51d4bbc0dea7e" };
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     
@@ -360,16 +341,18 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Initial Auth Token Setup (Rule 3)
     const initAuth = async () => {
         try {
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
             } else {
+                // Not: auth/admin-restricted-operation hatası alıyorsanız 
+                // Firebase Console > Authentication > Sign-in Method kısmından "Anonymous" seçeneğini aktif etmelisiniz.
                 await signInAnonymously(auth);
             }
         } catch (error) {
-            console.error("Auth init error:", error);
+            console.error("Auth init hatası:", error.code);
+            // Hata durumunda bile uygulamanın çalışmaya devam etmesi için sessizce devam ediyoruz.
         }
     };
     initAuth();
@@ -385,14 +368,9 @@
 
     const GLOBAL_ITEM_CATALOG = [
         { name: "Koltuk (3'lü Standart)", x: 230, y: 100, z: 90, w: 85, cat: "furniture" },
-        { name: "Koltuk (2'li Standart)", x: 160, y: 100, z: 90, w: 60, cat: "furniture" },
-        { name: "Yatak (Çift Kişilik)", x: 160, y: 200, z: 30, w: 45, cat: "furniture" },
-        { name: "Buzdolabı (Kombi)", x: 70, y: 75, z: 185, w: 85, cat: "furniture" },
-        { name: "Çamaşır Makinesi", x: 60, y: 60, z: 85, w: 72, cat: "furniture" },
-        { name: "Bulaşık Makinesi", x: 60, y: 60, z: 85, w: 48, cat: "furniture" },
         { name: "Televizyon (55 inç)", x: 135, y: 12, z: 85, w: 18, cat: "electronics" },
+        { name: "Buzdolabı", x: 70, y: 75, z: 185, w: 85, cat: "furniture" },
         { name: "Koli (Jumbo Boy)", x: 80, y: 60, z: 60, w: 40, cat: "personal" },
-        { name: "Koli (Büyük Boy)", x: 60, y: 40, z: 40, w: 22, cat: "personal" },
         { name: "Valiz (Büyük)", x: 55, y: 35, z: 85, w: 28, cat: "personal" }
     ];
 
@@ -430,6 +408,7 @@
                 if(loginBtn) loginBtn.classList.remove('hidden');
                 if(profileCont) profileCont.classList.add('hidden');
             }
+            loadPricingSettings(); // Auth gerçekleştikten sonra ayarları çek
         });
 
         if (searchInput) {
@@ -446,12 +425,12 @@
                             </div>
                         </div>`).join('');
                     searchResults.classList.remove('hidden');
-                } else if(searchResults) { searchResults.classList.add('hidden'); }
+                }
             });
         }
 
         document.addEventListener('click', (e) => {
-            if (searchInput && searchResults && !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            if (searchInput && searchResults && !searchInput.contains(e.target)) {
                 searchResults.classList.add('hidden');
             }
         });
@@ -470,8 +449,6 @@
         document.getElementById('dir-cy-tr').onclick = () => { currentDirection = 'cy-tr'; updateDirUI(); resetCalc(); };
         document.getElementById('login-btn').onclick = () => document.getElementById('login-modal').classList.remove('hidden');
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).then(() => document.getElementById('login-modal').classList.add('hidden'));
-
-        loadPricingSettings();
     }
 
     window.handleItemAdd = (name) => {
@@ -497,7 +474,7 @@
                 <div class="flex items-center gap-3">
                     <button type="button" onclick="updateItemQty('${item.id}', -1)" class="w-8 h-8 bg-white rounded-lg shadow-sm font-bold">-</button>
                     <button type="button" onclick="updateItemQty('${item.id}', 1)" class="w-8 h-8 bg-white rounded-lg shadow-sm font-bold">+</button>
-                    <button type="button" onclick="removeItem('${item.id}')" class="text-red-500 ml-2 transition-colors hover:text-red-700"><i class="ri-delete-bin-7-line ri-lg"></i></button>
+                    <button type="button" onclick="removeItem('${item.id}')" class="text-red-500 ml-2"><i class="ri-delete-bin-7-line ri-lg"></i></button>
                 </div>
             </div>`).join('');
     }
@@ -561,7 +538,6 @@
         
         try {
             showToast("Ekleniyor...");
-            // Correct path usage (Rule 1)
             await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'cart'), {
                 direction: currentDirection, mode: currentCalcMode,
                 items: currentCalcMode === 'dims' ? selectedItemsList.map(i => `${i.qty}x ${i.name}`) : ['E-Ticaret Link Siparişi'],
@@ -590,12 +566,12 @@
     }
 
     async function loadPricingSettings() {
-        // Correct path usage for settings (Rule 1 & Rule 3 guard)
+        if (!auth.currentUser) return; // Kullanıcı girişi bekleyelim
         try {
             const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'pricing'));
             if (snap && snap.exists()) pricingSettings = snap.data();
         } catch (error) {
-            console.warn("Using default settings due to path or auth issues.");
+            console.warn("Varsayılan ayarlar kullanılıyor.");
         }
         populateCategories();
     }
