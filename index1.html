@@ -120,21 +120,25 @@
                 <span class="text-xs font-black text-gray-800 uppercase tracking-tight">Sipariş Ver / Hesapla</span>
             </button>
 
-            <a href="sepet.html" class="bg-white shadow-xl shadow-gray-200/50 p-6 rounded-3xl flex flex-col items-center justify-center border border-gray-100 hover:border-primary/40 hover:scale-[1.03] transition-all group relative">
+            <button id="orders-link-btn" class="bg-white shadow-xl shadow-gray-200/50 p-6 rounded-3xl flex flex-col items-center justify-center border border-gray-100 hover:border-primary/40 hover:scale-[1.03] transition-all group relative">
                 <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <i class="ri-shopping-bag-3-fill ri-2x text-primary"></i>
                     <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black rounded-full h-6 w-6 flex items-center justify-center hidden border-2 border-white shadow-lg">0</span>
                 </div>
                 <span class="text-xs font-black text-gray-800 uppercase tracking-tight">Siparişlerim</span>
-            </a>
+            </button>
         </div>
 
         <!-- Akıllı Hesaplama Modülü -->
         <section id="calculator-section" class="bg-white rounded-[40px] shadow-2xl mx-auto p-8 mb-16 max-w-2xl border border-gray-100 relative overflow-hidden hidden fade-in">
             <div class="absolute top-0 left-0 w-2 h-full bg-primary"></div>
             <div class="mb-8">
-                <h2 class="text-2xl font-black text-gray-800 tracking-tight">Akıllı Hesaplayıcı</h2>
+                <h2 class="text-2xl font-black text-gray-800 tracking-tight text-center">Akıllı Hesaplayıcı</h2>
                 <p class="text-xs text-gray-400 font-bold uppercase mt-1 text-primary tracking-widest text-center">Gümrük, Nakliye ve Sigorta Dahil</p>
+                <div class="mt-4 p-3 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center gap-3">
+                    <i class="ri-user-smile-line text-primary ri-lg"></i>
+                    <span class="text-[11px] font-bold text-primary/80 uppercase">Hesaplama yapmak için giriş yapmanız gerekmez!</span>
+                </div>
             </div>
 
             <form id="calculator-form" class="space-y-6">
@@ -257,7 +261,7 @@
             </div>
         </div>
 
-        <!-- Tanıtım Videosu (İstediğiniz Konumda) -->
+        <!-- Tanıtım Videosu -->
         <div class="mb-16">
             <h3 class="text-xl font-black mb-6 text-gray-800 uppercase tracking-tighter text-center">Nasıl Çalışıyoruz?</h3>
             <div class="relative w-full overflow-hidden rounded-[40px] shadow-2xl bg-black border-4 border-white" style="padding-top: 56.25%;">
@@ -312,8 +316,8 @@
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-dark/80 hidden items-center justify-center z-[100] p-4 backdrop-blur-md">
         <div class="bg-white w-full max-w-sm rounded-[40px] p-10 text-center shadow-2xl">
-            <h3 class="text-xl font-black mb-4 uppercase tracking-tighter text-gray-800">Hoş Geldiniz</h3>
-            <p class="text-xs text-gray-500 mb-8 font-medium">Sipariş vermek ve takibini yapmak için Google ile giriş yapın.</p>
+            <h3 id="login-title" class="text-xl font-black mb-4 uppercase tracking-tighter text-gray-800">Hoş Geldiniz</h3>
+            <p id="login-desc" class="text-xs text-gray-500 mb-8 font-medium">Sipariş vermek ve takibini yapmak için Google ile giriş yapın.</p>
             <button id="google-login-btn" class="w-full py-4 bg-gray-100 hover:bg-gray-200 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-colors">
                 <i class="ri-google-fill text-red-500"></i> Google İle Giriş
             </button>
@@ -324,12 +328,10 @@
 </div>
 
 <script type="module">
-    // Firebase v9 Modular SDK Importları (Sizin koddaki gibi)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    // Firebase Yapılandırması (Sizin koddaki config değerleri)
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
         authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -344,13 +346,13 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Başlangıç Yetkilendirmesi (Rule 3)
     const initAuth = async () => {
         try {
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
             } else {
-                await signInAnonymously(auth).catch(() => console.log("Anonim giriş pasif."));
+                // Misafir olarak girişi hemen başlatıyoruz.
+                await signInAnonymously(auth).catch(() => console.log("Misafir girişi başlatıldı."));
             }
         } catch (error) {
             console.error("Yetkilendirme hatası:", error);
@@ -363,7 +365,6 @@
         categoryRates: { 'furniture': 0.75, 'shopping': 0.45, 'personal': 0.35, 'electronics': 0.85, 'hobby': 0.55, 'industrial': 0.90 }
     };
 
-    // DOM Elements
     const loginBtn = document.getElementById('login-btn');
     const googleLoginBtn = document.getElementById('google-login-btn');
     const profileCont = document.getElementById('profile-container');
@@ -375,37 +376,57 @@
     const mainBtnText = document.getElementById('main-btn-text');
     const calcResultPanel = document.getElementById('calculation-result');
     const toast = document.getElementById('toast');
+    const ordersLinkBtn = document.getElementById('orders-link-btn');
 
     function init() {
-        // Auth Listener
         onAuthStateChanged(auth, user => {
             if(user && !user.isAnonymous) {
                 loginBtn.classList.add('hidden');
                 profileCont.classList.remove('hidden');
                 profileImg.src = user.photoURL || 'https://placehold.co/40x40?text=U';
-                listenToCart(user.uid); // Sepet dinleyiciyi başlat
+                listenToCart(user.uid);
             } else {
                 loginBtn.classList.remove('hidden');
                 profileCont.classList.add('hidden');
+                cartBadge.classList.add('hidden');
             }
             loadPricingSettings(); 
         });
 
-        // Event Listeners
-        if (loginBtn) loginBtn.onclick = () => document.getElementById('login-modal').classList.remove('hidden');
-        if (googleLoginBtn) googleLoginBtn.onclick = async () => {
-            try {
-                await signInWithPopup(auth, new GoogleAuthProvider());
-                document.getElementById('login-modal').classList.add('hidden');
-                showToast("Giriş yapıldı.");
-            } catch (e) { showToast("Giriş başarısız."); }
-        };
+        if (loginBtn) {
+            loginBtn.onclick = () => {
+                showLoginModal("Hoş Geldiniz", "Siparişlerinize erişmek ve sepetinizi yönetmek için Google ile giriş yapın.");
+            };
+        }
+
+        if (googleLoginBtn) {
+            googleLoginBtn.onclick = async () => {
+                try {
+                    await signInWithPopup(auth, new GoogleAuthProvider());
+                    document.getElementById('login-modal').classList.add('hidden');
+                    showToast("Giriş yapıldı!");
+                } catch (e) { showToast("Giriş başarısız."); }
+            };
+        }
 
         const triggerBtn = document.getElementById('action-calculate-btn');
-        if (triggerBtn) triggerBtn.onclick = () => { 
-            calcSection.classList.remove('hidden'); 
-            calcSection.scrollIntoView({ behavior: 'smooth' }); 
-        };
+        if (triggerBtn) {
+            triggerBtn.onclick = () => { 
+                calcSection.classList.remove('hidden'); 
+                calcSection.scrollIntoView({ behavior: 'smooth' }); 
+            };
+        }
+
+        if (ordersLinkBtn) {
+            ordersLinkBtn.onclick = () => {
+                const user = auth.currentUser;
+                if (!user || user.isAnonymous) {
+                    showLoginModal("Giriş Gerekli", "Siparişlerinizi görüntülemek için lütfen Google ile giriş yapın.");
+                } else {
+                    window.location.href = 'sepet.html';
+                }
+            };
+        }
 
         if (calcForm) {
             calcForm.onsubmit = (e) => {
@@ -414,6 +435,12 @@
                 else addToCart();
             };
         }
+    }
+
+    function showLoginModal(title, desc) {
+        document.getElementById('login-title').innerText = title;
+        document.getElementById('login-desc').innerText = desc;
+        document.getElementById('login-modal').classList.remove('hidden');
     }
 
     function calculate() {
@@ -440,8 +467,9 @@
 
     async function addToCart() {
         const user = auth.currentUser;
+        // Misafirse veya giriş yapmamışsa modalı aç
         if(!user || user.isAnonymous) { 
-            document.getElementById('login-modal').classList.remove('hidden'); 
+            showLoginModal("Sepete Ekle", "Hesapladığınız bu siparişi sepetinize eklemek için lütfen Google ile giriş yapın.");
             return; 
         }
 
@@ -450,7 +478,6 @@
 
         try {
             showToast("Ekleniyor...");
-            // Canvas Path Rule: /artifacts/{appId}/users/{userId}/cart
             await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'cart'), {
                 productLink: document.getElementById('product-link').value,
                 price: parseFloat(document.getElementById('product-price').value),
@@ -460,7 +487,7 @@
                 addedAt: new Date(),
                 status: 'pending'
             });
-            showToast("Sepete eklendi.");
+            showToast("Sepete eklendi!");
             resetCalculator();
         } catch (e) {
             console.error(e);
@@ -469,7 +496,6 @@
     }
 
     function listenToCart(uid) {
-        // Canvas Path Rule: /artifacts/{appId}/users/{userId}/cart
         onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'cart'), (snap) => {
             const count = snap.size;
             cartBadge.textContent = count;
@@ -478,7 +504,6 @@
     }
 
     async function loadPricingSettings() {
-        // Canvas Path Rule: /artifacts/{appId}/public/data/settings/pricing
         try {
             const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'pricing'));
             if (snap.exists()) pricingSettings = snap.data();
