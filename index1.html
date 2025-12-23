@@ -49,6 +49,87 @@
                 }
             }
         }
+      // --- DOM Elements ---
+const calculateBtn = document.getElementById('calculate-btn');
+const selectionModal = document.getElementById('selection-modal');
+const closeSelectionModal = document.getElementById('close-selection-modal');
+const optLinkOrder = document.getElementById('opt-link-order');
+const optCargoOrder = document.getElementById('opt-cargo-order');
+const linkSection = document.getElementById('calculator-section');
+const cargoSection = document.getElementById('item-cargo-section');
+
+// 1. Ana "Sipariş Ver" butonu tıklanınca modalı aç
+calculateBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    selectionModal.classList.remove('hidden');
+});
+
+closeSelectionModal.addEventListener('click', () => selectionModal.classList.add('hidden'));
+
+// 2. Link ile Satın Al seçilirse
+optLinkOrder.addEventListener('click', () => {
+    selectionModal.classList.add('hidden');
+    cargoSection.classList.add('hidden');
+    linkSection.classList.remove('hidden');
+    linkSection.scrollIntoView({ behavior: 'smooth' });
+});
+
+// 3. Kargo Hesapla seçilirse
+optCargoOrder.addEventListener('click', () => {
+    selectionModal.classList.add('hidden');
+    linkSection.classList.add('hidden');
+    cargoSection.classList.remove('hidden');
+    cargoSection.scrollIntoView({ behavior: 'smooth' });
+});
+
+// --- Eşya Arama ve Fiyat Çekme Mantığı ---
+// Normalde bu veriyi Firebase'den 'items' koleksiyonundan çekeceksin.
+const dummyItems = [
+    { name: 'Bulaşık Makinesi', price: 1500 },
+    { name: 'Buzdolabı (Solo)', price: 2500 },
+    { name: 'Çamaşır Makinesi', price: 1400 },
+    { name: 'Kombi', price: 800 },
+    { name: 'Valiz (Büyük Boy)', price: 300 },
+    { name: 'Koli (Orta Boy)', price: 150 }
+];
+
+const itemSearch = document.getElementById('item-search');
+const searchResults = document.getElementById('search-results');
+
+itemSearch.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    if(term.length < 2) {
+        searchResults.classList.add('hidden');
+        return;
+    }
+
+    // Admin panelinden gelecek olan veriyi filtrele
+    const filtered = dummyItems.filter(i => i.name.toLowerCase().includes(term));
+    
+    if(filtered.length > 0) {
+        searchResults.innerHTML = filtered.map(item => `
+            <div class="p-3 hover:bg-gray-100 cursor-pointer border-b text-sm" onclick="selectItem('${item.name}', ${item.price})">
+                ${item.name} - <span class="font-bold">${item.price} ₺</span>
+            </div>
+        `).join('');
+        searchResults.classList.remove('hidden');
+    } else {
+        searchResults.classList.add('hidden');
+    }
+});
+
+// Eşya Seçildiğinde
+window.selectItem = (name, price) => {
+    itemSearch.value = name;
+    searchResults.classList.add('hidden');
+    document.getElementById('selected-item-info').classList.remove('hidden');
+    document.getElementById('selected-item-name').textContent = name;
+    document.getElementById('selected-item-price').textContent = price + " ₺";
+    
+    const addBtn = document.getElementById('add-cargo-to-cart');
+    addBtn.disabled = false;
+    addBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+};
     </script>
 
     <style>
@@ -128,99 +209,356 @@
   </div>
 </main>
 
-       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-8">
-           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-8">
-            <button id="open-selection-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-8">
+            <button id="calculate-btn"
+                class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+                <div
+                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                     <i class="ri-calculator-line ri-xl text-primary"></i>
                 </div>
-                <span class="text-sm font-medium">Sipariş Ver / Hesapla</span>
+                <span class="text-sm font-medium">Sipariş Ver</span>
             </button>
 
-            <a href="sepet.html" id="cart-page-btn" class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
+                class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+                <div
+                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
                     <i class="ri-shopping-cart-line ri-xl text-primary"></i>
                 </div>
                 <span class="text-sm font-medium">Sepetim</span>
-                <span id="cart-badge" class="absolute bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
+                <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
             </a>
         </div>
 
-        <div id="selection-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden px-4">
-            <div class="bg-white rounded-xl p-6 w-full max-w-sm relative fade-in">
-                <button id="close-selection-modal" class="absolute top-4 right-4 text-gray-400"><i class="ri-close-line ri-lg"></i></button>
-                <h3 class="text-lg font-bold text-center mb-6 text-primary">Lütfen Seçim Yapın</h3>
-                <div class="space-y-3">
-                    <button id="btn-link-mode" class="w-full flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-all">
-                        <i class="ri-links-line ri-xl text-blue-500"></i>
-                        <div class="text-left"><p class="font-bold text-sm">Link ile Satın Al</p><p class="text-xs text-gray-500">Trendyol, Amazon vb.</p></div>
-                    </button>
-                    <button id="btn-cargo-mode" class="w-full flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-all text-left">
-                        <i class="ri-truck-line ri-xl text-orange-500"></i>
-                        <div><p class="font-bold text-sm">Eşya/Kargo Gönder</p><p class="text-xs text-gray-500">Buzdolabı, Koli, Çanta vb.</p></div>
-                    </button>
+        <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
+            <h2 class="text-xl font-semibold mb-4 text-primary">1. Ürün Bilgilerini Girin</h2>
+            <form id="calculator-form" class="space-y-4">
+                <div>
+                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi<span class="text-red-500">*</span></label>
+                    <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                        <option value="service" selected>Ürünü benim yerime siz sipariş edin</option>
+                        <option value="self">Ürünü ben alacağım, sadece kargo hizmeti istiyorum</option>
+                    </select>
                 </div>
+                <div>
+                    <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki<span class="text-red-500">*</span></label>
+                    <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/urun">
+                </div>
+                <div>
+                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)<span class="text-red-500">*</span></label>
+                    <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
+                </div>
+                <div>
+                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori<span class="text-red-500">*</span></label>
+                    <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                        <option value="" disabled selected>Kategoriler Yükleniyor...</option>
+                    </select>
+                </div>
+                
+                <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+                    <h3 class="font-medium text-gray-800 mb-2">Ürün Getirme Maliyeti</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span id="result-price-label">Ürün Fiyatı:</span>
+                            <span id="result-price">0 ₺</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Kategori Hizmet Bedeli:</span>
+                            <span id="result-category-fee">0 ₺</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
+                            <span>Getirme Dahil Toplam:</span>
+                            <span id="result-total">0 ₺</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
+                    <i class="ri-calculator-line"></i>
+                    <span>Maliyeti Hesapla</span>
+                </button>
+            </form>
+        </section>
+
+
+
+<!-- 🧩 Kampanya Vitrini Başlangıcı -->
+<style>
+    /* EK CSS: Kaydırmalı Yapı için */
+    .product-slider {
+        /* Yatay kaydırmayı etkinleştirir */
+        overflow-x: auto; 
+        /* Scrollbar'ı gizler (isteğe bağlı, daha temiz görünüm için) */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        white-space: nowrap; /* Kartların yan yana durmasını sağlar */
+        padding-bottom: 1rem; /* Alttaki scrollbar için boşluk */
+        scroll-behavior: smooth; /* Yumuşak kaydırma */
+        /* Mobil cihazlarda kolay kaydırma için */
+        -webkit-overflow-scrolling: touch; 
+    }
+    .product-slider::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
+    .product-card {
+        /* Kaydırma alanında kartların genişliğini ayarlar */
+        display: inline-block;
+        width: 300px; /* Her kartın sabit genişliği */
+        margin-right: 1.5rem; /* Kartlar arasındaki boşluk */
+        white-space: normal;
+        /* Kaydırma sırasında yakalama noktası için */
+        scroll-snap-align: start; 
+    }
+    /* İsteğe bağlı: İlk kartın sola yaslanmasını sağlar */
+    .product-slider > div:first-child {
+        margin-left: 1rem;
+    }
+    /* İsteğe bağlı: Son karttan sonra boşluk bırakır */
+    .product-slider > div:last-child {
+        margin-right: 1rem;
+    }
+</style>
+
+<h2 class="text-3xl font-extrabold text-gray-800 mb-6 text-center border-b-4 border-primary pb-3 tracking-tight">
+    🛒 En Popüler Ürünler & Fırsatlar
+</h2>
+
+<div class="max-w-4xl mx-auto">
+    <div class="product-slider flex snap-x snap-mandatory">
+
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://cdn.dsmcdn.com/ty1339/product/media/images/prod/QC/20240531/13/4f260764-0e89-3345-85d3-c78b2860a122/1_org_zoom.jpg"
+                alt="Legom Aktivite Koltuğu & Yatak & Çok amaçlı"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
+
+
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Legom Aktivite Koltuğu & Yatak & Çok amaçlı</h3>
+                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    12.635,<span class="text-base">00 ₺</span>
+                </p>
+                <a href="https://www.trendyol.com/good-night/legom-aktivite-koltugu-yatak-cok-amacli-p-833506385?boutiqueId=61&merchantId=797053"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
             </div>
         </div>
 
-        <section id="cargo-calc-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
-            <h2 class="text-xl font-semibold mb-4 text-primary">Kargo/Eşya Hesaplama</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Gönderim Yönü</label>
-                    <select id="cargo-direction" class="w-full p-2 border rounded-md text-sm">
-                        <option value="tr-kktc">Türkiye ➔ Kıbrıs</option>
-                        <option value="kktc-tr">Kıbrıs ➔ Türkiye</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Eşya Adı (Ara/Seç)</label>
-                    <input type="text" id="cargo-search" list="cargo-items-list" class="w-full p-2 border rounded-md" placeholder="Örn: Bulaşık Makinesi...">
-                    <datalist id="cargo-items-list"></datalist>
-                </div>
-                <div id="cargo-result-box" class="hidden p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-600">Taşıma Bedeli:</span>
-                        <span id="cargo-final-price" class="text-xl font-bold text-primary">0 ₺</span>
-                    </div>
-                    <button id="add-cargo-btn" class="w-full mt-4 bg-primary text-white py-2 rounded-md font-semibold">Sepete Ekle</button>
-                </div>
-            </div>
-        </section>
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://cdn.dsmcdn.com/ty1583/prod/QC/20241008/22/36a5c729-891b-369b-9235-de1c4459aab2/1_org_zoom.jpg"
+                alt="Kışlık Ev Terliği"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
 
-        <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
-            <h2 class="text-xl font-semibold mb-4 text-primary text-center">Ürün Bilgilerini Girin</h2>
-            <form id="calculator-form" class="space-y-4">
-                <div>
-                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
-                    <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md text-sm">
-                        <option value="service" selected>Ürünü benim yerime siz sipariş edin</option>
-                        <option value="self">Ürünü ben alacağım, sadece kargo hizmeti</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
-                    <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md" placeholder="https://...">
-                </div>
-                <div>
-                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
-                    <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md" step="any">
-                </div>
-                <div>
-                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                    <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md text-sm">
-                        <option value="" disabled selected>Kategori seçin</option>
-                    </select>
-                </div>
-                <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-                    <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
-                        <span>Toplam Maliyet:</span>
-                        <span id="result-total">0 ₺</span>
-                    </div>
-                </div>
-                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold">Maliyeti Hesapla</button>
-            </form>
-        </section>
+
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">3'lü Kışlık Ev Terliği Kışlık Terlik Misafir Terliği</h3>
+                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    289,<span class="text-base">90 ₺</span>
+                </p>
+                <a href="https://www.trendyol.com/star-shoes/3-lu-kislik-ev-terligi-kislik-terlik-misafir-terligi-p-864790548?merchantId=441558&boutiqueId=61"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
+            </div>
+        </div>
+
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://cdn.dsmcdn.com/ty1613/prod/QC/20241208/02/3f26a3f7-9329-3fbf-976d-40355be6ec72/1_org_zoom.jpg"
+                alt="Kışlık Mont"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
+
+
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Kadın Siyah Oversize Şişme Kışlık Mont Dik Yaka</h3>
+                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    826,<span class="text-base">68 ₺</span>
+                </p>
+                <a href="https://www.trendyol.com/lia-blanco-s/kadin-siyah-oversize-sisme-kislik-mont-dik-yaka-p-856865482?merchantId=654815"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
+            </div>
+        </div>
+        
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://cdn.dsmcdn.com/ty1521/product/media/images/prod/QC/20240903/19/2055f782-17d7-358f-bf14-480a25545b92/1_org_zoom.jpg"
+                alt="Saç Kurtarma Ve Canlandırma"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
+
+
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Ovex Hızlı Saç Kurtarma Ve Canlandırma Terapisi - 200 Ml.</h3>
+                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    379,<span class="text-base">24 ₺</span>
+                </p>
+                <a href="https://www.trendyol.com/hc-care/ovex-hizli-sac-kurtarma-ve-canlandirma-terapisi-200-ml-p-7103580?merchantId=110268"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
+            </div>
+        </div>
+</div>
+
+
+<!-- 🧩 Kampanya Vitrini Sonu -->
+
+
+
+        
+
+        <div class="px-4 mb-8">
+    <h3 class="text-lg font-semibold mb-4">Popüler Alışveriş Siteleri</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+
+        <!-- Trendyol -->
+        <a href="https://www.trendyol.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png"
+                 alt="Trendyol" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                Kıbrıs'ta Trendyol var mı, Türkiye'den Kıbrıs'a Trendyol kargo, Trendyol Kıbrıs alışveriş,
+                Trendyol Kıbrıs sipariş, Kıbrıs Trendyol ürünleri, Trendyol Kıbrıs teslim, Trendyol Türkiye’den gönderim,
+                Kıbrıs Trendyol fırsatları, Trendyol kampanya Kıbrıs, Trendyol ürün fiyatları Kıbrıs, Trendyol Kıbrıs alışveriş sitesi,
+                Trendyol Kıbrıs hızlı kargo, Trendyol Kıbrıs güvenli alışveriş, Trendyol Kıbrıs indirim, Kıbrıs Trendyol sipariş süreci,
+                Trendyol Kıbrıs popüler ürünler, Trendyol Kıbrıs müşteri yorumları, Trendyol Kıbrıs ödeme seçenekleri,
+                Trendyol Kıbrıs elektronik ürünleri, Trendyol Kıbrıs moda ürünleri, Trendyol Kıbrıs ev dekorasyonu,
+                Trendyol Kıbrıs kıyafet, Trendyol Kıbrıs ayakkabı, Trendyol Kıbrıs çanta, Trendyol Kıbrıs indirimli ürünler,
+                Trendyol Kıbrıs ücretsiz kargo, Kıbrıs Trendyol sipariş takibi, Trendyol Kıbrıs alışveriş rehberi
+            </span>
+        </a>
+
+        <!-- Hepsiburada -->
+        <a href="https://www.hepsiburada.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png"
+                 alt="Hepsiburada" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                Hepsiburada Kıbrıs, Türkiye'den Kıbrıs'a Hepsiburada kargo, Hepsiburada alışveriş, Hepsiburada Kıbrıs sipariş,
+                Kıbrıs Hepsiburada ürünleri, Hepsiburada Kıbrıs teslim, Hepsiburada Türkiye’den gönderim, Kıbrıs Hepsiburada fırsatları,
+                Hepsiburada kampanya Kıbrıs, Hepsiburada ürün fiyatları Kıbrıs, Hepsiburada Kıbrıs alışveriş sitesi,
+                Hepsiburada Kıbrıs hızlı kargo, Hepsiburada Kıbrıs güvenli alışveriş, Hepsiburada Kıbrıs indirim, Kıbrıs Hepsiburada sipariş süreci,
+                Hepsiburada Kıbrıs popüler ürünler, Hepsiburada Kıbrıs müşteri yorumları, Hepsiburada Kıbrıs ödeme seçenekleri,
+                Hepsiburada Kıbrıs elektronik ürünleri, Hepsiburada Kıbrıs moda ürünleri, Hepsiburada Kıbrıs ev dekorasyonu
+            </span>
+        </a>
+
+        <!-- N11 -->
+        <a href="https://www.n11.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg"
+                 alt="N11" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                N11 Kıbrıs, Türkiye'den Kıbrıs'a N11 kargo, N11 Kıbrıs alışveriş, N11 Kıbrıs sipariş, Kıbrıs N11 ürünleri,
+                N11 Kıbrıs teslim, N11 Türkiye’den gönderim, Kıbrıs N11 fırsatları, N11 kampanya Kıbrıs, N11 ürün fiyatları Kıbrıs,
+                N11 Kıbrıs alışveriş sitesi, N11 Kıbrıs hızlı kargo, N11 Kıbrıs güvenli alışveriş, N11 Kıbrıs indirim,
+                N11 Kıbrıs popüler ürünler, N11 Kıbrıs müşteri yorumları, N11 Kıbrıs ödeme seçenekleri
+            </span>
+        </a>
+
+        <!-- Amazon -->
+        <a href="https://www.amazon.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s"
+                 alt="Amazon" class="w-16 h-16 object-contain">
+            <span class="hidden">
+                Amazon Kıbrıs, Türkiye'den Kıbrıs'a Amazon kargo, Amazon Kıbrıs alışveriş, Amazon Kıbrıs sipariş,
+                Kıbrıs Amazon ürünleri, Amazon Kıbrıs teslim, Amazon Türkiye’den gönderim, Kıbrıs Amazon fırsatları,
+                Amazon kampanya Kıbrıs, Amazon ürün fiyatları Kıbrıs, Amazon Kıbrıs alışveriş sitesi, Amazon Kıbrıs hızlı kargo
+            </span>
+        </a>
+
+
+        <a href="https://www.temu.com/tr" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Temu_logo_icon.svg/2048px-Temu_logo_icon.svg.png"
+        alt="Temu" class="w-16 h-16 object-contain">
+    <span class="hidden">
+        Temu Kıbrıs, Türkiye'den Kıbrıs'a Temu kargo, Temu Kıbrıs sipariş, Kıbrıs Temu ürünleri,
+        Temu Kıbrıs teslim, Temu Türkiye’den gönderim, Kıbrıs Temu fırsatları, Temu kampanya Kıbrıs,
+        Temu ürün fiyatları Kıbrıs, Temu Kıbrıs alışveriş sitesi, Temu Kıbrıs hızlı kargo, Temu sipariş takibi Kıbrıs
+    </span>
+</a>
+
+
+<a href="https://www.englishhome.com/" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV2piQJf3LUJ22rzNUvgJyjcI0i6d8i01oDw&s"
+        alt="englishhome" class="w-16 h-16 object-contain">
+    <span class="hidden">
+       English Home KKTC, Türkiye'den Kıbrıs'a English Home kargo, English Home Kıbrıs sipariş, KKTC English Home ürünleri,
+English Home Kıbrıs teslimatı, English Home Türkiye’den gönderim, KKTC English Home fırsatları, English Home kampanya Kıbrıs,
+English Home ev tekstili ve dekorasyon Kıbrıs, English Home mutfak ve banyo ürünleri KKTC,
+English Home yatak, yorgan ve aksesuar Kıbrıs, English Home KKTC alışveriş sitesi, English Home Kıbrıs hızlı kargo
+    </span>
+</a>
+        
+     <a href="https://www.zara.com.tr" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png"
+        alt="Zara" class="w-16 h-16 object-contain">
+    <span class="hidden">
+        Zara Kıbrıs, Türkiye'den Kıbrıs'a Zara kargo, Zara Kıbrıs sipariş, Kıbrıs Zara ürünleri,
+        Zara Kıbrıs teslim, Zara Türkiye’den gönderim, Kıbrıs Zara fırsatları, Zara kampanya Kıbrıs,
+        Zara ürün fiyatları Kıbrıs, Zara Kıbrıs moda, Zara Kıbrıs kıyafet, Zara Kıbrıs hızlı kargo
+    </span>
+</a>
+
+<!-- pullandbear -->
+        <a href="https://www.pullandbear.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.logo.wine/a/logo/Pull%26Bear/Pull%26Bear-Logo.wine.svg"
+                 alt="pullandbear" class="w-16 h-16 object-contain">
+            <span class="hidden">
+             Pull&Bear KKTC, Türkiye'den Kıbrıs'a Pull&Bear kargo, Pull&Bear Kıbrıs sipariş, KKTC Pull&Bear ürünleri,
+Pull&Bear Kıbrıs teslimatı, Pull&Bear Türkiye’den gönderim, KKTC Pull&Bear fırsatları, Pull&Bear kampanya Kıbrıs,
+Pull&Bear kadın ve erkek giyim Kıbrıs, Pull&Bear ayakkabı ve aksesuarlar KKTC,
+Pull&Bear yeni sezon koleksiyonu Kıbrıs, Pull&Bear KKTC alışveriş sitesi, Pull&Bear Kıbrıs hızlı kargo
+            </span>
+        </a>
+        
+
+        <!-- hm -->
+        <a href="https://www2.hm.com/tr_tr/index.html" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/23/1/hm-logo-png_seeklogo-234240.png"
+                 alt="hm" class="w-16 h-16 object-contain">
+            <span class="hidden">
+             H&M KKTC, Türkiye'den Kıbrıs'a H&M kargo, H&M Kıbrıs sipariş, KKTC H&M ürünleri,
+H&M Kıbrıs teslimatı, H&M Türkiye’den gönderim, KKTC H&M fırsatları, H&M kampanya Kıbrıs,
+H&M kadın, erkek ve çocuk giyim Kıbrıs, H&M moda ürünleri KKTC,
+H&M ayakkabı ve aksesuar Kıbrıs, H&M KKTC alışveriş sitesi, H&M Kıbrıs hızlı kargo
+            </span>
+        </a>
+      
+    <!-- uspolo -->
+        <a href="https://tr.uspoloassn.com/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/61/1/u-s-polo-assn-logo-png_seeklogo-617334.png"
+                 alt="uspolo" class="w-16 h-16 object-contain">
+            <span class="hidden">
+          U.S. Polo KKTC, Türkiye'den Kıbrıs'a U.S. Polo kargo, U.S. Polo Kıbrıs sipariş, KKTC U.S. Polo ürünleri,
+U.S. Polo Kıbrıs teslimatı, U.S. Polo Türkiye’den gönderim, KKTC U.S. Polo fırsatları, U.S. Polo kampanya Kıbrıs,
+U.S. Polo erkek ve kadın giyim Kıbrıs, U.S. Polo ayakkabı ve aksesuar KKTC,
+U.S. Polo moda ürünleri Kıbrıs, U.S. Polo KKTC alışveriş sitesi, U.S. Polo Kıbrıs hızlı kargo
+            </span>
+        </a>
+        
+        <!-- mango -->
+        <a href="https://shop.mango.com/tr/tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/29/1/mango-logo-png_seeklogo-299348.png"
+                 alt="mango" class="w-16 h-16 object-contain">
+            <span class="hidden">
+           Mango KKTC, Türkiye'den Kıbrıs'a Mango kargo, Mango Kıbrıs sipariş, KKTC Mango ürünleri,
+Mango Kıbrıs teslimatı, Mango Türkiye’den gönderim, KKTC Mango fırsatları, Mango kampanya Kıbrıs,
 Mango kadın ve erkek giyim Kıbrıs, Mango ayakkabı ve aksesuar KKTC,
 Mango moda ürünleri Kıbrıs, Mango KKTC alışveriş sitesi, Mango Kıbrıs hızlı kargo
             </span>
@@ -457,122 +795,15 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
         Ürün elinize teslim edilene kadar Getir Kıbrıs güvencesindesiniz.
       </p>
     </div>
-// MODAL KONTROLLERİ
-    const selectionModal = document.getElementById('selection-modal');
-    const openSelectionBtn = document.getElementById('open-selection-btn');
-    const cargoSection = document.getElementById('cargo-calc-section');
-    const cargoSearchInput = document.getElementById('cargo-search');
 
-    // Modalı Aç/Kapat
-    openSelectionBtn.onclick = () => selectionModal.classList.remove('hidden');
-    document.getElementById('close-selection-modal').onclick = () => selectionModal.classList.add('hidden');
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h4 class="font-semibold text-lg text-indigo-700 mb-2">2️⃣ Ürünü Ben Alacağım Sadece Kargo Hizmeti İstiyorum</h4>
+      <p class="text-gray-700">
+        Bu yöntemde alışverişi kendiniz yaparsınız. Yalnızca Türkiye'deki gönderim adresi olarak <strong>Getir Kıbrıs deposu adresini</strong> girmelisiniz:
+      </p>
 
-    // Link Modunu Seç
-    document.getElementById('btn-link-mode').onclick = () => {
-        selectionModal.classList.add('hidden');
-        cargoSection.classList.add('hidden');
-        calculatorSection.classList.remove('hidden');
-        calculatorSection.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    // Kargo/Eşya Modunu Seç
-    document.getElementById('btn-cargo-mode').onclick = () => {
-        selectionModal.classList.add('hidden');
-        calculatorSection.classList.add('hidden');
-        cargoSection.classList.remove('hidden');
-        cargoSection.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    // KARGO FİYAT LİSTESİ (Admin'den gelecek şekilde kurgulandı)
-  // KARGO FİYAT LİSTESİ VE FONKSİYONLARI
-    let cargoPrices = [
-        { name: "Bulaşık Makinesi", price: 1500 },
-        { name: "Buzdolabı", price: 2500 },
-        { name: "Çamaşır Makinesi", price: 1400 },
-        { name: "Koli (Küçük)", price: 150 },
-        { name: "Koli (Orta)", price: 300 },
-        { name: "Koli (Büyük)", price: 500 },
-        { name: "Televizyon (55 inç)", price: 1200 },
-        { name: "Motosiklet", price: 5000 },
-        { name: "Kombi", price: 1000 },
-        { name: "Valiz/Çanta", price: 250 }
-    ];
-
-    // Datalist'i doldur
-    const datalist = document.getElementById('cargo-items-list');
-    cargoPrices.forEach(item => {
-        let opt = document.createElement('option');
-        opt.value = item.name;
-        datalist.appendChild(opt);
-    });
-
-    // Arama ve Fiyat Gösterme
-    cargoSearchInput.oninput = () => {
-        const found = cargoPrices.find(x => x.name.toLowerCase() === cargoSearchInput.value.toLowerCase());
-        const resultBox = document.getElementById('cargo-result-box');
-        if(found) {
-            document.getElementById('cargo-final-price').textContent = found.price + " ₺";
-            resultBox.classList.remove('hidden');
-        } else {
-            resultBox.classList.add('hidden');
-        }
-    };
-
-    // KARGOYU SEPETE EKLEME (FIREBASE)
-    const addCargoBtn = document.getElementById('add-cargo-btn');
-    addCargoBtn.onclick = async () => {
-        const user = auth.currentUser;
-        if (!user) {
-            window.showAuthRequiredModal();
-            return;
-        }
-
-        const itemName = cargoSearchInput.value;
-        const direction = document.getElementById('cargo-direction').value;
-        const foundItem = cargoPrices.find(x => x.name.toLowerCase() === itemName.toLowerCase());
-
-        if (!foundItem) {
-            showToast('Lütfen listeden bir eşya seçin.', 'error');
-            return;
-        }
-
-        const cargoData = {
-            productLink: "Kargo/Eşya Taşıma Hizmeti",
-            productPrice: foundItem.price,
-            category: "Lojistik",
-            direction: direction === 'tr-kktc' ? "Türkiye -> Kıbrıs" : "Kıbrıs -> Türkiye",
-            itemName: itemName,
-            orderMethod: "cargo_service", // Sepet sayfasında ayırmak için önemli
-            quantity: 1,
-            addedAt: new Date()
-        };
-
-        try {
-            addCargoBtn.disabled = true;
-            addCargoBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Ekleniyor...';
-            
-            await addDoc(collection(db, 'users', user.uid, 'cart'), cargoData);
-            
-            showToast('Taşıma hizmeti sepete eklendi!');
-            cargoSearchInput.value = '';
-            document.getElementById('cargo-result-box').classList.add('hidden');
-            
-            // Sepet sayfasına yönlendir
-            setTimeout(() => { window.location.href = 'sepet.html'; }, 800);
-            
-        } catch (error) {
-            console.error("Hata:", error);
-            showToast('Hata oluştu: ' + error.message, 'error');
-        } finally {
-            addCargoBtn.disabled = false;
-            addCargoBtn.textContent = 'Sepete Ekle';
-        }
-    };
-            resultBox.classList.remove('hidden');
-        } else {
-            resultBox.classList.add('hidden');
-        }
-    };
+      <div class="bg-gray-100 p-3 rounded-lg mt-3">
+        <p class="font-semibold text-sm text-gray-800">Getir Kıbrıs Türkiye Adresi:</p>
         <p class="text-sm text-gray-700">
           <strong>Adres:</strong> Aydın, Nazilli, Bozyurt Mah. Kanal Üstü 3281 sk. No:3 <br>
           <strong>Telefon:</strong> +90 547 190 19 88 <br>
@@ -1107,6 +1338,61 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
     loadPricingSettings();
 
 </script>
+    <div id="selection-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden px-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-lg relative fade-in">
+        <button id="close-selection-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <i class="ri-close-line ri-xl"></i>
+        </button>
+        
+        <h3 class="text-xl font-bold text-center mb-6 text-primary">Nasıl Yardımcı Olabiliriz?</h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button id="opt-link-order" class="flex flex-col items-center p-6 border-2 border-gray-100 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all group">
+                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="ri-link text-3xl text-primary"></i>
+                </div>
+                <span class="font-bold text-gray-800">Link ile Satın Al</span>
+                <p class="text-xs text-center text-gray-500 mt-2">Trendyol, Amazon vb. sitelerden ürün getirtin.</p>
+            </button>
+
+            <button id="opt-cargo-order" class="flex flex-col items-center p-6 border-2 border-gray-100 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all group">
+                <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="ri-truck-line text-3xl text-orange-600"></i>
+                </div>
+                <span class="font-bold text-gray-800">Kargo Hesapla</span>
+                <p class="text-xs text-center text-gray-500 mt-2">Beyaz eşya, koli veya mobilya gönderin.</p>
+            </button>
+        </div>
+    </div>
+</div>
+    <section id="item-cargo-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
+    <h2 class="text-xl font-semibold mb-4 text-primary text-center">Eşya Gönderim Hesaplama</h2>
+    
+    <div class="space-y-4">
+        <div class="flex gap-2 mb-4">
+            <button class="direction-btn flex-1 py-2 rounded-md border-2 border-primary bg-primary text-white text-sm font-bold" data-dir="TR-TRNC">TR -> Kıbrıs</button>
+            <button class="direction-btn flex-1 py-2 rounded-md border-2 border-primary text-primary text-sm font-bold" data-dir="TRNC-TR">Kıbrıs -> TR</button>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Gönderilecek Eşya</label>
+            <input type="text" id="item-search" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50" placeholder="Örn: Bulaşık Makinesi, Koli, Buzdolabı...">
+            <div id="search-results" class="mt-1 bg-white border border-gray-200 rounded-md hidden max-h-48 overflow-y-auto shadow-lg z-10">
+                </div>
+        </div>
+
+        <div id="selected-item-info" class="hidden p-4 bg-gray-50 rounded-lg border border-dashed border-primary">
+            <div class="flex justify-between items-center">
+                <span id="selected-item-name" class="font-bold text-gray-700"></span>
+                <span id="selected-item-price" class="text-lg font-extrabold text-primary">0 ₺</span>
+            </div>
+        </div>
+
+        <button id="add-cargo-to-cart" class="w-full bg-primary text-white py-3 rounded-button font-semibold opacity-50 cursor-not-allowed" disabled>
+            Sepete Ekle
+        </button>
+    </div>
+</section>
 
 </body>
 </html>
