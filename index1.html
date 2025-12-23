@@ -187,50 +187,7 @@
             </form>
         </section>
 
-        <section id="item-cargo-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
-            <h2 class="text-xl font-semibold mb-4 text-primary text-center">Eşya Gönderim Hesaplama</h2>
-            <div class="space-y-4">
-                <div class="flex gap-2 mb-4">
-                    <button class="dir-btn flex-1 py-2 rounded-md border-2 border-primary bg-primary text-white text-sm font-bold" data-dir="TR-TRNC">TR -> Kıbrıs</button>
-                    <button class="dir-btn flex-1 py-2 rounded-md border-2 border-primary text-primary text-sm font-bold" data-dir="TRNC-TR">Kıbrıs -> TR</button>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Gönderilecek Eşya</label>
-                    <input type="text" id="item-search" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50" placeholder="Örn: Bulaşık Makinesi, Koli, Buzdolabı...">
-                    <div id="search-results" class="mt-1 bg-white border border-gray-200 rounded-md hidden max-h-48 overflow-y-auto shadow-lg z-10"></div>
-                </div>
-                <div id="selected-item-info" class="hidden p-4 bg-gray-50 rounded-lg border border-dashed border-primary">
-                    <div class="flex justify-between items-center">
-                        <span id="selected-item-name" class="font-bold text-gray-700"></span>
-                        <span id="selected-item-price" class="text-lg font-extrabold text-primary">0 ₺</span>
-                    </div>
-                </div>
-                <button id="add-cargo-to-cart" class="w-full bg-primary text-white py-3 rounded-button font-semibold opacity-50 cursor-not-allowed" disabled>Sepete Ekle</button>
-            </div>
-        </section>
 
-        <div id="selection-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden px-4">
-            <div class="bg-white rounded-2xl p-6 w-full max-w-lg relative fade-in">
-                <button id="close-selection-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-xl"></i></button>
-                <h3 class="text-xl font-bold text-center mb-6 text-primary">Nasıl Yardımcı Olabiliriz?</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button id="opt-link-order" class="flex flex-col items-center p-6 border-2 border-gray-100 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all group">
-                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <i class="ri-link text-3xl text-primary"></i>
-                        </div>
-                        <span class="font-bold text-gray-800">Link ile Satın Al</span>
-                        <p class="text-xs text-center text-gray-500 mt-2">Trendyol, Amazon vb. sitelerden ürün getirtin.</p>
-                    </button>
-                    <button id="opt-cargo-order" class="flex flex-col items-center p-6 border-2 border-gray-100 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all group">
-                        <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <i class="ri-truck-line text-3xl text-orange-600"></i>
-                        </div>
-                        <span class="font-bold text-gray-800">Kargo Hesapla</span>
-                        <p class="text-xs text-center text-gray-500 mt-2">Beyaz eşya, koli veya mobilya gönderin.</p>
-                    </button>
-                </div>
-            </div>
-        </div>
 
 <style>
     /* EK CSS: Kaydırmalı Yapı için */
@@ -470,7 +427,7 @@ Pull&Bear yeni sezon koleksiyonu Kıbrıs, Pull&Bear KKTC alışveriş sitesi, P
             <span class="hidden">
              H&M KKTC, Türkiye'den Kıbrıs'a H&M kargo, H&M Kıbrıs sipariş, KKTC H&M ürünleri,
 H&M Kıbrıs teslimatı, H&M Türkiye’den gönderim, KKTC H&M fırsatları, H&M kampanya Kıbrıs,
-H&M kadın, erkek ve çocuk giyim Kıbrıs, H&M moda ürünleri KKTC,
+H&M kadın, erkek ve child giyim Kıbrıs, H&M moda ürünleri KKTC,
 H&M ayakkabı ve aksesuar Kıbrıs, H&M KKTC alışveriş sitesi, H&M Kıbrıs hızlı kargo
             </span>
         </a>
@@ -973,8 +930,70 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
 
 </div>
 
+    <div id="selection-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden px-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-lg relative fade-in">
+        <button id="close-selection-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <i class="ri-close-line ri-xl"></i>
+        </button>
+        
+        <h3 class="text-xl font-bold text-center mb-6 text-primary">Nasıl Yardımcı Olabiliriz?</h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button id="opt-link-order" class="flex flex-col items-center p-6 border-2 border-gray-100 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all group">
+                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="ri-link text-3xl text-primary"></i>
+                </div>
+                <span class="font-bold text-gray-800">Link ile Satın Al</span>
+                <p class="text-xs text-center text-gray-500 mt-2">Trendyol, Amazon vb. sitelerden ürün getirtin.</p>
+            </button>
+
+            <button id="opt-cargo-order" class="flex flex-col items-center p-6 border-2 border-gray-100 rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all group">
+                <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="ri-truck-line text-3xl text-orange-600"></i>
+                </div>
+                <span class="font-bold text-gray-800">Kargo Hesapla</span>
+                <p class="text-xs text-center text-gray-500 mt-2">Beyaz eşya, koli veya mobilya gönderin.</p>
+            </button>
+        </div>
+    </div>
+</div>
+
+<section id="item-cargo-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
+    <h2 class="text-xl font-semibold mb-4 text-primary text-center">Eşya Gönderim Hesaplama</h2>
+    
+    <div class="space-y-4">
+        <div class="flex gap-2 mb-4">
+            <button class="direction-btn flex-1 py-2 rounded-md border-2 border-primary bg-primary text-white text-sm font-bold" data-dir="TR-TRNC">TR -> Kıbrıs</button>
+            <button class="direction-btn flex-1 py-2 rounded-md border-2 border-primary text-primary text-sm font-bold" data-dir="TRNC-TR">Kıbrıs -> TR</button>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Gönderilecek Eşya</label>
+            <input type="text" id="item-search" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50" placeholder="Örn: Bulaşık Makinesi, Koli, Buzdolabı...">
+            <div id="search-results" class="mt-1 bg-white border border-gray-200 rounded-md hidden max-h-48 overflow-y-auto shadow-lg z-10">
+                </div>
+        </div>
+
+        <div id="cargo-list-container" class="hidden mt-4 space-y-2 border-t pt-4">
+            <h4 class="text-sm font-bold text-gray-700 mb-2">Gönderilecek Eşyalar:</h4>
+            <div id="cargo-items-list" class="space-y-2">
+                </div>
+            <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg mt-4 font-bold border border-primary/20">
+                <span class="text-gray-700">Genel Toplam:</span>
+                <span id="cargo-total-amount" class="text-primary text-lg">0 ₺</span>
+            </div>
+        </div>
+
+        <button id="add-cargo-to-cart" class="w-full bg-primary text-white py-3 rounded-button font-semibold opacity-50 cursor-not-allowed mt-4" disabled>
+            Hepsini Sepete Ekle
+        </button>
+    </div>
+</section>
+
 <script>
-    // --- SEÇENEK MODALİ VE MODÜL GEÇİŞLERİ ---
+    // --- GLOBAL KARGO LİSTESİ ---
+    let selectedCargoItems = [];
+
     document.addEventListener('DOMContentLoaded', () => {
         const calculateBtn = document.getElementById('calculate-btn');
         const selectionModal = document.getElementById('selection-modal');
@@ -984,47 +1003,46 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
         const linkSection = document.getElementById('calculator-section');
         const cargoSection = document.getElementById('item-cargo-section');
 
-        // Sipariş Ver butonuna basınca modalı aç
+        // 1. Ana "Sipariş Ver" butonu tıklanınca modalı aç
         calculateBtn.addEventListener('click', (e) => {
             e.preventDefault();
             selectionModal.classList.remove('hidden');
         });
 
-        // Modalı Kapat
-        closeSelectionModal.onclick = () => selectionModal.classList.add('hidden');
+        closeSelectionModal.addEventListener('click', () => selectionModal.classList.add('hidden'));
 
-        // Link Seçeneği
-        optLinkOrder.onclick = () => {
+        // 2. Link ile Satın Al seçilirse
+        optLinkOrder.addEventListener('click', () => {
             selectionModal.classList.add('hidden');
             cargoSection.classList.add('hidden');
             linkSection.classList.remove('hidden');
             linkSection.scrollIntoView({ behavior: 'smooth' });
-        };
+        });
 
-        // Kargo Seçeneği
-        optCargoOrder.onclick = () => {
+        // 3. Kargo Hesapla seçilirse
+        optCargoOrder.addEventListener('click', () => {
             selectionModal.classList.add('hidden');
             linkSection.classList.add('hidden');
             cargoSection.classList.remove('hidden');
             cargoSection.scrollIntoView({ behavior: 'smooth' });
-        };
+        });
 
-        // --- EŞYA ARAMA MANTIĞI ---
+        // --- EŞYA ARAMA VE LİSTELEME MANTIĞI ---
         const dummyItems = [
             { name: 'Bulaşık Makinesi', price: 1500 },
             { name: 'Buzdolabı (Solo)', price: 2500 },
             { name: 'Çamaşır Makinesi', price: 1400 },
-            { name: 'Televizyon (55 İnç)', price: 800 },
-            { name: 'Koli (Orta Boy)', price: 150 },
-            { name: 'Valiz (Büyük)', price: 300 }
+            { name: 'Kombi', price: 800 },
+            { name: 'Valiz (Büyük Boy)', price: 300 },
+            { name: 'Koli (Orta Boy)', price: 150 }
         ];
 
         const itemSearch = document.getElementById('item-search');
         const searchResults = document.getElementById('search-results');
-        const infoDiv = document.getElementById('selected-item-info');
-        const nameSpan = document.getElementById('selected-item-name');
-        const priceSpan = document.getElementById('selected-item-price');
-        const addCargoBtn = document.getElementById('add-cargo-to-cart');
+        const cargoItemsList = document.getElementById('cargo-items-list');
+        const cargoListContainer = document.getElementById('cargo-list-container');
+        const cargoTotalAmount = document.getElementById('cargo-total-amount');
+        const addCargoToCartBtn = document.getElementById('add-cargo-to-cart');
 
         itemSearch.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
@@ -1033,9 +1051,10 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
                 return;
             }
             const filtered = dummyItems.filter(i => i.name.toLowerCase().includes(term));
+            
             if(filtered.length > 0) {
                 searchResults.innerHTML = filtered.map(item => `
-                    <div class="p-3 hover:bg-gray-100 cursor-pointer border-b text-sm" onclick="selectCargoItem('${item.name}', ${item.price})">
+                    <div class="p-3 hover:bg-gray-100 cursor-pointer border-b text-sm" onclick="handleCargoSelection('${item.name}', ${item.price})">
                         ${item.name} - <span class="font-bold">${item.price} ₺</span>
                     </div>
                 `).join('');
@@ -1045,26 +1064,50 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
             }
         });
 
-        window.selectCargoItem = (name, price) => {
-            itemSearch.value = name;
+        // Eşya Seçildiğinde (Listeye Ekle)
+        window.handleCargoSelection = (name, price) => {
+            selectedCargoItems.push({ name, price, id: Date.now() });
+            itemSearch.value = '';
             searchResults.classList.add('hidden');
-            infoDiv.classList.remove('hidden');
-            nameSpan.textContent = name;
-            priceSpan.textContent = price + " ₺";
-            addCargoBtn.disabled = false;
-            addCargoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            updateCargoUI();
         };
 
-        // Yön Butonları Görselliği
-        document.querySelectorAll('.dir-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.dir-btn').forEach(b => {
-                    b.classList.remove('bg-primary', 'text-white');
-                    b.classList.add('text-primary');
-                });
-                btn.classList.add('bg-primary', 'text-white');
-            });
-        });
+        // Eşya Silme
+        window.removeCargoFromList = (id) => {
+            selectedCargoItems = selectedCargoItems.filter(item => item.id !== id);
+            updateCargoUI();
+        };
+
+        // Arayüzü ve Toplamı Güncelle
+        function updateCargoUI() {
+            if(selectedCargoItems.length > 0) {
+                cargoListContainer.classList.remove('hidden');
+                addCargoToCartBtn.disabled = false;
+                addCargoToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                let total = 0;
+                cargoItemsList.innerHTML = selectedCargoItems.map(item => {
+                    total += item.price;
+                    return `
+                        <div class="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                            <div>
+                                <span class="font-medium text-gray-800">${item.name}</span>
+                                <span class="text-xs text-primary block">${item.price} ₺</span>
+                            </div>
+                            <button onclick="removeCargoFromList(${item.id})" class="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+                cargoTotalAmount.textContent = total + " ₺";
+            } else {
+                cargoListContainer.classList.add('hidden');
+                addCargoToCartBtn.disabled = true;
+                addCargoToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
     });
 </script>
 
@@ -1235,7 +1278,7 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
         }
     });
     
-    // ---- CALCULATOR & CART (Link Section) ---- //
+    // ---- CALCULATOR & CART ---- //
     const calculatorSection = document.getElementById('calculator-section');
     const calculatorForm = document.getElementById('calculator-form');
     const mainActionBtn = document.getElementById('main-action-btn');
@@ -1290,14 +1333,16 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
             window.showAuthRequiredModal();
             return;
         }
+
         const productData = {
             productLink: document.getElementById('product-link').value,
             productPrice: parseFloat(document.getElementById('product-price').value),
             category: document.getElementById('product-category').value,
             orderMethod: document.getElementById('order-method').value,
             quantity: 1,
-            addedAt: new Date()
+            addedAt: new Date() 
         };
+
         try {
             await addDoc(collection(db, 'users', user.uid, 'cart'), productData);
             showToast('Ürün başarıyla sepete eklendi!');
@@ -1310,7 +1355,7 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
         }
     }
 
-    // ---- CARGO ITEM CART HANDLING (Yeni Eklenen) ----
+    // --- ÇOKLU KARGO EŞYALARINI SEPETE EKLEME ---
     const addCargoBtn = document.getElementById('add-cargo-to-cart');
     addCargoBtn.addEventListener('click', async () => {
         const user = auth.currentUser;
@@ -1318,19 +1363,26 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
             window.showAuthRequiredModal();
             return;
         }
-        const cargoData = {
-            productLink: "Eşya Gönderimi: " + document.getElementById('selected-item-name').textContent,
-            productPrice: parseFloat(document.getElementById('selected-item-price').textContent),
-            category: "cargo_item",
-            orderMethod: "cargo_service",
-            quantity: 1,
-            addedAt: new Date()
-        };
+
+        // Global selectedCargoItems dizisindeki her eşyayı sepete ekle
+        if (selectedCargoItems.length === 0) return;
+
         try {
-            await addDoc(collection(db, 'users', user.uid, 'cart'), cargoData);
-            showToast('Eşya sepete eklendi!');
+            for (const item of selectedCargoItems) {
+                const cargoData = {
+                    productLink: "Eşya Gönderimi: " + item.name,
+                    productPrice: item.price,
+                    category: "cargo_item",
+                    orderMethod: "cargo_service",
+                    quantity: 1,
+                    addedAt: new Date()
+                };
+                await addDoc(collection(db, 'users', user.uid, 'cart'), cargoData);
+            }
+            showToast('Tüm eşyalar sepete eklendi!');
             window.location.href = 'https://getirkibris.com/sepet.html';
         } catch (error) {
+            console.error("Sepete ekleme hatası:", error);
             showToast('Hata oluştu!', 'error');
         }
     });
@@ -1359,7 +1411,9 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
         }, 3000);
     }
     
+    // Sayfa yüklendiğinde ayarları çek
     loadPricingSettings();
+
 </script>
 
 </body>
