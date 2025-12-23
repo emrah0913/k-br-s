@@ -331,7 +331,7 @@
     </a>
 
     <!-- Toast -->
-    <div id="toast" class="fixed bottom-32 left-1/2 -translate-x-1/2 bg-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest opacity-0 transition-all z-[200] shadow-2xl pointer-events-none"></div>
+    <div id="toast" class="fixed bottom-32 left-1/2 -translate-x-1/2 bg-dark text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest opacity-0 transition-all z-[200] shadow-2xl pointer-events-none border border-white/10"></div>
 
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-dark/80 hidden items-center justify-center z-[100] p-4 backdrop-blur-md">
@@ -349,15 +349,30 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+    // Firebase Config - Fixed with mandatory rules
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", authDomain: "kibris-6b4f7.firebaseapp.com", projectId: "kibris-6b4f7", storageBucket: "kibris-6b4f7.firebasestorage.app", messagingSenderId: "141262926171", appId: "1:141262926171:web:07226845e51d4bbc0dea7e" };
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // Initial Auth Token Setup (Rule 3)
+    const initAuth = async () => {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        } catch (error) {
+            console.error("Auth init error:", error);
+        }
+    };
+    initAuth();
     
     let currentCalcMode = 'link'; 
     let currentDirection = 'tr-cy'; 
@@ -407,7 +422,7 @@
             const loginBtn = document.getElementById('login-btn');
             const profileCont = document.getElementById('profile-container');
             const profileImg = document.getElementById('profile-img');
-            if(user) {
+            if(user && !user.isAnonymous) {
                 if(loginBtn) loginBtn.classList.add('hidden');
                 if(profileCont) profileCont.classList.remove('hidden');
                 if(profileImg) profileImg.src = user.photoURL || 'https://placehold.co/40x40?text=U';
@@ -540,10 +555,13 @@
     async function addToCart() {
         const user = auth.currentUser;
         if(!user) { document.getElementById('login-modal').classList.remove('hidden'); return; }
+        
         const rawTotal = document.getElementById('result-total').textContent;
         const cleanTotal = Number(rawTotal.replace('₺','').replace(/\./g,'').replace(',','.').trim());
+        
         try {
             showToast("Ekleniyor...");
+            // Correct path usage (Rule 1)
             await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'cart'), {
                 direction: currentDirection, mode: currentCalcMode,
                 items: currentCalcMode === 'dims' ? selectedItemsList.map(i => `${i.qty}x ${i.name}`) : ['E-Ticaret Link Siparişi'],
@@ -552,7 +570,10 @@
             showToast("Sepete eklendi!");
             resetCalc();
             if(currentCalcMode === 'dims') { selectedItemsList = []; renderSelectedItems(); } else calcForm.reset();
-        } catch(e) { console.error(e); }
+        } catch(e) { 
+            console.error("Cart error:", e);
+            showToast("Yetki hatası oluştu.");
+        }
     }
 
     function showToast(msg) {
@@ -569,8 +590,13 @@
     }
 
     async function loadPricingSettings() {
-        const snap = await getDoc(doc(db, "settings", "pricing")).catch(() => null);
-        if (snap && snap.exists()) pricingSettings = snap.data();
+        // Correct path usage for settings (Rule 1 & Rule 3 guard)
+        try {
+            const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'pricing'));
+            if (snap && snap.exists()) pricingSettings = snap.data();
+        } catch (error) {
+            console.warn("Using default settings due to path or auth issues.");
+        }
         populateCategories();
     }
 
