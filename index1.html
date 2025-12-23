@@ -1018,162 +1018,97 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
             linkSection.scrollIntoView({ behavior: 'smooth' });
         });
 
-      <script>
-document.addEventListener('DOMContentLoaded', () => {
-
-    /* ==========================
-       GLOBAL DEĞİŞKENLER
-    ========================== */
-    let selectedCargoItems = [];
-    let cargoCalculatedTotal = 0;
-
-    /* ==========================
-       DUMMY ÜRÜNLER
-    ========================== */
-    const dummyItems = [
-        { name: 'Bulaşık Makinesi', price: 1500 },
-        { name: 'Buzdolabı (Solo)', price: 2500 },
-        { name: 'Çamaşır Makinesi', price: 1400 },
-        { name: 'Kombi', price: 800 },
-        { name: 'Valiz (Büyük Boy)', price: 300 },
-        { name: 'Koli (Orta Boy)', price: 150 }
-    ];
-
-    /* ==========================
-       DOM ELEMENTLERİ
-    ========================== */
-    const itemSearch = document.getElementById('item-search');
-    const searchResults = document.getElementById('cargo-search-results');
-    const cargoItemsList = document.getElementById('cargo-items-list');
-    const cargoListContainer = document.getElementById('cargo-list-container');
-    const cargoTotalAmount = document.getElementById('cargo-total-amount');
-    const addCargoToCartBtn = document.getElementById('add-cargo-to-cart');
-
-    /* ==========================
-       ARAMA
-    ========================== */
-    itemSearch.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        if (term.length < 2) {
-            searchResults.classList.add('hidden');
-            return;
-        }
-
-        const filtered = dummyItems.filter(i =>
-            i.name.toLowerCase().includes(term)
-        );
-
-        if (filtered.length) {
-            searchResults.innerHTML = filtered.map(item => `
-                <div class="p-3 hover:bg-gray-100 cursor-pointer border-b text-sm"
-                     onclick="handleCargoSelection('${item.name}', ${item.price})">
-                    ${item.name}
-                    <span class="font-bold text-primary float-right">
-                        ${item.price} ₺
-                    </span>
-                </div>
-            `).join('');
-            searchResults.classList.remove('hidden');
-        } else {
-            searchResults.classList.add('hidden');
-        }
-    });
-
-    /* ==========================
-       ÜRÜN SEÇ
-    ========================== */
-    window.handleCargoSelection = (name, price) => {
-        const existing = selectedCargoItems.find(i => i.name === name);
-
-        if (existing) {
-            existing.qty += 1;
-        } else {
-            selectedCargoItems.push({
-                id: Date.now(),
-                name,
-                price,
-                qty: 1
-            });
-        }
-
-        itemSearch.value = '';
-        searchResults.classList.add('hidden');
-        updateCargoUI();
-    };
-
-    /* ==========================
-       ÜRÜN SİL
-    ========================== */
-    window.removeCargoFromList = (id) => {
-        selectedCargoItems = selectedCargoItems.filter(i => i.id !== id);
-        updateCargoUI();
-    };
-
-    /* ==========================
-       UI + TOPLAM (TEK KAYNAK)
-    ========================== */
-    function updateCargoUI() {
-        if (!selectedCargoItems.length) {
-            cargoListContainer.classList.add('hidden');
-            addCargoToCartBtn.disabled = true;
-            cargoCalculatedTotal = 0;
-            cargoTotalAmount.textContent = "0 ₺";
-            return;
-        }
-
-        cargoListContainer.classList.remove('hidden');
-        addCargoToCartBtn.disabled = false;
-
-        let total = 0;
-
-        cargoItemsList.innerHTML = selectedCargoItems.map(item => {
-            total += item.price * item.qty;
-            return `
-                <div class="flex justify-between items-center p-3 bg-white rounded-lg border">
-                    <div>
-                        <div class="font-medium">${item.name}</div>
-                        <div class="text-xs text-primary">
-                            ${item.qty} x ${item.price} ₺
-                        </div>
-                    </div>
-                    <button onclick="removeCargoFromList(${item.id})"
-                        class="text-red-500 hover:bg-red-50 p-2 rounded-full">
-                        🗑
-                    </button>
-                </div>
-            `;
-        }).join('');
-
-        cargoCalculatedTotal = total; // ⭐ TEK GERÇEK FİYAT
-        cargoTotalAmount.textContent = total + " ₺";
-    }
-
-    /* ==========================
-       SEPETE EKLE (HESAP YOK!)
-    ========================== */
-    addCargoToCartBtn.addEventListener('click', async () => {
-
-        if (!cargoCalculatedTotal) return;
-
-        // 🔥 SADECE MODALDAKİ FİYAT KAYDEDİLİR
-        await addDoc(collection(db, 'cart'), {
-            type: 'cargo',
-            items: selectedCargoItems,
-            total: cargoCalculatedTotal,
-            createdAt: new Date()
+        // 3. Kargo Hesapla seçilirse
+        optCargoOrder.addEventListener('click', () => {
+            selectionModal.classList.add('hidden');
+            linkSection.classList.add('hidden');
+            cargoSection.classList.remove('hidden');
+            cargoSection.scrollIntoView({ behavior: 'smooth' });
         });
 
-        // RESET
-        selectedCargoItems = [];
-        cargoCalculatedTotal = 0;
-        updateCargoUI();
+        // --- EŞYA ARAMA VE LİSTELEME MANTIĞI ---
+        const dummyItems = [
+            { name: 'Bulaşık Makinesi', price: 1500 },
+            { name: 'Buzdolabı (Solo)', price: 2500 },
+            { name: 'Çamaşır Makinesi', price: 1400 },
+            { name: 'Kombi', price: 800 },
+            { name: 'Valiz (Büyük Boy)', price: 300 },
+            { name: 'Koli (Orta Boy)', price: 150 }
+        ];
 
-        alert('Sepete eklendi');
+        const itemSearch = document.getElementById('item-search');
+        const searchResults = document.getElementById('search-results');
+        const cargoItemsList = document.getElementById('cargo-items-list');
+        const cargoListContainer = document.getElementById('cargo-list-container');
+        const cargoTotalAmount = document.getElementById('cargo-total-amount');
+        const addCargoToCartBtn = document.getElementById('add-cargo-to-cart');
+
+        itemSearch.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            if(term.length < 2) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+            const filtered = dummyItems.filter(i => i.name.toLowerCase().includes(term));
+            
+            if(filtered.length > 0) {
+                searchResults.innerHTML = filtered.map(item => `
+                    <div class="p-3 hover:bg-gray-100 cursor-pointer border-b text-sm" onclick="handleCargoSelection('${item.name}', ${item.price})">
+                        ${item.name} - <span class="font-bold">${item.price} ₺</span>
+                    </div>
+                `).join('');
+                searchResults.classList.remove('hidden');
+            } else {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+        // Eşya Seçildiğinde (Listeye Ekle)
+        window.handleCargoSelection = (name, price) => {
+            selectedCargoItems.push({ name, price, id: Date.now() });
+            itemSearch.value = '';
+            searchResults.classList.add('hidden');
+            updateCargoUI();
+        };
+
+        // Eşya Silme
+        window.removeCargoFromList = (id) => {
+            selectedCargoItems = selectedCargoItems.filter(item => item.id !== id);
+            updateCargoUI();
+        };
+
+        // Arayüzü ve Toplamı Güncelle
+        function updateCargoUI() {
+            if(selectedCargoItems.length > 0) {
+                cargoListContainer.classList.remove('hidden');
+                addCargoToCartBtn.disabled = false;
+                addCargoToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                let total = 0;
+                cargoItemsList.innerHTML = selectedCargoItems.map(item => {
+                    total += item.price;
+                    return `
+                        <div class="flex justify-between items-center p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                            <div>
+                                <span class="font-medium text-gray-800">${item.name}</span>
+                                <span class="text-xs text-primary block">${item.price} ₺</span>
+                            </div>
+                            <button onclick="removeCargoFromList(${item.id})" class="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+                cargoTotalAmount.textContent = total + " ₺";
+            } else {
+                cargoListContainer.classList.add('hidden');
+                addCargoToCartBtn.disabled = true;
+                addCargoToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
     });
-
-});
 </script>
-
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
