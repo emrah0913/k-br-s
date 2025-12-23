@@ -323,9 +323,9 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -346,9 +346,9 @@
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
             } else {
-                // Not: Hata alıyorsanız Firebase Console > Authentication > Sign-in Method > Anonymous aktif edilmelidir.
+                // Rule 3: Auth First. Anonim girişi bekliyoruz.
                 await signInAnonymously(auth).catch((err) => {
-                    console.warn("Anonim giriş hatası (Konsolda kapalı olabilir):", err.message);
+                    console.warn("Anonim giriş pasif:", err.message);
                 });
             }
         } catch (error) {
@@ -477,8 +477,9 @@
 
         try {
             showToast("Ekleniyor...");
-            // Rule 1: /artifacts/{appId}/users/{userId}/{collectionName}
-            await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'cart'), {
+            // Rule 1: Strictly follow /artifacts/{appId}/users/{userId}/{collectionName}
+            const collectionPath = collection(db, 'artifacts', appId, 'users', user.uid, 'cart');
+            await addDoc(collectionPath, {
                 productLink: document.getElementById('product-link').value,
                 price: parseFloat(document.getElementById('product-price').value),
                 category: document.getElementById('product-category').value,
@@ -490,38 +491,39 @@
             showToast("Sepete eklendi!");
             resetCalculator();
         } catch (e) {
-            console.error("Sepet ekleme hatası:", e);
+            console.error("Sepet ekleme detayı:", e);
             if(e.code === 'permission-denied') {
-                showToast("Yetki hatası: Lütfen giriş yapın.");
+                showToast("Erişim Reddedildi: Lütfen Firestore kurallarınızı kontrol edin.");
             } else {
-                showToast("Hata: Sepete eklenemedi.");
+                showToast(`Hata: ${e.message}`);
             }
         }
     }
 
     function listenToCart(uid) {
-        if(!uid) return;
-        // Rule 1: /artifacts/{appId}/users/{userId}/{collectionName}
+        if(!uid || !auth.currentUser) return;
+        // Rule 1 & Rule 3
         const cartRef = collection(db, 'artifacts', appId, 'users', uid, 'cart');
         onSnapshot(cartRef, (snap) => {
             const count = snap.size;
             cartBadge.textContent = count;
             cartBadge.classList.toggle('hidden', count === 0);
         }, (err) => {
-            console.warn("Sepet dinleme hatası:", err.message);
+            console.warn("Sepet dinleme yetki hatası (Giriş yapmamış olabilirsiniz):", err.message);
         });
     }
 
     async function loadPricingSettings() {
+        if(!auth.currentUser) return; 
         try {
-            // Rule 1: /artifacts/{appId}/public/data/{collectionName}
+            // Rule 1: Strictly follow /artifacts/{appId}/public/data/{collectionName}
             const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'pricing');
             const snap = await getDoc(settingsRef);
             if (snap.exists()) {
                 pricingSettings = snap.data();
             }
         } catch (e) { 
-            console.warn("Ayarlar yüklenemedi, varsayılanlar kullanılıyor."); 
+            console.warn("Fiyat ayarları okunamadı (Varsayılanlar aktif):", e.message); 
         }
         populateCategories();
     }
