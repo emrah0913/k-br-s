@@ -97,63 +97,49 @@
         </div>
     </header>
 
-  <div class="px-4 mb-10">
-    <div class="bg-gradient-to-r from-primary to-[#4a329d] rounded-2xl p-8 text-white shadow-lg border-b-4 border-secondary">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex-1 text-center md:text-left">
-                <h2 class="text-2xl sm:text-3xl font-extrabold mb-4 leading-tight">
-                    📦 Türkiye'den Kıbrıs'a <br class="hidden sm:block"> 
-                    <span class="text-secondary text-3xl sm:text-4xl">Sürpriz Fiyat Yok!</span>
-                </h2>
-                <ul class="space-y-3 text-sm sm:text-base opacity-95">
-                    <li class="flex items-center gap-3 justify-center md:justify-start">
-                        <i class="ri-checkbox-circle-fill text-secondary"></i>
-                        <span>Kargo ve nakliye dahil tek fiyat</span>
-                    </li>
-                    <li class="flex items-center gap-3 justify-center md:justify-start">
-                        <i class="ri-checkbox-circle-fill text-secondary"></i>
-                        <span>Gümrükleme süreçleri bize ait</span>
-                    </li>
-                    <li class="flex items-center gap-3 justify-center md:justify-start">
-                        <i class="ri-checkbox-circle-fill text-secondary"></i>
-                        <span>Depomuzdan veya adrese teslimat</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="hidden md:flex flex-shrink-0 w-48 h-48 bg-white/10 rounded-full items-center justify-center backdrop-blur-sm border border-white/20">
-                <div class="text-center">
-                    <i class="ri-shield-check-line text-6xl text-secondary mb-2 block"></i>
-                    <span class="text-[10px] uppercase tracking-widest font-bold">Güvenli Teslimat</span>
-                </div>
-            </div>
-        </div>
+<div class="px-4 mb-6">
+    <div class="bg-[#5d3ebc] rounded-2xl p-6 text-white shadow-lg border-b-4 border-[#ffd300]">
+        <h2 class="text-xl font-extrabold mb-4 flex items-center gap-2">
+            <i class="ri-shield-check-fill text-[#ffd300]"></i>
+            Sürpriz Fiyat Yok!
+        </h2>
+        <ul class="space-y-3 text-sm font-medium">
+            <li class="flex items-center gap-3">
+                <i class="ri-checkbox-circle-line text-[#ffd300]"></i>
+                <span>Kargo ve nakliye dahil tek fiyat</span>
+            </li>
+            <li class="flex items-center gap-3">
+                <i class="ri-checkbox-circle-line text-[#ffd300]"></i>
+                <span>Gümrükleme süreçleri bize ait</span>
+            </li>
+            <li class="flex items-center gap-3">
+                <i class="ri-checkbox-circle-line text-[#ffd300]"></i>
+                <span>Depomuzdan veya adrese teslimat</span>
+            </li>
+        </ul>
     </div>
 </div>
+
+<div class="grid grid-cols-1 gap-4 px-4 mb-8">
     
-   
-   <a href="getirhome.html"
-    class="bg-[#ffd300] shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-[#ffd300] hover:bg-[#ffdf300] transition-all w-full">
-    
-    <div class="w-15 h-15 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm overflow-hidden p-2">
-        <img src="getirhome-logo.png" alt="GetirHome" class="w-full h-full object-contain">
-    </div>
-    
-    <span class="text-sm font-bold text-gray-900">GetirHome</span>
-</a>
-    
+    <a href="getirhome.html"
+        class="bg-[#ffd300] shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-[#ffd300] hover:bg-[#ffdf00] transition-all">
+        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm overflow-hidden p-1">
+            <img src="getirhome-logo.png" alt="GetirHome" class="w-full h-full object-contain">
+        </div>
+        <span class="text-sm font-bold text-gray-900">GetirHome</span>
+    </a>
+
     <button id="calculate-btn"
-        class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all w-full">
+        class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
         <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
             <i class="ri-calculator-line ri-xl text-primary"></i>
         </div>
         <span class="text-sm font-medium">Sipariş Ver</span>
     </button>
 
-    
-
     <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
-        class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all w-full">
+        class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
         <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
             <i class="ri-shopping-cart-line ri-xl text-primary"></i>
         </div>
@@ -161,7 +147,6 @@
         <span id="cart-badge" class="absolute bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
     </a>
 </div>
-        </div>
 
         <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
             <h2 class="text-xl font-semibold mb-4 text-primary">1. Ürün Bilgilerini Girin</h2>
