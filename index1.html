@@ -265,90 +265,32 @@
 
 <h2 class="text-3xl font-extrabold text-gray-800 mb-6 text-center border-b-4 border-primary pb-3 tracking-tight">
     🛒 En Popüler Ürünler & Fırsatlar
-</h2>
+<div class="px-4 mb-10">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-extrabold text-gray-800 flex items-center gap-2">
+            <i class="ri-links-line text-primary"></i>
+            Ürün Yakala
+        </h3>
+        <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full animate-pulse">SİSTEM AKTİF</span>
+    </div>
 
-<div class="max-w-4xl mx-auto">
-    <div class="product-slider flex snap-x snap-mandatory">
-
-        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
-            <img src="https://cdn.dsmcdn.com/ty1339/product/media/images/prod/QC/20240531/13/4f260764-0e89-3345-85d3-c78b2860a122/1_org_zoom.jpg"
-                alt="Legom Aktivite Koltuğu & Yatak & Çok amaçlı"
-               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
-
-
-            <div class="p-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Legom Aktivite Koltuğu & Yatak & Çok amaçlı</h3>
-                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
-                <p class="text-xl font-extrabold text-red-600 mb-4">
-                    12.635,<span class="text-base">00 ₺</span>
-                </p>
-                <a href="https://www.trendyol.com/good-night/legom-aktivite-koltugu-yatak-cok-amacli-p-833506385?boutiqueId=61&merchantId=797053"
-                    target="_blank"
-                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
-                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
-                </a>
-            </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">GetirHome Ürün Linki</label>
+        <div class="flex flex-col gap-3">
+            <input type="text" id="product-link-input" placeholder="Ürün linkini buraya yapıştırın..." 
+                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+            <button onclick="fetchProductData()" class="w-full bg-[#ffd300] text-gray-900 py-3 rounded-xl font-black text-sm hover:bg-[#ffdf00] shadow-md transition-all flex items-center justify-center gap-2">
+                <i class="ri-magic-line text-lg"></i> ÜRÜNÜ GETİR VE HESAPLA
+            </button>
         </div>
+    </div>
 
-        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
-            <img src="https://cdn.dsmcdn.com/ty1583/prod/QC/20241008/22/36a5c729-891b-369b-9235-de1c4459aab2/1_org_zoom.jpg"
-                alt="Kışlık Ev Terliği"
-               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
-
-
-            <div class="p-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">3'lü Kışlık Ev Terliği Kışlık Terlik Misafir Terliği</h3>
-                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
-                <p class="text-xl font-extrabold text-red-600 mb-4">
-                    289,<span class="text-base">90 ₺</span>
-                </p>
-                <a href="https://www.trendyol.com/star-shoes/3-lu-kislik-ev-terligi-kislik-terlik-misafir-terligi-p-864790548?merchantId=441558&boutiqueId=61"
-                    target="_blank"
-                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
-                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
-                </a>
-            </div>
+    <div id="product-list" class="grid grid-cols-2 gap-4">
+        <div id="empty-state" class="col-span-2 py-10 text-center border-2 border-dashed border-gray-100 rounded-3xl">
+            <i class="ri-shopping-basket-2-line text-4xl text-gray-200 block mb-2"></i>
+            <p class="text-xs text-gray-400 font-medium">Henüz ürün eklenmedi.<br>Link yapıştırarak başlayın.</p>
         </div>
-
-        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
-            <img src="https://cdn.dsmcdn.com/ty1613/prod/QC/20241208/02/3f26a3f7-9329-3fbf-976d-40355be6ec72/1_org_zoom.jpg"
-                alt="Kışlık Mont"
-               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
-
-
-            <div class="p-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Kadın Siyah Oversize Şişme Kışlık Mont Dik Yaka</h3>
-                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
-                <p class="text-xl font-extrabold text-red-600 mb-4">
-                    826,<span class="text-base">68 ₺</span>
-                </p>
-                <a href="https://www.trendyol.com/lia-blanco-s/kadin-siyah-oversize-sisme-kislik-mont-dik-yaka-p-856865482?merchantId=654815"
-                    target="_blank"
-                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
-                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
-                </a>
-            </div>
-        </div>
-        
-        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
-            <img src="https://cdn.dsmcdn.com/ty1521/product/media/images/prod/QC/20240903/19/2055f782-17d7-358f-bf14-480a25545b92/1_org_zoom.jpg"
-                alt="Saç Kurtarma Ve Canlandırma"
-               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
-
-
-            <div class="p-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Ovex Hızlı Saç Kurtarma Ve Canlandırma Terapisi - 200 Ml.</h3>
-                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
-                <p class="text-xl font-extrabold text-red-600 mb-4">
-                    379,<span class="text-base">24 ₺</span>
-                </p>
-                <a href="https://www.trendyol.com/hc-care/ovex-hizli-sac-kurtarma-ve-canlandirma-terapisi-200-ml-p-7103580?merchantId=110268"
-                    target="_blank"
-                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
-                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
-                </a>
-            </div>
-        </div>
+    </div>
 </div>
 
 
