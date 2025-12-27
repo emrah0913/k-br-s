@@ -265,92 +265,91 @@
 
 <h2 class="text-3xl font-extrabold text-gray-800 mb-6 text-center border-b-4 border-primary pb-3 tracking-tight">
     🛒 En Popüler Ürünler & Fırsatlar
-<section class="popular-products-section px-4 mb-10 mt-6">
-    <div class="flex items-center justify-between mb-4 px-1">
-        <h3 class="text-lg font-extrabold text-gray-800 flex items-center gap-2">
-            <i class="ri-fire-fill text-orange-500 text-xl"></i>
-            Popüler Fırsatlar
-        </h3>
-        <a href="getirhome.html" class="text-xs font-bold text-primary">Tümünü Gör</a>
-    </div>
+</h2>
 
-    <div id="popular-products-scroll" class="flex overflow-x-auto gap-4 pb-4 snap-x no-scrollbar" 
-         style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+<div class="max-w-4xl mx-auto">
+    <div class="product-slider flex snap-x snap-mandatory">
+
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://omhucph.com/cdn/shop/files/Frame_321.png?v=1761396673&width=1900"
+                alt="Legom Koltuk & Yatak & Çok amaçlı"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
+
+
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Legom Koltuk & Yatak & Çok amaçlı</h3>
+                <p class="text-sm text-gray-500 mb-1">Getir Home'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    19.000,<span class="text-base">00 ₺</span>
+                </p>
+                <a href="https://getirkibris.com/getirhome.html#/detail?id=2vm7INjnWYYGsM1E1zai"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
+            </div>
         </div>
 
-    <style>
-        /* Kaydırma çubuğunu gizle */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .product-card-pop { min-width: 160px; max-width: 160px; scroll-snap-align: start; }
-    </style>
-
-    <script>
-        (function() {
-            // YÖNETİCİ: Buraya GetirHome.html'den aldığın ürün linklerini ekle
-            const firsatLinkleri = [
-                "https://getirkibris.com/getirhome.html#/detail?id=0RZvTfCRJ6ZmP0c4CEtF",
-                "getirhome.html#/detail?id=URUN_ID_2",
-                "getirhome.html#/detail?id=URUN_ID_3",
-                "getirhome.html#/detail?id=URUN_ID_4"
-            ];
-
-            const container = document.getElementById('popular-products-scroll');
-
-            firsatLinkleri.forEach(url => {
-                // Linkten ID'yi simüle etme (Tasarım amaçlı)
-                const urlObj = new URL(url.replace("#", ""), window.location.origin);
-                const productId = urlObj.searchParams.get("id") || "Ürün";
-
-                const cardTemplate = `
-                    <div class="product-card-pop bg-white rounded-2xl p-3 shadow-md border border-gray-50 flex-shrink-0 relative transition-transform active:scale-95">
-                        <a href="${url}" class="block">
-                            <div class="w-full h-32 bg-gray-50 rounded-xl mb-2 overflow-hidden flex items-center justify-center p-2 relative">
-                                <img src="https://via.placeholder.com/150?text=GetirHome" class="w-full h-full object-contain">
-                                <div class="absolute top-1 right-1 bg-[#ffd300] text-[#5d3ebc] text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm">
-                                    FIRSAT
-                                </div>
-                            </div>
-                            <h4 class="text-[11px] font-bold text-gray-800 line-clamp-2 h-8 leading-tight mb-1">Popüler Ürün</h4>
-                        </a>
-                        
-                        <div class="flex items-center justify-between mt-3">
-                            <div class="flex flex-col text-left">
-                                <span class="text-[9px] text-gray-400 line-through">190.00 TL</span>
-                                <span class="text-primary font-black text-sm italic tracking-tighter">145.00 TL</span>
-                            </div>
-                            <button onclick="alert('Sepete Eklendi!')" 
-                                    class="bg-white border-2 border-gray-100 p-1.5 rounded-xl text-primary hover:bg-primary hover:text-white shadow-sm transition-all">
-                                <i class="ri-add-line font-bold text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardTemplate);
-            });
-        })();
-    </script>
-</section>
-
- <main class="pt-16 pb-20">
-  <div class="relative w-full overflow-hidden mb-6" style="padding-top: 56.25%;">
-    <iframe 
-      class="absolute top-0 left-0 w-full h-full" 
-      src="https://www.youtube.com/embed/YYNLzJJKTXs"
-      title="YouTube video player" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-      referrerpolicy="strict-origin-when-cross-origin" 
-      allowfullscreen>
-    </iframe>
-
-    <div class="absolute inset-0 bg-gradient-to-t from-[#5b21b6]/25 via-transparent to-transparent pointer-events-none"></div>
-
-    <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#5b21b6]/40 to-transparent pointer-events-none"></div>
-  </div>
-</main>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 mb-8">
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://cdn.dsmcdn.com/ty1583/prod/QC/20241008/22/36a5c729-891b-369b-9235-de1c4459aab2/1_org_zoom.jpg"
+                alt="Kışlık Ev Terliği"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
 
 
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">3'lü Kışlık Ev Terliği Kışlık Terlik Misafir Terliği</h3>
+                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    289,<span class="text-base">90 ₺</span>
+                </p>
+                <a href="https://www.trendyol.com/star-shoes/3-lu-kislik-ev-terligi-kislik-terlik-misafir-terligi-p-864790548?merchantId=441558&boutiqueId=61"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
+            </div>
+        </div>
+
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://cdn.dsmcdn.com/ty1613/prod/QC/20241208/02/3f26a3f7-9329-3fbf-976d-40355be6ec72/1_org_zoom.jpg"
+                alt="Kışlık Mont"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
+
+
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Kadın Siyah Oversize Şişme Kışlık Mont Dik Yaka</h3>
+                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    826,<span class="text-base">68 ₺</span>
+                </p>
+                <a href="https://www.trendyol.com/lia-blanco-s/kadin-siyah-oversize-sisme-kislik-mont-dik-yaka-p-856865482?merchantId=654815"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
+            </div>
+        </div>
+        
+        <div class="product-card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 rounded-xl overflow-hidden text-center flex-shrink-0">
+            <img src="https://cdn.dsmcdn.com/ty1521/product/media/images/prod/QC/20240903/19/2055f782-17d7-358f-bf14-480a25545b92/1_org_zoom.jpg"
+                alt="Saç Kurtarma Ve Canlandırma"
+               class="w-full h-100 object-contain p-2 rounded-2xl"  loading="lazy">
+
+
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 truncate">Ovex Hızlı Saç Kurtarma Ve Canlandırma Terapisi - 200 Ml.</h3>
+                <p class="text-sm text-gray-500 mb-1">Trendyol'dan Gönderim</p>
+                <p class="text-xl font-extrabold text-red-600 mb-4">
+                    379,<span class="text-base">24 ₺</span>
+                </p>
+                <a href="https://www.trendyol.com/hc-care/ovex-hizli-sac-kurtarma-ve-canlandirma-terapisi-200-ml-p-7103580?merchantId=110268"
+                    target="_blank"
+                    class="inline-block w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <i class="ri-shopping-bag-line mr-2"></i> Satın Al
+                </a>
+            </div>
+        </div>
+</div>
 
     
 
