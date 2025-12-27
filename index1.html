@@ -265,36 +265,71 @@
 
 <h2 class="text-3xl font-extrabold text-gray-800 mb-6 text-center border-b-4 border-primary pb-3 tracking-tight">
     🛒 En Popüler Ürünler & Fırsatlar
-<div class="px-4 mb-10">
-    <div class="flex items-center justify-between mb-4">
+<section class="popular-products-section px-4 mb-10 mt-6">
+    <div class="flex items-center justify-between mb-4 px-1">
         <h3 class="text-lg font-extrabold text-gray-800 flex items-center gap-2">
-            <i class="ri-links-line text-primary"></i>
-            Ürün Yakala
+            <i class="ri-fire-fill text-orange-500 text-xl"></i>
+            Popüler Fırsatlar
         </h3>
-        <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full animate-pulse">SİSTEM AKTİF</span>
+        <a href="getirhome.html" class="text-xs font-bold text-primary">Tümünü Gör</a>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-8">
-        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">GetirHome Ürün Linki</label>
-        <div class="flex flex-col gap-3">
-            <input type="text" id="product-link-input" placeholder="Ürün linkini buraya yapıştırın..." 
-                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-            <button onclick="fetchProductData()" class="w-full bg-[#ffd300] text-gray-900 py-3 rounded-xl font-black text-sm hover:bg-[#ffdf00] shadow-md transition-all flex items-center justify-center gap-2">
-                <i class="ri-magic-line text-lg"></i> ÜRÜNÜ GETİR VE HESAPLA
-            </button>
+    <div id="popular-products-scroll" class="flex overflow-x-auto gap-4 pb-4 snap-x no-scrollbar" 
+         style="scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
         </div>
-    </div>
 
-    <div id="product-list" class="grid grid-cols-2 gap-4">
-        <div id="empty-state" class="col-span-2 py-10 text-center border-2 border-dashed border-gray-100 rounded-3xl">
-            <i class="ri-shopping-basket-2-line text-4xl text-gray-200 block mb-2"></i>
-            <p class="text-xs text-gray-400 font-medium">Henüz ürün eklenmedi.<br>Link yapıştırarak başlayın.</p>
-        </div>
-    </div>
-</div>
+    <style>
+        /* Kaydırma çubuğunu gizle */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .product-card-pop { min-width: 160px; max-width: 160px; scroll-snap-align: start; }
+    </style>
 
+    <script>
+        (function() {
+            // YÖNETİCİ: Buraya GetirHome.html'den aldığın ürün linklerini ekle
+            const firsatLinkleri = [
+                "getirhome.html#/detail?id=URUN_ID_1",
+                "getirhome.html#/detail?id=URUN_ID_2",
+                "getirhome.html#/detail?id=URUN_ID_3",
+                "getirhome.html#/detail?id=URUN_ID_4"
+            ];
 
+            const container = document.getElementById('popular-products-scroll');
 
+            firsatLinkleri.forEach(url => {
+                // Linkten ID'yi simüle etme (Tasarım amaçlı)
+                const urlObj = new URL(url.replace("#", ""), window.location.origin);
+                const productId = urlObj.searchParams.get("id") || "Ürün";
+
+                const cardTemplate = `
+                    <div class="product-card-pop bg-white rounded-2xl p-3 shadow-md border border-gray-50 flex-shrink-0 relative transition-transform active:scale-95">
+                        <a href="${url}" class="block">
+                            <div class="w-full h-32 bg-gray-50 rounded-xl mb-2 overflow-hidden flex items-center justify-center p-2 relative">
+                                <img src="https://via.placeholder.com/150?text=GetirHome" class="w-full h-full object-contain">
+                                <div class="absolute top-1 right-1 bg-[#ffd300] text-[#5d3ebc] text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm">
+                                    FIRSAT
+                                </div>
+                            </div>
+                            <h4 class="text-[11px] font-bold text-gray-800 line-clamp-2 h-8 leading-tight mb-1">Popüler Ürün</h4>
+                        </a>
+                        
+                        <div class="flex items-center justify-between mt-3">
+                            <div class="flex flex-col text-left">
+                                <span class="text-[9px] text-gray-400 line-through">190.00 TL</span>
+                                <span class="text-primary font-black text-sm italic tracking-tighter">145.00 TL</span>
+                            </div>
+                            <button onclick="alert('Sepete Eklendi!')" 
+                                    class="bg-white border-2 border-gray-100 p-1.5 rounded-xl text-primary hover:bg-primary hover:text-white shadow-sm transition-all">
+                                <i class="ri-add-line font-bold text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardTemplate);
+            });
+        })();
+    </script>
+</section>
 
  <main class="pt-16 pb-20">
   <div class="relative w-full overflow-hidden mb-6" style="padding-top: 56.25%;">
