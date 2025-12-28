@@ -152,6 +152,25 @@
         background-color: #5D3EBC;
         border-radius: 10px;
     }
+    
+    /* SEPET SAYACI STİLİ */
+    .cart-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #ef4444; /* Kırmızı */
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        border-radius: 9999px;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        border: 2px solid white;
+    }
 </style>
 
 </head>
@@ -171,23 +190,17 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <button id="menu-toggle-btn" onclick="toggleMobileMenu()" class="lg:hidden text-primary p-2 mr-2"><i class="ri-menu-line ri-xl"></i></button>
 
-        <!-- BÜYÜTÜLMÜŞ LOGO ALANI -->
-<div class="flex items-center space-x-3 sm:space-x-8">
-    <!-- Getir Kıbrıs Logo (Sola Alındı) -->
+        <div class="flex items-center space-x-3 sm:space-x-8">
     <a href="index.html" class="flex items-center opacity-60 hover:opacity-100 transition-opacity">
-        <!-- h-8 (32px) mobilde, sm:h-10 (40px) masaüstünde -->
         <img src="getirkibris-logo.png" 
              alt="Getir Kıbrıs Logo" 
              class="h-12 sm:h-10 w-auto object-contain"
              onerror="this.src='https://placehold.co/150x40/5D3EBC/FFFFFF?text=getirkıbrıs'">
     </a>
 
-    <!-- Dikey Ayırıcı Çizgi -->
     <div class="h-8 w-px bg-gray-200"></div>
 
-    <!-- Getir Home Ana Logo (Sağa Alındı) -->
     <a href="#" onclick="navigate('/')" class="flex items-center group">
-        <!-- h-10 (40px) mobilde, sm:h-12 (48px) masaüstünde -->
         <img src="getirhome-logo.png" 
              alt="Getir Home Logo" 
              class="h-12 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
@@ -196,19 +209,13 @@
 </div>
         
         <div class="flex items-center gap-2 sm:gap-4">
-            <a href="/sepet.html" class="relative bg-primary hover:bg-primary/90 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold flex items-center gap-1 sm:gap-2 transition-colors text-sm">
-    
-    <i class="ri-shopping-cart-2-fill text-base sm:text-lg"></i>
-
-    <!-- SEPET ADET ROZETİ -->
-    <span id="cart-count"
-          class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">
-        0
-    </span>
-
-    <span class="hidden sm:inline">Sepetim</span>
-</a>
-
+            <a href="/sepet.html" class="bg-primary hover:bg-primary/90 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold flex items-center gap-1 sm:gap-2 transition-colors text-sm relative">
+                <div class="relative">
+                    <i class="ri-shopping-cart-2-fill text-base sm:text-lg"></i>
+                    <span id="cart-count" class="cart-badge hidden">0</span>
+                </div>
+                <span class="hidden sm:inline">Sepetim</span>
+            </a>
             <div class="h-6 sm:h-8 w-px bg-gray-200"></div> 
             <div class="flex items-center gap-3">
                 <span id="user-email" class="text-xs sm:text-sm font-medium text-gray-600 truncate max-w-[50px] sm:max-w-[100px]">Misafir</span>
@@ -237,7 +244,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, setDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
     // --- Firebase Konfigürasyonu (Admin ile aynı olmalı) ---
     const firebaseConfig = {
@@ -265,10 +272,9 @@
     const pageTitle = document.getElementById("page-title");
     const mobileMenuOverlay = document.getElementById("mobile-menu-overlay");
     const mobileMenu = document.getElementById("mobile-menu");
+    const cartCountSpan = document.getElementById("cart-count");
 
     let allProducts = []; 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     let allCategories = {}; // {name: {id, name, parent, image}}
     let allBanners = []; 
     let productsLoaded = false;
@@ -276,11 +282,8 @@
     let currentSelectedVariant = null;
     let currentCalculatedPrice = 0; 
     let currentSearchTerm = ''; // Arama terimini tutar
-
-    let currentSlide = 0;
-    let carouselWrapper;
-    let totalSlides;
-    let autoSlideInterval;
+    let currentUserId = null;
+    let unsubscribeCart = null;
 
     // --- YARDIMCI FONKSİYONLAR ---
     function showMsg(text, isError=false){
@@ -475,9 +478,9 @@
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const dotsContainer = document.getElementById('carousel-dots');
-        totalSlides = allBanners.length;
+        let totalSlidesCount = allBanners.length;
 
-        if (!carouselWrapper || totalSlides === 0) return;
+        if (!carouselWrapper || totalSlidesCount === 0) return;
 
         prevBtn.addEventListener('click', () => changeSlide(-1));
         nextBtn.addEventListener('click', () => changeSlide(1));
@@ -493,20 +496,25 @@
         
         if (autoSlideInterval) clearInterval(autoSlideInterval);
         
-        if (totalSlides > 1) {
+        if (totalSlidesCount > 1) {
             autoSlideInterval = setInterval(() => changeSlide(1), 5000); 
         }
 
         showSlide(0); 
     }
     
+    let currentSlide = 0;
+    let carouselWrapper;
+    let autoSlideInterval;
+
     function showSlide(index) {
-        if (totalSlides === 0) return;
+        const totalSlidesCount = allBanners.length;
+        if (totalSlidesCount === 0) return;
         
-        if (index >= totalSlides) {
+        if (index >= totalSlidesCount) {
             currentSlide = 0;
         } else if (index < 0) {
-            currentSlide = totalSlides - 1;
+            currentSlide = totalSlidesCount - 1;
         } else {
             currentSlide = index;
         }
@@ -596,7 +604,7 @@
         initCarousel();
     }
     
-    // --- AUTH MANTIK (Aynı Kaldı) ---
+    // --- AUTH MANTIK VE SEPET SAYACI TAKİBİ ---
     loginBtn.addEventListener("click", async ()=>{ 
         try{ await signInWithPopup(auth,provider); } 
         catch(e){ showMsg("Giriş hatası: "+e.message, true); } 
@@ -606,17 +614,34 @@
         await signOut(auth); 
     });
 
+    function startCartListener(uid) {
+        if (unsubscribeCart) unsubscribeCart();
+        const cartRef = collection(db, "users", uid, "cart");
+        unsubscribeCart = onSnapshot(cartRef, (snapshot) => {
+            const count = snapshot.docs.length;
+            if (count > 0) {
+                cartCountSpan.textContent = count;
+                cartCountSpan.classList.remove("hidden");
+            } else {
+                cartCountSpan.classList.add("hidden");
+            }
+        });
+    }
+
     onAuthStateChanged(auth, user=>{
         if(user){
             currentUserId = user.uid;
             userEmailSpan.textContent=user.email;
             loginBtn.classList.add("hidden");
             logoutBtn.classList.remove("hidden");
+            startCartListener(user.uid);
         }else{
             currentUserId = null;
             userEmailSpan.textContent="Misafir";
             loginBtn.classList.remove("hidden");
             logoutBtn.classList.add("hidden");
+            cartCountSpan.classList.add("hidden");
+            if (unsubscribeCart) unsubscribeCart();
         }
     });
 
@@ -1243,11 +1268,8 @@
             showMsg(`Ürünler yüklenirken kritik hata oluştu: ${e.message}`, true);
         } finally {
             renderPage(); 
-            updateCartCount();
         }
     }
-    updateCartCount();
-
 
     // --- SEPETE EKLEME MANTIĞI ---
     async function handleAddToCart(event, selectedVariant = null, calculatedPrice = null){
@@ -1306,23 +1328,6 @@
     }
 
     loadProducts();
-
-
-
-    function updateCartCount() {
-    const cartCountSpan = document.getElementById("cart-count");
-    if (!cartCountSpan) return;
-
-    const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-
-    if (totalQuantity > 0) {
-        cartCountSpan.textContent = totalQuantity;
-        cartCountSpan.classList.remove("hidden");
-    } else {
-        cartCountSpan.classList.add("hidden");
-    }
-}
-
 </script>
 </body>
 </html>
