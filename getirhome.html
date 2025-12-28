@@ -171,11 +171,29 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <button id="menu-toggle-btn" onclick="toggleMobileMenu()" class="lg:hidden text-primary p-2 mr-2"><i class="ri-menu-line ri-xl"></i></button>
 
-        <div class="flex items-center space-x-2 sm:space-x-4">
-            <a href="#" onclick="navigate('/')" class="text-lg sm:text-xl font-extrabold text-primary hover:text-primary/90 transition-colors">Getir Home</a>
-            
-            <a href="index.html" class="text-lg sm:text-xl font-extrabold text-gray-500 hover:text-primary/70 transition-colors border-l pl-2 sm:pl-4 block">Getir Kıbrıs</a>
-        </div>
+        <!-- BÜYÜTÜLMÜŞ LOGO ALANI -->
+<div class="flex items-center space-x-3 sm:space-x-8">
+    <!-- Getir Kıbrıs Logo (Sola Alındı) -->
+    <a href="index.html" class="flex items-center opacity-60 hover:opacity-100 transition-opacity">
+        <!-- h-8 (32px) mobilde, sm:h-10 (40px) masaüstünde -->
+        <img src="getirkibris-logo.png" 
+             alt="Getir Kıbrıs Logo" 
+             class="h-8 sm:h-10 w-auto object-contain"
+             onerror="this.src='https://placehold.co/150x40/5D3EBC/FFFFFF?text=getirkıbrıs'">
+    </a>
+
+    <!-- Dikey Ayırıcı Çizgi -->
+    <div class="h-8 w-px bg-gray-200"></div>
+
+    <!-- Getir Home Ana Logo (Sağa Alındı) -->
+    <a href="#" onclick="navigate('/')" class="flex items-center group">
+        <!-- h-10 (40px) mobilde, sm:h-12 (48px) masaüstünde -->
+        <img src="getirhome-logo.png" 
+             alt="Getir Home Logo" 
+             class="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+             onerror="this.src='https://placehold.co/150x40/5D3EBC/FFD300?text=getirhome'">
+    </a>
+</div>
         
         <div class="flex items-center gap-2 sm:gap-4">
             <a href="/sepet.html" class="bg-primary hover:bg-primary/90 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold flex items-center gap-1 sm:gap-2 transition-colors text-sm">
