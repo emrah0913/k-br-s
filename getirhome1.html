@@ -217,11 +217,13 @@
                 <span class="hidden sm:inline">Sepetim</span>
             </a>
             <div class="h-6 sm:h-8 w-px bg-gray-200"></div> 
-            <div class="flex items-center gap-3">
-                <span id="user-email" class="text-xs sm:text-sm font-medium text-gray-600 truncate max-w-[50px] sm:max-w-[100px]">Misafir</span>
-                <button id="loginBtn" class="text-primary hover:text-primary/80 font-semibold transition-colors text-sm">Giriş</button>
-                <button id="logoutBtn" class="text-red-500 hover:text-red-700 font-semibold hidden transition-colors text-sm">Çıkış</button>
-            </div>
+           <div class="flex items-center gap-3">
+    <img id="user-photo" src="" class="h-8 w-8 rounded-full border border-gray-200 hidden object-cover" alt="P">
+    
+    <span id="user-email" class="text-xs sm:text-sm font-medium text-gray-600 truncate max-w-[50px] sm:max-w-[100px]">Misafir</span>
+    <button id="loginBtn" class="text-primary hover:text-primary/80 font-semibold transition-colors text-sm">Giriş</button>
+    <button id="logoutBtn" class="text-red-500 hover:text-red-700 font-semibold hidden transition-colors text-sm">Çıkış</button>
+</div>
         </div>
     </div>
 </header>
@@ -628,22 +630,37 @@
         });
     }
 
-    onAuthStateChanged(auth, user=>{
-        if(user){
-            currentUserId = user.uid;
-            userEmailSpan.textContent=user.email;
-            loginBtn.classList.add("hidden");
-            logoutBtn.classList.remove("hidden");
-            startCartListener(user.uid);
-        }else{
-            currentUserId = null;
-            userEmailSpan.textContent="Misafir";
-            loginBtn.classList.remove("hidden");
-            logoutBtn.classList.add("hidden");
-            cartCountSpan.classList.add("hidden");
-            if (unsubscribeCart) unsubscribeCart();
+   onAuthStateChanged(auth, user => {
+    const userPhoto = document.getElementById("user-photo"); // Yeni eklediğimiz resim elementi
+    
+    if (user) {
+        currentUserId = user.uid;
+        userEmailSpan.textContent = user.email;
+        
+        // --- GOOGLE PROFİL RESMİ MANTIĞI ---
+        if (user.photoURL) {
+            userPhoto.src = user.photoURL; // Google'dan gelen resmi yükle
+            userPhoto.classList.remove("hidden"); // Gizliydi, görünür yap
+        } else {
+            // Eğer resim yoksa (anonim giriş vb.) gizle
+            userPhoto.classList.add("hidden");
         }
-    });
+        // ------------------------------------
+
+        loginBtn.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        startCartListener(user.uid);
+    } else {
+        currentUserId = null;
+        userEmailSpan.textContent = "Misafir";
+        userPhoto.classList.add("hidden"); // Çıkış yapılınca resmi gizle
+        loginBtn.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        cartCountSpan.classList.add("hidden");
+        if (unsubscribeCart) unsubscribeCart();
+    }
+});
+      
 
     // --- ÜRÜN KARTI RENDER (Kırpılma Sorunu Giderildi) ---
     function renderProductCards(productsToRender, productsListContainer) {
