@@ -196,18 +196,59 @@
     </a>
 </div>
         
-        <div class="flex items-center gap-2 sm:gap-4">
-            <a href="/sepet.html" class="bg-primary hover:bg-primary/90 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold flex items-center gap-1 sm:gap-2 transition-colors text-sm">
-                <i class="ri-shopping-cart-2-fill text-base sm:text-lg"></i> <span class="hidden sm:inline">Sepetim</span>
-            </a>
-            <div class="h-6 sm:h-8 w-px bg-gray-200"></div> 
-            <div class="flex items-center gap-3">
-                <span id="user-email" class="text-xs sm:text-sm font-medium text-gray-600 truncate max-w-[50px] sm:max-w-[100px]">Misafir</span>
-                <button id="loginBtn" class="text-primary hover:text-primary/80 font-semibold transition-colors text-sm">Giriş</button>
-                <button id="logoutBtn" class="text-red-500 hover:text-red-700 font-semibold hidden transition-colors text-sm">Çıkış</button>
-            </div>
-        </div>
+       <div class="flex items-center gap-2 sm:gap-4 p-4 bg-gray-50">
+    <a href="/sepet.html" class="relative bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold flex items-center gap-1 sm:gap-2 transition-colors text-sm">
+        <i class="ri-shopping-cart-2-fill text-base sm:text-lg"></i> 
+        <span class="hidden sm:inline">Sepetim</span>
+        
+        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center hidden border-2 border-white">
+            0
+        </span>
+    </a>
+
+    <div class="h-6 sm:h-8 w-px bg-gray-200"></div> 
+
+    <div class="flex items-center gap-3">
+        <span id="user-email" class="text-xs sm:text-sm font-medium text-gray-600">Misafir</span>
+        <button id="add-test-item" class="bg-green-500 text-white px-3 py-1 rounded text-xs">Ürün Ekle (Test)</button>
     </div>
+</div>
+
+<script>
+    // 1. Sepet Sayısını Güncelleyen Fonksiyon
+    function updateCartBadge() {
+        // LocalStorage'dan sepeti al, yoksa boş dizi oluştur
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const badge = document.getElementById('cart-count');
+        
+        // Sepetteki toplam ürün adedini hesapla
+        const totalItems = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+
+        if (totalItems > 0) {
+            badge.textContent = totalItems;
+            badge.classList.remove('hidden'); // Sayı varsa göster
+        } else {
+            badge.classList.add('hidden'); // Sepet boşsa gizle
+        }
+    }
+
+    // 2. Örnek "Sepete Ekle" Mantığı (Test Butonu İçin)
+    document.getElementById('add-test-item').addEventListener('click', function() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        // Örnek bir ürün objesi ekleyelim
+        cart.push({ id: 1, name: "Ürün", quantity: 1 });
+        
+        // LocalStorage'a kaydet
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Badge'i güncelle
+        updateCartBadge();
+    });
+
+    // 3. Sayfa yüklendiğinde hafızadaki mevcut sayıyı göster
+    document.addEventListener('DOMContentLoaded', updateCartBadge);
+</script>
 </header>
 
 <section id="hero-section" class="bg-primary/90 text-white">
