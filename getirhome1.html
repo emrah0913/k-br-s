@@ -172,26 +172,27 @@
         <button id="menu-toggle-btn" onclick="toggleMobileMenu()" class="lg:hidden text-primary p-2 mr-2"><i class="ri-menu-line ri-xl"></i></button>
 
         <!-- LOGO ALANI: img etiketleri kullanılarak güncellenmiş versiyon -->
-<div class="flex items-center space-x-2 sm:space-x-6">
-    <!-- Getir Home Ana Logo -->
+<!-- BÜYÜTÜLMÜŞ LOGO ALANI -->
+<div class="flex items-center space-x-3 sm:space-x-8">
+    <!-- Getir Home Ana Logo (Daha Büyük) -->
     <a href="#" onclick="navigate('/')" class="flex items-center group">
-        <!-- src kısmına GetirHome logo dosyanızın yolunu yazın -->
+        <!-- h-10 (40px) mobilde, sm:h-12 (48px) masaüstünde -->
         <img src="getirhome-logo.png" 
              alt="Getir Home Logo" 
-             class="h-12 w-auto object-contain transition-transform group-hover:scale-105"
-             onerror="this.src='https://placehold.co/100x28/5D3EBC/FFD300?text=getirhome'">
+             class="h-12 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+             onerror="this.src='https://placehold.co/150x40/5D3EBC/FFD300?text=getirhome'">
     </a>
 
-    <!-- Dikey Ayırıcı Çizgi -->
-    <div class="h-6 w-px bg-gray-200 hidden sm:block"></div>
+    <!-- Dikey Ayırıcı Çizgi (Artık mobilde de görünür) -->
+    <div class="h-8 w-px bg-gray-200"></div>
 
-    <!-- Getir Kıbrıs Logo -->
-    <a href="index.html" class="hidden sm:flex items-center opacity-60 hover:opacity-100 transition-opacity">
-        <!-- src kısmına GetirKıbrıs logo dosyanızın yolunu yazın -->
+    <!-- Getir Kıbrıs Logo (Mobilde gizli olan 'hidden' sınıfı kaldırıldı) -->
+    <a href="index.html" class="flex items-center opacity-60 hover:opacity-100 transition-opacity">
+        <!-- h-8 (32px) mobilde, sm:h-10 (40px) masaüstünde -->
         <img src="getirkibris-logo.png" 
              alt="Getir Kıbrıs Logo" 
-             class="h-12 w-auto object-contain"
-             onerror="this.src='https://placehold.co/110x28/5D3EBC/FFFFFF?text=getirkıbrıs'">
+             class="h-12 sm:h-10 w-auto object-contain"
+             onerror="this.src='https://placehold.co/150x40/5D3EBC/FFFFFF?text=getirkıbrıs'">
     </a>
 </div>
         
