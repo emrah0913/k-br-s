@@ -43,10 +43,23 @@
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
             border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
-            flex-shrink: 0; background: white; border: 1px solid #eee;
+            flex-shrink: 0; background: white; border: 1px solid #eee; position: relative;
         }
         .thumb-item.active { border-color: #5D3EBC; box-shadow: 0 0 0 2px rgba(93, 62, 188, 0.2); }
         .thumb-item img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Video Butonu Özel Tasarım */
+        .video-thumb-btn {
+            background-image: url('getirhome-logo.png');
+            background-size: 80%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #f9fafb;
+        }
+        .video-overlay-icon {
+            position: absolute; inset: 0; background: rgba(93, 62, 188, 0.4);
+            display: flex; items-center; justify-content: center; color: white;
+        }
 
         /* Mobil Menü Geçişi */
         #mobile-sidebar { transition: transform 0.3s ease-in-out; }
@@ -66,31 +79,18 @@
             display: flex; align-items: center; justify-content: center; border: 2px solid white;
         }
 
-        /* Video Tam Ekran Wrapper */
         .main-media-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 100%; /* Kare alanı koru */
-            background: #f9fafb;
-            border-radius: 1.5rem;
-            overflow: hidden;
+            position: relative; width: 100%; padding-bottom: 100%; 
+            background: #f9fafb; border-radius: 1.5rem; overflow: hidden;
         }
         .media-content {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; items-center; justify-content: center;
         }
         .media-content iframe, .media-content video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Videoyu tam ekrana yayar */
-            border-radius: 1.5rem;
+            width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem;
         }
-        .media-content img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
+        .media-content img { max-width: 90%; max-height: 90%; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -232,8 +232,10 @@
                         `).join('')}
                         
                         ${p.video ? `
-                            <div class="thumb-item flex items-center justify-center bg-primary text-white" onclick="changeMedia('video', '${p.video}', this)">
-                                <i class="ri-play-fill ri-2x"></i>
+                            <div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)">
+                                <div class="video-overlay-icon">
+                                    <i class="ri-play-fill ri-2x"></i>
+                                </div>
                             </div>
                         ` : ''}
                     </div>
