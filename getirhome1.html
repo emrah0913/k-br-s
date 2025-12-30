@@ -40,6 +40,18 @@
             object-fit: contain; padding: 10px;
         }
 
+        /* Banner Tasarımı */
+        .banner-container {
+            width: 100%; border-radius: 1rem; overflow: hidden; margin-bottom: 1.5rem;
+            position: relative; aspect-ratio: 16 / 6; background: #ddd;
+        }
+        .banner-slide {
+            position: absolute; inset: 0; opacity: 0; transition: opacity 0.8s ease-in-out;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .banner-slide.active { opacity: 1; z-index: 10; }
+        .banner-slide img { width: 100%; height: 100%; object-fit: cover; }
+
         /* Video ve Thumb Tasarımı */
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
@@ -74,7 +86,6 @@
             display: flex; items-center; justify-content: center;
         }
 
-        /* VİDEO TAM EKRAN (FOTOĞRAF GİBİ) AYARI */
         .media-content iframe, 
         .media-content video { 
             width: 100% !important; 
@@ -148,6 +159,11 @@
                 <input type="text" id="search-input" placeholder="Ürün ara..." class="w-full p-4 pl-12 rounded-2xl border-none shadow-sm focus:ring-2 focus:ring-primary outline-none">
                 <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 ri-xl"></i>
             </div>
+
+            <div id="banner-area" class="banner-container">
+                <div class="flex items-center justify-center h-full text-gray-400">Yükleniyor...</div>
+            </div>
+
             <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
         </div>
 
@@ -186,9 +202,38 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    let allProducts = [], allCategories = [], currentUserId = null;
+    let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
 
-    // --- VİDEO URL İYİLEŞTİRME (VİDEOLARIN ÇALIŞMASINI SAĞLAR) ---
+    // Bannerları Yükle
+    async function loadBanners() {
+        const snap = await getDocs(collection(db, "homeBanners"));
+        allBanners = snap.docs.map(d => d.data());
+        renderBanners();
+    }
+
+    function renderBanners() {
+        const container = document.getElementById("banner-area");
+        if (allBanners.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        container.innerHTML = allBanners.map((b, i) => `
+            <div class="banner-slide ${i === 0 ? 'active' : ''}">
+                <img src="${b.url}" onerror="this.src='https://placehold.co/1200x480?text=Banner'">
+            </div>
+        `).join('');
+
+        // Otomatik Geçiş
+        let current = 0;
+        setInterval(() => {
+            const slides = document.querySelectorAll('.banner-slide');
+            if(slides.length < 2) return;
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }, 5000);
+    }
+
     function getCleanEmbedUrl(url) {
         if (!url) return "";
         let videoId = "";
@@ -287,7 +332,6 @@
         renderRelatedProducts(p);
     }
 
-    // --- MEDYA DEĞİŞTİRME (VİDEO TAM EKRAN VE ÇALIŞIR) ---
     window.changeMedia = (type, url, el) => {
         const container = document.getElementById("main-media-container");
         document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
@@ -363,6 +407,7 @@
         document.getElementById("desktop-menu").innerHTML = menuHtml;
         document.getElementById("mobile-category-list").innerHTML = menuHtml;
         renderProducts(allProducts);
+        loadBanners(); // Bannerları yükle
     }
 
     onAuthStateChanged(auth, user => {
