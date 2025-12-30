@@ -171,6 +171,55 @@
         padding: 0 4px;
         border: 2px solid white;
     }
+            /* Ürün kartlarını aynı boyuta sabitleyen ve hizalayan stil */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 1rem;
+    padding: 0.75rem;
+}
+
+/* Görsellerin kesilmesini önleyen kare konteyner */
+.product-image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Kare oran */
+    background-color: #f9fafb; /* Ürün arkasına hafif gri fon */
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.product-image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Görseli ezmeden sığdırır */
+    padding: 8px;
+}
+
+/* Modern 'Ekle' Butonu */
+.add-to-cart-btn {
+    width: 100%;
+    background: #ffffff;
+    color: #5D3EBC;
+    border: 2px solid #f3f4f6;
+    padding: 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+    background: #5D3EBC;
+    color: white;
+    border-color: #5D3EBC;
+}
 </style>
 
 </head>
@@ -670,82 +719,58 @@
 
     // --- ÜRÜN KARTI RENDER (Kırpılma Sorunu Giderildi) ---
     function renderProductCards(productsToRender, productsListContainer) {
-        
-        productsListContainer.innerHTML = ''; 
+    productsListContainer.innerHTML = ''; 
 
-        const productGrid = document.createElement('div');
-        productGrid.id = "products-grid";
-        productGrid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6";
+    const productGrid = document.createElement('div');
+    productGrid.id = "products-grid";
+    // Mobilde 2, tablette 3, masaüstünde 5 sütunlu düzen
+    productGrid.className = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-5";
 
-        if (productsToRender.length === 0) {
-            productGrid.innerHTML = "<p class='col-span-full text-center py-10 text-gray-500'>Filtre/Arama sonucunda aktif ürün bulunamadı.</p>";
-            productsListContainer.appendChild(productGrid);
-            return;
-        }
+    if (productsToRender.length === 0) {
+        productGrid.innerHTML = "<div class='col-span-full text-center py-20 text-gray-400'><i class='ri-search-line text-4xl'></i><p>Ürün bulunamadı.</p></div>";
+        productsListContainer.appendChild(productGrid);
+        return;
+    }
 
-        productsToRender.forEach(p => {
-            const card = document.createElement("a");
-            card.href = `#`; 
-            card.onclick = (e) => {
-                e.preventDefault(); 
-                navigate(`/detail?id=${p.id}`); 
-            };
-            card.className = "product-card bg-white p-3 sm:p-4 rounded-xl shadow-lg flex flex-col overflow-hidden cursor-pointer";
-            
-            const productNameDisplay = p.name || 'Ürün Adı Yok';
+    productsToRender.forEach(p => {
+        const currentPrice = (p.price || 0).toFixed(2);
+        const oldPrice = (p.old_price || 0).toFixed(2);
+        const hasDiscount = p.old_price > p.price;
 
-            const imageHtml = p.image ?
-                `<img src="${p.image}" 
-                    alt="${productNameDisplay}" 
-                    class="w-full h-full object-contain transition-transform duration-300 hover:scale-[1.03]"
-                    onerror="this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3e%3crect width=\'100\' height=\'100\' fill=\'%23e5e7eb\'/%3e%3ctext x=\'50\' y=\'55\' font-size=\'10\' fill=\'%239ca3af\' text-anchor=\'middle\'%3eGörsel+Yüklenemedi%3c/text%3e%3c/svg%3e';"
-                    />`
-                :
-                `<div class="w-full h-full flex items-center justify-center text-gray-500 bg-gray-200 text-sm font-semibold">GÖRSEL YOK</div>`;
+        const card = document.createElement("div");
+        card.className = "product-card group cursor-pointer hover:shadow-xl transition-shadow duration-300";
+        card.onclick = () => navigate(`/detail?id=${p.id}`);
 
-            const currentPrice = (p.price || 0).toFixed(2);
-            const oldPrice = (p.old_price || 0).toFixed(2);
-            const showDiscount = p.old_price > p.price;
+        card.innerHTML = `
+            <div class="product-image-container">
+                <img src="${p.image}" alt="${p.name}" onerror="this.src='https://placehold.co/400x400?text=Görsel+Yok'">
+                ${hasDiscount ? `
+                    <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        %${Math.round((1 - p.price/p.old_price)*100)} İndirim
+                    </span>` : ''}
+            </div>
+            
+            <div class="flex flex-col flex-grow">
+                <span class="text-[10px] text-primary font-bold uppercase opacity-60 mb-1">${p.category || 'Genel'}</span>
+                <h3 class="font-bold text-sm text-gray-800 line-clamp-2 mb-2 h-10 leading-snug">${p.name}</h3>
+                
+                <div class="mt-auto">
+                    <div class="flex flex-col mb-2">
+                        ${hasDiscount ? `<span class="text-xs text-gray-400 line-through font-medium">${oldPrice} ₺</span>` : '<span class="text-xs invisible">-</span>'}
+                        <span class="text-lg font-extrabold text-primary">${currentPrice} ₺</span>
+                    </div>
+                    
+                    <button data-id="${p.id}" class="add-to-cart-btn flex items-center justify-center gap-1" onclick="event.stopPropagation(); handleAddToCart(event);">
+                        <i class="ri-add-line text-lg"></i> Ekle
+                    </button>
+                </div>
+            </div>
+        `;
+        productGrid.appendChild(card);
+    });
 
-            let priceHtml = '';
-            if (showDiscount) {
-                priceHtml = `
-                    <div class="flex flex-col items-start">
-                        <span class="text-xs text-gray-400 line-through">${oldPrice} ₺</span>
-                        <span class="font-extrabold text-base sm:text-xl text-primary">${currentPrice} ₺</span>
-                    </div>
-                `;
-            } else {
-                priceHtml = `<span class="font-extrabold text-base sm:text-xl text-primary">${currentPrice} ₺</span>`;
-            }
-
-            card.innerHTML = `
-                <div class="h-32 sm:h-40 overflow-hidden mb-3 sm:mb-4 rounded-lg bg-gray-50 p-2 flex items-center justify-center">
-                    ${imageHtml}
-                </div>
-                <span class="text-xs text-primary font-semibold uppercase mb-1">${p.category || 'GENEL'}</span>
-                <h3 class="font-bold text-sm sm:text-base text-gray-800 truncate mb-1">${productNameDisplay}</h3>
-                <p class="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">${p.description || "Açıklama mevcut değil."}</p>
-                
-                <div class="flex justify-between items-center mt-auto pt-2 border-t">
-                    ${priceHtml} <button data-id="${p.id}" class="add-to-cart-btn bg-getir-yellow text-primary px-3 py-1 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-getir-yellow/80 transition-colors flex items-center gap-1 text-xs sm:text-sm">
-                        <i class="ri-add-line"></i> Ekle
-                    </button>
-                </div>
-            `;
-            productGrid.appendChild(card);
-        });
-
-        productsListContainer.appendChild(productGrid);
-
-        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.addEventListener('click', (event) => {
-                event.stopPropagation(); 
-                handleAddToCart(event);
-            });
-        });
-    }
-
+    productsListContainer.appendChild(productGrid);
+}
     /**
      * Benzer ürünleri yatay kaydırmalı carousel olarak render eder.
      */
