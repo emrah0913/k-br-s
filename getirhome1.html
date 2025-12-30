@@ -13,10 +13,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: '#5D3EBC', 
-                        secondary: '#FFD300',
-                    },
+                    colors: { primary: '#5D3EBC', secondary: '#FFD300' },
                     fontFamily: { inter: ['Inter', 'sans-serif'] }
                 }
             }
@@ -26,7 +23,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         
-        /* Ürün Kartı Stili */
         .product-card {
             display: flex; flex-direction: column; height: 100%; background: white;
             border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
@@ -43,10 +39,14 @@
             object-fit: contain; padding: 10px;
         }
 
-        /* Menü Animasyonları */
-        .category-children { transition: all 0.3s ease; }
-        .rotate-icon { transition: transform 0.3s; }
-        .rotate-icon.active { transform: rotate(90deg); }
+        /* Galeri Thumbnails */
+        .thumb-item {
+            width: 70px; height: 70px; border: 2px solid transparent; 
+            border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
+            flex-shrink: 0; background: white;
+        }
+        .thumb-item.active { border-color: #5D3EBC; }
+        .thumb-item img { width: 100%; height: 100%; object-fit: contain; }
 
         /* Mobil Menü Geçişi */
         #mobile-sidebar { transition: transform 0.3s ease-in-out; }
@@ -65,6 +65,10 @@
             font-size: 10px; width: 18px; height: 18px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; border: 2px solid white;
         }
+
+        /* Video alanı oranı */
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; width: 100%; }
+        .video-wrapper iframe, .video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 1rem; }
     </style>
 </head>
 <body>
@@ -151,40 +155,97 @@
 
     let allProducts = [], allCategories = [], currentUserId = null;
 
-    // Hamburger Menü Fonksiyonu
     window.toggleMobileMenu = () => {
         const sidebar = document.getElementById("mobile-sidebar");
         const overlay = document.getElementById("sidebar-overlay");
         const isHidden = sidebar.classList.contains("-translate-x-full");
-
         if (isHidden) {
             sidebar.classList.remove("-translate-x-full");
             overlay.classList.remove("hidden");
             setTimeout(() => overlay.classList.add("opacity-100"), 10);
-            document.body.style.overflow = "hidden";
         } else {
             sidebar.classList.add("-translate-x-full");
             overlay.classList.remove("opacity-100");
-            setTimeout(() => { overlay.classList.add("hidden"); document.body.style.overflow = "auto"; }, 300);
+            setTimeout(() => overlay.classList.add("hidden"), 300);
         }
     };
 
-    // Navigasyon Mantığı
     window.handleNavigate = (view, productId = null) => {
         const home = document.getElementById("home-view");
         const detail = document.getElementById("detail-view");
         const sidebar = document.getElementById("main-sidebar");
-
         if (view === 'detail') {
-            home.classList.add("hidden");
-            sidebar.classList.add("lg:hidden");
-            detail.classList.remove("hidden");
-            renderProductDetail(productId);
+            home.classList.add("hidden"); sidebar.classList.add("lg:hidden");
+            detail.classList.remove("hidden"); renderProductDetail(productId);
             window.scrollTo(0,0);
         } else {
-            detail.classList.add("hidden");
-            sidebar.classList.remove("lg:hidden");
+            detail.classList.add("hidden"); sidebar.classList.remove("lg:hidden");
             home.classList.remove("hidden");
+        }
+    };
+
+    function renderProductDetail(id) {
+        const p = allProducts.find(x => x.id === id);
+        const content = document.getElementById("product-detail-content");
+        
+        // Medya listesi oluştur (Ana resim + Ek resimler)
+        let mediaItems = [p.image];
+        if (p.extraImages && Array.isArray(p.extraImages)) {
+            mediaItems = [...mediaItems, ...p.extraImages];
+        }
+
+        content.innerHTML = `
+            <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
+                <div class="w-full md:w-1/2">
+                    <div id="main-media-box" class="w-full bg-gray-50 rounded-2xl p-4 flex items-center justify-center min-h-[350px] mb-4">
+                        <img id="big-image" src="${p.image}" class="max-h-96 object-contain">
+                    </div>
+                    
+                    <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
+                        ${mediaItems.map((img, index) => `
+                            <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
+                                <img src="${img}">
+                            </div>
+                        `).join('')}
+                        
+                        ${p.video ? `
+                            <div class="thumb-item flex items-center justify-center bg-primary text-white" onclick="changeMedia('video', '${p.video}', this)">
+                                <i class="ri-play-fill ri-2x"></i>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2 flex flex-col">
+                    <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-4">${p.name}</h1>
+                    <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
+                    <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
+                    <div class="mt-auto">
+                        <div class="text-3xl font-black text-primary mb-6">${p.price.toFixed(2)} ₺</div>
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg" onclick="addToCart('${p.id}')">
+                            Sepete Ekle
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    // Galeri Değiştirme Fonksiyonu
+    window.changeMedia = (type, url, el) => {
+        const box = document.getElementById("main-media-box");
+        document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
+        el.classList.add('active');
+
+        if (type === 'img') {
+            box.innerHTML = `<img src="${url}" class="max-h-96 object-contain">`;
+        } else {
+            // YouTube veya Direkt MP4 kontrolü
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                const videoId = url.split('v=')[1] || url.split('/').pop();
+                box.innerHTML = `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe></div>`;
+            } else {
+                box.innerHTML = `<div class="video-wrapper"><video src="${url}" controls autoplay></video></div>`;
+            }
         }
     };
 
@@ -250,28 +311,6 @@
                 </div>`;
             grid.appendChild(card);
         });
-    }
-
-    function renderProductDetail(id) {
-        const p = allProducts.find(x => x.id === id);
-        const content = document.getElementById("product-detail-content");
-        content.innerHTML = `
-            <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
-                <div class="w-full md:w-1/2 bg-gray-50 rounded-2xl p-4 flex items-center justify-center">
-                    <img src="${p.image}" class="max-h-96 object-contain" onerror="this.src='https://placehold.co/600x600?text=Resim+Yok'">
-                </div>
-                <div class="w-full md:w-1/2 flex flex-col">
-                    <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-4">${p.name}</h1>
-                    <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
-                    <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Bu ürün için bir açıklama girilmemiştir."}</div>
-                    <div class="mt-auto">
-                        <div class="text-3xl font-black text-primary mb-6">${p.price.toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl transition-transform active:scale-95 shadow-lg shadow-primary/20" onclick="addToCart('${p.id}')">
-                            Sepete Ekle
-                        </button>
-                    </div>
-                </div>
-            </div>`;
     }
 
     window.addToCart = async (id) => {
