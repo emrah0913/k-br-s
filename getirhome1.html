@@ -23,6 +23,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         
+        /* --- SABİT GÖRSEL YAPI: ÜRÜN KARTLARI --- */
         .product-card {
             display: flex; flex-direction: column; height: 100%; background: white;
             border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
@@ -39,28 +40,37 @@
             object-fit: contain; padding: 10px;
         }
 
-        /* KAYDIRMALI BANNER TASARIMI */
-        .banner-wrapper {
-            width: 100%; margin-bottom: 1.5rem; position: relative;
-        }
+        /* --- BANNER ALANI (KAYDIRMALI VE TIKLAMA KAPALI) --- */
+        .banner-wrapper { width: 100%; margin-bottom: 1.5rem; position: relative; }
         .banner-scroll {
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-            scrollbar-width: none; -ms-overflow-style: none; border-radius: 1rem;
+            scrollbar-width: none; -ms-overflow-style: none; border-radius: 1.5rem;
         }
         .banner-scroll::-webkit-scrollbar { display: none; }
-        
         .banner-item {
             flex: 0 0 100%; scroll-snap-align: start; position: relative;
-            aspect-ratio: 16 / 6; overflow: hidden; cursor: pointer;
+            aspect-ratio: 16 / 6; overflow: hidden; pointer-events: none; /* Tıklama kapalı */
         }
-        .banner-item img, .banner-item video {
-            width: 100%; height: 100%; object-fit: cover;
-        }
+        .banner-item img, .banner-item video { width: 100%; height: 100%; object-fit: cover; }
         .banner-overlay {
             position: absolute; inset: 0; 
-            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
             display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 1.5rem; color: white;
+            padding: 2rem; color: white;
+        }
+
+        /* --- ÜRÜN DETAY MEDYA ALANI --- */
+        .main-media-wrapper {
+            position: relative; width: 100%; padding-bottom: 100%; 
+            background: #f9fafb; border-radius: 1.5rem; overflow: hidden;
+        }
+        .media-content {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; items-center; justify-content: center;
+        }
+        .media-content iframe, .media-content video { 
+            width: 100% !important; height: 100% !important; 
+            object-fit: cover; border-radius: 1.5rem; 
         }
 
         .thumb-item {
@@ -85,23 +95,6 @@
             position: absolute; top: -5px; right: -5px; background: #ef4444; color: white;
             font-size: 10px; width: 18px; height: 18px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; border: 2px solid white;
-        }
-
-        .main-media-wrapper {
-            position: relative; width: 100%; padding-bottom: 100%; 
-            background: #f9fafb; border-radius: 1.5rem; overflow: hidden;
-        }
-        .media-content {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; items-center; justify-content: center;
-        }
-
-        .media-content iframe, 
-        .media-content video { 
-            width: 100% !important; 
-            height: 100% !important; 
-            object-fit: cover; 
-            border-radius: 1.5rem; 
         }
 
         .related-scroll {
@@ -213,7 +206,7 @@
 
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
 
-    // --- BANNER YÜKLEME VE RENDER (VİDEO + METİN DESTEĞİ) ---
+    // --- BANNER RENDER (VİDEO VE METİN DESTEĞİ) ---
     async function loadBanners() {
         const snap = await getDocs(collection(db, "homeBanners"));
         allBanners = snap.docs.map(d => d.data());
@@ -225,7 +218,7 @@
         }
 
         container.innerHTML = allBanners.map(b => `
-            <div class="banner-item" onclick="if('${b.link}') window.location.href='${b.link}'">
+            <div class="banner-item">
                 ${b.videoUrl ? 
                     `<video src="${b.videoUrl}" autoplay muted loop playsinline></video>` : 
                     `<img src="${b.url}" alt="${b.title || 'Banner'}">`
@@ -290,8 +283,7 @@
         const p = allProducts.find(x => x.id === id);
         if(!p) return;
         const content = document.getElementById("product-detail-content");
-        let mediaItems = [p.image];
-        if (p.extraImages && Array.isArray(p.extraImages)) mediaItems = [...mediaItems, ...p.extraImages];
+        let mediaItems = [p.image, ...(p.extraImages || [])];
 
         content.innerHTML = `
             <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
@@ -307,11 +299,7 @@
                                 <img src="${img}">
                             </div>
                         `).join('')}
-                        ${p.video ? `
-                            <div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)">
-                                <div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div>
-                            </div>
-                        ` : ''}
+                        ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
                     </div>
                 </div>
                 <div class="w-full md:w-1/2 flex flex-col">
@@ -333,10 +321,8 @@
         const container = document.getElementById("main-media-container");
         document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
         el.classList.add('active');
-
-        if (type === 'img') {
-            container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
-        } else {
+        if (type === 'img') container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
+        else {
             const finalUrl = getCleanEmbedUrl(url);
             if (finalUrl.includes("youtube.com")) container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             else container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover"></video>`;
@@ -429,16 +415,8 @@
         const grid = document.getElementById("products-grid");
         grid.innerHTML = products.map(p => `
             <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
-                <div class="product-image-container">
-                    <img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'">
-                </div>
-                <div class="flex flex-col flex-grow">
-                    <h3 class="font-bold text-xs md:text-sm text-gray-800 line-clamp-2 h-10 mb-2">${p.name}</h3>
-                    <div class="mt-auto">
-                        <div class="text-sm md:text-lg font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="add-btn text-xs md:text-sm" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
-                    </div>
-                </div>
+                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
+                <div class="flex flex-col flex-grow"><h3 class="font-bold text-xs md:text-sm text-gray-800 line-clamp-2 h-10 mb-2">${p.name}</h3><div class="mt-auto"><div class="text-sm md:text-lg font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div><button class="add-btn text-xs md:text-sm" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button></div></div>
             </div>`).join('');
     }
 
