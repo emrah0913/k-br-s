@@ -23,7 +23,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         
-        /* Kart Tasarımı */
         .product-card {
             display: flex; flex-direction: column; height: 100%; background: white;
             border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
@@ -40,19 +39,30 @@
             object-fit: contain; padding: 10px;
         }
 
-        /* Banner Tasarımı */
-        .banner-container {
-            width: 100%; border-radius: 1rem; overflow: hidden; margin-bottom: 1.5rem;
-            position: relative; aspect-ratio: 16 / 6; background: #ddd;
+        /* KAYDIRMALI BANNER TASARIMI */
+        .banner-wrapper {
+            width: 100%; margin-bottom: 1.5rem; position: relative;
         }
-        .banner-slide {
-            position: absolute; inset: 0; opacity: 0; transition: opacity 0.8s ease-in-out;
-            display: flex; align-items: center; justify-content: center;
+        .banner-scroll {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+            scrollbar-width: none; -ms-overflow-style: none; border-radius: 1rem;
         }
-        .banner-slide.active { opacity: 1; z-index: 10; }
-        .banner-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .banner-scroll::-webkit-scrollbar { display: none; }
+        
+        .banner-item {
+            flex: 0 0 100%; scroll-snap-align: start; position: relative;
+            aspect-ratio: 16 / 6; overflow: hidden; cursor: pointer;
+        }
+        .banner-item img, .banner-item video {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .banner-overlay {
+            position: absolute; inset: 0; 
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 1.5rem; color: white;
+        }
 
-        /* Video ve Thumb Tasarımı */
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
             border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
@@ -125,12 +135,12 @@
         <div class="flex items-center gap-2">
             <button onclick="toggleMobileMenu()" class="lg:hidden text-primary p-1"><i class="ri-menu-line ri-2x"></i></button>
             <a href="index.html">
-                <img src="getirkibris-logo.png" class="h-8 md:h-10 w-auto object-contain" onerror="this.src='https://placehold.co/120x40/5D3EBC/FFFFFF?text=Kibris'">
+                <img src="getirkibris-logo.png" class="h-8 md:h-10 w-auto object-contain">
             </a>
         </div>
         <div class="flex justify-center">
             <a href="javascript:void(0)" onclick="resetAndGoHome()">
-                <img src="getirhome-logo.png" class="h-10 md:h-12 w-auto object-contain" onerror="this.src='https://placehold.co/140x40/5D3EBC/FFD300?text=Home'">
+                <img src="getirhome-logo.png" class="h-10 md:h-12 w-auto object-contain">
             </a>
         </div>
         <div class="flex items-center justify-end gap-3">
@@ -160,8 +170,8 @@
                 <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 ri-xl"></i>
             </div>
 
-            <div id="banner-area" class="banner-container">
-                <div class="flex items-center justify-center h-full text-gray-400">Yükleniyor...</div>
+            <div id="banner-area" class="banner-wrapper">
+                <div id="banner-scroll-container" class="banner-scroll"></div>
             </div>
 
             <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
@@ -172,7 +182,6 @@
                 <i class="ri-arrow-left-line"></i> Geri Dön
             </button>
             <div id="product-detail-content"></div>
-            
             <div class="mt-12">
                 <h3 class="text-xl font-extrabold text-gray-800 mb-4 border-b pb-2">Benzer Ürünler</h3>
                 <div id="related-products-list" class="related-scroll"></div>
@@ -204,51 +213,41 @@
 
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
 
-    // Bannerları Yükle
+    // --- BANNER YÜKLEME VE RENDER (VİDEO + METİN DESTEĞİ) ---
     async function loadBanners() {
         const snap = await getDocs(collection(db, "homeBanners"));
         allBanners = snap.docs.map(d => d.data());
-        renderBanners();
-    }
-
-    function renderBanners() {
-        const container = document.getElementById("banner-area");
+        const container = document.getElementById("banner-scroll-container");
+        
         if (allBanners.length === 0) {
-            container.style.display = 'none';
+            document.getElementById("banner-area").style.display = 'none';
             return;
         }
-        container.innerHTML = allBanners.map((b, i) => `
-            <div class="banner-slide ${i === 0 ? 'active' : ''}">
-                <img src="${b.url}" onerror="this.src='https://placehold.co/1200x480?text=Banner'">
+
+        container.innerHTML = allBanners.map(b => `
+            <div class="banner-item" onclick="if('${b.link}') window.location.href='${b.link}'">
+                ${b.videoUrl ? 
+                    `<video src="${b.videoUrl}" autoplay muted loop playsinline></video>` : 
+                    `<img src="${b.url}" alt="${b.title || 'Banner'}">`
+                }
+                <div class="banner-overlay">
+                    ${b.title ? `<h2 class="text-xl md:text-3xl font-black mb-1">${b.title}</h2>` : ''}
+                    ${b.subtitle ? `<p class="text-sm md:text-base font-medium opacity-90">${b.subtitle}</p>` : ''}
+                </div>
             </div>
         `).join('');
-
-        // Otomatik Geçiş
-        let current = 0;
-        setInterval(() => {
-            const slides = document.querySelectorAll('.banner-slide');
-            if(slides.length < 2) return;
-            slides[current].classList.remove('active');
-            current = (current + 1) % slides.length;
-            slides[current].classList.add('active');
-        }, 5000);
     }
 
     function getCleanEmbedUrl(url) {
         if (!url) return "";
         let videoId = "";
         try {
-            if (url.includes("youtu.be/")) {
-                videoId = url.split("youtu.be/")[1].split(/[?#]/)[0];
-            } else if (url.includes("youtube.com/watch")) {
-                videoId = new URL(url).searchParams.get('v');
-            } else if (url.includes("youtube.com/embed/")) {
-                videoId = url.split("embed/")[1].split(/[?#]/)[0];
-            } else if (url.includes("youtube.com/shorts/")) {
-                videoId = url.split("shorts/")[1].split(/[?#]/)[0];
-            }
+            if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].split(/[?#]/)[0];
+            else if (url.includes("youtube.com/watch")) videoId = new URL(url).searchParams.get('v');
+            else if (url.includes("youtube.com/embed/")) videoId = url.split("embed/")[1].split(/[?#]/)[0];
+            else if (url.includes("youtube.com/shorts/")) videoId = url.split("shorts/")[1].split(/[?#]/)[0];
             if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0`;
-        } catch (e) { console.error("URL Format Hatası"); }
+        } catch (e) { console.error("URL Hatası"); }
         return url; 
     }
 
@@ -291,7 +290,6 @@
         const p = allProducts.find(x => x.id === id);
         if(!p) return;
         const content = document.getElementById("product-detail-content");
-        
         let mediaItems = [p.image];
         if (p.extraImages && Array.isArray(p.extraImages)) mediaItems = [...mediaItems, ...p.extraImages];
 
@@ -328,7 +326,6 @@
                     </div>
                 </div>
             </div>`;
-
         renderRelatedProducts(p);
     }
 
@@ -341,23 +338,15 @@
             container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
         } else {
             const finalUrl = getCleanEmbedUrl(url);
-            if (finalUrl.includes("youtube.com")) {
-                container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            } else {
-                container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover"></video>`;
-            }
+            if (finalUrl.includes("youtube.com")) container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            else container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover"></video>`;
         }
     };
 
     function renderRelatedProducts(currentProduct) {
         const listContainer = document.getElementById("related-products-list");
         const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
-
-        if (related.length === 0) {
-            listContainer.innerHTML = '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
-            return;
-        }
-
+        if (related.length === 0) { listContainer.innerHTML = '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>'; return; }
         listContainer.innerHTML = related.map(p => `
             <div class="related-item bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-all" onclick="handleNavigate('detail', '${p.id}')">
                 <div class="w-full h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center p-2">
@@ -382,17 +371,9 @@
         const p = allProducts.find(x => x.id === id);
         try {
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                userId: currentUserId,
-                productName: String(p.name),
-                productLink: String(p.name),
-                productPrice: parseFloat(p.price),
-                variant: 'Standart',
-                baseProductId: id,
-                category: p.category || 'genel',
-                orderMethod: 'service',
-                quantity: 1,
-                image: p.image,
-                addedAt: new Date()
+                userId: currentUserId, productName: String(p.name), productLink: String(p.name),
+                productPrice: parseFloat(p.price), variant: 'Standart', baseProductId: id,
+                category: p.category || 'genel', orderMethod: 'service', quantity: 1, image: p.image, addedAt: new Date()
             }, { merge: true });
             showToast(`"${p.name}" sepete eklendi!`);
         } catch (e) { showToast("Hata!", true); }
@@ -402,12 +383,10 @@
         const [pSnap, cSnap] = await Promise.all([ getDocs(collection(db, "homeProducts")), getDocs(collection(db, "homeCategories")) ]);
         allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
         allCategories = cSnap.docs.map(d => d.data());
-        
-        const menuHtml = buildMenu();
-        document.getElementById("desktop-menu").innerHTML = menuHtml;
-        document.getElementById("mobile-category-list").innerHTML = menuHtml;
+        document.getElementById("desktop-menu").innerHTML = buildMenu();
+        document.getElementById("mobile-category-list").innerHTML = buildMenu();
         renderProducts(allProducts);
-        loadBanners(); // Bannerları yükle
+        loadBanners();
     }
 
     onAuthStateChanged(auth, user => {
@@ -417,22 +396,16 @@
             document.getElementById("user-photo").classList.remove("hidden");
             document.getElementById("loginBtn").classList.add("hidden");
             onSnapshot(collection(db, "users", user.uid, "cart"), snap => {
-                const count = snap.docs.length;
                 const badge = document.getElementById("cart-count");
-                badge.textContent = count;
-                badge.classList.toggle("hidden", count === 0);
+                badge.textContent = snap.docs.length;
+                badge.classList.toggle("hidden", snap.docs.length === 0);
             });
         }
     });
 
     document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
     window.handleLogout = () => confirm("Çıkış?") && signOut(auth);
-    
-    document.getElementById("search-input").oninput = (e) => {
-        const val = e.target.value.toLowerCase();
-        renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(val)));
-    };
-    
+    document.getElementById("search-input").oninput = (e) => renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(e.target.value.toLowerCase())));
     document.getElementById("cart-btn").onclick = () => { window.location.href = 'sepet.html'; };
 
     function buildMenu(parentName = null, level = 0) {
@@ -448,16 +421,8 @@
 
     window.handleCategoryClick = (e, name, isLeaf) => {
         e.stopPropagation();
-        if (isLeaf) { 
-            handleNavigate('home'); 
-            renderProducts(allProducts.filter(p => p.category === name)); 
-            if (window.innerWidth < 1024) toggleMobileMenu(); 
-        } else { 
-            const sub = e.currentTarget.nextElementSibling; 
-            if (sub) sub.classList.toggle('hidden'); 
-            const icon = e.currentTarget.querySelector('.rotate-icon'); 
-            if(icon) icon.classList.toggle('rotate-90'); 
-        }
+        if (isLeaf) { handleNavigate('home'); renderProducts(allProducts.filter(p => p.category === name)); if (window.innerWidth < 1024) toggleMobileMenu(); } 
+        else { const sub = e.currentTarget.nextElementSibling; if (sub) sub.classList.toggle('hidden'); const icon = e.currentTarget.querySelector('.rotate-icon'); if(icon) icon.classList.toggle('rotate-90'); }
     };
 
     function renderProducts(products) {
