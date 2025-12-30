@@ -23,6 +23,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         
+        /* Mevcut Kart Tasarımı */
         .product-card {
             display: flex; flex-direction: column; height: 100%; background: white;
             border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
@@ -39,6 +40,7 @@
             object-fit: contain; padding: 10px;
         }
 
+        /* Video Thumb ve Oynatıcı */
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
             border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
@@ -70,7 +72,6 @@
             scrollbar-width: none; -ms-overflow-style: none;
         }
         .related-scroll::-webkit-scrollbar { display: none; }
-        .related-item { flex: 0 0 160px; }
     </style>
 </head>
 <body>
@@ -84,7 +85,7 @@
             <a href="javascript:void(0)" onclick="resetAndGoHome()"><img src="getirhome-logo.png" class="h-10 md:h-12"></a>
         </div>
         <div class="flex items-center gap-3">
-            <button id="cart-btn" class="bg-primary text-white p-2 rounded-xl relative">
+            <button id="cart-btn" class="bg-primary text-white p-2 rounded-xl relative transition-transform active:scale-95">
                 <i class="ri-shopping-basket-fill text-xl"></i>
                 <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white hidden">0</span>
             </button>
@@ -100,7 +101,9 @@
         </div>
 
         <div id="detail-view" class="hidden">
-            <button onclick="handleNavigate('home')" class="mb-6 text-primary font-bold flex items-center gap-2"><i class="ri-arrow-left-line"></i> Geri Dön</button>
+            <button onclick="handleNavigate('home')" class="mb-6 text-primary font-bold flex items-center gap-2">
+                <i class="ri-arrow-left-line"></i> Geri Dön
+            </button>
             <div id="product-detail-content"></div>
             <div class="mt-12">
                 <h3 class="text-xl font-extrabold mb-4 border-b pb-2">Benzer Ürünler</h3>
@@ -131,8 +134,9 @@
 
     let allProducts = [], currentUserId = null;
 
-    // --- VİDEO URL DÖNÜŞTÜRÜCÜ (KRİTİK FONKSİYON) ---
-    function getYouTubeEmbedUrl(url) {
+    // --- VİDEO URL DÖNÜŞTÜRÜCÜ ---
+    // YouTube linklerini tarayıcıda çalışacak "embed" formatına çevirir
+    function formatVideoUrl(url) {
         if (!url) return "";
         let videoId = "";
         if (url.includes("youtu.be/")) {
@@ -140,9 +144,9 @@
         } else if (url.includes("youtube.com/watch?v=")) {
             videoId = url.split("v=")[1].split("&")[0];
         } else if (url.includes("youtube.com/embed/")) {
-            return url; // Zaten embed formatında
+            return url;
         } else {
-            return url; // Muhtemelen direkt video dosyası (.mp4 vb.)
+            return url; // Direkt mp4 vb. linki ise olduğu gibi döner
         }
         return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0`;
     }
@@ -155,8 +159,13 @@
         if (type === 'img') {
             container.innerHTML = `<img src="${url}" class="max-h-96 object-contain">`;
         } else {
-            const embedUrl = getYouTubeEmbedUrl(url);
-            container.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            const embedUrl = formatVideoUrl(url);
+            // Eğer YouTube ise iframe, değilse video tag kullanır
+            if (embedUrl.includes("youtube.com")) {
+                container.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            } else {
+                container.innerHTML = `<video src="${embedUrl}" controls autoplay muted class="w-full h-full object-cover"></video>`;
+            }
         }
     };
 
@@ -173,6 +182,8 @@
             home.classList.remove("hidden");
         }
     };
+
+    // 
 
     function renderProductDetail(id) {
         const p = allProducts.find(x => x.id === id);
@@ -203,12 +214,14 @@
                     </div>
                 </div>
                 <div class="w-full md:w-1/2 flex flex-col">
-                    <h1 class="text-3xl font-black mb-2">${p.name}</h1>
-                    <div class="text-primary font-bold mb-6 uppercase">${p.category}</div>
-                    <p class="text-gray-500 mb-8">${p.description || "Açıklama yok."}</p>
+                    <h1 class="text-3xl font-black mb-2 text-gray-800">${p.name}</h1>
+                    <div class="text-primary font-bold mb-6 uppercase tracking-wider">${p.category}</div>
+                    <p class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</p>
                     <div class="mt-auto">
                         <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg" onclick="addToCart('${p.id}')">Sepete Ekle</button>
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">
+                            Sepete Ekle
+                        </button>
                     </div>
                 </div>
             </div>`;
@@ -216,20 +229,22 @@
     }
 
     window.addToCart = async (id) => {
-        if (!currentUserId) return alert("Giriş yapın!");
+        if (!currentUserId) return alert("Lütfen önce giriş yapın!");
         const p = allProducts.find(x => x.id === id);
+        
+        // Sepet sayfasındaki 0 TL sorununu çözen veriler
         await setDoc(doc(db, "users", currentUserId, "cart", id), {
             userId: currentUserId,
-            productName: p.name,
-            productLink: p.name,
+            productName: String(p.name),
+            productLink: String(p.name),
             productPrice: parseFloat(p.price),
-            orderMethod: 'service',
+            orderMethod: 'service', // Sepet sayfasındaki hesaplama için şart
             quantity: 1,
             image: p.image,
             category: p.category || 'genel',
             addedAt: new Date()
         }, { merge: true });
-        alert("Eklendi!");
+        alert("Ürün sepete eklendi!");
     };
 
     async function loadData() {
@@ -243,11 +258,24 @@
         grid.innerHTML = products.map(p => `
             <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
                 <div class="product-image-container"><img src="${p.image}"></div>
-                <h3 class="font-bold text-sm h-10 line-clamp-2">${p.name}</h3>
-                <div class="mt-auto flex justify-between items-center">
-                    <span class="text-primary font-black">${parseFloat(p.price).toFixed(2)} ₺</span>
-                    <button class="bg-primary/10 p-2 rounded-lg text-primary" onclick="event.stopPropagation(); addToCart('${p.id}')"><i class="ri-add-line"></i></button>
+                <h3 class="font-bold text-sm h-10 line-clamp-2 text-gray-800">${p.name}</h3>
+                <div class="mt-auto flex justify-between items-center pt-2">
+                    <span class="text-primary font-black text-base">${parseFloat(p.price).toFixed(2)} ₺</span>
+                    <button class="bg-primary/10 p-2 rounded-lg text-primary hover:bg-primary hover:text-white transition-colors" onclick="event.stopPropagation(); addToCart('${p.id}')">
+                        <i class="ri-add-line"></i>
+                    </button>
                 </div>
+            </div>`).join('');
+    }
+
+    function renderRelated(product) {
+        const list = document.getElementById("related-products-list");
+        const related = allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 10);
+        list.innerHTML = related.map(p => `
+            <div class="related-item bg-white p-3 rounded-xl border cursor-pointer" onclick="handleNavigate('detail', '${p.id}')">
+                <div class="h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center p-2"><img src="${p.image}" class="max-h-full"></div>
+                <h4 class="text-xs font-bold line-clamp-1">${p.name}</h4>
+                <div class="text-primary font-black text-sm">${parseFloat(p.price).toFixed(2)} ₺</div>
             </div>`).join('');
     }
 
