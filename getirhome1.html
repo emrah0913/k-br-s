@@ -28,9 +28,10 @@
             background: white; border-radius: 1.25rem; padding: 1rem;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; transition: all 0.3s ease; border: 1px solid #e5e7eb; cursor: pointer;
+            min-height: 120px;
         }
         .category-card:hover { transform: scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #5D3EBC; }
-        .category-card img { width: 60px; height: 60px; object-fit: contain; margin-bottom: 0.75rem; }
+        .category-card img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 0.75rem; }
         .category-card span { font-weight: 700; color: #374151; font-size: 0.85rem; line-height: 1.2; }
 
         .product-card {
@@ -172,14 +173,16 @@
             </div>
 
             <div id="category-showcase" class="mb-8">
-                <h2 class="text-xl font-extrabold text-gray-800 mb-4">Kategorileri Keşfet</h2>
+                <div class="flex items-center gap-2 mb-4">
+                    <button id="back-to-parent" class="hidden text-primary" onclick="goUpCategory()"><i class="ri-arrow-left-s-line ri-2x"></i></button>
+                    <h2 id="category-showcase-title" class="text-xl font-extrabold text-gray-800">Kategorileri Keşfet</h2>
+                </div>
                 <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
             </div>
 
             <div id="product-section" class="hidden">
                 <div class="flex items-center justify-between mb-4">
                     <h2 id="section-title" class="text-xl font-extrabold text-gray-800">Ürünler</h2>
-                    <button onclick="resetAndGoHome()" class="text-primary font-bold text-sm">Hepsini Gör</button>
                 </div>
                 <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
             </div>
@@ -220,6 +223,7 @@
     const provider = new GoogleAuthProvider();
 
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
+    let activeCategoryParent = null; // Şu an hangi seviyedeyiz?
 
     function getCleanEmbedUrl(url) {
         if (!url) return null;
@@ -254,9 +258,17 @@
 
     window.resetAndGoHome = () => {
         document.getElementById("search-input").value = "";
+        activeCategoryParent = null;
+        renderCategoryShowcase(null);
         document.getElementById("category-showcase").classList.remove("hidden");
         document.getElementById("product-section").classList.add("hidden");
         handleNavigate('home');
+    };
+
+    window.goUpCategory = () => {
+        const current = allCategories.find(c => c.name === activeCategoryParent);
+        activeCategoryParent = current ? current.parent : null;
+        renderCategoryShowcase(activeCategoryParent);
     };
 
     window.toggleMobileMenu = () => {
@@ -342,21 +354,53 @@
         document.getElementById("desktop-menu").innerHTML = buildMenu();
         document.getElementById("mobile-category-list").innerHTML = buildMenu();
         
-        renderCategoryShowcase();
+        renderCategoryShowcase(null);
         loadBanners();
     }
 
-    // ANA SAYFA KATEGORİ KARTLARI RENDER
-    function renderCategoryShowcase() {
+    // DİNAMİK KATEGORİ KARTLARI (Derinlemesine)
+    function renderCategoryShowcase(parent = null) {
+        activeCategoryParent = parent;
         const grid = document.getElementById("category-grid");
-        // Sadece ana kategorileri göster (parent olmayanlar)
-        const topCategories = allCategories.filter(c => !c.parent);
-        grid.innerHTML = topCategories.map(cat => `
-            <div class="category-card" onclick="handleCategoryClick(event, '${cat.name}', true)">
-                <img src="${cat.image || 'getirhome-logo.png'}" onerror="this.src='https://placehold.co/100x100?text=Kategori'">
-                <span>${cat.name}</span>
-            </div>
-        `).join('');
+        const title = document.getElementById("category-showcase-title");
+        const backBtn = document.getElementById("back-to-parent");
+        const prodSection = document.getElementById("product-section");
+
+        const items = allCategories.filter(c => c.parent === parent);
+
+        if (parent) {
+            title.textContent = parent;
+            backBtn.classList.remove("hidden");
+        } else {
+            title.textContent = "Kategorileri Keşfet";
+            backBtn.classList.add("hidden");
+        }
+
+        // Eğer bu seviyede alt kategori varsa onları kart olarak göster
+        if (items.length > 0) {
+            prodSection.classList.add("hidden");
+            grid.parentElement.classList.remove("hidden");
+            grid.innerHTML = items.map(cat => {
+                const hasSub = allCategories.some(c => c.parent === cat.name);
+                return `
+                    <div class="category-card" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})">
+                        <img src="${cat.image || 'getirhome-logo.png'}" onerror="this.src='https://placehold.co/100x100?text=${cat.name}'">
+                        <span>${cat.name}</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            // Alt kategori yoksa (Leaf node), ürünleri bu kategoriye göre listele
+            grid.parentElement.classList.add("hidden"); // Kategori gridini gizle
+            showProductsByCategory(parent);
+        }
+    }
+
+    function showProductsByCategory(categoryName) {
+        const prodSection = document.getElementById("product-section");
+        document.getElementById("section-title").textContent = categoryName;
+        prodSection.classList.remove("hidden");
+        renderProducts(allProducts.filter(p => p.category === categoryName));
     }
 
     onAuthStateChanged(auth, user => {
@@ -401,16 +445,18 @@
     window.handleCategoryClick = (e, name, isLeaf) => {
         e.stopPropagation();
         if (isLeaf) {
+            // Eğer kategori yaprak ise ürünleri göster
             document.getElementById("category-showcase").classList.add("hidden");
-            document.getElementById("product-section").classList.remove("hidden");
-            document.getElementById("section-title").textContent = name;
-            renderProducts(allProducts.filter(p => p.category === name));
+            showProductsByCategory(name);
             if (window.innerWidth < 1024) toggleMobileMenu();
-            window.scrollTo(0,0);
         } else {
-            const sub = e.currentTarget.nextElementSibling; if (sub) sub.classList.toggle('hidden');
+            // Eğer kategori alt kategorilere sahipse, kartları güncelle
+            renderCategoryShowcase(name);
+            // Sol menü (desktop) açma/kapama mantığı
+            const sub = e.currentTarget.nextElementSibling; if (sub && sub.tagName === 'UL') sub.classList.toggle('hidden');
             const icon = e.currentTarget.querySelector('.rotate-icon'); if(icon) icon.classList.toggle('rotate-90');
         }
+        window.scrollTo(0,0);
     };
 
     function renderProducts(products) {
