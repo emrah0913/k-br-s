@@ -232,7 +232,6 @@
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
     let activeCategoryParent = null;
 
-    // --- URL VE TARAYICI YÖNETİMİ ---
     function updateUrl(params = {}) {
         const url = new URL(window.location);
         url.search = ""; 
@@ -360,7 +359,7 @@
             </div>`).join('') : '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
     }
 
-    // --- SEPETE EKLEME DÜZELTİLDİ: NAME VE PRICE VERİLERİ ARTIK DOĞRU ---
+    // --- SEPETE EKLEME DÜZELTİLDİ: NAME, LINK VE PRICE VERİLERİ ARTIK SEPET SAYFASIYLA TAM UYUMLU ---
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Giriş yapın", true); return; }
         const p = allProducts.find(x => x.id === id);
@@ -369,6 +368,7 @@
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
                 userId: currentUserId, 
                 productName: String(p.name), 
+                productLink: String(p.name), // Sepet sayfanız ismi buradan okuyor olabilir, garantiye alıyoruz
                 productPrice: parseFloat(p.price),
                 quantity: 1, 
                 image: p.image, 
@@ -407,7 +407,7 @@
         const categories = [...new Set(allProducts.map(p => p.category))];
         const items = categories.map(cat => {
             const catProds = allProducts.filter(p => p.category === cat);
-            return catProds[catProds.length - 1]; // Her kategoriden son ürünü al
+            return catProds[catProds.length - 1]; 
         }).filter(Boolean).slice(0, 8);
 
         grid.innerHTML = items.map(p => `
