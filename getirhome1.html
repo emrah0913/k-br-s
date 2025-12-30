@@ -23,7 +23,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         
-        /* --- GÖRSEL YAPI: ÜRÜN KARTLARI --- */
+        /* --- SABİT GÖRSEL YAPI: ÜRÜN KARTLARI --- */
         .product-card {
             display: flex; flex-direction: column; height: 100%; background: white;
             border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
@@ -40,33 +40,28 @@
             object-fit: contain; padding: 10px;
         }
 
-        /* --- BANNER ALANI (VİDEO VE METİN DESTEKLİ) --- */
+        /* --- KAYDIRMALI VE VİDEOLU BANNER --- */
         .banner-wrapper { width: 100%; margin-bottom: 1.5rem; position: relative; }
         .banner-scroll {
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
             scrollbar-width: none; -ms-overflow-style: none; border-radius: 1.5rem;
         }
         .banner-scroll::-webkit-scrollbar { display: none; }
-        
         .banner-item {
             flex: 0 0 100%; scroll-snap-align: start; position: relative;
             aspect-ratio: 16 / 6; overflow: hidden; pointer-events: none;
         }
-        /* Video Container Mantığı */
         .video-container { position: relative; width: 100%; height: 100%; background: #000; }
         .video-container iframe, .video-container video {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; border: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border: none;
         }
-        
         .banner-overlay {
             position: absolute; inset: 0; 
             background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 2rem; color: white;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem; color: white;
         }
 
-        /* --- ÜRÜN DETAY MEDYA ALANI --- */
+        /* --- ÜRÜN DETAY MEDYA --- */
         .main-media-wrapper {
             position: relative; width: 100%; padding-bottom: 100%; 
             background: #f9fafb; border-radius: 1.5rem; overflow: hidden;
@@ -76,28 +71,18 @@
             display: flex; items-center; justify-content: center;
         }
         .media-content iframe, .media-content video { 
-            width: 100% !important; height: 100% !important; 
-            object-fit: cover; border-radius: 1.5rem; 
+            width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 1.5rem; 
         }
 
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
             border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
-            flex-shrink: 0; background: white; border: 1px solid #eee; position: relative;
+            flex-shrink: 0; background: white; border: 1px solid #eee;
         }
         .thumb-item.active { border-color: #5D3EBC; box-shadow: 0 0 0 2px rgba(93, 62, 188, 0.2); }
 
-        .video-thumb-btn {
-            background-image: url('getirhome-logo.png');
-            background-size: 80%; background-position: center; background-repeat: no-repeat;
-        }
-        .video-overlay-icon {
-            position: absolute; inset: 0; background: rgba(93, 62, 188, 0.45);
-            display: flex; align-items: center; justify-content: center; color: white;
-        }
-
+        /* --- MENÜ VE HEADER --- */
         .header-container { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
-
         .rotate-icon { transition: transform 0.3s ease; }
         .rotate-90 { transform: rotate(90deg); }
 
@@ -105,15 +90,16 @@
             width: 100%; background: white; color: #5D3EBC; border: 2px solid #f3f4f6;
             padding: 8px; border-radius: 10px; font-weight: 700;
         }
+        .add-btn:hover { background: #5D3EBC; color: white; border-color: #5D3EBC; }
     </style>
 </head>
 <body>
 
 <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-[60] hidden opacity-0" onclick="toggleMobileMenu()"></div>
 
-<div id="mobile-sidebar" class="fixed top-0 left-0 w-72 h-full bg-white z-[70] transform -translate-x-full shadow-2xl overflow-y-auto">
-    <div class="p-5 border-b flex justify-between items-center bg-primary text-white">
-        <span class="font-bold text-lg">Kategoriler</span>
+<div id="mobile-sidebar" class="fixed top-0 left-0 w-72 h-full bg-white z-[70] transform -translate-x-full shadow-2xl overflow-y-auto transition-transform duration-300">
+    <div class="p-5 border-b flex justify-between items-center bg-primary text-white font-bold">
+        <span>Kategoriler</span>
         <button onclick="toggleMobileMenu()"><i class="ri-close-line ri-xl"></i></button>
     </div>
     <div id="mobile-category-list" class="p-4"></div>
@@ -129,11 +115,12 @@
             <a href="javascript:void(0)" onclick="resetAndGoHome()"><img src="getirhome-logo.png" class="h-10 md:h-12 w-auto object-contain"></a>
         </div>
         <div class="flex items-center justify-end gap-3">
-            <button id="cart-btn" class="bg-primary text-white p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 relative">
+            <button id="cart-btn" class="bg-primary text-white p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 relative transition-transform active:scale-95">
                 <i class="ri-shopping-basket-fill text-xl"></i>
                 <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white hidden">0</span>
                 <span class="hidden md:inline font-bold">Sepetim</span>
             </button>
+            <img id="user-photo" src="" class="h-10 w-10 rounded-full border-2 border-primary hidden cursor-pointer" onclick="handleLogout()">
             <button id="loginBtn" class="bg-primary/10 text-primary px-4 py-2 rounded-xl font-bold text-sm">Giriş</button>
         </div>
     </div>
@@ -142,7 +129,9 @@
 <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8">
     <aside id="main-sidebar" class="hidden lg:block w-72 flex-shrink-0">
         <div class="bg-white rounded-2xl shadow-sm border p-4 sticky top-28">
-            <h2 class="font-extrabold text-gray-800 mb-4 pb-2 border-b">Kategoriler</h2>
+            <h2 class="font-extrabold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
+                <i class="ri-list-settings-line"></i> Kategoriler
+            </h2>
             <nav id="desktop-menu" class="space-y-1"></nav>
         </div>
     </aside>
@@ -150,17 +139,22 @@
     <section id="content-area" class="flex-grow">
         <div id="home-view">
             <div class="relative mb-6">
-                <input type="text" id="search-input" placeholder="Ürün ara..." class="w-full p-4 pl-12 rounded-2xl border-none shadow-sm focus:ring-2 focus:ring-primary outline-none">
+                <input type="text" id="search-input" placeholder="Ürün veya kategori ara..." class="w-full p-4 pl-12 rounded-2xl border-none shadow-sm focus:ring-2 focus:ring-primary outline-none text-gray-700">
                 <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 ri-xl"></i>
             </div>
+            
             <div id="banner-area" class="banner-wrapper">
                 <div id="banner-scroll-container" class="banner-scroll"></div>
             </div>
+
+            <h2 id="section-title" class="text-xl font-extrabold text-gray-800 mb-4 px-1">Tüm Ürünler</h2>
             <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
         </div>
 
         <div id="detail-view" class="hidden">
-            <button onclick="handleNavigate('home')" class="mb-6 flex items-center gap-2 text-primary font-bold"><i class="ri-arrow-left-line"></i> Geri Dön</button>
+            <button onclick="handleNavigate('home')" class="mb-6 flex items-center gap-2 text-primary font-bold hover:underline">
+                <i class="ri-arrow-left-line"></i> Ürünlere Geri Dön
+            </button>
             <div id="product-detail-content"></div>
             <div class="mt-12">
                 <h3 class="text-xl font-extrabold text-gray-800 mb-4 border-b pb-2">Benzer Ürünler</h3>
@@ -191,9 +185,9 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    let allProducts = [], allCategories = [], currentUserId = null;
+    let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
 
-    // --- VİDEO URL İŞLEME MANTIĞI ---
+    // --- VİDEO URL İŞLEME (DETAYLI) ---
     function getCleanEmbedUrl(url) {
         if (!url) return "";
         let videoId = "";
@@ -206,50 +200,115 @@
         return url; 
     }
 
+    // --- BANNERLARI YÜKLE ---
     async function loadBanners() {
         const snap = await getDocs(collection(db, "homeBanners"));
         const container = document.getElementById("banner-scroll-container");
-        const banners = snap.docs.map(d => d.data());
-        if (banners.length === 0) { document.getElementById("banner-area").style.display = 'none'; return; }
+        allBanners = snap.docs.map(d => d.data());
+        
+        if (allBanners.length === 0) { document.getElementById("banner-area").style.display = 'none'; return; }
 
-        container.innerHTML = banners.map(b => {
+        container.innerHTML = allBanners.map(b => {
             const mediaUrl = b.videoUrl || b.url;
-            const isVideo = b.videoUrl || ['.mp4', '.webm'].some(ext => mediaUrl?.toLowerCase().includes(ext));
-            const ytMatch = mediaUrl?.match(/(?:youtube\.com|youtu\.be)/);
-            
-            let mediaHtml = '';
-            if (ytMatch) {
-                mediaHtml = `<div class="video-container"><iframe src="${getCleanEmbedUrl(mediaUrl)}" allow="autoplay; encrypted-media" frameborder="0"></iframe></div>`;
-            } else if (isVideo) {
-                mediaHtml = `<div class="video-container"><video src="${mediaUrl}" autoplay loop muted playsinline></video></div>`;
-            } else {
-                mediaHtml = `<img src="${mediaUrl}" class="w-full h-full object-cover">`;
-            }
+            const isYt = mediaUrl?.includes("youtube.com") || mediaUrl?.includes("youtu.be");
+            let mediaHtml = isYt ? 
+                `<div class="video-container"><iframe src="${getCleanEmbedUrl(mediaUrl)}" allow="autoplay; encrypted-media" frameborder="0"></iframe></div>` : 
+                `<img src="${mediaUrl}" class="w-full h-full object-cover">`;
 
             return `
                 <div class="banner-item">
                     ${mediaHtml}
                     <div class="banner-overlay">
-                        ${b.title ? `<h2 class="text-xl md:text-3xl font-black mb-1 drop-shadow-lg">${b.title}</h2>` : ''}
-                        ${b.subtitle || b.description ? `<p class="text-sm md:text-base font-medium opacity-90 drop-shadow-md">${b.subtitle || b.description}</p>` : ''}
+                        ${b.title ? `<h2 class="text-xl md:text-2xl font-black mb-1 drop-shadow-lg">${b.title}</h2>` : ''}
+                        ${b.subtitle ? `<p class="text-sm opacity-90 drop-shadow-md">${b.subtitle}</p>` : ''}
                     </div>
                 </div>`;
         }).join('');
     }
 
-    // --- NAVİGASYON ---
-    window.handleNavigate = (view, productId = null) => {
-        const home = document.getElementById("home-view");
-        const detail = document.getElementById("detail-view");
-        const sidebar = document.getElementById("main-sidebar");
-        if (view === 'detail') {
-            home.classList.add("hidden"); sidebar.classList.add("lg:hidden");
-            detail.classList.remove("hidden"); renderProductDetail(productId); window.scrollTo(0,0);
-        } else {
-            detail.classList.add("hidden"); sidebar.classList.remove("lg:hidden");
-            home.classList.remove("hidden");
+    // --- KATEGORİ MENÜSÜ (HİYERARŞİK VE RESİMLİ) ---
+    function buildMenu(parent = null, level = 0) {
+        const children = allCategories.filter(c => c.parent === parent);
+        if (children.length === 0) return '';
+        let html = `<ul class="${level > 0 ? 'hidden ml-4 border-l' : 'space-y-1'}">`;
+        children.forEach(cat => {
+            const hasSub = allCategories.some(c => c.parent === cat.name);
+            html += `<li>
+                <div class="flex items-center justify-between p-2 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})">
+                    <div class="flex items-center gap-3">
+                        ${cat.image ? `<img src="${cat.image}" class="w-6 h-6 object-contain rounded">` : '<i class="ri-checkbox-blank-circle-fill text-[8px] text-primary"></i>'}
+                        <span class="text-sm font-semibold text-gray-700">${cat.name}</span>
+                    </div>
+                    ${hasSub ? '<i class="ri-arrow-right-s-line rotate-icon"></i>' : ''}
+                </div>
+                ${hasSub ? buildMenu(cat.name, level + 1) : ''}
+            </li>`;
+        });
+        return html + '</ul>';
+    }
+
+    window.handleCategoryClick = (e, name, isLeaf) => {
+        e.stopPropagation();
+        if (isLeaf) { 
+            document.getElementById("section-title").textContent = name;
+            renderProducts(allProducts.filter(p => p.category === name || (p.hierarchy && p.hierarchy.includes(name)))); 
+            if(window.innerWidth < 1024) toggleMobileMenu();
+        } else { 
+            const sub = e.currentTarget.nextElementSibling; 
+            const icon = e.currentTarget.querySelector('.rotate-icon');
+            if (sub) sub.classList.toggle('hidden');
+            if (icon) icon.classList.toggle('rotate-90');
         }
     };
+
+    // --- SEPETE EKLEME (TAM SENKRON) ---
+    window.addToCart = async (id) => {
+        if (!currentUserId) { showToast("Giriş yapmalısınız!", true); return; }
+        const p = allProducts.find(x => x.id === id);
+        if(!p) return;
+        
+        try {
+            await setDoc(doc(db, "users", currentUserId, "cart", id), {
+                userId: currentUserId,
+                productName: String(p.name),
+                productPrice: parseFloat(p.price),
+                productLink: String(p.name),
+                orderMethod: 'service',
+                quantity: 1,
+                image: p.image,
+                category: p.category || 'genel',
+                addedAt: new Date()
+            }, { merge: true });
+            showToast(`"${p.name}" sepete eklendi!`);
+        } catch(e) { showToast("Hata!", true); }
+    };
+
+    // --- VERİ YÜKLEME VE RENDER ---
+    async function loadData() {
+        const [pSnap, cSnap] = await Promise.all([ getDocs(collection(db, "homeProducts")), getDocs(collection(db, "homeCategories")) ]);
+        allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
+        allCategories = cSnap.docs.map(d => d.data());
+        
+        document.getElementById("desktop-menu").innerHTML = buildMenu();
+        document.getElementById("mobile-category-list").innerHTML = buildMenu();
+        renderProducts(allProducts);
+        loadBanners();
+    }
+
+    function renderProducts(products) {
+        const grid = document.getElementById("products-grid");
+        grid.innerHTML = products.length ? products.map(p => `
+            <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
+                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
+                <div class="flex flex-col flex-grow">
+                    <h3 class="font-bold text-xs md:text-sm text-gray-800 line-clamp-2 mb-2">${p.name}</h3>
+                    <div class="mt-auto">
+                        <div class="text-primary font-black mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
+                        <button class="add-btn text-xs py-2 active:scale-95" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
+                    </div>
+                </div>
+            </div>`).join('') : '<p class="col-span-full text-center py-10 text-gray-400">Ürün bulunamadı.</p>';
+    }
 
     function renderProductDetail(id) {
         const p = allProducts.find(x => x.id === id);
@@ -258,11 +317,7 @@
         document.getElementById("product-detail-content").innerHTML = `
             <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
                 <div class="w-full md:w-1/2">
-                    <div class="main-media-wrapper mb-4">
-                        <div id="main-media-container" class="media-content">
-                            <img src="${p.image}" class="w-full h-full object-contain">
-                        </div>
-                    </div>
+                    <div class="main-media-wrapper mb-4"><div id="main-media-container" class="media-content"><img src="${p.image}" class="w-full h-full object-contain"></div></div>
                     <div class="flex gap-2 overflow-x-auto pb-2">
                         ${mediaItems.map((img, i) => `<div class="thumb-item ${i===0?'active':''}" onclick="changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
                         ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
@@ -271,10 +326,10 @@
                 <div class="w-full md:w-1/2 flex flex-col">
                     <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
                     <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
-                    <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama yok."}</div>
+                    <div class="text-gray-600 mb-8 leading-relaxed">${p.description || "Açıklama mevcut değil."}</div>
                     <div class="mt-auto">
                         <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl active:scale-95 shadow-lg" onclick="addToCart('${p.id}')">Sepete Ekle</button>
                     </div>
                 </div>
             </div>`;
@@ -292,70 +347,24 @@
         }
     };
 
-    function renderRelatedProducts(currentProduct) {
+    function renderRelatedProducts(curr) {
         const list = document.getElementById("related-products-list");
-        const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
-        list.innerHTML = related.map(p => `
-            <div class="related-item bg-white p-2 rounded-xl border cursor-pointer hover:shadow-md transition-all" onclick="handleNavigate('detail', '${p.id}')">
-                <div class="w-full h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center p-2"><img src="${p.image}" class="max-h-full object-contain"></div>
+        const rel = allProducts.filter(p => p.category === curr.category && p.id !== curr.id).slice(0, 10);
+        list.innerHTML = rel.map(p => `
+            <div class="related-item bg-white p-3 rounded-xl border cursor-pointer hover:shadow-md transition-all" onclick="handleNavigate('detail', '${p.id}')">
+                <div class="h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center p-2"><img src="${p.image}" class="max-h-full object-contain"></div>
                 <h4 class="text-xs font-bold text-gray-700 line-clamp-1">${p.name}</h4>
                 <div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
             </div>`).join('');
     }
 
-    function buildMenu(parent = null, level = 0) {
-        const children = allCategories.filter(c => c.parent === parent);
-        if (children.length === 0) return '';
-        let html = `<ul class="${level > 0 ? 'hidden ml-4 border-l' : 'space-y-1'}">`;
-        children.forEach(cat => {
-            const hasSub = allCategories.some(c => c.parent === cat.name);
-            html += `<li><div class="flex items-center justify-between p-2 rounded-xl hover:bg-gray-100 cursor-pointer" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})">
-                <span class="text-sm font-semibold text-gray-700">${cat.name}</span>
-                ${hasSub ? '<i class="ri-arrow-right-s-line rotate-icon"></i>' : ''}
-            </div>${hasSub ? buildMenu(cat.name, level + 1) : ''}</li>`;
-        });
-        return html + '</ul>';
-    }
-
-    window.handleCategoryClick = (e, name, isLeaf) => {
-        e.stopPropagation();
-        if (isLeaf) { renderProducts(allProducts.filter(p => p.category === name)); if(window.innerWidth < 1024) toggleMobileMenu(); } 
-        else { 
-            const sub = e.currentTarget.nextElementSibling; 
-            const icon = e.currentTarget.querySelector('.rotate-icon');
-            if (sub) sub.classList.toggle('hidden');
-            if (icon) icon.classList.toggle('rotate-90');
-        }
-    };
-
-    function renderProducts(products) {
-        const grid = document.getElementById("products-grid");
-        grid.innerHTML = products.map(p => `
-            <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
-                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
-                <div class="flex flex-col flex-grow">
-                    <h3 class="font-bold text-xs md:text-sm text-gray-800 line-clamp-2 h-10 mb-2">${p.name}</h3>
-                    <div class="mt-auto">
-                        <div class="text-sm md:text-lg font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="add-btn text-xs md:text-sm" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
-                    </div>
-                </div>
-            </div>`).join('');
-    }
-
-    async function loadData() {
-        const [pSnap, cSnap] = await Promise.all([ getDocs(collection(db, "homeProducts")), getDocs(collection(db, "homeCategories")) ]);
-        allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
-        allCategories = cSnap.docs.map(d => d.data());
-        document.getElementById("desktop-menu").innerHTML = buildMenu();
-        document.getElementById("mobile-category-list").innerHTML = buildMenu();
-        renderProducts(allProducts);
-        loadBanners();
-    }
-
+    // --- GENEL FONKSİYONLAR ---
     onAuthStateChanged(auth, user => {
         if (user) {
             currentUserId = user.uid;
+            document.getElementById("user-photo").src = user.photoURL || '';
+            document.getElementById("user-photo").classList.remove("hidden");
+            document.getElementById("loginBtn").classList.add("hidden");
             onSnapshot(collection(db, "users", user.uid, "cart"), snap => {
                 const badge = document.getElementById("cart-count");
                 badge.textContent = snap.docs.length;
@@ -364,13 +373,13 @@
         }
     });
 
-    window.addToCart = async (id) => {
-        if (!currentUserId) return;
-        const p = allProducts.find(x => x.id === id);
-        await setDoc(doc(db, "users", currentUserId, "cart", id), {
-            userId: currentUserId, productName: p.name, productPrice: parseFloat(p.price),
-            orderMethod: 'service', quantity: 1, image: p.image, category: p.category || 'genel'
-        }, { merge: true });
+    document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
+    window.handleLogout = () => confirm("Çıkış?") && signOut(auth);
+
+    window.handleNavigate = (v, id) => {
+        document.getElementById("home-view").classList.toggle("hidden", v === 'detail');
+        document.getElementById("detail-view").classList.toggle("hidden", v === 'home');
+        if(v === 'detail') renderProductDetail(id);
     };
 
     window.toggleMobileMenu = () => {
@@ -378,10 +387,29 @@
         const overlay = document.getElementById("sidebar-overlay");
         sidebar.classList.toggle("-translate-x-full");
         overlay.classList.toggle("hidden");
+        setTimeout(() => overlay.classList.toggle("opacity-100"), 10);
     };
 
-    window.resetAndGoHome = () => { handleNavigate('home'); renderProducts(allProducts); };
-    document.getElementById("search-input").oninput = (e) => renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(e.target.value.toLowerCase())));
+    window.resetAndGoHome = () => { 
+        document.getElementById("search-input").value = "";
+        document.getElementById("section-title").textContent = "Tüm Ürünler";
+        handleNavigate('home'); 
+        renderProducts(allProducts); 
+    };
+
+    function showToast(m, err=false) {
+        const t = document.getElementById("toast");
+        t.textContent = m;
+        t.className = `fixed bottom-6 right-6 z-[100] px-6 py-3 rounded-2xl text-white font-bold shadow-2xl transition-all ${err ? 'bg-red-500' : 'bg-green-600'}`;
+        t.classList.remove("hidden");
+        setTimeout(() => t.classList.add("hidden"), 3000);
+    }
+
+    document.getElementById("search-input").oninput = (e) => {
+        const val = e.target.value.toLowerCase();
+        renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(val) || p.category.toLowerCase().includes(val)));
+    };
+
     document.getElementById("cart-btn").onclick = () => window.location.href = 'sepet.html';
 
     loadData();
