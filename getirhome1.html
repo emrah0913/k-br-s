@@ -23,6 +23,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         
+        /* --- KATEGORİ KARTLARI --- */
         .category-card {
             background: white; border-radius: 1.25rem; padding: 1rem;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -78,6 +79,7 @@
             padding: 2rem; color: white; z-index: 10;
         }
 
+        /* --- ÜRÜN DETAY --- */
         .main-media-wrapper {
             position: relative; width: 100%; padding-bottom: 100%; 
             background: #f9fafb; border-radius: 1.5rem; overflow: hidden;
@@ -234,6 +236,14 @@
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
     let activeCategoryParent = null;
 
+    // --- URL YÖNETİMİ ---
+    function updateUrl(params = {}) {
+        const url = new URL(window.location);
+        url.search = ""; // Temizle
+        Object.keys(params).forEach(key => url.searchParams.set(key, params[key]));
+        window.history.pushState({}, '', url);
+    }
+
     function getCleanEmbedUrl(url) {
         if (!url) return null;
         let videoId = "";
@@ -268,6 +278,7 @@
     window.resetAndGoHome = () => {
         document.getElementById("search-input").value = "";
         activeCategoryParent = null;
+        updateUrl({}); // URL'yi temizle
         renderCategoryShowcase(null);
         document.getElementById("category-showcase").classList.remove("hidden");
         document.getElementById("popular-section").classList.remove("hidden");
@@ -293,8 +304,12 @@
         const home = document.getElementById("home-view");
         const detail = document.getElementById("detail-view");
         const sidebar = document.getElementById("main-sidebar");
-        if (view === 'detail') { home.classList.add("hidden"); sidebar.classList.add("lg:hidden"); detail.classList.remove("hidden"); renderProductDetail(productId); window.scrollTo(0,0); } 
-        else { detail.classList.add("hidden"); sidebar.classList.remove("lg:hidden"); home.classList.remove("hidden"); }
+        if (view === 'detail') {
+            updateUrl({ view: 'detail', id: productId });
+            home.classList.add("hidden"); sidebar.classList.add("lg:hidden"); detail.classList.remove("hidden"); renderProductDetail(productId); window.scrollTo(0,0);
+        } else {
+            detail.classList.add("hidden"); sidebar.classList.remove("lg:hidden"); home.classList.remove("hidden");
+        }
     };
 
     function renderProductDetail(id) {
@@ -371,7 +386,21 @@
         document.getElementById("mobile-category-list").innerHTML = buildMenu();
         
         renderPopularProducts();
-        renderCategoryShowcase(null);
+        
+        // --- SAYFA YÜKLENDİĞİNDE URL KONTROLÜ ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const view = urlParams.get('view');
+        const cat = urlParams.get('category');
+        const id = urlParams.get('id');
+
+        if (view === 'detail' && id) {
+            handleNavigate('detail', id);
+        } else if (cat) {
+            handleCardClick(null, cat, true);
+        } else {
+            renderCategoryShowcase(null);
+        }
+        
         loadBanners();
     }
 
@@ -380,8 +409,8 @@
         const categories = [...new Set(allProducts.map(p => p.category))];
         const items = categories.map(cat => {
             const catProds = allProducts.filter(p => p.category === cat);
-            return catProds[catProds.length - 1]; // Son eklenen ürünü al
-        }).filter(Boolean).slice(0, 8); // Çok fazla olursa sınırlayalım
+            return catProds[catProds.length - 1];
+        }).filter(Boolean).slice(0, 8);
 
         grid.innerHTML = items.map(p => `
             <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
@@ -436,8 +465,9 @@
     }
 
     window.handleCardClick = (e, name, isLeaf) => {
-        e.preventDefault(); e.stopPropagation();
+        if(e) { e.preventDefault(); e.stopPropagation(); }
         if (isLeaf) {
+            updateUrl({ category: name });
             document.getElementById("category-showcase").classList.add("hidden");
             document.getElementById("popular-section").classList.add("hidden");
             showProductsByCategory(name);
@@ -497,6 +527,7 @@
     window.handleCategoryClick = (e, name, isLeaf) => {
         e.stopPropagation();
         if (isLeaf) {
+            updateUrl({ category: name });
             document.getElementById("category-showcase").classList.add("hidden");
             document.getElementById("popular-section").classList.add("hidden");
             showProductsByCategory(name);
@@ -533,6 +564,18 @@
         t.classList.remove("hidden");
         setTimeout(() => t.classList.add("hidden"), 3000);
     }
+
+    // --- TARAYICI GERİ TUŞUNU YÖNET ---
+    window.onpopstate = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('view') === 'detail') {
+            handleNavigate('detail', urlParams.get('id'));
+        } else if (urlParams.get('category')) {
+            handleCardClick(null, urlParams.get('category'), true);
+        } else {
+            resetAndGoHome();
+        }
+    };
 
     loadData();
 </script>
