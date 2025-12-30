@@ -39,7 +39,6 @@
             object-fit: contain; padding: 10px;
         }
 
-        /* Galeri Thumbnails */
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
             border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
@@ -48,7 +47,7 @@
         .thumb-item.active { border-color: #5D3EBC; box-shadow: 0 0 0 2px rgba(93, 62, 188, 0.2); }
         .thumb-item img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Video Butonu Özel Tasarım */
+        /* Video Butonu: Getir Home Logolu */
         .video-thumb-btn {
             background-image: url('getirhome-logo.png');
             background-size: 80%;
@@ -57,11 +56,10 @@
             background-color: #f9fafb;
         }
         .video-overlay-icon {
-            position: absolute; inset: 0; background: rgba(93, 62, 188, 0.4);
-            display: flex; items-center; justify-content: center; color: white;
+            position: absolute; inset: 0; background: rgba(93, 62, 188, 0.5);
+            display: flex; align-items: center; justify-content: center; color: white;
         }
 
-        /* Mobil Menü Geçişi */
         #mobile-sidebar { transition: transform 0.3s ease-in-out; }
         #sidebar-overlay { transition: opacity 0.3s ease-in-out; }
 
@@ -85,12 +83,11 @@
         }
         .media-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; items-center; justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
         .media-content iframe, .media-content video {
             width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem;
         }
-        .media-content img { max-width: 90%; max-height: 90%; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -247,7 +244,7 @@
                     <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                     <div class="mt-auto">
                         <div class="text-3xl font-black text-primary mb-6">${p.price.toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-transform" onclick="addToCart('${p.id}')">
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">
                             Sepete Ekle
                         </button>
                     </div>
@@ -279,6 +276,73 @@
         t.classList.remove("hidden");
         setTimeout(() => t.classList.add("hidden"), 3000);
     }
+
+    // --- DÜZELTİLMİŞ SEPETE EKLEME ---
+    window.addToCart = async (id) => {
+        if (!currentUserId) { showToast("Lütfen giriş yapın", true); return; }
+        const p = allProducts.find(x => x.id === id);
+        try {
+            // Sepet sayfasındaki 'productName' undefıned hatasını düzeltmek için 
+            // Hem 'name' hem 'productName' olarak kaydediyoruz.
+            await setDoc(doc(db, "users", currentUserId, "cart", id), {
+                name: p.name,
+                productName: p.name, // Sepet sayfası bunu bekliyor olabilir
+                price: p.price,
+                productPrice: p.price,
+                quantity: 1,
+                image: p.image,
+                addedAt: new Date()
+            }, { merge: true });
+            showToast("Sepete eklendi");
+        } catch (e) { showToast("Hata oluştu", true); }
+    };
+
+    async function loadData() {
+        const [pSnap, cSnap] = await Promise.all([
+            getDocs(collection(db, "homeProducts")),
+            getDocs(collection(db, "homeCategories"))
+        ]);
+        allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
+        allCategories = cSnap.docs.map(d => d.data());
+        const menuHtml = buildMenu();
+        document.getElementById("desktop-menu").innerHTML = menuHtml;
+        document.getElementById("mobile-category-list").innerHTML = menuHtml;
+        renderProducts(allProducts);
+    }
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            currentUserId = user.uid;
+            document.getElementById("user-photo").src = user.photoURL;
+            document.getElementById("user-photo").classList.remove("hidden");
+            document.getElementById("loginBtn").classList.add("hidden");
+            onSnapshot(collection(db, "users", user.uid, "cart"), snap => {
+                const count = snap.docs.length;
+                const badge = document.getElementById("cart-count");
+                badge.textContent = count;
+                badge.classList.toggle("hidden", count === 0);
+            });
+        } else {
+            currentUserId = null;
+            document.getElementById("user-photo").classList.add("hidden");
+            document.getElementById("loginBtn").classList.remove("hidden");
+        }
+    });
+
+    // Logo Tıklama
+    window.handleHomeClick = () => handleNavigate('home');
+
+    document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
+    window.handleLogout = () => confirm("Çıkış yapılsın mı?") && signOut(auth);
+    document.getElementById("search-input").oninput = (e) => {
+        const val = e.target.value.toLowerCase();
+        renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(val)));
+    };
+    
+    document.getElementById("cart-btn").onclick = () => {
+        if(!currentUserId) showToast("Lütfen giriş yapın", true);
+        else window.location.href = 'sepet.html';
+    };
 
     function buildMenu(parentName = null, level = 0) {
         const children = allCategories.filter(c => c.parent === parentName);
@@ -335,56 +399,6 @@
             grid.appendChild(card);
         });
     }
-
-    window.addToCart = async (id) => {
-        if (!currentUserId) { showToast("Lütfen giriş yapın", true); return; }
-        const p = allProducts.find(x => x.id === id);
-        try {
-            await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                name: p.name, price: p.price, quantity: 1, image: p.image
-            }, { merge: true });
-            showToast("Sepete eklendi");
-        } catch (e) { showToast("Hata oluştu", true); }
-    };
-
-    async function loadData() {
-        const [pSnap, cSnap] = await Promise.all([
-            getDocs(collection(db, "homeProducts")),
-            getDocs(collection(db, "homeCategories"))
-        ]);
-        allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
-        allCategories = cSnap.docs.map(d => d.data());
-        const menuHtml = buildMenu();
-        document.getElementById("desktop-menu").innerHTML = menuHtml;
-        document.getElementById("mobile-category-list").innerHTML = menuHtml;
-        renderProducts(allProducts);
-    }
-
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            currentUserId = user.uid;
-            document.getElementById("user-photo").src = user.photoURL;
-            document.getElementById("user-photo").classList.remove("hidden");
-            document.getElementById("loginBtn").classList.add("hidden");
-            onSnapshot(collection(db, "users", user.uid, "cart"), snap => {
-                const count = snap.docs.length;
-                const badge = document.getElementById("cart-count");
-                badge.textContent = count;
-                badge.classList.toggle("hidden", count === 0);
-            });
-        } else {
-            currentUserId = null;
-            document.getElementById("user-photo").classList.add("hidden");
-            document.getElementById("loginBtn").classList.remove("hidden");
-        }
-    });
-
-    document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
-    window.handleLogout = () => confirm("Çıkış yapılsın mı?") && signOut(auth);
-    document.getElementById("search-input").oninput = (e) => {
-        const val = e.target.value.toLowerCase();
-        renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(val)));
-    };
 
     loadData();
 </script>
