@@ -43,9 +43,9 @@
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
             border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
-            flex-shrink: 0; background: white;
+            flex-shrink: 0; background: white; border: 1px solid #eee;
         }
-        .thumb-item.active { border-color: #5D3EBC; }
+        .thumb-item.active { border-color: #5D3EBC; box-shadow: 0 0 0 2px rgba(93, 62, 188, 0.2); }
         .thumb-item img { width: 100%; height: 100%; object-fit: contain; }
 
         /* Mobil Menü Geçişi */
@@ -66,9 +66,31 @@
             display: flex; align-items: center; justify-content: center; border: 2px solid white;
         }
 
-        /* Video alanı oranı */
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; width: 100%; }
-        .video-wrapper iframe, .video-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 1rem; }
+        /* Video Tam Ekran Wrapper */
+        .main-media-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* Kare alanı koru */
+            background: #f9fafb;
+            border-radius: 1.5rem;
+            overflow: hidden;
+        }
+        .media-content {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; items-center; justify-content: center;
+        }
+        .media-content iframe, .media-content video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Videoyu tam ekrana yayar */
+            border-radius: 1.5rem;
+        }
+        .media-content img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
@@ -188,7 +210,6 @@
         const p = allProducts.find(x => x.id === id);
         const content = document.getElementById("product-detail-content");
         
-        // Medya listesi oluştur (Ana resim + Ek resimler)
         let mediaItems = [p.image];
         if (p.extraImages && Array.isArray(p.extraImages)) {
             mediaItems = [...mediaItems, ...p.extraImages];
@@ -197,8 +218,10 @@
         content.innerHTML = `
             <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
                 <div class="w-full md:w-1/2">
-                    <div id="main-media-box" class="w-full bg-gray-50 rounded-2xl p-4 flex items-center justify-center min-h-[350px] mb-4">
-                        <img id="big-image" src="${p.image}" class="max-h-96 object-contain">
+                    <div class="main-media-wrapper mb-4">
+                        <div id="main-media-container" class="media-content">
+                            <img src="${p.image}" class="max-h-96 object-contain">
+                        </div>
                     </div>
                     
                     <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
@@ -217,12 +240,12 @@
                 </div>
 
                 <div class="w-full md:w-1/2 flex flex-col">
-                    <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-4">${p.name}</h1>
+                    <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
                     <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
                     <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                     <div class="mt-auto">
                         <div class="text-3xl font-black text-primary mb-6">${p.price.toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg" onclick="addToCart('${p.id}')">
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-transform" onclick="addToCart('${p.id}')">
                             Sepete Ekle
                         </button>
                     </div>
@@ -230,21 +253,19 @@
             </div>`;
     }
 
-    // Galeri Değiştirme Fonksiyonu
     window.changeMedia = (type, url, el) => {
-        const box = document.getElementById("main-media-box");
+        const container = document.getElementById("main-media-container");
         document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
         el.classList.add('active');
 
         if (type === 'img') {
-            box.innerHTML = `<img src="${url}" class="max-h-96 object-contain">`;
+            container.innerHTML = `<img src="${url}" class="max-h-96 object-contain">`;
         } else {
-            // YouTube veya Direkt MP4 kontrolü
             if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                const videoId = url.split('v=')[1] || url.split('/').pop();
-                box.innerHTML = `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe></div>`;
+                const videoId = url.split('v=')[1] || url.split('/').pop().split('?')[0];
+                container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             } else {
-                box.innerHTML = `<div class="video-wrapper"><video src="${url}" controls autoplay></video></div>`;
+                container.innerHTML = `<video src="${url}" controls autoplay muted class="object-cover"></video>`;
             }
         }
     };
