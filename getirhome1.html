@@ -23,7 +23,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
         
-        /* Kart Tasarımı */
         .product-card {
             display: flex; flex-direction: column; height: 100%; background: white;
             border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
@@ -40,7 +39,6 @@
             object-fit: contain; padding: 10px;
         }
 
-        /* Video ve Thumb Tasarımı */
         .thumb-item {
             width: 70px; height: 70px; border: 2px solid transparent; 
             border-radius: 0.5rem; cursor: pointer; transition: 0.2s; overflow: hidden;
@@ -75,7 +73,6 @@
         }
         .media-content iframe, .media-content video { width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem; }
 
-        /* Yatay Benzer Ürünler Kaydırma */
         .related-scroll {
             display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem;
             scrollbar-width: none; -ms-overflow-style: none;
@@ -181,14 +178,12 @@
 
     let allProducts = [], allCategories = [], currentUserId = null;
 
-    // Anasayfa Sıfırlama
     window.resetAndGoHome = () => {
         document.getElementById("search-input").value = "";
         handleNavigate('home');
         renderProducts(allProducts);
     };
 
-    // Sidebar Kontrol
     window.toggleMobileMenu = () => {
         const sidebar = document.getElementById("mobile-sidebar");
         const overlay = document.getElementById("sidebar-overlay");
@@ -204,7 +199,6 @@
         }
     };
 
-    // Görünüm Değiştirme
     window.handleNavigate = (view, productId = null) => {
         const home = document.getElementById("home-view");
         const detail = document.getElementById("detail-view");
@@ -219,7 +213,6 @@
         }
     };
 
-    // Ürün Detay Render
     function renderProductDetail(id) {
         const p = allProducts.find(x => x.id === id);
         if(!p) return;
@@ -254,7 +247,7 @@
                     <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
                     <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                     <div class="mt-auto">
-                        <div class="text-3xl font-black text-primary mb-6">${p.price.toFixed(2)} ₺</div>
+                        <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
                         <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">
                             Sepete Ekle
                         </button>
@@ -265,7 +258,6 @@
         renderRelatedProducts(p);
     }
 
-    // Benzer Ürünler Render
     function renderRelatedProducts(currentProduct) {
         const listContainer = document.getElementById("related-products-list");
         const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
@@ -281,7 +273,7 @@
                     <img src="${p.image}" class="max-h-full object-contain">
                 </div>
                 <h4 class="text-xs font-bold text-gray-700 line-clamp-1 mb-1">${p.name}</h4>
-                <div class="text-sm font-black text-primary">${p.price.toFixed(2)} ₺</div>
+                <div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
             </div>
         `).join('');
     }
@@ -306,19 +298,24 @@
         setTimeout(() => t.classList.add("hidden"), 3000);
     }
 
-    // SEPETE EKLEME (Fiyat sayısal olarak kaydediliyor)
+    // --- SEPETE EKLEME MANTIĞI (0 TL HATASI ÇÖZÜLDÜ) ---
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Giriş yapın", true); return; }
         const p = allProducts.find(x => x.id === id);
+        
+        // KRİTİK: Fiyatın sayısal olduğundan emin oluyoruz
+        const itemPrice = parseFloat(p.price) || 0;
+
         try {
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
                 userId: currentUserId,
                 productName: String(p.name),
-                productLink: String(p.name),
-                productPrice: parseFloat(p.price),
+                productLink: String(p.name), // Sepet sayfasının başlık olarak kullandığı alan
+                productPrice: itemPrice,     // Sepet sayfasındaki fiyata giden ana değer
                 variant: 'Standart',
                 baseProductId: id,
-                category: p.category,
+                category: p.category || 'genel',
+                orderMethod: 'service',      // KRİTİK: Sepet sayfasının fiyata dahil etmesi için gereken tip
                 quantity: 1,
                 image: p.image,
                 addedAt: new Date()
@@ -369,15 +366,23 @@
         let html = `<ul class="${level > 0 ? 'hidden ml-4 border-l border-gray-100' : 'space-y-1'}">`;
         children.forEach(cat => {
             const hasSub = allCategories.some(c => c.parent === cat.name);
-            html += `<li><div class="flex items-center justify-between p-2 rounded-xl hover:bg-gray-100 cursor-pointer group" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})"><div class="flex items-center gap-3">${cat.image ? `<img src="${cat.image}" class="w-6 h-6 object-contain">` : '<i class="ri-checkbox-blank-circle-fill text-[8px] text-primary"></i>'}<span class="text-sm font-semibold text-gray-700">${cat.name}</span></div>${hasSub ? '<i class="ri-arrow-right-s-line rotate-icon text-gray-400"></i>' : ''}</div>${hasSub ? buildMenu(cat.name, level + 1) : ''}</li>`;
+            html += `<li><div class="flex items-center justify-between p-2 rounded-xl hover:bg-gray-100 cursor-pointer group" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})"><div class="flex items-center gap-3">${cat.image ? `<img src="${cat.image}" class="w-6 h-6 object-contain">` : '<i class="ri-checkbox-blank-circle-fill text-[8px] text-primary"></i>'}<span class="text-sm font-semibold text-gray-700">${cat.name}</span></div>${hasSub ? '<i class="ri-arrow-right-s-line rotate-icon transition-transform duration-200 text-gray-400"></i>' : ''}</div>${hasSub ? buildMenu(cat.name, level + 1) : ''}</li>`;
         });
         return html + '</ul>';
     }
 
     window.handleCategoryClick = (e, name, isLeaf) => {
         e.stopPropagation();
-        if (isLeaf) { handleNavigate('home'); renderProducts(allProducts.filter(p => p.category === name)); if (window.innerWidth < 1024) toggleMobileMenu(); } 
-        else { const sub = e.currentTarget.nextElementSibling; if (sub) sub.classList.toggle('hidden'); const icon = e.currentTarget.querySelector('.rotate-icon'); if(icon) icon.classList.toggle('rotate-90'); }
+        if (isLeaf) { 
+            handleNavigate('home'); 
+            renderProducts(allProducts.filter(p => p.category === name)); 
+            if (window.innerWidth < 1024) toggleMobileMenu(); 
+        } else { 
+            const sub = e.currentTarget.nextElementSibling; 
+            if (sub) sub.classList.toggle('hidden'); 
+            const icon = e.currentTarget.querySelector('.rotate-icon'); 
+            if(icon) icon.classList.toggle('rotate-90'); 
+        }
     };
 
     function renderProducts(products) {
