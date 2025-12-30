@@ -37,9 +37,15 @@
         .product-card {
             display: flex; flex-direction: column; height: 100%; background: white;
             border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
-            border: 1px solid #e5e7eb; cursor: pointer;
+            border: 1px solid #e5e7eb; cursor: pointer; position: relative;
         }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+
+        .free-shipping-tag {
+            position: absolute; top: 10px; left: 10px; background: #22c55e; color: white;
+            font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 6px; z-index: 20;
+            text-transform: uppercase;
+        }
 
         .product-image-container {
             position: relative; width: 100%; padding-top: 100%; 
@@ -111,12 +117,12 @@
             display: flex; align-items: center; justify-content: center; border: 2px solid white;
         }
 
-        .related-scroll {
+        .related-scroll, .popular-scroll {
             display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem;
             scrollbar-width: none; -ms-overflow-style: none;
         }
-        .related-scroll::-webkit-scrollbar { display: none; }
-        .related-item { flex: 0 0 160px; }
+        .related-scroll::-webkit-scrollbar, .popular-scroll::-webkit-scrollbar { display: none; }
+        .popular-item { flex: 0 0 160px; }
 
         .add-btn {
             width: 100%; background: white; color: #5D3EBC; border: 2px solid #f3f4f6;
@@ -179,6 +185,11 @@
 
             <div id="banner-area" class="banner-wrapper">
                 <div id="banner-scroll-container" class="banner-scroll"></div>
+            </div>
+
+            <div id="popular-section" class="mb-8">
+                <h2 class="text-xl font-extrabold text-gray-800 mb-4">Popüler Ürünler</h2>
+                <div id="popular-grid" class="popular-scroll"></div>
             </div>
 
             <div id="category-showcase" class="mb-8">
@@ -268,6 +279,7 @@
         activeCategoryParent = null;
         renderCategoryShowcase(null);
         document.getElementById("category-showcase").classList.remove("hidden");
+        document.getElementById("popular-section").classList.remove("hidden");
         document.getElementById("product-section").classList.add("hidden");
         handleNavigate('home');
     };
@@ -299,21 +311,14 @@
         if(!p) return;
         const content = document.getElementById("product-detail-content");
         let mediaItems = [p.image, ...(p.extraImages || [])];
-
         content.innerHTML = `
             <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
                 <div class="w-full md:w-1/2">
                     <div class="main-media-wrapper mb-4">
-                        <div id="main-media-container" class="media-content">
-                            <img src="${p.image}" class="w-full h-full object-contain">
-                        </div>
+                        <div id="main-media-container" class="media-content"><img src="${p.image}" class="w-full h-full object-contain"></div>
                     </div>
                     <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
-                        ${mediaItems.map((img, index) => `
-                            <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
-                                <img src="${img}">
-                            </div>
-                        `).join('')}
+                        ${mediaItems.map((img, index) => `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
                         ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
                     </div>
                 </div>
@@ -323,9 +328,7 @@
                     <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                     <div class="mt-auto">
                         <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">
-                            Sepete Ekle
-                        </button>
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
                     </div>
                 </div>
             </div>`;
@@ -350,24 +353,15 @@
         listContainer.innerHTML = related.length ? related.map(p => `<div class="related-item bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer" onclick="handleNavigate('detail', '${p.id}')"><div class="w-full h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center p-2"><img src="${p.image}" class="max-h-full object-contain"></div><h4 class="text-xs font-bold text-gray-700 line-clamp-1 mb-1">${p.name}</h4><div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div></div>`).join('') : '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
     }
 
-    // --- SEPETE EKLEME (FIXED: ISIM VE FIYAT YUKLENIYOR) ---
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Giriş yapın", true); return; }
         const p = allProducts.find(x => x.id === id);
         if(!p) return;
         try {
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                userId: currentUserId, 
-                productName: String(p.name), 
-                productLink: String(p.name),
-                productPrice: parseFloat(p.price), 
-                variant: 'Standart', 
-                baseProductId: id,
-                category: p.category || 'genel', 
-                orderMethod: 'service', 
-                quantity: 1, 
-                image: p.image, 
-                addedAt: new Date()
+                userId: currentUserId, productName: String(p.name), productLink: String(p.name),
+                productPrice: parseFloat(p.price), variant: 'Standart', baseProductId: id,
+                category: p.category || 'genel', orderMethod: 'service', quantity: 1, image: p.image, addedAt: new Date()
             }, { merge: true });
             showToast(`"${p.name}" sepete eklendi!`);
         } catch (e) { showToast("Hata!", true); }
@@ -381,8 +375,33 @@
         document.getElementById("desktop-menu").innerHTML = buildMenu();
         document.getElementById("mobile-category-list").innerHTML = buildMenu();
         
+        renderPopularProducts();
         renderCategoryShowcase(null);
         loadBanners();
+    }
+
+    // --- POPÜLER ÜRÜNLERİ RENDER ET ---
+    function renderPopularProducts() {
+        const grid = document.getElementById("popular-grid");
+        const categories = [...new Set(allProducts.map(p => p.category))];
+        const items = categories.map(cat => {
+            const catProds = allProducts.filter(p => p.category === cat);
+            return catProds[catProds.length - 1]; // Son eklenen ürünü al
+        }).filter(Boolean);
+
+        grid.innerHTML = items.map(p => `
+            <div class="popular-item product-card" onclick="handleNavigate('detail', '${p.id}')">
+                <div class="free-shipping-tag">Ücretsiz Kargo</div>
+                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
+                <div class="flex flex-col flex-grow">
+                    <h3 class="font-bold text-xs text-gray-800 line-clamp-2 h-8 mb-1">${p.name}</h3>
+                    <div class="mt-auto">
+                        <div class="text-sm font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
+                        <button class="add-btn text-[10px] py-1" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
     }
 
     function renderCategoryShowcase(parent = null) {
@@ -391,15 +410,18 @@
         const title = document.getElementById("category-showcase-title");
         const backBtn = document.getElementById("back-to-parent");
         const prodSection = document.getElementById("product-section");
+        const popularSec = document.getElementById("popular-section");
 
         const items = allCategories.filter(c => c.parent === parent);
 
         if (parent) {
             title.textContent = parent;
             backBtn.classList.remove("hidden");
+            popularSec.classList.add("hidden"); // Alt kategorideyken popüleri gizle
         } else {
             title.textContent = "Kategorileri Keşfet";
             backBtn.classList.add("hidden");
+            popularSec.classList.remove("hidden");
         }
 
         if (items.length > 0) {
@@ -421,10 +443,10 @@
     }
 
     window.handleCardClick = (e, name, isLeaf) => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         if (isLeaf) {
             document.getElementById("category-showcase").classList.add("hidden");
+            document.getElementById("popular-section").classList.add("hidden");
             showProductsByCategory(name);
         } else {
             renderCategoryShowcase(name);
@@ -460,6 +482,7 @@
         const val = e.target.value.toLowerCase();
         if(val.length > 0) {
             document.getElementById("category-showcase").classList.add("hidden");
+            document.getElementById("popular-section").classList.add("hidden");
             document.getElementById("product-section").classList.remove("hidden");
             renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(val)));
         } else {
@@ -482,6 +505,7 @@
         e.stopPropagation();
         if (isLeaf) {
             document.getElementById("category-showcase").classList.add("hidden");
+            document.getElementById("popular-section").classList.add("hidden");
             showProductsByCategory(name);
             if (window.innerWidth < 1024) toggleMobileMenu();
         } else {
