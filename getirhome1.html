@@ -119,7 +119,7 @@
 
         .add-btn {
             width: 100%; background: white; color: #5D3EBC; border: 2px solid #f3f4f6;
-            padding: 8px; border-radius: 10px; font-weight: 700;
+            padding: 8px; border-radius: 10px; font-weight: 700; transition: 0.2s;
         }
         .add-btn:hover { background: #5D3EBC; color: white; border-color: #5D3EBC; }
     </style>
@@ -140,17 +140,13 @@
     <div class="max-w-7xl mx-auto px-4 h-full header-container">
         <div class="flex items-center gap-2">
             <button onclick="toggleMobileMenu()" class="lg:hidden text-primary p-1"><i class="ri-menu-line ri-2x"></i></button>
-            <a href="index.html">
-                <img src="getirkibris-logo.png" class="h-8 md:h-10 w-auto object-contain">
-            </a>
+            <a href="index.html"><img src="getirkibris-logo.png" class="h-8 md:h-10 w-auto object-contain"></a>
         </div>
         <div class="flex justify-center">
-            <a href="javascript:void(0)" onclick="resetAndGoHome()">
-                <img src="getirhome-logo.png" class="h-10 md:h-12 w-auto object-contain">
-            </a>
+            <a href="javascript:void(0)" onclick="resetAndGoHome()"><img src="getirhome-logo.png" class="h-10 md:h-12 w-auto object-contain"></a>
         </div>
         <div class="flex items-center justify-end gap-3">
-            <button id="cart-btn" class="bg-primary text-white p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 relative transition-transform active:scale-95">
+            <button id="cart-btn" onclick="location.href='sepet.html'" class="bg-primary text-white p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 relative transition-transform active:scale-95">
                 <i class="ri-shopping-basket-fill text-xl"></i>
                 <span id="cart-count" class="badge hidden">0</span>
                 <span class="hidden md:inline font-bold">Sepetim</span>
@@ -236,10 +232,10 @@
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
     let activeCategoryParent = null;
 
-    // --- URL YÖNETİMİ ---
+    // --- URL VE TARAYICI YÖNETİMİ ---
     function updateUrl(params = {}) {
         const url = new URL(window.location);
-        url.search = ""; // Temizle
+        url.search = ""; 
         Object.keys(params).forEach(key => url.searchParams.set(key, params[key]));
         window.history.pushState({}, '', url);
     }
@@ -278,7 +274,7 @@
     window.resetAndGoHome = () => {
         document.getElementById("search-input").value = "";
         activeCategoryParent = null;
-        updateUrl({}); // URL'yi temizle
+        updateUrl({}); 
         renderCategoryShowcase(null);
         document.getElementById("category-showcase").classList.remove("hidden");
         document.getElementById("popular-section").classList.remove("hidden");
@@ -360,18 +356,25 @@
             <div class="flex-shrink-0 w-40 bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer" onclick="handleNavigate('detail', '${p.id}')">
                 <div class="w-full h-24 flex items-center justify-center mb-2"><img src="${p.image}" class="max-h-full object-contain"></div>
                 <h4 class="text-[10px] font-bold text-gray-700 line-clamp-1">${p.name}</h4>
-                <div class="text-xs font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
+                <div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
             </div>`).join('') : '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
     }
 
+    // --- SEPETE EKLEME DÜZELTİLDİ: NAME VE PRICE VERİLERİ ARTIK DOĞRU ---
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Giriş yapın", true); return; }
         const p = allProducts.find(x => x.id === id);
         if(!p) return;
         try {
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                userId: currentUserId, productName: String(p.name), productPrice: parseFloat(p.price),
-                quantity: 1, image: p.image, addedAt: new Date(), category: p.category || 'genel', orderMethod: 'service'
+                userId: currentUserId, 
+                productName: String(p.name), 
+                productPrice: parseFloat(p.price),
+                quantity: 1, 
+                image: p.image, 
+                addedAt: new Date(), 
+                category: p.category || 'genel', 
+                orderMethod: 'service'
             }, { merge: true });
             showToast(`"${p.name}" sepete eklendi!`);
         } catch (e) { showToast("Hata!", true); }
@@ -387,19 +390,14 @@
         
         renderPopularProducts();
         
-        // --- SAYFA YÜKLENDİĞİNDE URL KONTROLÜ ---
         const urlParams = new URLSearchParams(window.location.search);
         const view = urlParams.get('view');
         const cat = urlParams.get('category');
         const id = urlParams.get('id');
 
-        if (view === 'detail' && id) {
-            handleNavigate('detail', id);
-        } else if (cat) {
-            handleCardClick(null, cat, true);
-        } else {
-            renderCategoryShowcase(null);
-        }
+        if (view === 'detail' && id) handleNavigate('detail', id);
+        else if (cat) handleCardClick(null, cat, true);
+        else renderCategoryShowcase(null);
         
         loadBanners();
     }
@@ -409,7 +407,7 @@
         const categories = [...new Set(allProducts.map(p => p.category))];
         const items = categories.map(cat => {
             const catProds = allProducts.filter(p => p.category === cat);
-            return catProds[catProds.length - 1];
+            return catProds[catProds.length - 1]; // Her kategoriden son ürünü al
         }).filter(Boolean).slice(0, 8);
 
         grid.innerHTML = items.map(p => `
@@ -423,8 +421,7 @@
                         <button class="add-btn text-[10px] py-1.5" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`).join('');
     }
 
     function renderCategoryShowcase(parent = null) {
@@ -565,16 +562,11 @@
         setTimeout(() => t.classList.add("hidden"), 3000);
     }
 
-    // --- TARAYICI GERİ TUŞUNU YÖNET ---
     window.onpopstate = () => {
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('view') === 'detail') {
-            handleNavigate('detail', urlParams.get('id'));
-        } else if (urlParams.get('category')) {
-            handleCardClick(null, urlParams.get('category'), true);
-        } else {
-            resetAndGoHome();
-        }
+        if (urlParams.get('view') === 'detail') handleNavigate('detail', urlParams.get('id'));
+        else if (urlParams.get('category')) handleCardClick(null, urlParams.get('category'), true);
+        else resetAndGoHome();
     };
 
     loadData();
