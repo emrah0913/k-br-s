@@ -108,7 +108,7 @@
             </a>
         </div>
         <div class="flex items-center justify-end gap-3">
-            <button id="cart-btn" class="bg-primary text-white p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 relative">
+            <button id="cart-btn" class="bg-primary text-white p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 relative transition-transform active:scale-95">
                 <i class="ri-shopping-basket-fill text-xl"></i>
                 <span id="cart-count" class="badge hidden">0</span>
                 <span class="hidden md:inline font-bold">Sepetim</span>
@@ -291,12 +291,22 @@
         setTimeout(() => t.classList.add("hidden"), 3000);
     }
 
+    // --- SEPETE EKLEME MANTIĞI (Fiyat Eklendi) ---
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Giriş yapın", true); return; }
         const p = allProducts.find(x => x.id === id);
         try {
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                userId: currentUserId, productName: p.name, productLink: p.name, productPrice: p.price, variant: 'Standart', baseProductId: id, category: p.category, quantity: 1, image: p.image, addedAt: new Date()
+                userId: currentUserId,
+                productName: String(p.name),
+                productLink: String(p.name),
+                productPrice: parseFloat(p.price), // Fiyat sayısal olarak kaydediliyor
+                variant: 'Standart',
+                baseProductId: id,
+                category: p.category,
+                quantity: 1,
+                image: p.image,
+                addedAt: new Date()
             }, { merge: true });
             showToast(`"${p.name}" sepete eklendi!`);
         } catch (e) { showToast("Hata!", true); }
