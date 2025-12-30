@@ -223,7 +223,7 @@
     const provider = new GoogleAuthProvider();
 
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
-    let activeCategoryParent = null; // Şu an hangi seviyedeyiz?
+    let activeCategoryParent = null;
 
     function getCleanEmbedUrl(url) {
         if (!url) return null;
@@ -358,7 +358,6 @@
         loadBanners();
     }
 
-    // DİNAMİK KATEGORİ KARTLARI (Derinlemesine)
     function renderCategoryShowcase(parent = null) {
         activeCategoryParent = parent;
         const grid = document.getElementById("category-grid");
@@ -376,25 +375,36 @@
             backBtn.classList.add("hidden");
         }
 
-        // Eğer bu seviyede alt kategori varsa onları kart olarak göster
         if (items.length > 0) {
             prodSection.classList.add("hidden");
             grid.parentElement.classList.remove("hidden");
             grid.innerHTML = items.map(cat => {
                 const hasSub = allCategories.some(c => c.parent === cat.name);
                 return `
-                    <div class="category-card" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})">
-                        <img src="${cat.image || 'getirhome-logo.png'}" onerror="this.src='https://placehold.co/100x100?text=${cat.name}'">
+                    <div class="category-card" onclick="handleCardClick(event, '${cat.name}', ${!hasSub})">
+                        <img src="${cat.image || ''}" onerror="this.src='https://placehold.co/100x100?text=${cat.name}'">
                         <span>${cat.name}</span>
                     </div>
                 `;
             }).join('');
         } else {
-            // Alt kategori yoksa (Leaf node), ürünleri bu kategoriye göre listele
-            grid.parentElement.classList.add("hidden"); // Kategori gridini gizle
+            grid.parentElement.classList.add("hidden");
             showProductsByCategory(parent);
         }
     }
+
+    // Kart tıklaması için özel fonksiyon (Menü açmayı engeller)
+    window.handleCardClick = (e, name, isLeaf) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isLeaf) {
+            document.getElementById("category-showcase").classList.add("hidden");
+            showProductsByCategory(name);
+        } else {
+            renderCategoryShowcase(name);
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     function showProductsByCategory(categoryName) {
         const prodSection = document.getElementById("product-section");
@@ -442,21 +452,22 @@
         return html + '</ul>';
     }
 
+    // Sol menü ve Mobil Hamburger menü için tıklama mantığı
     window.handleCategoryClick = (e, name, isLeaf) => {
         e.stopPropagation();
         if (isLeaf) {
-            // Eğer kategori yaprak ise ürünleri göster
             document.getElementById("category-showcase").classList.add("hidden");
             showProductsByCategory(name);
+            // Sadece mobil menü açıksa kapat
             if (window.innerWidth < 1024) toggleMobileMenu();
         } else {
-            // Eğer kategori alt kategorilere sahipse, kartları güncelle
             renderCategoryShowcase(name);
-            // Sol menü (desktop) açma/kapama mantığı
-            const sub = e.currentTarget.nextElementSibling; if (sub && sub.tagName === 'UL') sub.classList.toggle('hidden');
-            const icon = e.currentTarget.querySelector('.rotate-icon'); if(icon) icon.classList.toggle('rotate-90');
+            const sub = e.currentTarget.nextElementSibling; 
+            if (sub && sub.tagName === 'UL') sub.classList.toggle('hidden');
+            const icon = e.currentTarget.querySelector('.rotate-icon'); 
+            if(icon) icon.classList.toggle('rotate-90');
         }
-        window.scrollTo(0,0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     function renderProducts(products) {
