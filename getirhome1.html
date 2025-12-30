@@ -47,7 +47,7 @@
         .thumb-item.active { border-color: #5D3EBC; box-shadow: 0 0 0 2px rgba(93, 62, 188, 0.2); }
         .thumb-item img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Video Butonu: Getir Home Logolu */
+        /* Video Butonu: Getir Home Logolu ve Play İkonlu */
         .video-thumb-btn {
             background-image: url('getirhome-logo.png');
             background-size: 80%;
@@ -56,7 +56,7 @@
             background-color: #f9fafb;
         }
         .video-overlay-icon {
-            position: absolute; inset: 0; background: rgba(93, 62, 188, 0.5);
+            position: absolute; inset: 0; background: rgba(93, 62, 188, 0.45);
             display: flex; align-items: center; justify-content: center; color: white;
         }
 
@@ -88,6 +88,7 @@
         .media-content iframe, .media-content video {
             width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem;
         }
+        .media-content img { max-width: 90%; max-height: 90%; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -220,31 +221,26 @@
                             <img src="${p.image}" class="max-h-96 object-contain">
                         </div>
                     </div>
-                    
                     <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
                         ${mediaItems.map((img, index) => `
                             <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
                                 <img src="${img}">
                             </div>
                         `).join('')}
-                        
                         ${p.video ? `
                             <div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)">
-                                <div class="video-overlay-icon">
-                                    <i class="ri-play-fill ri-2x"></i>
-                                </div>
+                                <div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div>
                             </div>
                         ` : ''}
                     </div>
                 </div>
-
                 <div class="w-full md:w-1/2 flex flex-col">
                     <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
                     <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
                     <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                     <div class="mt-auto">
                         <div class="text-3xl font-black text-primary mb-6">${p.price.toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl transition-transform active:scale-95" onclick="addToCart('${p.id}')">
                             Sepete Ekle
                         </button>
                     </div>
@@ -256,7 +252,6 @@
         const container = document.getElementById("main-media-container");
         document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
         el.classList.add('active');
-
         if (type === 'img') {
             container.innerHTML = `<img src="${url}" class="max-h-96 object-contain">`;
         } else {
@@ -277,24 +272,27 @@
         setTimeout(() => t.classList.add("hidden"), 3000);
     }
 
-    // --- DÜZELTİLMİŞ SEPETE EKLEME ---
+    // --- SEPETE EKLEME MANTIĞI (TAM DÜZELTME) ---
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Lütfen giriş yapın", true); return; }
-        const p = allProducts.find(x => x.id === id);
+        const product = allProducts.find(x => x.id === id);
         try {
-            // Sepet sayfasındaki 'productName' undefıned hatasını düzeltmek için 
-            // Hem 'name' hem 'productName' olarak kaydediyoruz.
+            // Sepet sayfası hem 'name' hem 'productName' beklediği için ikisini de kaydediyoruz
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                name: p.name,
-                productName: p.name, // Sepet sayfası bunu bekliyor olabilir
-                price: p.price,
-                productPrice: p.price,
+                userId: currentUserId,
+                productName: String(product.name),
+                productLink: String(product.name),
+                productPrice: parseFloat(product.price),
+                variant: 'Standart',
+                baseProductId: id,
+                category: product.category || 'genel',
+                orderMethod: 'service',
                 quantity: 1,
-                image: p.image,
+                image: product.image,
                 addedAt: new Date()
             }, { merge: true });
-            showToast("Sepete eklendi");
-        } catch (e) { showToast("Hata oluştu", true); }
+            showToast(`"${product.name}" sepete eklendi!`);
+        } catch (e) { showToast("Sepete ekleme hatası!", true); }
     };
 
     async function loadData() {
@@ -328,9 +326,6 @@
             document.getElementById("loginBtn").classList.remove("hidden");
         }
     });
-
-    // Logo Tıklama
-    window.handleHomeClick = () => handleNavigate('home');
 
     document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
     window.handleLogout = () => confirm("Çıkış yapılsın mı?") && signOut(auth);
