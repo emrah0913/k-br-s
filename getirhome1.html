@@ -47,7 +47,7 @@
         .thumb-item.active { border-color: #5D3EBC; box-shadow: 0 0 0 2px rgba(93, 62, 188, 0.2); }
         .thumb-item img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Video Butonu: Getir Home Logolu ve Play İkonlu */
+        /* Video Butonu: Arka planda logo, ön planda play */
         .video-thumb-btn {
             background-image: url('getirhome-logo.png');
             background-size: 80%;
@@ -88,7 +88,6 @@
         .media-content iframe, .media-content video {
             width: 100%; height: 100%; object-fit: cover; border-radius: 1.5rem;
         }
-        .media-content img { max-width: 90%; max-height: 90%; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -107,13 +106,17 @@
     <div class="max-w-7xl mx-auto px-4 h-full header-container">
         <div class="flex items-center gap-2">
             <button onclick="toggleMobileMenu()" class="lg:hidden text-primary p-1"><i class="ri-menu-line ri-2x"></i></button>
-            <img src="getirkibris-logo.png" class="h-8 md:h-10 w-auto object-contain" onerror="this.src='https://placehold.co/120x40/5D3EBC/FFFFFF?text=Kibris'">
+            <a href="index.html">
+                <img src="getirkibris-logo.png" class="h-8 md:h-10 w-auto object-contain" onerror="this.src='https://placehold.co/120x40/5D3EBC/FFFFFF?text=Kibris'">
+            </a>
         </div>
+
         <div class="flex justify-center">
-            <a href="javascript:void(0)" onclick="handleNavigate('home')">
+            <a href="javascript:void(0)" onclick="resetAndGoHome()">
                 <img src="getirhome-logo.png" class="h-10 md:h-12 w-auto object-contain" onerror="this.src='https://placehold.co/140x40/5D3EBC/FFD300?text=Home'">
             </a>
         </div>
+
         <div class="flex items-center justify-end gap-3">
             <button id="cart-btn" class="bg-primary text-white p-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 relative">
                 <i class="ri-shopping-basket-fill text-xl"></i>
@@ -174,6 +177,13 @@
     const provider = new GoogleAuthProvider();
 
     let allProducts = [], allCategories = [], currentUserId = null;
+
+    // Anasayfaya Dönüş ve Filtre Sıfırlama
+    window.resetAndGoHome = () => {
+        document.getElementById("search-input").value = "";
+        handleNavigate('home');
+        renderProducts(allProducts);
+    };
 
     window.toggleMobileMenu = () => {
         const sidebar = document.getElementById("mobile-sidebar");
@@ -240,7 +250,7 @@
                     <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                     <div class="mt-auto">
                         <div class="text-3xl font-black text-primary mb-6">${p.price.toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl transition-transform active:scale-95" onclick="addToCart('${p.id}')">
+                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg active:scale-95" onclick="addToCart('${p.id}')">
                             Sepete Ekle
                         </button>
                     </div>
@@ -272,12 +282,11 @@
         setTimeout(() => t.classList.add("hidden"), 3000);
     }
 
-    // --- SEPETE EKLEME MANTIĞI (TAM DÜZELTME) ---
+    // --- SEPETE EKLEME MANTIĞI ---
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Lütfen giriş yapın", true); return; }
         const product = allProducts.find(x => x.id === id);
         try {
-            // Sepet sayfası hem 'name' hem 'productName' beklediği için ikisini de kaydediyoruz
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
                 userId: currentUserId,
                 productName: String(product.name),
@@ -292,7 +301,7 @@
                 addedAt: new Date()
             }, { merge: true });
             showToast(`"${product.name}" sepete eklendi!`);
-        } catch (e) { showToast("Sepete ekleme hatası!", true); }
+        } catch (e) { showToast("Hata!", true); }
     };
 
     async function loadData() {
@@ -383,7 +392,7 @@
             card.className = "product-card";
             card.onclick = () => handleNavigate('detail', p.id);
             card.innerHTML = `
-                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Resim+Yok'"></div>
+                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
                 <div class="flex flex-col flex-grow">
                     <h3 class="font-bold text-xs md:text-sm text-gray-800 line-clamp-2 h-10 mb-2">${p.name}</h3>
                     <div class="mt-auto">
