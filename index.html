@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Türkiye'den Kıbrıs'a Sipariş Getirme Hizmeti | Getir Kıbrıs</title>
 
-
-
-
-
-
-    
     <meta name="description" content="Trendyol, Hepsiburada ve diğer Türkiye sitelerinden Kıbrıs'a kolayca ürün getirin. Hesaplayın ve sepetinize ekleyin.">
     <link rel="canonical" href="https://getirkibris.com" />
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
@@ -23,7 +17,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 
     <script>
-        // Tailwind CSS Konfigürasyonu (index (22).html'deki borderRadius ile birleştirildi)
+        // Tailwind CSS Konfigürasyonu (Aynen korundu)
         tailwind.config = {
             theme: {
                 extend: {
@@ -54,12 +48,11 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9f9f9; /* index (22).html'deki daha açık gri tonu tercih edildi */
+            background-color: #f9f9f9;
         }
         .copy-btn:active, .auth-button:active {
             transform: scale(0.95);
         }
-        /* Animasyonlar (eski index.html'den korunmuştur) */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -70,10 +63,8 @@
         .hidden {
             display: none;
         }
-       
     </style>
 
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -81,8 +72,6 @@
   gtag('js', new Date());
   gtag('config', 'G-JL9P6BRZTD');
 </script>
-
-
 
 </head>
 <body class="bg-gray-50">
@@ -108,46 +97,84 @@
         </div>
     </header>
 
-   <main class="pt-16 pb-20">
-  <div class="relative w-full overflow-hidden mb-6" style="padding-top: 56.25%;">
-    <iframe 
-      class="absolute top-0 left-0 w-full h-full" 
-      src="https://www.youtube.com/embed/YYNLzJJKTXs"
-      title="YouTube video player" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-      referrerpolicy="strict-origin-when-cross-origin" 
-      allowfullscreen>
-    </iframe>
-
-    <!-- Hafif mor transparan geçiş (videoyu boğmadan, mobilde görünürlüğü artırır) -->
-    <div class="absolute inset-0 bg-gradient-to-t from-[#5b21b6]/25 via-transparent to-transparent pointer-events-none"></div>
-
-    <!-- Alt kısmı biraz yumuşatmak için -->
-    <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#5b21b6]/40 to-transparent pointer-events-none"></div>
-  </div>
-</main>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-8">
-            <button id="calculate-btn"
-                class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-                <div
-                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-                    <i class="ri-calculator-line ri-xl text-primary"></i>
-                </div>
-                <span class="text-sm font-medium">Sipariş Ver</span>
-            </button>
-
-            <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
-                class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-                <div
-                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-                    <i class="ri-shopping-cart-line ri-xl text-primary"></i>
-                </div>
-                <span class="text-sm font-medium">Sepetim</span>
-                <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
-            </a>
+<div class="px-4 pt-28 mb-6">
+    <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl border-b-4 border-[#ffd300]" 
+         style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
+        
+        <div class="mb-6">
+            <h2 class="text-2xl font-black tracking-tight leading-none uppercase">
+                Şeffaf Fiyatlandırma <br>
+                <span class="text-[#ffd300] text-lg font-bold italic opacity-90">Sürpriz Maliyetlere Son</span>
+            </h2>
         </div>
+        
+        <div class="grid grid-cols-1 gap-4">
+            <div class="bg-white/10 backdrop-blur-md p-5 rounded-xl border border-white/10">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center border border-white/30">
+                        <i class="ri-box-3-line text-[#ffd300] text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] uppercase tracking-widest opacity-70 font-bold">Hizmet Kapsamı</p>
+                        <p class="text-lg font-extrabold text-white">Gümrük + Kargo + Nakliye</p>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-white/10 text-[#ffd300] font-bold text-sm flex items-center gap-2">
+                    <i class="ri-checkbox-circle-fill"></i>
+                    TÜM SÜREÇ TEK FİYATA DAHİLDİR
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 px-1">
+                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
+                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
+                    <span>Ekstra gümrük vergisi talep edilmez.</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
+                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
+                    <span>Hesaplanan tutar net teslimat fiyatıdır.</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
+                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
+                    <span>Tüm operasyonel süreçler tarafımızca yönetilir.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60 border-t border-white/5 pt-4">
+            <i class="ri-shield-check-line text-lg"></i>
+            <span>Uluslararası Taşıma Standartları</span>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-4 px-4 mb-8">
+    <a href="getirhome.html"
+        class="bg-[#ffd300] shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-[#ffd300] hover:bg-[#ffdf00] transition-all">
+        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm overflow-hidden p-1">
+            <img src="getirhome-logo.png" alt="GetirHome" class="w-full h-full object-contain">
+        </div>
+        <span class="text-sm font-bold text-gray-900">GetirHome</span>
+    </a>
+
+    <button id="calculate-btn"
+        class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <i class="ri-calculator-line ri-xl text-primary"></i>
+        </div>
+        <span class="text-sm font-medium">Sipariş Ver</span>
+    </button>
+
+    <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
+        class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <i class="ri-shopping-cart-line ri-xl text-primary"></i>
+        </div>
+        <span class="text-sm font-medium">Sepetim</span>
+        <span id="cart-badge" class="absolute bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
+    </a>
+</div>
+
 
         <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
             <h2 class="text-xl font-semibold mb-4 text-primary">1. Ürün Bilgilerini Girin</h2>
@@ -1260,73 +1287,3 @@ Decathlon ürün fiyatları Kıbrıs, Decathlon KKTC alışveriş sitesi, Decath
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
