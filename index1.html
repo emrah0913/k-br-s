@@ -17,7 +17,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 
     <script>
-        // Tailwind CSS Konfigürasyonu (Aynen korundu)
         tailwind.config = {
             theme: {
                 extend: {
@@ -63,7 +62,6 @@
         .hidden {
             display: none;
         }
-        /* Yeni Dil ve Para Birimi Seçici Stilleri */
         .custom-selector {
             appearance: none;
             background: #fff;
@@ -80,6 +78,8 @@
         .custom-selector:hover { border-color: #5d3ebc; }
         [dir="rtl"] { text-align: right; }
         [dir="rtl"] .product-card { margin-right: 0; margin-left: 1.5rem; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
@@ -97,7 +97,6 @@
 
     <header class="fixed top-0 w-full max-w-screen-lg bg-white shadow-sm z-50 px-4 py-3 flex items-center">
         <div class="flex-1 flex gap-2">
-            <!-- Dil Seçici -->
             <select id="lang-select" class="custom-selector">
                 <option value="tr">🇹🇷 TR</option>
                 <option value="en">🇬🇧 EN</option>
@@ -105,7 +104,6 @@
                 <option value="gr">🇬🇷 GR</option>
                 <option value="ar">🇸🇦 AR</option>
             </select>
-            <!-- Para Birimi Seçici -->
             <select id="curr-select" class="custom-selector">
                 <option value="TRY">₺ TRY</option>
                 <option value="USD">$ USD</option>
@@ -114,8 +112,8 @@
             </select>
         </div>
         <div class="flex flex-col items-center">
-            <img src="logom.png" alt="Getir Kıbrıs" class="h-12"> <a href="https://getirkibris.com/index.html" data-readdy="true"
-                class="text-sm font-medium text-primary mt-1" data-i18n="nav_home">Ana Sayfa</a>
+            <img src="logom.png" alt="Getir Kıbrıs" class="h-12"> 
+            <a href="https://getirkibris.com/index.html" class="text-sm font-medium text-primary mt-1" data-i18n="nav_home">Ana Sayfa</a>
         </div>
         <div class="flex-1 flex justify-end">
             <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
@@ -207,90 +205,62 @@
     </a>
 </div>
 
-
-        <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
-            <h2 class="text-xl font-semibold mb-4 text-primary" data-i18n="calc_header">1. Ürün Bilgilerini Girin</h2>
-            <form id="calculator-form" class="space-y-4">
-                <div>
-                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_method">Sipariş Yöntemi</span><span class="text-red-500">*</span></label>
-                    <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                        <option value="service" selected data-i18n="calc_opt1">Ürünü benim yerime siz sipariş edin</option>
-                        <option value="self" data-i18n="calc_opt2">Ürünü ben alacağım, sadece kargo hizmeti istiyorum</option>
-                    </select>
+<section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
+    <h2 class="text-xl font-semibold mb-4 text-primary" data-i18n="calc_header">1. Ürün Bilgilerini Girin</h2>
+    <form id="calculator-form" class="space-y-4">
+        <div>
+            <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_method">Sipariş Yöntemi</span><span class="text-red-500">*</span></label>
+            <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                <option value="service" selected data-i18n="calc_opt1">Ürünü benim yerime siz sipariş edin</option>
+                <option value="self" data-i18n="calc_opt2">Ürünü ben alacağım, sadece kargo hizmeti istiyorum</option>
+            </select>
+        </div>
+        <div>
+            <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_link">Ürün Linki</span><span class="text-red-500">*</span></label>
+            <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/urun">
+        </div>
+        <div>
+            <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_price">Ürün Fiyatı</span> (₺)<span class="text-red-500">*</span></label>
+            <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
+        </div>
+        <div>
+            <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_category">Kategori</span><span class="text-red-500">*</span></label>
+            <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                <option value="" disabled selected data-i18n="calc_loading">Kategoriler Yükleniyor...</option>
+            </select>
+        </div>
+        
+        <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+            <h3 class="font-medium text-gray-800 mb-2" data-i18n="res_header">Ürün Getirme Maliyeti</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span id="result-price-label" data-i18n="res_price">Ürün Fiyatı:</span>
+                    <span id="result-price" class="currency-sync">0 ₺</span>
                 </div>
-                <div>
-                    <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_link">Ürün Linki</span><span class="text-red-500">*</span></label>
-                    <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/urun">
+                <div class="flex justify-between">
+                    <span data-i18n="res_fee">Kategori Hiz Bedeli:</span>
+                    <span id="result-category-fee" class="currency-sync">0 ₺</span>
                 </div>
-                <div>
-                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_price">Ürün Fiyatı</span> (₺)<span class="text-red-500">*</span></label>
-                    <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
+                <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
+                    <span data-i18n="res_total">Getirme Dahil Toplam:</span>
+                    <span id="result-total" class="currency-sync">0 ₺</span>
                 </div>
-                <div>
-                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="calc_category">Kategori</span><span class="text-red-500">*</span></label>
-                    <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                        <option value="" disabled selected data-i18n="calc_loading">Kategoriler Yükleniyor...</option>
-                    </select>
-                </div>
-                
-                <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-                    <h3 class="font-medium text-gray-800 mb-2" data-i18n="res_header">Ürün Getirme Maliyeti</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span id="result-price-label" data-i18n="res_price">Ürün Fiyatı:</span>
-                            <span id="result-price" class="currency-sync">0 ₺</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span data-i18n="res_fee">Kategori Hiz Bedeli:</span>
-                            <span id="result-category-fee" class="currency-sync">0 ₺</span>
-                        </div>
-                        <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
-                            <span data-i18n="res_total">Getirme Dahil Toplam:</span>
-                            <span id="result-total" class="currency-sync">0 ₺</span>
-                        </div>
-                    </div>
-                </div>
+            </div>
+        </div>
 
-                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
-                    <i class="ri-calculator-line"></i>
-                    <span data-i18n="btn_calc">Maliyeti Hesapla</span>
-                </button>
-            </form>
-        </section>
-
-
-
-<!-- 🧩 Kampanya Vitrini Başlangıcı -->
-<style>
-    /* EK CSS: Kaydırmalı Yapı için */
-    .product-slider {
-        overflow-x: auto; 
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        white-space: nowrap;
-        padding-bottom: 1rem;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch; 
-    }
-    .product-slider::-webkit-scrollbar { display: none; }
-    .product-card {
-        display: inline-block;
-        width: 300px;
-        margin-right: 1.5rem;
-        white-space: normal;
-        scroll-snap-align: start; 
-    }
-    .product-slider > div:first-child { margin-left: 1rem; }
-    .product-slider > div:last-child { margin-right: 1rem; }
-</style>
+        <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
+            <i class="ri-calculator-line"></i>
+            <span data-i18n="btn_calc">Maliyeti Hesapla</span>
+        </button>
+    </form>
+</section>
 
 <h2 class="text-2xl font-extrabold text-gray-800 mb-4 px-4 border-l-4 border-primary ml-4" data-i18n="pop_title">
     🛒 Popüler Ürünler
 </h2>
 
-<div class="product-slider">
- <div class="product-slider flex overflow-x-auto gap-4 p-4 snap-x snap-mandatory scrollbar-hide">
-
+<div class="product-slider flex overflow-x-auto gap-4 p-4 snap-x snap-mandatory scrollbar-hide">
+    <!-- Legom Vitrin Kartları -->
     <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
         <div class="absolute top-3 left-3 z-10">
             <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
@@ -298,8 +268,7 @@
             </span>
         </div>
         <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-            <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900"
-                  alt="Legom Koltuk" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
+            <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" alt="Legom Koltuk" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
         </div>
         <div class="p-4 text-center">
             <h3 class="text-sm font-bold text-gray-800 truncate">Legom Koltuk</h3>
@@ -310,20 +279,18 @@
                     <i class="ri-checkbox-circle-fill"></i> <span data-i18n="all_incl">Gümrük + Kargo Dahil</span>
                 </p>
             </div>
-            <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" 
-               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors" data-i18n="btn_buy">Satın Al</a>
+            <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors" data-i18n="btn_buy">Satın Al</a>
         </div>
     </div>
 
-      <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
+    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
         <div class="absolute top-3 left-3 z-10">
             <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
                 <i class="ri-truck-fill"></i> <span data-i18n="free_ship">ÜCRETSİZ KARGO</span>
             </span>
         </div>
         <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-            <img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536"
-                  alt="Legom XL Koltuk" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
+            <img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536" alt="Legom XL Koltuk" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
         </div>
         <div class="p-4 text-center">
             <h3 class="text-sm font-bold text-gray-800 truncate">Legom XL Koltuk</h3>
@@ -334,481 +301,275 @@
                     <i class="ri-checkbox-circle-fill"></i> <span data-i18n="all_incl">Gümrük + Kargo Dahil</span>
                 </p>
             </div>
-            <a href="https://getirkibris.com/getirhome?view=detail&id=4EB3NPv3gcV20oDbgH1S" 
-               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors" data-i18n="btn_buy">Satın Al</a>
+            <a href="https://getirkibris.com/getirhome?view=detail&id=4EB3NPv3gcV20oDbgH1S" class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors" data-i18n="btn_buy">Satın Al</a>
         </div>
     </div>
-
-    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-        <div class="absolute top-3 left-3 z-10">
-            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
-                <i class="ri-truck-fill"></i> <span data-i18n="free_ship">ÜCRETSİZ KARGO</span>
-            </span>
-        </div>
-        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-            <img src="https://omhucph.com/cdn/shop/files/Frame_321.png?v=1761396673&width=1900"
-                  alt="Legom Köşe Koltuk" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-        </div>
-        <div class="p-4 text-center">
-            <h3 class="text-sm font-bold text-gray-800 truncate">Legom Köşe Koltuk</h3>
-            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2" data-i18n="home_ship">Getir Home'dan Gönderim</p>
-            <div class="mb-3">
-                <p class="text-lg font-black text-red-600 leading-none currency-static" data-tl="38000">38.000,00 ₺</p>
-                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                    <i class="ri-checkbox-circle-fill"></i> <span data-i18n="all_incl">Gümrük + Kargo Dahil</span>
-                </p>
-            </div>
-            <a href="https://getirkibris.com/getirhome?view=detail&id=2vm7INjnWYYGsM1E1zai" 
-               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors" data-i18n="btn_buy">Satın Al</a>
-        </div>
-    </div>
-
-    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-        <div class="absolute top-3 left-3 z-10">
-            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
-                <i class="ri-truck-fill"></i> <span data-i18n="free_ship">ÜCRETSİZ KARGO</span>
-            </span>
-        </div>
-        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-            <img src="https://omhucph.com/cdn/shop/files/Frame_191_f3c383bb-5ccf-48a4-a13d-5c102a8baf20.png?v=1761404019&width=1536"
-                  alt="Legom Berjer" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-        </div>
-        <div class="p-4 text-center">
-            <h3 class="text-sm font-bold text-gray-800 truncate">Legom Berjer</h3>
-            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2" data-i18n="home_ship">Getir Home'dan Gönderim</p>
-            <div class="mb-3">
-                <p class="text-lg font-black text-red-600 leading-none currency-static" data-tl="13000">13.000,00 ₺</p>
-                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                    <i class="ri-checkbox-circle-fill"></i> <span data-i18n="all_incl">Gümrük + Kargo Dahil</span>
-                </p>
-            </div>
-            <a href="https://getirkibris.com/getirhome?view=detail&id=qNeAieAEZNOvBaG7nVRv" 
-               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors" data-i18n="btn_buy">Satın Al</a>
-        </div>
-    </div>
-
-    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-        <div class="absolute top-3 left-3 z-10">
-            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
-                <i class="ri-truck-fill"></i> <span data-i18n="free_ship">ÜCRETSİZ KARGO</span>
-            </span>
-        </div>
-        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-            <img src="https://omhucph.com/cdn/shop/files/yellow_8c0fb6a4-b7a0-40d3-9845-fb891b61ce70.png?v=1761415660&width=1536"
-                  alt="Legom Puf" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-        </div>
-        <div class="p-4 text-center">
-            <h3 class="text-sm font-bold text-gray-800 truncate">Legom Puf</h3>
-            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2" data-i18n="home_ship">Getir Home'dan Gönderim</p>
-            <div class="mb-3">
-                <p class="text-lg font-black text-red-600 leading-none currency-static" data-tl="10000">10.000,00 ₺</p>
-                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                    <i class="ri-checkbox-circle-fill"></i> <span data-i18n="all_incl">Gümrük + Kargo Dahil</span>
-                </p>
-            </div>
-            <a href="https://getirkibris.com/getirhome?view=detail&id=LEBDrGvQ456nImSfAqgE" 
-               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors" data-i18n="btn_buy">Satın Al</a>
-        </div>
-    </div>
-
 </div>
 
-<style>
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-
-<!-- 🧩 Kampanya Vitrini Sonu -->
-
-        
-
-        <div class="px-4 mb-8">
+<div class="px-4 mb-8">
     <h3 class="text-lg font-semibold mb-4" data-i18n="pop_sites">Popüler Alışveriş Siteleri</h3>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-
-        <!-- Trendyol -->
-        <a href="https://www.trendyol.com" target="_blank"
-           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png"
-                 alt="Trendyol" class="w-16 h-16 object-contain">
+        <!-- Mağazalar: Tüm SEO Etiketleri Dahil Edildi -->
+        <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" alt="Trendyol" class="w-16 h-16 object-contain">
+            <span class="hidden">Trendyol Kıbrıs, Kıbrıs'ta Trendyol var mı, Türkiye'den Kıbrıs'a Trendyol kargo, Trendyol Kıbrıs alışveriş, Trendyol Kıbrıs sipariş, Kıbrıs Trendyol ürünleri, Trendyol Kıbrıs teslim, Trendyol Türkiye’den gönderim, Kıbrıs Trendyol fırsatları, Trendyol kampanya Kıbrıs...</span>
         </a>
-
-        <!-- Hepsiburada -->
-        <a href="https://www.hepsiburada.com" target="_blank"
-           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png"
-                 alt="Hepsiburada" class="w-16 h-16 object-contain">
+        <a href="https://www.hepsiburada.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" alt="Hepsiburada" class="w-16 h-16 object-contain">
+            <span class="hidden">Hepsiburada Kıbrıs, Türkiye'den Kıbrıs'a Hepsiburada kargo, Hepsiburada KKTC kargo, Hepsiburada Kıbrıs sipariş, Kıbrıs Hepsiburada alışveriş...</span>
         </a>
-
-        <!-- N11 -->
-        <a href="https://www.n11.com" target="_blank"
-           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg"
-                 alt="N11" class="w-16 h-16 object-contain">
+        <a href="https://www.n11.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg" alt="N11" class="w-16 h-16 object-contain">
+            <span class="hidden">N11 Kıbrıs, N11 KKTC kargo, Türkiye'den Kıbrıs'a N11 sipariş, N11 Kıbrıs teslimat...</span>
         </a>
-
-        <!-- Amazon -->
-        <a href="https://www.amazon.com.tr" target="_blank"
-           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s"
-                 alt="Amazon" class="w-16 h-16 object-contain">
+        <a href="https://www.amazon.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s" alt="Amazon" class="w-16 h-16 object-contain">
+            <span class="hidden">Amazon Kıbrıs, Amazon Türkiye'den KKTC'ye kargo, Amazon Kıbrıs sipariş süreci...</span>
         </a>
-
-        <!-- Temu -->
-        <a href="https://www.temu.com/tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Temu_logo_icon.svg/2048px-Temu_logo_icon.svg.png"
-                alt="Temu" class="w-16 h-16 object-contain">
+        <a href="https://www.temu.com/tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Temu_logo_icon.svg/2048px-Temu_logo_icon.svg.png" alt="Temu" class="w-16 h-16 object-contain">
+            <span class="hidden">Temu Kıbrıs, Temu Türkiye'den Kıbrıs'a kargo, Temu KKTC sipariş...</span>
         </a>
-
-        <!-- English Home -->
-        <a href="https://www.englishhome.com/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV2piQJf3LUJ22rzNUvgJyjcI0i6d8i01oDw&s"
-                alt="englishhome" class="w-16 h-16 object-contain">
+        <a href="https://www.englishhome.com/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV2piQJf3LUJ22rzNUvgJyjcI0i6d8i01oDw&s" alt="englishhome" class="w-16 h-16 object-contain">
+            <span class="hidden">English Home Kıbrıs, English Home KKTC kargo, English Home Türkiye sipariş...</span>
         </a>
-        
-        <!-- Zara -->
-        <a href="https://www.zara.com.tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png"
-                alt="Zara" class="w-16 h-16 object-contain">
+        <a href="https://www.zara.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png" alt="Zara" class="w-16 h-16 object-contain">
+            <span class="hidden">Zara Kıbrıs, Zara Türkiye KKTC kargo, Zara Kıbrıs sipariş...</span>
         </a>
-
-        <!-- Pull&Bear -->
-        <a href="https://www.pullandbear.com.tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://www.logo.wine/a/logo/Pull%26Bear/Pull%26Bear-Logo.wine.svg"
-                alt="pullandbear" class="w-16 h-16 object-contain">
+        <a href="https://www.pullandbear.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://www.logo.wine/a/logo/Pull%26Bear/Pull%26Bear-Logo.wine.svg" alt="pullandbear" class="w-16 h-16 object-contain">
+            <span class="hidden">Pull&Bear Kıbrıs, Pull&Bear KKTC kargo, Pull&Bear Türkiye sipariş...</span>
         </a>
-
-        <!-- H&M -->
-        <a href="https://www2.hm.com/tr_tr/index.html" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/23/1/hm-logo-png_seeklogo-234240.png"
-                alt="hm" class="w-16 h-16 object-contain">
+        <a href="https://www2.hm.com/tr_tr/index.html" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/23/1/hm-logo-png_seeklogo-234240.png" alt="hm" class="w-16 h-16 object-contain">
+            <span class="hidden">H&M Kıbrıs, H&M KKTC kargo, H&M Türkiye sipariş...</span>
         </a>
-
-        <!-- US Polo -->
-        <a href="https://tr.uspoloassn.com/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/61/1/u-s-polo-assn-logo-png_seeklogo-617334.png"
-                alt="uspolo" class="w-16 h-16 object-contain">
+        <a href="https://tr.uspoloassn.com/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/61/1/u-s-polo-assn-logo-png_seeklogo-617334.png" alt="uspolo" class="w-16 h-16 object-contain">
+            <span class="hidden">US Polo Kıbrıs, US Polo KKTC kargo, US Polo Türkiye sipariş...</span>
         </a>
-
-        <!-- Mango -->
-        <a href="https://shop.mango.com/tr/tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/29/1/mango-logo-png_seeklogo-299348.png"
-                alt="mango" class="w-16 h-16 object-contain">
+        <a href="https://shop.mango.com/tr/tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/29/1/mango-logo-png_seeklogo-299348.png" alt="mango" class="w-16 h-16 object-contain">
+            <span class="hidden">Mango Kıbrıs, Mango KKTC kargo, Mango Türkiye sipariş...</span>
         </a>
-
-        <!-- Lacoste -->
-        <a href="https://www.lacoste.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/31/1/lacoste-logo-png_seeklogo-318446.png"
-                alt="lacoste" class="w-16 h-16 object-contain">
+        <a href="https://www.lacoste.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/31/1/lacoste-logo-png_seeklogo-318446.png" alt="lacoste" class="w-16 h-16 object-contain">
+            <span class="hidden">Lacoste Kıbrıs, Lacoste KKTC kargo, Lacoste Türkiye sipariş...</span>
         </a>
-
-        <!-- Bershka -->
-        <a href="https://www.bershka.com.tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://1000logos.net/wp-content/uploads/2020/03/Bershka-Logo.png"
-                alt="bershka" class="w-16 h-16 object-contain">
+        <a href="https://www.bershka.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://1000logos.net/wp-content/uploads/2020/03/Bershka-Logo.png" alt="bershka" class="w-16 h-16 object-contain">
+            <span class="hidden">Bershka Kıbrıs, Bershka KKTC kargo, Bershka Türkiye sipariş...</span>
         </a>
-
-        <!-- Avva -->
-        <a href="https://www.avva.com.tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://static.tildacdn.com/tild3339-3139-4733-b331-623033333733/avva.png"
-                alt="Avva" class="w-16 h-16 object-contain">
+        <a href="https://www.avva.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://static.tildacdn.com/tild3339-3139-4733-b331-623033333733/avva.png" alt="Avva" class="w-16 h-16 object-contain">
+            <span class="hidden">Avva Kıbrıs, Avva KKTC kargo, Avva Türkiye sipariş...</span>
         </a>
-
-        <!-- Under Armour -->
-        <a href="https://www.underarmour.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://download.logo.wine/logo/Under_Armour/Under_Armour-Logo.wine.png"
-                alt="Underarmour" class="w-16 h-16 object-contain">
+        <a href="https://www.underarmour.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://download.logo.wine/logo/Under_Armour/Under_Armour-Logo.wine.png" alt="Underarmour" class="w-16 h-16 object-contain">
+            <span class="hidden">Under Armour Kıbrıs, Under Armour KKTC kargo...</span>
         </a>
-
-        <!-- D&R -->
-        <a href="https://www.dr.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://upload.wikimedia.org/wikipedia/tr/5/52/D%26R_logo.jpg"
-                alt="Drstore" class="w-16 h-16 object-contain">
+        <a href="https://www.dr.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/tr/5/52/D%26R_logo.jpg" alt="Drstore" class="w-16 h-16 object-contain">
+            <span class="hidden">D&R Kıbrıs, D&R KKTC kargo, D&R Türkiye sipariş...</span>
         </a>
-
-        <!-- Gap -->
-        <a href="https://gap.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://logos-world.net/wp-content/uploads/2020/09/Gap-Logo-700x394.png"
-                alt="Gap" class="w-16 h-16 object-contain">
+        <a href="https://gap.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://logos-world.net/wp-content/uploads/2020/09/Gap-Logo-700x394.png" alt="Gap" class="w-16 h-16 object-contain">
+            <span class="hidden">Gap Kıbrıs, Gap KKTC kargo, Gap Türkiye sipariş...</span>
         </a>
-
-        <!-- Adidas -->
-        <a href="https://www.adidas.com.tr/tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/16/2/adidas-logo-png_seeklogo-168370.png"
-                alt="Adidas" class="w-16 h-16 object-contain">
+        <a href="https://www.adidas.com.tr/tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/16/2/adidas-logo-png_seeklogo-168370.png" alt="Adidas" class="w-16 h-16 object-contain">
+            <span class="hidden">Adidas Kıbrıs, Adidas KKTC kargo, Adidas Türkiye sipariş...</span>
         </a>
-
-        <!-- Nike -->
-        <a href="https://www.nike.com/tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/9/1/nike-logo-png_seeklogo-99478.png"
-                alt="Nike" class="w-16 h-16 object-contain">
+        <a href="https://www.nike.com/tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/9/1/nike-logo-png_seeklogo-99478.png" alt="Nike" class="w-16 h-16 object-contain">
+            <span class="hidden">Nike Kıbrıs, Nike KKTC kargo, Nike Türkiye sipariş...</span>
         </a>
-
-        <!-- Gant -->
-        <a href="https://www.gant.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/26/1/gant-logo-png_seeklogo-261630.png"
-                alt="Gant" class="w-16 h-16 object-contain">
+        <a href="https://www.gant.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/26/1/gant-logo-png_seeklogo-261630.png" alt="Gant" class="w-16 h-16 object-contain">
+            <span class="hidden">Gant Kıbrıs, Gant KKTC kargo, Gant Türkiye sipariş...</span>
         </a>
-
-        <!-- Hummel -->
-        <a href="https://hummel.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/16/1/hummel-logo-png_seeklogo-168403.png"
-                alt="Hummel" class="w-16 h-16 object-contain">
+        <a href="https://hummel.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/16/1/hummel-logo-png_seeklogo-168403.png" alt="Hummel" class="w-16 h-16 object-contain">
+            <span class="hidden">Hummel Kıbrıs, Hummel KKTC kargo, Hummel Türkiye sipariş...</span>
         </a>
-
-        <!-- Columbia -->
-        <a href="https://www.columbia.com.tr" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://www.logo.wine/a/logo/Columbia_Sportswear/Columbia_Sportswear-Logo.wine.svg"
-                alt="columbia" class="w-16 h-16 object-contain">
+        <a href="https://www.columbia.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://www.logo.wine/a/logo/Columbia_Sportswear/Columbia_Sportswear-Logo.wine.svg" alt="columbia" class="w-16 h-16 object-contain">
+            <span class="hidden">Columbia Kıbrıs, Columbia KKTC kargo, Columbia Türkiye sipariş...</span>
         </a>
-
-        <!-- Ebebek -->
-        <a href="https://www.e-bebek.com" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://worldef.com/wp-content/uploads/2023/08/ebebek-logo-.-1024x1024-1.png"
-                alt="Ebebek" class="w-16 h-16 object-contain">
+        <a href="https://www.e-bebek.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://worldef.com/wp-content/uploads/2023/08/ebebek-logo-.-1024x1024-1.png" alt="Ebebek" class="w-16 h-16 object-contain">
+            <span class="hidden">Ebebek Kıbrıs, Ebebek KKTC kargo, Ebebek Türkiye sipariş...</span>
         </a>
-
-        <!-- Boyner -->
-        <a href="https://www.boyner.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Boyner_Logo.jpg/1200px-Boyner_Logo.jpg"
-                alt="Boyner" class="w-16 h-16 object-contain">
+        <a href="https://www.boyner.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Boyner_Logo.jpg/1200px-Boyner_Logo.jpg" alt="Boyner" class="w-16 h-16 object-contain">
+            <span class="hidden">Boyner Kıbrıs, Boyner KKTC kargo, Boyner Türkiye sipariş...</span>
         </a>
-
-        <!-- Decathlon -->
-        <a href="https://www.decathlon.com.tr/" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://1000logos.net/wp-content/uploads/2020/03/Decathlon-Logo-768x431.png"
-                alt="Decathlon" class="w-16 h-16 object-contain">
+        <a href="https://www.decathlon.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://1000logos.net/wp-content/uploads/2020/03/Decathlon-Logo-768x431.png" alt="Decathlon" class="w-16 h-16 object-contain">
+            <span class="hidden">Decathlon Kıbrıs, Decathlon KKTC kargo, Decathlon Türkiye sipariş...</span>
         </a>
-
-        <!-- ÇiçekSepeti -->
-        <a href="https://www.ciceksepeti.com" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg"
-                alt="ÇiçekSepeti" class="w-16 h-16 object-contain">
+        <a href="https://www.ciceksepeti.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg" alt="ÇiçekSepeti" class="w-16 h-16 object-contain">
+            <span class="hidden">ÇiçekSepeti Kıbrıs, ÇiçekSepeti KKTC kargo, ÇiçekSepeti Türkiye sipariş...</span>
         </a>
-
-        <!-- GittiGidiyor -->
-        <a href="https://www.gittigidiyor.com" target="_blank"
-            class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s"
-                alt="GittiGidiyor" class="w-16 h-16 object-contain">
+        <a href="https://www.gittigidiyor.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s" alt="GittiGidiyor" class="w-16 h-16 object-contain">
+            <span class="hidden">GittiGidiyor Kıbrıs, GittiGidiyor KKTC kargo...</span>
         </a>
-
     </div>
 </div>
 
-
-       <div class="mt-8 bg-gray-50 p-6 rounded-xl shadow-sm">
+<div class="mt-8 bg-gray-50 p-6 rounded-xl shadow-sm">
   <h3 class="text-xl font-semibold mb-3 text-gray-800" data-i18n="methods_header">Sipariş Yöntemleri</h3>
-  <p class="text-gray-700 mb-4" data-i18n="methods_desc">
-    Getir Kıbrıs’ta iki farklı sipariş yöntemiyle hizmet veriyoruz. Aşağıdaki seçeneklerden hangisi size uygunsa onu tercih edebilirsiniz:
-  </p>
+  <p class="text-gray-700 mb-4" data-i18n="methods_desc">Getir Kıbrıs’ta iki farklı sipariş yöntemiyle hizmet veriyoruz. Aşağıdaki seçeneklerden hangisi size uygunsa onu tercih edebilirsiniz:</p>
 
   <div class="space-y-6">
     <div class="bg-white p-4 rounded-lg shadow">
       <h4 class="font-semibold text-lg text-indigo-700 mb-2" data-i18n="method1_header">1️⃣ Ürünü Benim Yerime Sipariş Edin</h4>
-      <p class="text-gray-700" data-i18n="method1_desc">
-        Ürünü sizin yerinize biz sipariş ediyoruz. 
-        Ödemeyi bize yapıyorsunuz, tüm süreci biz takip ediyoruz.
-        Ürün elinize teslim edilene kadar Getir Kıbrıs güvencesindesiniz.
-      </p>
+      <p class="text-gray-700" data-i18n="method1_desc">Ürünü sizin yerinize biz sipariş ediyoruz. Ödemeyi bize yapıyorsunuz, tüm süreci biz takip ediyoruz. Ürün elinize teslim edilene kadar Getir Kıbrıs güvencesindesiniz.</p>
     </div>
 
     <div class="bg-white p-4 rounded-lg shadow">
       <h4 class="font-semibold text-lg text-indigo-700 mb-2" data-i18n="method2_header">2️⃣ Ürünü Ben Alacağım Sadece Kargo Hizmeti İstiyorum</h4>
-      <p class="text-gray-700" data-i18n="method2_desc">
-        Bu yöntemde alışverişi kendiniz yaparsınız. Yalnızca Türkiye'deki gönderim adresi olarak Getir Kıbrıs deposu adresini girmelisiniz:
-      </p>
+      <p class="text-gray-700" data-i18n="method2_desc">Bu yöntemde alışverişi kendiniz yaparsınız. Yalnızca Türkiye'deki gönderim adresi olarak Getir Kıbrıs deposu adresini girmelisiniz:</p>
 
       <div class="bg-gray-100 p-3 rounded-lg mt-3">
         <p class="font-semibold text-sm text-gray-800" data-i18n="tr_address_label">Getir Kıbrıs Türkiye Adresi:</p>
         <p class="text-sm text-gray-700">
           <strong data-i18n="tr_addr">Adres:</strong> Aydın, Nazilli, Bozyurt Mah. Kanal Üstü 3281 sk. No:3 <br>
           <strong data-i18n="tr_phone">Telefon:</strong> +90 547 190 19 88 <br>
-            <strong data-i18n="tr_name">Ad Soyad:</strong> Emrah Kutlu
+          <strong data-i18n="tr_name">Ad Soyad:</strong> Emrah Kutlu
         </p>
       </div>
+      <p class="text-gray-700 mt-3" data-i18n="method2_footer">Ürün bu adrese ulaştığında biz sizin adınıza teslim alır, Kıbrıs’a kargo ile gönderimini sağlarız.</p>
     </div>
   </div>
 </div>
 
-
-
-    
-            
-            <div class="mt-6">
-                <h4 class="text-lg font-semibold mb-4" data-i18n="footer_addr_title">Kıbrıs Depo Adresimiz</h4>
-                <div class="space-y-4">
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 flex items-center justify-center text-primary">
-                            <i class="ri-map-pin-2-line"></i>
-                        </div>
+<div class="mt-6 px-4">
+    <h4 class="text-lg font-semibold mb-4" data-i18n="footer_addr_title">Kıbrıs Depo Adresimiz</h4>
+    <div class="space-y-4">
+        <div class="flex items-start gap-3">
+            <div class="w-6 h-6 flex items-center justify-center text-primary"><i class="ri-map-pin-2-line"></i></div>
+            <div>
+                <h5 class="font-medium text-gray-800" data-i18n="footer_addr_label">Adres</h5>
+                <p class="text-sm text-gray-600">Alayköy Sanayi Bölgesi 1.Etap, 3.Cadde, 8.Sokak, Lefkoşa, KKTC Moben Trading</p>
+            </div>
+        </div>
+        <div class="flex items-start gap-3">
+            <div class="w-6 h-6 flex items-center justify-center text-primary"><i class="ri-phone-line"></i></div>
+            <div>
+                <h5 class="font-medium text-gray-800" data-i18n="footer_phone_label">Telefon</h5>
+                <p class="text-sm text-gray-600">+90 533 860 71 82</p>
+            </div>
+        </div>
+        <div class="flex items-start gap-3">
+            <div class="w-6 h-6 flex items-center justify-center text-primary"><i class="ri-mail-line"></i></div>
+            <div>
+                <h5 class="font-medium text-gray-800" data-i18n="footer_email_label">E-posta</h5>
+                <p class="text-sm text-gray-600">info@getirkibris.com</p>
+            </div>
+        </div>
+    </div>
+    <div class="mt-6 relative">
+        <div class="absolute top-4 left-4 z-10 bg-white px-4 py-2 rounded-lg shadow-md">
+            <h5 class="font-medium text-gray-800" data-i18n="footer_map_label">Kıbrıs Adresimiz</h5>
+        </div>
+        <div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
+            <a href="https://maps.app.goo.gl/8kmoWBNWWsJrxPDz7" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Lefko%C5%9Fa%2C_KKTC.svg/1200px-Lefko%C5%9Fa%2C_KKTC.svg.png" alt="Harita" class="w-full h-full object-cover">
+            </a>
+        </div>
+    </div>
+    <div class="mt-8 space-y-6">
+        <div>
+            <h4 class="text-lg font-semibold mb-4" data-i18n="shopping_ops_title">Alışveriş İşlemleri</h4>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="ri-shopping-cart-line text-primary"></i></div>
                         <div>
-                            <h5 class="font-medium text-gray-800" data-i18n="footer_addr_label">Adres</h5>
-                            <p class="text-sm text-gray-600">Alayköy Sanayi Bölgesi 1.Etap, 3.Cadde, 8.Sokak, Lefkoşa, KKTC   Moben Trading</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 flex items-center justify-center text-primary">
-                            <i class="ri-phone-line"></i>
-                        </div>
-                        <div>
-                            <h5 class="font-medium text-gray-800" data-i18n="footer_phone_label">Telefon</h5>
-                            <p class="text-sm text-gray-600">+90 533 860 71 82</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 flex items-center justify-center text-primary">
-                            <i class="ri-mail-line"></i>
-                        </div>
-                        <div>
-                            <h5 class="font-medium text-gray-800" data-i18n="footer_email_label">E-posta</h5>
-                            <p class="text-sm text-gray-600">info@getirkibris.com</p>
+                            <h5 class="font-medium text-gray-800" data-i18n="order_process_title">Sipariş Verme</h5>
+                            <p class="text-sm text-gray-600 mt-1" data-i18n="order_process_desc">Türkiye'deki herhangi bir e-ticaret sitesinden ürün seçin, sipariş formunu doldurun ve ödemenizi yapın.</p>
                         </div>
                     </div>
                 </div>
-                <div class="mt-6 relative">
-                    <div class="absolute top-4 left-4 z-10 bg-white px-4 py-2 rounded-lg shadow-md">
-                        <h5 class="font-medium text-gray-800" data-i18n="footer_map_label">Kıbrıs Adresimiz</h5>
-                    </div>
-                    <div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
-                        <a href="https://maps.app.goo.gl/8kmoWBNWWsJrxPDz7" data-readdy="true" target="_blank">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Lefko%C5%9Fa%2C_KKTC.svg/1200px-Lefko%C5%9Fa%2C_KKTC.svg.png" alt="Harita"
-                                class="w-full h-full object-cover">
-                        </a>
-                    </div>
-                </div>
-                <div class="mt-8 space-y-6">
-                    <div>
-                        <h4 class="text-lg font-semibold mb-4" data-i18n="shopping_ops_title">Alışveriş İşlemleri</h4>
-                        <div class="grid grid-cols-1 gap-4">
-                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                                <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <i class="ri-shopping-cart-line text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-medium text-gray-800" data-i18n="order_process_title">Sipariş Verme</h5>
-                                        <p class="text-sm text-gray-600 mt-1" data-i18n="order_process_desc">Türkiye'deki herhangi bir e-ticaret sitesinden ürün seçin, sipariş formunu doldurun ve ödemenizi yapın.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                                <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <i class="ri-calculator-line text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-medium text-gray-800" data-i18n="cost_calc_title">Maliyet Hesaplama</h5>
-                                        <p class="text-sm text-gray-600 mt-1" data-i18n="cost_calc_desc">Ürün fiyatı ve kategorisine göre toplam maliyeti hesaplayın, ek ücretleri önceden öğrenin.</p>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="ri-calculator-line text-primary"></i></div>
+                        <div>
+                            <h5 class="font-medium text-gray-800" data-i18n="cost_calc_title">Maliyet Hesaplama</h5>
+                            <p class="text-sm text-gray-600 mt-1" data-i18n="cost_calc_desc">Ürün fiyatı ve kategorisine göre toplam maliyeti hesaplayın, ek ücretleri önceden öğrenin.</p>
                         </div>
                     </div>
-                    <div>
-                      <h4 class="text-lg font-semibold mb-4" data-i18n="delivery_title">Teslimat ve Takip</h4>
-<div class="grid grid-cols-1 gap-4">
-    
-    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-            <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <i class="ri-truck-line text-primary"></i>
+                </div>
             </div>
-            <div>
-                <h5 class="font-medium text-gray-800" data-i18n="cargo_track_title">Kargo Takibi</h5>
-                <p class="text-sm text-gray-600 mt-1" data-i18n="cargo_track_desc">Siparişinizin durumunu anlık olarak takip edin, teslimat sürecini kontrol edin.</p>
+        </div>
+        <div>
+            <h4 class="text-lg font-semibold mb-4" data-i18n="delivery_title">Teslimat ve Takip</h4>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="ri-truck-line text-primary"></i></div>
+                        <div>
+                            <h5 class="font-medium text-gray-800" data-i18n="cargo_track_title">Kargo Takibi</h5>
+                            <p class="text-sm text-gray-600 mt-1" data-i18n="cargo_track_desc">Siparişinizin durumunu anlık olarak takip edin, teslimat sürecini kontrol edin.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="ri-time-line text-primary"></i></div>
+                        <div>
+                            <h5 class="font-medium text-gray-800" data-i18n="delivery_time_title">Teslimat Süresi</h5>
+                            <p class="text-sm text-gray-600 mt-1" data-i18n="delivery_time_desc">Ürün, online alışveriş sitelerinden Türkiye depomuza ulaştıktan sonra 10 iş günü içerisinde size teslim edilir.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="ri-map-pin-line text-primary"></i></div>
+                        <div>
+                            <h5 class="font-medium text-gray-800" data-i18n="delivery_opts_title">Teslimat Seçenekleri</h5>
+                            <p class="text-sm text-gray-600 mt-1" data-i18n="delivery_opts_desc">Depodan teslim veya adrese teslimat seçeneklerinden size uygun olanı seçin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 class="text-lg font-semibold mb-4 mt-8" data-i18n="cust_service_title">Müşteri Hizmetleri</h4>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="ri-customer-service-line text-primary"></i></div>
+                        <div>
+                            <h5 class="font-medium text-gray-800" data-i18n="support_title">7/24 Destek</h5>
+                            <p class="text-sm text-gray-600 mt-1" data-i18n="support_desc">WhatsApp üzerinden bize ulaşın, sorularınızı yanıtlayalım, sorunlarınıza çözüm bulalım.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="ri-file-list-3-line text-primary"></i></div>
+                        <div>
+                            <h5 class="font-medium text-gray-800" data-i18n="order_history_title">Sipariş Geçmişi</h5>
+                            <p class="text-sm text-gray-600 mt-1" data-i18n="order_history_desc">Tüm siparişlerinizi görüntüleyin, geçmiş alışverişlerinizi kontrol edin.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-            <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <i class="ri-time-line text-primary"></i> 
-            </div>
-            <div>
-                <h5 class="font-medium text-gray-800" data-i18n="delivery_time_title">Teslimat Süresi</h5>
-                <p class="text-sm text-gray-600 mt-1" data-i18n="delivery_time_desc">Ürün, online alışveriş sitelerinden Türkiye depomuza ulaştıktan sonra 10 iş günü içerisinde size teslim edilir.</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex items-start gap-4">
-            <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                <i class="ri-map-pin-line text-primary"></i>
-            </div>
-            <div>
-                <h5 class="font-medium text-gray-800" data-i18n="delivery_opts_title">Teslimat Seçenekleri</h5>
-                <p class="text-sm text-gray-600 mt-1" data-i18n="delivery_opts_desc">Depodan teslim veya adrese teslimat seçeneklerinden size uygun olanı seçin.</p>
-            </div>
-        </div>
-    </div>
-    
 </div>
-                        <h4 class="text-lg font-semibold mb-4 mt-8" data-i18n="cust_service_title">Müşteri Hizmetleri</h4>
-                        <div class="grid grid-cols-1 gap-4">
-                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                                <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <i class="ri-customer-service-line text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-medium text-gray-800" data-i18n="support_title">7/24 Destek</h5>
-                                        <p class="text-sm text-gray-600 mt-1" data-i18n="support_desc">WhatsApp üzerinden bize ulaşın, sorularınızı yanıtlayalım, sorunlarınıza çözüm bulalım.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                                <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <i class="ri-file-list-3-line text-primary"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-medium text-gray-800" data-i18n="order_history_title">Sipariş Geçmişi</h5>
-                                        <p class="text-sm text-gray-600 mt-1" data-i18n="order_history_desc">Tüm siparişlerinizi görüntüleyin, geçmiş alışverişlerinizi kontrol edin.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <section class="px-4 py-6 text-center">
-            <h1 class="text-2xl sm:text-4xl font-bold text-primary mb-4" data-i18n="footer_h1">Türkiye’den Kıbrıs’a Ürün Getirme Hizmeti</h1>
-            <p class="text-lg text-gray-700" data-i18n="footer_p">
-                Getir Kıbrıs, Türkiye'deki online alışveriş sitelerinden verdiğiniz siparişleri sizin için Kuzey Kıbrıs’a ulaştırır.
-                Trendyol, Hepsiburada, N11, Amazon gibi sitelerden aldığınız ürünleri uygun fiyatlarla teslim alırsınız.
-            </p>
-        </section>
-    </main>
 
-<a href="https://wa.me/905471901988" target="_blank" data-readdy="true"
-   class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors p-6">
-   <i class="ri-whatsapp-line ri-xl text-white"></i>
+<section class="px-4 py-6 text-center">
+    <h1 class="text-2xl sm:text-4xl font-bold text-primary mb-4" data-i18n="footer_h1">Türkiye’den Kıbrıs’a Ürün Getirme Hizmeti</h1>
+    <p class="text-lg text-gray-700" data-i18n="footer_p">Getir Kıbrıs, Türkiye'deki online alışveriş sitelerinden verdiğiniz siparişleri sizin için Kuzey Kıbrıs’a ulaştırır. Trendyol, Hepsiburada, N11, Amazon gibi sitelerden aldığınız ürünleri uygun fiyatlarla teslim alırsınız.</p>
+</section>
+
+<a href="https://wa.me/905471901988" target="_blank" class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors p-6">
+    <i class="ri-whatsapp-line ri-xl text-white"></i>
 </a>
 
 <div class="mt-8 px-4 pb-20 text-center">
@@ -819,60 +580,57 @@
     </div>
 </div>
 
-    <!-- Modallar ve Toast Mantığı (Kod Aynen Korundu) -->
-    <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
-            <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
-            <div class="text-center mb-6">
-                <h3 class="text-2xl font-bold text-gray-800" data-i18n="modal_login_title">Hoş Geldiniz!</h3>
-                <p class="text-sm text-gray-600 mt-1" data-i18n="modal_login_subtitle">Hizmetlerimizi kullanmak için giriş yapın.</p>
+<!-- Modallar -->
+<div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+        <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
+        <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-800" data-i18n="modal_login_title">Hoş Geldiniz!</h3>
+            <p class="text-sm text-gray-600 mt-1" data-i18n="modal_login_subtitle">Hizmetlerimizi kullanmak için giriş yapın.</p>
+        </div>
+        <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-button py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+            <i class="ri-google-fill ri-lg text-red-500"></i>
+            <span data-i18n="btn_google_login">Google ile Giriş Yap</span>
+        </button>
+    </div>
+</div>
+
+<div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+        <h3 class="text-2xl font-bold text-gray-800 text-center mb-2" data-i18n="modal_profile_title">Profilinizi Tamamlayın</h3>
+        <p class="text-sm text-gray-600 mt-1 text-center mb-6" data-i18n="modal_profile_subtitle">Size daha iyi hizmet verebilmemiz için bu bilgilere ihtiyacımız var.</p>
+        <form id="profile-form" class="space-y-4">
+            <div>
+                <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="label_fullname">Ad Soyad</span> <span class="text-red-500">*</span></label>
+                <input type="text" id="full-name-input" required class="w-full p-2 border border-gray-300 rounded-md">
             </div>
-            <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-button py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                <i class="ri-google-fill ri-lg text-red-500"></i>
-                <span data-i18n="btn_google_login">Google ile Giriş Yap</span>
-            </button>
+            <div>
+                <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="label_phone">Telefon Numarası</span> <span class="text-red-500">*</span></label>
+                <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md" placeholder="+90 5XX XXX XX XX">
+            </div>
+            <div>
+                <label for="address-input" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="label_address">Varsayılan Teslimat Adresi</span> <span class="text-red-500">*</span></label>
+                <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Tam adresinizi girin"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-semibold" data-i18n="btn_save_profile">Profili Kaydet</button>
+        </form>
+    </div>
+</div>
+
+<div id="auth-required-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 text-center fade-in">
+        <h3 class="text-xl font-bold text-gray-800" data-i18n="modal_auth_title">Giriş Gerekli</h3>
+        <p class="text-sm text-gray-600 mt-2 mb-6" data-i18n="modal_auth_desc">Bu özelliği kullanmak için lütfen giriş yapın.</p>
+        <div class="space-y-2">
+            <button id="auth-modal-login-btn" class="w-full bg-primary text-white py-2 rounded-button font-medium" data-i18n="btn_auth_login">Giriş Yap</button>
+            <button id="close-auth-modal" class="w-full text-gray-600 py-2 font-medium" data-i18n="btn_close">Kapat</button>
         </div>
     </div>
+</div>
 
-    <div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
-            <h3 class="text-2xl font-bold text-gray-800 text-center mb-2" data-i18n="modal_profile_title">Profilinizi Tamamlayın</h3>
-            <p class="text-sm text-gray-600 mt-1 text-center mb-6" data-i18n="modal_profile_subtitle">Size daha iyi hizmet verebilmemiz için bu bilgilere ihtiyacımız var.</p>
-            <form id="profile-form" class="space-y-4">
-                <div>
-                    <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="label_fullname">Ad Soyad</span> <span class="text-red-500">*</span></label>
-                    <input type="text" id="full-name-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
-                </div>
-                <div>
-                    <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="label_phone">Telefon Numarası</span> <span class="text-red-500">*</span></label>
-                    <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="+90 5XX XXX XX XX">
-                </div>
-                <div>
-                    <label for="address-input" class="block text-sm font-medium text-gray-700 mb-1"><span data-i18n="label_address">Varsayılan Teslimat Adresi</span> <span class="text-red-500">*</span></label>
-                    <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Tam adresinizi girin"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors" data-i18n="btn_save_profile">Profili Kaydet</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="auth-required-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 text-center fade-in">
-            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="ri-lock-line ri-2x text-red-500"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800" data-i18n="modal_auth_title">Giriş Gerekli</h3>
-            <p class="text-sm text-gray-600 mt-2 mb-6" data-i18n="modal_auth_desc">Bu özelliği kullanmak için lütfen giriş yapın.</p>
-            <div class="space-y-2">
-                <button id="auth-modal-login-btn" class="w-full bg-primary text-white py-2 rounded-button font-medium hover:bg-primary/90 transition-colors" data-i18n="btn_auth_login">Giriş Yap</button>
-                <button id="close-auth-modal" class="w-full text-gray-600 py-2 font-medium hover:bg-gray-100 rounded-button transition-colors" data-i18n="btn_close">Kapat</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4">
-        <span id="toast-message"></span>
-    </div>
+<div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4">
+    <span id="toast-message"></span>
+</div>
 
 </div>
 
@@ -896,48 +654,74 @@
     const db = getFirestore(app);
     let cartUnsubscribe = null;
 
-    // --- DİL VE PARA BİRİMİ SİSTEMİ ---
+    // --- TÜM SAYFAYI KAPSAYAN DEV SÖZLÜK ---
     const i18n = {
         tr: {
-            nav_home: "Ana Sayfa", hero_title: "Şeffaf Fiyatlandırma", hero_subtitle: "Sürpriz Maliyetlere Son", hero_label: "Hizmet Kapsamı", hero_scope: "Gümrük + Kargo + Nakliye", hero_badge: "TÜM SÜREÇ TEK FİYATA DAHİLDİR", hero_item1: "Ekstra gümrük vergisi talep edilmez.", hero_item2: "Hesaplanan tutar net teslimat fiyatıdır.", hero_item3: "Tüm operasyonel süreçler tarafımızca yönetilir.", hero_standard: "Uluslararası Taşıma Standartları", btn_order: "Sipariş Ver", btn_cart: "Sepetim", calc_header: "1. Ürün Bilgilerini Girin", calc_method: "Sipariş Yöntemi", calc_opt1: "Ürünü benim yerime siz sipariş edin", calc_opt2: "Ürünü ben alacağım, sadece kargo hizmeti istiyorum", calc_link: "Ürün Linki", calc_price: "Ürün Fiyatı", calc_category: "Kategori", calc_loading: "Kategoriler Yükleniyor...", res_header: "Ürün Getirme Maliyeti", res_price: "Ürün Fiyatı:", res_fee: "Kategori Hiz Bedeli:", res_total: "Getirme Dahil Toplam:", btn_calc: "Maliyeti Hesapla", pop_title: "🛒 Popüler Ürünler", free_ship: "ÜCRETSİZ KARGO", home_ship: "Getir Home'dan Gönderim", all_incl: "Gümrük + Kargo Dahil", btn_buy: "Satın Al", pop_sites: "Popüler Alışveriş Siteleri", methods_header: "Sipariş Yöntemleri", methods_desc: "Getir Kıbrıs’ta iki farklı sipariş yöntemiyle hizmet veriyoruz...", method1_header: "1️⃣ Ürünü Benim Yerime Sipariş Edin", method1_desc: "Ürünü sizin yerinize biz sipariş ediyoruz. Ödemeyi bize yapıyorsunuz...", method2_header: "2️⃣ Ürünü Ben Alacağım Sadece Kargo Hizmeti İstiyorum", method2_desc: "Bu yöntemde alışverişi kendiniz yaparsınız...", tr_address_label: "Getir Kıbrıs Türkiye Adresi:", tr_addr: "Adres:", tr_phone: "Telefon:", tr_name: "Ad Soyad:", footer_addr_title: "Kıbrıs Depo Adresimiz", footer_addr_label: "Adres", footer_phone_label: "Telefon", footer_email_label: "E-posta", footer_map_label: "Kıbrıs Adresimiz", shopping_ops_title: "Alışveriş İşlemleri", order_process_title: "Sipariş Verme", order_process_desc: "Türkiye'deki e-ticaret sitesinden ürün seçin...", cost_calc_title: "Maliyet Hesaplama", cost_calc_desc: "Ürün fiyatı ve kategorisine göre maliyeti hesaplayın...", delivery_title: "Teslimat ve Takip", cargo_track_title: "Kargo Takibi", cargo_track_desc: "Sipariş durumunu takip edin...", delivery_time_title: "Teslimat Süresi", delivery_time_desc: "10 iş günü içerisinde teslim edilir.", delivery_opts_title: "Teslimat Seçenekleri", delivery_opts_desc: "Depodan teslim veya adrese teslimat.", cust_service_title: "Müşteri Hizmetleri", support_title: "7/24 Destek", support_desc: "WhatsApp üzerinden ulaşın...", order_history_title: "Sipariş Geçmişi", order_history_desc: "Tüm siparişlerinizi görüntüleyin.", footer_h1: "Türkiye’den Kıbrıs’a Ürün Getirme Hizmeti", footer_p: "Getir Kıbrıs, Türkiye online alışveriş siparişlerinizi ulaştırır...", link_privacy: "Gizlilik Politikası", link_terms: "Kullanım Şartları", link_faq: "S.S.S.", modal_login_title: "Hoş Geldiniz!", modal_login_subtitle: "Giriş yapın.", btn_google_login: "Google ile Giriş Yap", modal_profile_title: "Profilinizi Tamamlayın", modal_profile_subtitle: "Bilgilerinize ihtiyacımız var.", label_fullname: "Ad Soyad", label_phone: "Telefon", label_address: "Adres", btn_save_profile: "Kaydet", modal_auth_title: "Giriş Gerekli", modal_auth_desc: "Lütfen giriş yapın.", btn_auth_login: "Giriş Yap", btn_close: "Kapat"
+            nav_home: "Ana Sayfa", hero_title: "Şeffaf Fiyatlandırma", hero_subtitle: "Sürpriz Maliyetlere Son", hero_label: "Hizmet Kapsamı", hero_scope: "Gümrük + Kargo + Nakliye", hero_badge: "TÜM SÜREÇ TEK FİYATA DAHİLDİR", hero_item1: "Ekstra gümrük vergisi talep edilmez.", hero_item2: "Hesaplanan tutar net teslimat fiyatıdır.", hero_item3: "Tüm operasyonel süreçler tarafımızca yönetilir.", hero_footer: "Uluslararası Taşıma Standartları", btn_order: "Sipariş Ver", btn_cart: "Sepetim", calc_header: "1. Ürün Bilgilerini Girin", calc_method: "Sipariş Yöntemi", calc_opt1: "Ürünü benim yerime siz sipariş edin", calc_opt2: "Ürünü ben alacağım, sadece kargo hizmeti istiyorum", calc_link: "Ürün Linki", calc_price: "Ürün Fiyatı", calc_category: "Kategori", calc_loading: "Kategoriler Yükleniyor...", res_header: "Ürün Getirme Maliyeti", res_price: "Ürün Fiyatı:", res_fee: "Kategori Hiz Bedeli:", res_total: "Getirme Dahil Toplam:", btn_calc: "Maliyeti Hesapla", pop_title: "🛒 Popüler Ürünler", free_ship: "ÜCRETSİZ KARGO", home_ship: "Getir Home'dan Gönderim", all_incl: "Gümrük + Kargo Dahil", btn_buy: "Satın Al", pop_sites: "Popüler Alışveriş Siteleri", methods_header: "Sipariş Yöntemleri", methods_desc: "Getir Kıbrıs’ta iki farklı sipariş yöntemiyle hizmet veriyoruz...", method1_header: "1️⃣ Ürünü Benim Yerime Sipariş Edin", method1_desc: "Ürünü sizin yerinize biz sipariş ediyoruz. Ödemeyi bize yapıyorsunuz...", method2_header: "2️⃣ Ürünü Ben Alacağım Sadece Kargo Hizmeti İstiyorum", method2_desc: "Bu yöntemde alışverişi kendiniz yaparsınız...", method2_footer: "Ürün bu adrese ulaştığında biz sizin adınıza teslim alırız...", tr_address_label: "Getir Kıbrıs Türkiye Adresi:", tr_addr: "Adres:", tr_phone: "Telefon:", tr_name: "Ad Soyad:", footer_addr_title: "Kıbrıs Depo Adresimiz", footer_addr_label: "Adres", footer_phone_label: "Telefon", footer_email_label: "E-posta", footer_map_label: "Kıbrıs Adresimiz", shopping_ops_title: "Alışveriş İşlemleri", order_process_title: "Sipariş Verme", order_process_desc: "Türkiye'deki e-ticaret sitelerinden ürün seçin...", cost_calc_title: "Maliyet Hesaplama", cost_calc_desc: "Ürün fiyatı ve kategorisine göre toplam maliyeti hesaplayın...", delivery_title: "Teslimat ve Takip", cargo_track_title: "Kargo Takibi", cargo_track_desc: "Siparişinizin durumunu takip edin...", delivery_time_title: "Teslimat Süresi", delivery_time_desc: "10 iş günü içerisinde teslim edilir.", delivery_opts_title: "Seçenekler", delivery_opts_desc: "Depodan teslim veya adrese teslimat.", cust_service_title: "Müşteri Hizmetleri", support_title: "7/24 Destek", support_desc: "WhatsApp üzerinden bize ulaşın...", order_history_title: "Geçmiş", order_history_desc: "Tüm siparişlerinizi görüntüleyin.", footer_h1: "Türkiye’den Kıbrıs’a Ürün Getirme Hizmeti", footer_p: "Getir Kıbrıs, siparişlerinizi sizin için Kuzey Kıbrıs’a ulaştırır.", link_privacy: "Gizlilik Politikası", link_terms: "Kullanım Şartları", link_faq: "S.S.S.", modal_login_title: "Hoş Geldiniz!", modal_login_subtitle: "Hizmetlerimiz için giriş yapın.", btn_google_login: "Google ile Giriş Yap", modal_profile_title: "Profilinizi Tamamlayın", modal_profile_subtitle: "Bilgilerinize ihtiyacımız var.", label_fullname: "Ad Soyad", label_phone: "Telefon", label_address: "Adres", btn_save_profile: "Kaydet", modal_auth_title: "Giriş Gerekli", modal_auth_desc: "Lütfen giriş yapın.", btn_auth_login: "Giriş Yap", btn_close: "Kapat"
         },
         en: {
-            nav_home: "Home", hero_title: "Transparent Pricing", hero_subtitle: "No More Surprise Costs", hero_label: "Service Scope", hero_scope: "Customs + Cargo + Shipping", hero_badge: "ALL-IN-ONE PRICE INCLUDED", hero_item1: "No extra customs tax requested.", hero_item2: "Calculated price is the net delivery price.", hero_item3: "All operations managed by us.", hero_standard: "International Shipping Standards", btn_order: "Order Now", btn_cart: "My Cart", calc_header: "1. Enter Product Info", calc_method: "Order Method", calc_opt1: "Order for me", calc_opt2: "I'll buy, just cargo service", calc_link: "Product Link", calc_price: "Product Price", calc_category: "Category", calc_loading: "Loading Categories...", res_header: "Delivery Cost", res_price: "Product Price:", res_fee: "Service Fee:", res_total: "Total Including Delivery:", btn_calc: "Calculate Cost", pop_title: "🛒 Popular Products", free_ship: "FREE SHIPPING", home_ship: "Ship from Getir Home", all_incl: "Customs + Cargo Included", btn_buy: "Buy Now", pop_sites: "Popular Shopping Sites", methods_header: "Order Methods", methods_desc: "We provide two types of services at Getir Cyprus...", method1_header: "1️⃣ Order Instead of Me", method1_desc: "We order the product for you. You pay us, we track it...", method2_header: "2️⃣ Just Cargo Service", method2_desc: "Shop yourself, use our warehouse address...", tr_address_label: "Cyprus Turkey Address:", tr_addr: "Address:", tr_phone: "Phone:", tr_name: "Name:", footer_addr_title: "Cyprus Warehouse", footer_addr_label: "Address", footer_phone_label: "Phone", footer_email_label: "Email", footer_map_label: "Cyprus Address", shopping_ops_title: "Shopping Operations", order_process_title: "Ordering", order_process_desc: "Choose from any Turkish site...", cost_calc_title: "Cost Calculation", cost_calc_desc: "Calculate total cost based on category...", delivery_title: "Delivery & Tracking", cargo_track_title: "Tracking", cargo_track_desc: "Track your order live...", delivery_time_title: "Delivery Time", delivery_time_desc: "Delivered within 10 business days.", delivery_opts_title: "Options", delivery_opts_desc: "Pickup or home delivery.", cust_service_title: "Customer Service", support_title: "24/7 Support", support_desc: "Contact us via WhatsApp...", order_history_title: "Order History", order_history_desc: "View all your orders.", footer_h1: "Turkey to Cyprus Shipping", footer_p: "Getir Cyprus delivers your orders from Turkey...", link_privacy: "Privacy Policy", link_terms: "Terms of Use", link_faq: "FAQ", modal_login_title: "Welcome!", modal_login_subtitle: "Login to continue.", btn_google_login: "Login with Google", modal_profile_title: "Complete Profile", modal_profile_subtitle: "We need your details.", label_fullname: "Full Name", label_phone: "Phone", label_address: "Address", btn_save_profile: "Save", modal_auth_title: "Auth Required", modal_auth_desc: "Please login.", btn_auth_login: "Login", btn_close: "Close"
+            nav_home: "Home", hero_title: "Transparent Pricing", hero_subtitle: "No More Surprise Costs", hero_label: "Service Scope", hero_scope: "Customs + Cargo + Shipping", hero_badge: "ALL-IN-ONE PRICE INCLUDED", hero_item1: "No extra customs tax requested.", hero_item2: "Calculated price is the net delivery price.", hero_item3: "All operations managed by us.", hero_footer: "International Shipping Standards", btn_order: "Order Now", btn_cart: "My Cart", calc_header: "1. Enter Product Info", calc_method: "Order Method", calc_opt1: "Order for me", calc_opt2: "I'll buy, just shipping", calc_link: "Product Link", calc_price: "Price", calc_category: "Category", calc_loading: "Loading...", res_header: "Delivery Cost", res_price: "Product Price:", res_fee: "Service Fee:", res_total: "Total Incl. Delivery:", btn_calc: "Calculate", pop_title: "🛒 Popular Products", free_ship: "FREE SHIPPING", home_ship: "Ship from Getir Home", all_incl: "Customs + Cargo Included", btn_buy: "Buy Now", pop_sites: "Popular Shopping Sites", methods_header: "Ordering Methods", methods_desc: "We provide two types of shipping services...", method1_header: "1️⃣ Order Instead of Me", method1_desc: "We order the product for you. You pay us...", method2_header: "2️⃣ Just Shipping Service", method2_desc: "You make the purchase yourself...", method2_footer: "When the product reaches this address, we collect it...", tr_address_label: "Turkey Warehouse Address:", tr_addr: "Address:", tr_phone: "Phone:", tr_name: "Name:", footer_addr_title: "Cyprus Warehouse Address", footer_addr_label: "Address", footer_phone_label: "Phone", footer_email_label: "Email", footer_map_label: "Cyprus Location", shopping_ops_title: "Shopping Operations", order_process_title: "Ordering", order_process_desc: "Choose from any Turkish site...", cost_calc_title: "Calculation", cost_calc_desc: "Calculate total cost in advance.", delivery_title: "Delivery & Tracking", cargo_track_title: "Tracking", cargo_track_desc: "Track your order status live.", delivery_time_title: "Delivery Time", delivery_time_desc: "Delivery within 10 business days.", delivery_opts_title: "Options", delivery_opts_desc: "Pickup or home delivery.", cust_service_title: "Customer Service", support_title: "24/7 Support", support_desc: "Contact us via WhatsApp...", order_history_title: "History", order_history_desc: "View all past orders.", footer_h1: "Shipping Turkey to Cyprus", footer_p: "Getir Cyprus delivers your orders to Northern Cyprus.", link_privacy: "Privacy Policy", link_terms: "Terms", link_faq: "FAQ", modal_login_title: "Welcome!", modal_login_subtitle: "Login to continue.", btn_google_login: "Login with Google", modal_profile_title: "Complete Profile", modal_profile_subtitle: "We need your details.", label_fullname: "Full Name", label_phone: "Phone", label_address: "Address", btn_save_profile: "Save", modal_auth_title: "Auth Required", modal_auth_desc: "Please login.", btn_auth_login: "Login", btn_close: "Close"
         },
         ru: {
-            nav_home: "Главная", hero_title: "Прозрачные цены", hero_subtitle: "Больше никаких сюрпризов", hero_label: "Объем услуг", hero_scope: "Таможня + Груз + Доставка", hero_badge: "ВСЕ ВКЛЮЧЕНО В ОДНУ ЦЕНУ", hero_item1: "Никаких дополнительных налогов.", hero_item2: "Цена является окончательной.", hero_item3: "Мы управляем всеми процессами.", hero_standard: "Международные стандарты", btn_order: "Заказать сейчас", btn_cart: "Корзина", calc_header: "1. Введите данные", calc_method: "Метод заказа", btn_calc: "Рассчитать стоимость", btn_buy: "Купить", pop_title: "🛒 Популярные товары"
+            nav_home: "Главная", hero_title: "Прозрачные цены", hero_subtitle: "Больше никаких сюрпризов", hero_label: "Объем услуг", hero_scope: "Таможня + Груз + Доставка", hero_badge: "ВСЕ ВКЛЮЧЕНО", btn_order: "Заказать", btn_cart: "Корзина", btn_calc: "Рассчитать", pop_title: "🛒 Популярные товары", free_ship: "БЕСПЛАТНО", btn_buy: "Купить", pop_sites: "Популярные сайты"
         },
         gr: {
-            nav_home: "Αρχική", hero_title: "Διαφανής Τιμολόγηση", hero_subtitle: "Όχι πια κρυφά κόστη", btn_order: "Παραγγελία", btn_cart: "Καλάθι", btn_calc: "Υπολογισμός", btn_buy: "Αγορά", pop_title: "🛒 Δημοφιλή Προϊόντα"
+            nav_home: "Αρχική", hero_title: "Διαφανής Τιμολόγηση", hero_subtitle: "Όχι πια κρυφά κόστη", btn_order: "Παραγγελία", btn_cart: "Καλάθι", btn_calc: "Υπολογισμός", pop_title: "🛒 Δημοφιλή Προϊόντα", free_ship: "ΔΩΡΕΑΝ", btn_buy: "Αγορά"
         },
         ar: {
-            nav_home: "الرئيسية", hero_title: "تسعير شفاف", hero_subtitle: "لا مزيد من التكاليف المفاجئة", hero_label: "نطاق الخدمة", hero_scope: "الجمارك + الشحن + النقل", hero_badge: "العملية بالكامل مشمولة في سعر واحد", btn_order: "اطلب الآن", btn_cart: "عربتي", calc_header: "1. أدخل معلومات المنتج", btn_calc: "احسب التكلفة", btn_buy: "اشترِ الآن", pop_title: "🛒 المنتجات الشعبية"
+            nav_home: "الرئيسية", hero_title: "تسعير شفاف", hero_subtitle: "لا مزيد من التكاليف المفاجئة", hero_label: "نطاق الخدمة", hero_scope: "الجمارك + الشحن + النقل", hero_badge: "العملية بالكامل مشمولة في سعر واحد", btn_order: "اطلب الآن", btn_cart: "عربتي", btn_calc: "احسب التكلفة", pop_title: "🛒 المنتجات الشعبية", free_ship: "شحن مجاني", btn_buy: "اشتري الآن"
         }
     };
 
-    const currencyConfig = {
-        TRY: { symbol: '₺', rate: 1 },
-        USD: { symbol: '$', rate: 0.029 },
-        EUR: { symbol: '€', rate: 0.027 },
-        GBP: { symbol: '£', rate: 0.023 }
+    // --- CANLI KUR VE AYARLAR ---
+    let liveRates = { TRY: 1, USD: 0.029, EUR: 0.027, GBP: 0.023 };
+    let pricingSettings = {};
+    const DEFAULT_SETTINGS = {
+        categoryRates: { 'furniture': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 }
     };
+
+    async function fetchWithRetry(url, options = {}, retries = 5, backoff = 1000) {
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) throw new Error('API Error');
+            return await response.json();
+        } catch (error) {
+            if (retries > 0) {
+                await new Promise(resolve => setTimeout(resolve, backoff));
+                return fetchWithRetry(url, options, retries - 1, backoff * 2);
+            }
+            throw error;
+        }
+    }
+
+    async function fetchLiveRates() {
+        try {
+            const data = await fetchWithRetry('https://open.er-api.com/v6/latest/TRY');
+            if (data && data.rates) {
+                liveRates = data.rates;
+                console.log("Canlı kurlar yüklendi.");
+                applySettings();
+            }
+        } catch (error) { console.error("Canlı kurlar çekilemedi."); }
+    }
 
     function applySettings() {
         const lang = localStorage.getItem('site_lang') || 'tr';
         const curr = localStorage.getItem('site_curr') || 'TRY';
+        const currSymbols = { TRY: '₺', USD: '$', EUR: '€', GBP: '£' };
 
-        // Dil uygula
         document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (i18n[lang] && i18n[lang][key]) el.textContent = i18n[lang][key];
         });
 
-        // Mevcut statik fiyatları güncelle
+        // Vitrin ürün fiyatlarını canlı kura göre çevir
         document.querySelectorAll('.currency-static').forEach(el => {
             const tl = parseFloat(el.getAttribute('data-tl'));
-            const converted = (tl * currencyConfig[curr].rate).toLocaleString(undefined, {minimumFractionDigits: 2});
-            el.textContent = `${converted} ${currencyConfig[curr].symbol}`;
+            const rate = liveRates[curr] || 1;
+            const converted = (tl * rate).toLocaleString(undefined, {minimumFractionDigits: 2});
+            el.textContent = `${converted} ${currSymbols[curr]}`;
         });
 
         document.getElementById('lang-select').value = lang;
@@ -956,14 +740,7 @@
         }
     });
 
-    // --- GLOBAL FIREBASE SETTINGS (Aynen Korundu) ---
-    let pricingSettings = {};
-    const DEFAULT_SETTINGS = {
-        categoryRates: { 'furniture': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
-        cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
-    };
-
-    // --- DOM Elements ---
+    // --- FIREBASE VE GENEL MANTIK ---
     const loginBtn = document.getElementById('login-btn');
     const profileContainer = document.getElementById('profile-container');
     const profileImg = document.getElementById('profile-img');
@@ -971,57 +748,34 @@
     const closeLoginModal = document.getElementById('close-login-modal');
     const googleLoginBtn = document.getElementById('google-login-btn');
     const authRequiredModal = document.getElementById('auth-required-modal');
-    const closeAuthModal = document.getElementById('close-auth-modal');
-    const authModalLoginBtn = document.getElementById('auth-modal-login-btn');
     const profileModal = document.getElementById('profile-modal');
     const profileForm = document.getElementById('profile-form');
     const cartBadge = document.getElementById('cart-badge');
 
-    // ---- SETTINGS LOADER ----
     async function loadPricingSettings() {
         try {
             const docRef = doc(db, "settings", "pricing");
             const docSnap = await getDoc(docRef);
-            if (docSnap.exists() && docSnap.data().categoryRates) {
-                pricingSettings = docSnap.data();
-            } else {
-                pricingSettings = DEFAULT_SETTINGS;
-            }
-        } catch (error) {
-            pricingSettings = DEFAULT_SETTINGS;
-        }
+            pricingSettings = docSnap.exists() ? docSnap.data() : DEFAULT_SETTINGS;
+        } catch (error) { pricingSettings = DEFAULT_SETTINGS; }
         populateCategoryDropdown();
     }
 
     function populateCategoryDropdown() {
         const categorySelect = document.getElementById('product-category');
-        if (!categorySelect || !pricingSettings.categoryRates) return;
-        
+        if (!categorySelect) return;
         categorySelect.innerHTML = '<option value="" disabled selected>Kategori seçin</option>';
-        const categoryDisplayNames = {
-            furniture: "Mobilya & Ev Eşyası",
-            clothing: "Giyim & Ayakkabı",
-            cosmetics: "Kozmetik",
-            stationery: "Kırtasiye & Kitap"
-        };
-        for (const categoryKey in pricingSettings.categoryRates) {
-            const option = document.createElement('option');
-            option.value = categoryKey;
-            option.textContent = categoryDisplayNames[categoryKey] || categoryKey;
-            categorySelect.appendChild(option);
+        const names = { furniture: "Mobilya", clothing: "Giyim", cosmetics: "Kozmetik", stationery: "Kırtasiye" };
+        for (const key in pricingSettings.categoryRates) {
+            const opt = document.createElement('option');
+            opt.value = key; opt.textContent = names[key] || key;
+            categorySelect.appendChild(opt);
         }
     }
 
-    // ---- AUTHENTICATION ---- //
     onAuthStateChanged(auth, user => {
         updateAuthUI(user);
-        if (user) {
-            checkUserProfile(user);
-            listenToCart(user.uid);
-        } else {
-            if (cartUnsubscribe) cartUnsubscribe();
-            cartBadge.classList.add('hidden');
-        }
+        if (user) { checkUserProfile(user); listenToCart(user.uid); }
     });
 
     function updateAuthUI(user) {
@@ -1029,156 +783,71 @@
             loginBtn.classList.add('hidden');
             profileContainer.classList.remove('hidden');
             profileImg.src = user.photoURL || 'https://placehold.co/40x40/cccccc/000000?text=P';
-            profileImg.alt = user.displayName || 'Profil';
         } else {
             loginBtn.classList.remove('hidden');
             profileContainer.classList.add('hidden');
         }
     }
-    
+
     loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
     closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
-    profileContainer.addEventListener('click', async () => {
-        if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-            await signOut(auth);
-            showToast('Başarıyla çıkış yapıldı.');
-        }
-    });
-    
     googleLoginBtn.addEventListener('click', async () => {
         const provider = new GoogleAuthProvider();
-        try {
-            await signInWithPopup(auth, provider);
-            loginModal.classList.add('hidden');
-            showToast('Giriş başarılı!');
-        } catch (error) {
-            showToast('Giriş sırasında bir hata oluştu.', 'error');
-        }
+        await signInWithPopup(auth, provider);
+        loginModal.classList.add('hidden');
     });
-
-    window.showAuthRequiredModal = () => authRequiredModal.classList.remove('hidden');
-    closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
-    authModalLoginBtn.addEventListener('click', () => {
-        authRequiredModal.classList.add('hidden');
-        loginModal.classList.remove('hidden');
-    });
-
-    // ---- USER PROFILE ---- //
-    async function checkUserProfile(user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (!userDocSnap.exists() || !userDocSnap.data().isProfileComplete) {
-            profileModal.classList.remove('hidden');
-            document.getElementById('full-name-input').value = user.displayName || '';
-        }
-    }
-    
-    profileForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const user = auth.currentUser;
-        if (!user) return;
-        const userData = {
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            fullName: document.getElementById('full-name-input').value,
-            phone: document.getElementById('phone-input').value,
-            address: document.getElementById('address-input').value,
-            isProfileComplete: true,
-        };
-        try {
-            await setDoc(doc(db, "users", user.uid), userData, { merge: true });
-            profileModal.classList.add('hidden');
-            showToast('Profiliniz başarıyla güncellendi!');
-        } catch (error) {
-            showToast('Profil kaydedilirken bir hata oluştu.', 'error');
-        }
-    });
-    
-    // ---- CALCULATOR & CART (Para Birimi Entegrasyonlu) ---- //
-    const calculatorSection = document.getElementById('calculator-section');
-    const calculatorForm = document.getElementById('calculator-form');
-    const mainActionBtn = document.getElementById('main-action-btn');
-    const calculationResult = document.getElementById('calculation-result');
-
-    calculatorForm.querySelectorAll('input, select').forEach(input => input.addEventListener('input', resetCalculatorState));
 
     const calculateBtn = document.getElementById('calculate-btn');
     calculateBtn.addEventListener('click', () => {
-        calculatorSection.classList.remove('hidden');
-        calculatorSection.scrollIntoView({ behavior: 'smooth' });
-        calculatorForm.reset();
-        resetCalculatorState();
+        document.getElementById('calculator-section').classList.remove('hidden');
+        document.getElementById('calculator-section').scrollIntoView({ behavior: 'smooth' });
     });
 
-    function resetCalculatorState() {
-        mainActionBtn.innerHTML = `<i class="ri-calculator-line"></i><span>Maliyeti Hesapla</span>`;
-        calculationResult.classList.add('hidden');
-    }
-    
-    calculatorForm.addEventListener('submit', async (e) => {
+    const calculatorForm = document.getElementById('calculator-form');
+    calculatorForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        if (mainActionBtn.textContent.includes('Hesapla') || mainActionBtn.textContent.includes('Calculate')) {
-            handleCalculation();
-        } else {
-            await handleAddToCart();
-        }
+        const btn = document.getElementById('main-action-btn');
+        if (btn.textContent.includes("Hesapla") || btn.textContent.includes("Calculate")) handleCalculation();
+        else handleAddToCart();
     });
 
     function handleCalculation() {
         const price = parseFloat(document.getElementById('product-price').value);
         const category = document.getElementById('product-category').value;
-        const orderMethod = document.getElementById('order-method').value;
-        const productLink = document.getElementById('product-link').value.trim();
-
-        if (isNaN(price) || price <= 0 || !category || !productLink) {
-            showToast('Lütfen tüm zorunlu alanları doğru doldurun.', 'error');
-            return;
-        }
-
         const curr = localStorage.getItem('site_curr') || 'TRY';
-        const config = currencyConfig[curr];
-        const categoryRates = pricingSettings.categoryRates || {};
-        const categoryFee = price * (categoryRates[category] || 0);
-        let total = (orderMethod === 'self') ? categoryFee : price + categoryFee;
-        
-        const format = (val) => `${(val * config.rate).toLocaleString(undefined, {minimumFractionDigits: 2})} ${config.symbol}`;
+        const currSyms = { TRY: '₺', USD: '$', EUR: '€', GBP: '£' };
 
-        document.getElementById('result-price').textContent = format(price);
-        document.getElementById('result-category-fee').textContent = format(categoryFee);
-        document.getElementById('result-total').textContent = format(total);
+        const fee = price * (pricingSettings.categoryRates[category] || 0);
+        const total = price + fee;
+        const rate = liveRates[curr] || 1;
+
+        const format = (val) => `${(val * rate).toLocaleString(undefined, {minimumFractionDigits: 2})} ${currSyms[curr]}`;
         
-        calculationResult.classList.remove('hidden');
-        mainActionBtn.innerHTML = `<i class="ri-shopping-cart-add-line"></i><span>Sepete Ekle</span>`;
+        document.getElementById('result-price').textContent = format(price);
+        document.getElementById('result-category-fee').textContent = format(fee);
+        document.getElementById('result-total').textContent = format(total);
+
+        document.getElementById('calculation-result').classList.remove('hidden');
+        document.getElementById('main-action-btn').innerHTML = `<i class="ri-shopping-cart-add-line"></i><span>Sepete Ekle</span>`;
     }
 
     async function handleAddToCart() {
         const user = auth.currentUser;
-        if (!user) { window.showAuthRequiredModal(); return; }
-
-        const productData = {
+        if (!user) { authRequiredModal.classList.remove('hidden'); return; }
+        const data = {
             productLink: document.getElementById('product-link').value,
             productPrice: parseFloat(document.getElementById('product-price').value),
             category: document.getElementById('product-category').value,
-            orderMethod: document.getElementById('order-method').value,
-            quantity: 1,
             addedAt: new Date()
         };
-
-        try {
-            await addDoc(collection(db, 'users', user.uid, 'cart'), productData);
-            showToast('Ürün başarıyla sepete eklendi!');
-            window.location.href = 'https://getirkibris.com/sepet.html'; 
-        } catch (error) {
-            showToast('Hata: ' + error.message, 'error');
-        }
+        await addDoc(collection(db, 'users', user.uid, 'cart'), data);
+        window.location.href = 'sepet.html';
     }
-    
+
     function listenToCart(userId) {
-        if (cartUnsubscribe) cartUnsubscribe();
-        cartUnsubscribe = onSnapshot(collection(db, 'users', userId, 'cart'), (snapshot) => {
-            cartBadge.textContent = snapshot.size;
-            cartBadge.classList.toggle('hidden', snapshot.size === 0);
+        onSnapshot(collection(db, 'users', userId, 'cart'), snap => {
+            cartBadge.textContent = snap.size;
+            cartBadge.classList.toggle('hidden', snap.size === 0);
         });
     }
 
@@ -1194,8 +863,33 @@
             toast.classList.add('opacity-0', 'translate-y-4');
         }, 3000);
     }
-    
+
+    async function checkUserProfile(user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (!userDocSnap.exists() || !userDocSnap.data().isProfileComplete) {
+            profileModal.classList.remove('hidden');
+            document.getElementById('full-name-input').value = user.displayName || '';
+        }
+    }
+
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+        const userData = {
+            fullName: document.getElementById('full-name-input').value,
+            phone: document.getElementById('phone-input').value,
+            address: document.getElementById('address-input').value,
+            isProfileComplete: true,
+        };
+        await setDoc(doc(db, "users", user.uid), userData, { merge: true });
+        profileModal.classList.add('hidden');
+        showToast('Profil kaydedildi!');
+    });
+
     loadPricingSettings();
+    fetchLiveRates(); 
     applySettings();
 
 </script>
