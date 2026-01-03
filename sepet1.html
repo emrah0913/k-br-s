@@ -336,7 +336,7 @@
         }, (error) => console.error("Siparişler dinlenirken hata oluştu: ", error));
     }
 
-  function renderCart() {
+ function renderCart() {
     const cartItemsList = document.getElementById('cart-items-list');
     const activeCartWrapper = document.getElementById('active-cart-wrapper');
 
@@ -353,34 +353,35 @@
         const itemFinalPrice = item.orderMethod === 'service' ? (item.productPrice || 0) + itemServiceFee : itemServiceFee;
         const lineTotal = itemFinalPrice * item.quantity;
 
-        // --- AYRIM MANTIĞI ---
-        const isHomeProduct = item.orderMethod === 'service';
+        // --- YENİ VE KESİN AYRIM MANTIĞI ---
+        // Linkin içinde "http" geçiyorsa bu bir dış bağlantıdır (Market ürünüdür)
+        const isExternalLink = item.productLink && item.productLink.includes("http");
         
-        // Link: GetirHome ise detay sayfası, Market ise dış link (Trendyol vb.)
-        const finalLink = isHomeProduct 
-            ? `getirhome.html?view=detail&id=${item.id}` 
-            : (item.productLink || "#");
+        // Link Belirleme
+        const finalLink = isExternalLink 
+            ? item.productLink 
+            : `getirhome.html?view=detail&id=${item.id}`;
 
-        // Görünür İsim: Eğer isim yoksa linkin kendisini gösterir
+        // İsim Belirleme
         const displayName = item.productName || item.productLink || "Ürün";
 
         return `
             <div class="flex items-start sm:items-center gap-4 border-b pb-4 flex-col sm:flex-row">
                 
-                ${isHomeProduct ? `
+                ${!isExternalLink && item.image ? `
                 <div class="w-16 h-16 flex-shrink-0 bg-white border rounded-lg overflow-hidden p-1">
                     <img src="${item.image}" class="w-full h-full object-contain">
                 </div>
                 ` : ''}
 
                 <div class="flex-1 min-w-0">
-                    <a href="${finalLink}" ${!isHomeProduct ? 'target="_blank"' : ''} class="font-semibold text-primary hover:underline truncate block text-sm">
+                    <a href="${finalLink}" ${isExternalLink ? 'target="_blank" rel="noopener noreferrer"' : ''} class="font-semibold text-primary hover:underline truncate block text-sm">
                         ${displayName} 
-                        ${isHomeProduct ? '<i class="ri-home-4-line ml-1 opacity-50"></i>' : '<i class="ri-external-link-line ml-1 opacity-50"></i>'}
+                        ${isExternalLink ? '<i class="ri-external-link-line ml-1 opacity-50"></i>' : '<i class="ri-home-4-line ml-1 opacity-50"></i>'}
                     </a>
                     
                     ${item.selectedVariant ? `
-                    <p class="text-[10px] text-amber-600 font-medium mt-1 italic">
+                    <p class="text-[10px] text-amber-600 font-medium mt-1">
                         <i class="ri-settings-3-line"></i> ${item.selectedVariant}
                     </p>` : ''}
                     
