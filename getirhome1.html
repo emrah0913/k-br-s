@@ -421,70 +421,68 @@ window.changeMedia = (type, url, el) => {
     }
 };
 
-// --- SEPETE EKLEME (Güncel Fiyat ile) ---
+// --- SEPETE EKLEME (Güncel Görsel ve Fiyat ile) ---
 window.addToCart = async (id) => {
     if (!currentUserId) { showToast("Giriş yapın", true); return; }
     const p = allProducts.find(x => x.id === id);
     if(!p) return;
 
+    // 1. Seçili varyant ismini al
     const activeBtn = document.querySelector('.variant-btn.active');
-    const selectedVariant = activeBtn ? activeBtn.innerText.trim() : "";
+    const selectedVariant = activeBtn ? activeBtn.querySelector('span').innerText.trim() : "";
     
-    // Ekranda görünen güncel fiyatı al (Varyant farkı dahil)
+    // 2. Ekranda o an görünen görseli al (Mavi seçiliyse mavi görseli alır)
+    const mainImgElement = document.querySelector("#main-media-container img");
+    const currentImage = mainImgElement ? mainImgElement.src : p.image;
+
+    // 3. Ekranda o an görünen güncel fiyatı al (Varyant farkı dahil)
     const priceDisplay = document.getElementById("product-detail-price");
     const currentPrice = priceDisplay ? parseFloat(priceDisplay.innerText.replace(" ₺", "")) : parseFloat(p.price);
 
     try {
-        await setDoc(doc(db, "users", currentUserId, "cart", id), {
+        // Firestore'a gönderirken 'id' yanına 'selectedVariant' ekleyerek her varyantın ayrı kalem olarak eklenmesini sağlıyoruz
+        // Eğer her varyantın ayrı satır olmasını istemiyorsan doc(db, ..., id) olarak bırakabilirsin
+        const cartItemId = selectedVariant ? `${id}_${selectedVariant.replace(/\s+/g, '_')}` : id;
+
+        await setDoc(doc(db, "users", currentUserId, "cart", cartItemId), {
             id: id,
+            cartItemId: cartItemId,
             userId: currentUserId, 
             productName: String(p.name), 
-            productPrice: currentPrice, // Güncellenmiş fiyatı gönderiyoruz
+            productPrice: currentPrice, 
             quantity: 1, 
-            image: p.image, 
+            image: currentImage, // Seçilen renk/varyant görseli gider
             addedAt: new Date(), 
             category: p.category || 'genel', 
-            selectedVariant: selectedVariant
+            selectedVariant: selectedVariant,
+            orderMethod: 'service'
         }, { merge: true });
+        
         showToast(`"${p.name}" ${selectedVariant ? '('+selectedVariant+')' : ''} sepete eklendi!`);
-    } catch (e) { showToast("Hata!", true); }
+    } catch (e) { 
+        console.error("Sepet hatası:", e);
+        showToast("Hata oluştu!", true); 
+    }
 };
+
+// --- BENZER ÜRÜNLERİ LİSTELEME ---
 function renderRelatedProducts(currentProduct) {
     const listContainer = document.getElementById("related-products-list");
-    const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
+    if (!listContainer) return;
+
+    const related = allProducts
+        .filter(p => p.category === currentProduct.category && p.id !== currentProduct.id)
+        .slice(0, 10);
+
     listContainer.innerHTML = related.length ? related.map(p => `
-        <div class="flex-shrink-0 w-40 bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer" onclick="handleNavigate('detail', '${p.id}')">
-            <div class="w-full h-24 flex items-center justify-center mb-2"><img src="${p.image}" class="max-h-full object-contain"></div>
+        <div class="flex-shrink-0 w-40 bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onclick="handleNavigate('detail', '${p.id}')">
+            <div class="w-full h-24 flex items-center justify-center mb-2">
+                <img src="${p.image}" class="max-h-full object-contain">
+            </div>
             <h4 class="text-[10px] font-bold text-gray-700 line-clamp-1">${p.name}</h4>
             <div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
         </div>`).join('') : '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
 }
-
-    window.addToCart = async (id) => {
-        if (!currentUserId) { showToast("Giriş yapın", true); return; }
-        const p = allProducts.find(x => x.id === id);
-        if(!p) return;
-
-        const activeBtn = document.querySelector('.variant-btn.active');
-        const selectedVariant = activeBtn ? activeBtn.innerText : "";
-
-        try {
-            await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                id: id,
-                userId: currentUserId, 
-                productName: String(p.name), 
-                productLink: String(p.name),
-                productPrice: parseFloat(p.price),
-                quantity: 1, 
-                image: p.image, 
-                addedAt: new Date(), 
-                category: p.category || 'genel', 
-                orderMethod: 'service',
-                selectedVariant: selectedVariant
-            }, { merge: true });
-            showToast(`"${p.name}" ${selectedVariant ? '('+selectedVariant+')' : ''} sepete eklendi!`);
-        } catch (e) { showToast("Hata!", true); }
-    };
 
     async function loadData() {
         const [pSnap, cSnap] = await Promise.all([ getDocs(collection(db, "homeProducts")), getDocs(collection(db, "homeCategories")) ]);
