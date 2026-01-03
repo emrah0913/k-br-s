@@ -308,7 +308,7 @@ function renderProductDetail(id) {
             variantsHtml = `
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2 italic underline text-primary">Seçenek Belirleyin:</label>
-                    <div class="flex flex-wrap gap-3" id="variant-options">
+                    <div class="flex flex-wrap gap-4" id="variant-options">
                         ${variantsArray.map((v, index) => {
                             const val = typeof v === 'object' ? (v.name || "Seçenek") : v;
                             const imgUrl = (v.extraImages && v.extraImages.length > 0) ? v.extraImages[0] : "";
@@ -319,16 +319,16 @@ function renderProductDetail(id) {
 
                             return `
                                 <button onclick='selectVariant(this, ${vImages}, ${vVideos})' 
-                                    class="variant-btn group flex flex-col items-center gap-1 ${index === 0 ? 'active' : ''}"
+                                    class="variant-btn group flex flex-col items-center gap-2 ${index === 0 ? 'active' : ''}"
                                     style="min-width: 60px;">
                                     ${imgUrl ? `
-                                        <div class="w-14 h-14 border-2 border-gray-200 rounded-xl overflow-hidden group-[.active]:border-primary transition-all shadow-sm">
+                                        <div class="w-16 h-16 border-2 border-gray-200 rounded-2xl overflow-hidden group-[.active]:border-primary group-[.active]:ring-2 group-[.active]:ring-primary/20 transition-all shadow-sm">
                                             <img src="${imgUrl}" class="w-full h-full object-cover">
                                         </div>
                                     ` : `
-                                        <div class="px-4 py-2 border-2 border-gray-200 rounded-xl group-[.active]:border-primary font-bold text-sm bg-white">${val}</div>
+                                        <div class="px-5 py-2 border-2 border-gray-200 rounded-2xl group-[.active]:border-primary font-bold text-sm bg-white">${val}</div>
                                     `}
-                                    <span class="text-[10px] font-bold text-gray-600">${val}</span>
+                                    <span class="text-[11px] font-bold text-gray-700">${val}</span>
                                 </button>
                             `;
                         }).join('')}
@@ -375,21 +375,22 @@ function renderProductDetail(id) {
 
 // --- VARYANT SEÇİLDİĞİNDE HEM BÜYÜK RESMİ HEM DE ALT RESİMLERİ GÜNCELLE ---
 window.selectVariant = (el, images, videos) => {
+    // Aktiflik durumunu değiştir
     document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
     el.classList.add('active');
 
     const mainContainer = document.getElementById("main-media-container");
     const thumbContainer = document.getElementById("thumb-container");
 
-    // Medya varsa ana ekranı varyantın ilk resmi yap
+    // Büyük resmi varyantın ilk resmi yap
     if (images && images.length > 0) {
         mainContainer.innerHTML = `<img src="${images[0]}" class="w-full h-full object-contain fade-in">`;
     }
 
-    // Alt küçük resim listesini (Thumbnail) varyantın medyalarıyla doldur
+    // --- ALT KÜÇÜK RESİMLERİ (THUMBNAILS) GÜNCELLE ---
     let newThumbsHtml = '';
     
-    // Varyant Resimleri
+    // Varyant Resimleri ekle
     images.forEach((img, index) => {
         newThumbsHtml += `
             <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
@@ -397,7 +398,7 @@ window.selectVariant = (el, images, videos) => {
             </div>`;
     });
 
-    // Varyant Videoları
+    // Varyant Videoları ekle
     if (videos && videos.length > 0) {
         videos.forEach(vid => {
             newThumbsHtml += `
@@ -409,7 +410,6 @@ window.selectVariant = (el, images, videos) => {
 
     thumbContainer.innerHTML = newThumbsHtml;
 };
-
 function renderRelatedProducts(currentProduct) {
     const listContainer = document.getElementById("related-products-list");
     const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
