@@ -298,9 +298,8 @@ function renderProductDetail(id) {
     const p = allProducts.find(x => x.id === id);
     if(!p) return;
     const content = document.getElementById("product-detail-content");
-    let mediaItems = [p.image, ...(p.extraImages || [])];
     
-    // --- VARYANT ARAYÜZÜ (ADMİN PANELİ extraImages DİZİSİNE UYUMLU) ---
+    // --- VARYANT ARAYÜZÜ ---
     let variantsHtml = '';
     if (p.variants) {
         const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
@@ -308,29 +307,26 @@ function renderProductDetail(id) {
         if (variantsArray.length > 0) {
             variantsHtml = `
                 <div class="mb-6">
-                    <label class="block text-sm font-bold text-gray-700 mb-2 italic underline">Seçenek Belirleyin:</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 italic underline text-primary">Seçenek Belirleyin:</label>
                     <div class="flex flex-wrap gap-3" id="variant-options">
                         ${variantsArray.map((v, index) => {
-                            // Admin panelinde varyant ismi 'name' içinde tutuluyor
-                            let val = typeof v === 'object' ? (v.name || "Seçenek") : v;
+                            const val = typeof v === 'object' ? (v.name || "Seçenek") : v;
+                            const imgUrl = (v.extraImages && v.extraImages.length > 0) ? v.extraImages[0] : "";
                             
-                            // Admin panelinde varyant resimleri 'extraImages' dizisinin içinde tutuluyor
-                            // Dizinin ilk elemanını görsel olarak kullanıyoruz
-                            let imgUrl = (v.extraImages && v.extraImages.length > 0) ? v.extraImages[0] : "";
+                            // Medyaları JSON string olarak selectVariant'a gönderiyoruz
+                            const vImages = JSON.stringify(v.extraImages || []);
+                            const vVideos = JSON.stringify(v.extraVideos || []);
 
                             return `
-                                <button onclick="selectVariant(this, '${val}', '${imgUrl}')" 
+                                <button onclick='selectVariant(this, ${vImages}, ${vVideos})' 
                                     class="variant-btn group flex flex-col items-center gap-1 ${index === 0 ? 'active' : ''}"
                                     style="min-width: 60px;">
-                                    
                                     ${imgUrl ? `
-                                        <div class="w-14 h-14 border-2 border-gray-200 rounded-xl overflow-hidden group-[.active]:border-primary group-[.active]:shadow-md transition-all">
+                                        <div class="w-14 h-14 border-2 border-gray-200 rounded-xl overflow-hidden group-[.active]:border-primary transition-all shadow-sm">
                                             <img src="${imgUrl}" class="w-full h-full object-cover">
                                         </div>
                                     ` : `
-                                        <div class="px-4 py-2 border-2 border-gray-200 rounded-xl group-[.active]:border-primary font-bold text-sm bg-white">
-                                            ${val}
-                                        </div>
+                                        <div class="px-4 py-2 border-2 border-gray-200 rounded-xl group-[.active]:border-primary font-bold text-sm bg-white">${val}</div>
                                     `}
                                     <span class="text-[10px] font-bold text-gray-600">${val}</span>
                                 </button>
@@ -341,6 +337,9 @@ function renderProductDetail(id) {
         }
     }
 
+    // İlk yüklemede ana ürün medyası
+    let initialMedia = [p.image, ...(p.extraImages || [])];
+
     content.innerHTML = `
         <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
             <div class="w-full md:w-1/2">
@@ -350,7 +349,11 @@ function renderProductDetail(id) {
                     </div>
                 </div>
                 <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
-                    ${mediaItems.map((img, index) => `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
+                    ${initialMedia.map((img, index) => `
+                        <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
+                            <img src="${img}">
+                        </div>
+                    `).join('')}
                     ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
                 </div>
             </div>
@@ -370,26 +373,53 @@ function renderProductDetail(id) {
     renderRelatedProducts(p);
 }
 
-// Varyant Seçimi ve Ana Resim Güncelleme
-window.selectVariant = (el, val, imgUrl) => {
+// --- VARYANT SEÇİLDİĞİNDE HEM BÜYÜK RESMİ HEM DE ALT RESİMLERİ GÜNCELLE ---
+window.selectVariant = (el, images, videos) => {
     document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
     el.classList.add('active');
+
+    const mainContainer = document.getElementById("main-media-container");
+    const thumbContainer = document.getElementById("thumb-container");
+
+    // Medya varsa ana ekranı varyantın ilk resmi yap
+    if (images && images.length > 0) {
+        mainContainer.innerHTML = `<img src="${images[0]}" class="w-full h-full object-contain fade-in">`;
+    }
+
+    // Alt küçük resim listesini (Thumbnail) varyantın medyalarıyla doldur
+    let newThumbsHtml = '';
     
-    if (imgUrl && imgUrl !== '' && imgUrl !== 'null' && imgUrl !== 'undefined') {
-        const mainContainer = document.getElementById("main-media-container");
-        mainContainer.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-contain fade-in">`;
+    // Varyant Resimleri
+    images.forEach((img, index) => {
+        newThumbsHtml += `
+            <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
+                <img src="${img}">
+            </div>`;
+    });
+
+    // Varyant Videoları
+    if (videos && videos.length > 0) {
+        videos.forEach(vid => {
+            newThumbsHtml += `
+                <div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${vid}', this)">
+                    <div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div>
+                </div>`;
+        });
     }
+
+    thumbContainer.innerHTML = newThumbsHtml;
 };
-    function renderRelatedProducts(currentProduct) {
-        const listContainer = document.getElementById("related-products-list");
-        const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
-        listContainer.innerHTML = related.length ? related.map(p => `
-            <div class="flex-shrink-0 w-40 bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer" onclick="handleNavigate('detail', '${p.id}')">
-                <div class="w-full h-24 flex items-center justify-center mb-2"><img src="${p.image}" class="max-h-full object-contain"></div>
-                <h4 class="text-[10px] font-bold text-gray-700 line-clamp-1">${p.name}</h4>
-                <div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
-            </div>`).join('') : '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
-    }
+
+function renderRelatedProducts(currentProduct) {
+    const listContainer = document.getElementById("related-products-list");
+    const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
+    listContainer.innerHTML = related.length ? related.map(p => `
+        <div class="flex-shrink-0 w-40 bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer" onclick="handleNavigate('detail', '${p.id}')">
+            <div class="w-full h-24 flex items-center justify-center mb-2"><img src="${p.image}" class="max-h-full object-contain"></div>
+            <h4 class="text-[10px] font-bold text-gray-700 line-clamp-1">${p.name}</h4>
+            <div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
+        </div>`).join('') : '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
+}
 
     window.addToCart = async (id) => {
         if (!currentUserId) { showToast("Giriş yapın", true); return; }
