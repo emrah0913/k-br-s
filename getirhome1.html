@@ -293,12 +293,13 @@
             detail.classList.add("hidden"); sidebar.classList.remove("lg:hidden"); home.classList.remove("hidden");
         }
     };
+// --- ÜRÜN DETAYINI RENDER EDEN ANA FONKSİYON ---
 function renderProductDetail(id) {
     const p = allProducts.find(x => x.id === id);
     if(!p) return;
     const content = document.getElementById("product-detail-content");
     
-    // --- VARYANT ARAYÜZÜ (YUVARLAK VE TEMİZ TASARIM) ---
+    // --- VARYANT ARAYÜZÜ (KARE ÇERÇEVELER KALDIRILDI) ---
     let variantsHtml = '';
     if (p.variants) {
         const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
@@ -311,19 +312,18 @@ function renderProductDetail(id) {
                         ${variantsArray.map((v, index) => {
                             const val = typeof v === 'object' ? (v.name || "Seçenek") : v;
                             const imgUrl = (v.extraImages && v.extraImages.length > 0) ? v.extraImages[0] : "";
-                            
                             const vImages = JSON.stringify(v.extraImages || []);
                             const vVideos = JSON.stringify(v.extraVideos || []);
 
                             return `
-                                <button onclick='selectVariant(this, ${vImages}, ${vVideos})' 
-                                    class="variant-btn group flex flex-col items-center gap-2 outline-none">
+                                <button onclick='window.selectVariant(this, ${vImages}, ${vVideos})' 
+                                    class="variant-btn group flex flex-col items-center gap-2 bg-transparent border-none p-0 outline-none cursor-pointer">
                                     
-                                    <div class="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 shadow-sm border-2 border-gray-100 group-[.active]:border-primary group-[.active]:ring-4 group-[.active]:ring-primary/10">
+                                    <div class="w-16 h-16 rounded-full overflow-hidden transition-all duration-300 shadow-sm border-2 border-gray-100 group-[.active]:border-primary group-[.active]:ring-4 group-[.active]:ring-primary/10">
                                         ${imgUrl ? `
                                             <img src="${imgUrl}" class="w-full h-full object-cover">
                                         ` : `
-                                            <span class="text-xs font-bold text-gray-400 bg-gray-50 w-full h-full flex items-center justify-center">${val.substring(0,1)}</span>
+                                            <div class="w-full h-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">${val.substring(0,1)}</div>
                                         `}
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-600 group-[.active]:text-primary transition-colors">${val}</span>
@@ -347,11 +347,11 @@ function renderProductDetail(id) {
                 </div>
                 <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="thumb-container">
                     ${initialMedia.map((img, index) => `
-                        <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
+                        <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="window.changeMedia('img', '${img}', this)">
                             <img src="${img}">
                         </div>
                     `).join('')}
-                    ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
+                    ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="window.changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
                 </div>
             </div>
             <div class="w-full md:w-1/2 flex flex-col">
@@ -370,48 +370,53 @@ function renderProductDetail(id) {
     renderRelatedProducts(p);
 }
 
-// --- DİNAMİK MEDYA DEĞİŞİMİ VE HATA ÇÖZÜMÜ ---
+// --- VARYANT SEÇİMİ (WINDOW KAPSAMINA ALINDI) ---
 window.selectVariant = (el, images, videos) => {
-    // 1. Aktiflik durumunu butonlar arasında değiştir
     document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
     el.classList.add('active');
 
     const mainContainer = document.getElementById("main-media-container");
     const thumbContainer = document.getElementById("thumb-container");
 
-    // 2. Büyük resmi güncelle (Varyantın ilk resmini koy)
     if (images && images.length > 0) {
         mainContainer.innerHTML = `<img src="${images[0]}" class="w-full h-full object-contain animate-pulse">`;
-        // Pulse efekti yüklendiğini göstermek için 300ms sonra kalkar
-        setTimeout(() => mainContainer.querySelector('img').classList.remove('animate-pulse'), 300);
+        setTimeout(() => { if(mainContainer.querySelector('img')) mainContainer.querySelector('img').classList.remove('animate-pulse'); }, 300);
     }
 
-    // 3. Alt resimleri (thumbnails) varyanta göre baştan oluştur
     let newThumbsHtml = '';
-    
-    if (images && images.length > 0) {
-        images.forEach((img, index) => {
-            newThumbsHtml += `
-                <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
-                    <img src="${img}">
-                </div>`;
-        });
-    }
+    images.forEach((img, index) => {
+        newThumbsHtml += `
+            <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="window.changeMedia('img', '${img}', this)">
+                <img src="${img}">
+            </div>`;
+    });
 
     if (videos && videos.length > 0) {
         videos.forEach(vid => {
             newThumbsHtml += `
-                <div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${vid}', this)">
+                <div class="thumb-item video-thumb-btn" onclick="window.changeMedia('video', '${vid}', this)">
                     <div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div>
                 </div>`;
         });
     }
+    thumbContainer.innerHTML = newThumbsHtml;
+};
 
-    // Eğer varyantın resmi yoksa ana ürün resimlerini tekrar göster (opsiyonel)
-    if (newThumbsHtml === '') {
-        // Bu kısmı ihtiyaca göre boş bırakabilir veya p.image'e döndürebilirsin
+// --- MEDYA DEĞİŞTİRME (WINDOW KAPSAMINA ALINDI) ---
+window.changeMedia = (type, url, el) => {
+    const container = document.getElementById("main-media-container");
+    document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
+    el.classList.add('active');
+    
+    if (type === 'img') {
+        container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
     } else {
-        thumbContainer.innerHTML = newThumbsHtml;
+        const finalUrl = getCleanEmbedUrl(url) || url;
+        if (finalUrl.includes("youtube.com")) {
+            container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen class="w-full h-full border-none rounded-2xl"></iframe>`;
+        } else {
+            container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover rounded-2xl"></video>`;
+        }
     }
 };
 function renderRelatedProducts(currentProduct) {
