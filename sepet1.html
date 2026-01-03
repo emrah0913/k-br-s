@@ -336,52 +336,74 @@
         }, (error) => console.error("Siparişler dinlenirken hata oluştu: ", error));
     }
 
-    function renderCart() {
-        const cartItemsList = document.getElementById('cart-items-list');
-        const activeCartWrapper = document.getElementById('active-cart-wrapper');
+  function renderCart() {
+    const cartItemsList = document.getElementById('cart-items-list');
+    const activeCartWrapper = document.getElementById('active-cart-wrapper');
 
-        if (cartItems.length === 0) {
-            activeCartWrapper.classList.add('hidden');
-            return;
-        }
-        activeCartWrapper.classList.remove('hidden');
+    if (cartItems.length === 0) {
+        activeCartWrapper.classList.add('hidden');
+        return;
+    }
+    activeCartWrapper.classList.remove('hidden');
 
-        const categoryRates = pricingSettings.categoryRates || {};
+    const categoryRates = pricingSettings.categoryRates || {};
+    
+    const cartHtml = cartItems.map(item => {
+        const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
+        const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
+        const lineTotal = itemFinalPrice * item.quantity;
+
+        // --- KRİTİK AYRIM BURADA BAŞLIYOR ---
+        const isHomeProduct = item.orderMethod === 'service';
         
-        const cartHtml = cartItems.map(item => {
-            const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
-            const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
-            const lineTotal = itemFinalPrice * item.quantity;
+        // Link Belirleme: Home ise kendi sayfana, Market ise Trendyol/Dış siteye gider.
+        const finalLink = isHomeProduct 
+            ? `getirhome.html?view=detail&id=${item.id}` 
+            : item.productLink;
 
-            // --- Home vs Market Ayrımı ---
-            const isHome = item.orderMethod === 'service';
-            const itemLink = isHome ? `getirhome.html?view=detail&id=${item.id}` : (item.productLink || "#");
-            const displayName = item.productName || item.productLink || "Bilinmeyen Ürün";
+        // İsim Belirleme: Market ürünlerinde link uzunsa çirkin durmasın diye productName kontrolü
+        const displayName = item.productName || item.productLink;
 
-            return `
-                <div class="flex items-start sm:items-center gap-4 border-b pb-4 flex-col sm:row">
-                    ${isHome ? `<img src="${item.image}" class="w-16 h-16 object-contain rounded-lg border p-1 bg-white">` : ''}
-                    <div class="flex-1 min-w-0">
-                        <a href="${itemLink}" ${!isHome ? 'target="_blank"' : ''} class="font-semibold text-primary hover:underline truncate block text-sm">
-                            ${displayName} ${isHome ? '<i class="ri-home-4-line text-[10px] ml-1"></i>' : '<i class="ri-external-link-line text-[10px] ml-1"></i>'}
-                        </a>
-                        ${item.selectedVariant ? `<p class="text-[10px] text-amber-600 font-medium mt-1 italic"><i class="ri-settings-3-line"></i> ${item.selectedVariant}</p>` : ''}
-                        <p class="text-xs text-gray-500 mt-1">Birim Fiyatı: ${itemFinalPrice.toFixed(2)} ₺</p>
-                    </div>
-                    <div class="flex items-center gap-2 border rounded-md p-1 self-start sm:self-center">
-                        <button data-id="${item.id}" class="quantity-btn decrease-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-100 rounded">-</button>
-                        <span class="w-6 text-center text-sm font-semibold">${item.quantity}</span>
-                        <button data-id="${item.id}" class="quantity-btn increase-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-100 rounded">+</button>
-                    </div>
-                    <p class="font-semibold w-24 text-right text-gray-800">${lineTotal.toFixed(2)} ₺</p>
-                    <button data-id="${item.id}" class="delete-btn text-red-500 hover:text-red-700">
+        return `
+            <div class="flex items-start sm:items-center gap-4 border-b pb-4 flex-col sm:flex-row">
+                
+                ${isHomeProduct ? `
+                <div class="w-16 h-16 flex-shrink-0 bg-white border rounded-lg overflow-hidden p-1">
+                    <img src="${item.image}" class="w-full h-full object-contain">
+                </div>
+                ` : ''}
+
+                <div class="flex-1 min-w-0">
+                    <a href="${finalLink}" ${!isHomeProduct ? 'target="_blank"' : ''} class="font-semibold text-primary hover:underline truncate block text-sm">
+                        ${displayName} 
+                        ${isHomeProduct ? '<i class="ri-home-4-line ml-1 opacity-50"></i>' : '<i class="ri-external-link-line ml-1 opacity-50"></i>'}
+                    </a>
+                    
+                    ${item.selectedVariant ? `
+                    <p class="text-[10px] text-amber-600 font-medium mt-1">
+                        <i class="ri-settings-3-line"></i> ${item.selectedVariant}
+                    </p>` : ''}
+                    
+                    <p class="text-xs text-gray-500 mt-1">Birim: ${itemFinalPrice.toFixed(2)} ₺</p>
+                </div>
+
+                <div class="flex items-center gap-2 border rounded-md p-1 self-start sm:self-center bg-gray-50">
+                    <button data-id="${item.id}" class="quantity-btn decrease-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-200 rounded">-</button>
+                    <span class="w-6 text-center text-sm font-bold">${item.quantity}</span>
+                    <button data-id="${item.id}" class="quantity-btn increase-btn w-6 h-6 flex items-center justify-center text-lg font-bold hover:bg-gray-200 rounded">+</button>
+                </div>
+
+                <div class="flex items-center gap-4 self-end sm:self-center">
+                    <p class="font-bold text-gray-800 min-w-[80px] text-right">${lineTotal.toFixed(2)} ₺</p>
+                    <button data-id="${item.id}" class="delete-btn text-red-500 hover:text-red-700 transition-colors">
                         <i class="ri-delete-bin-line ri-lg"></i>
                     </button>
-                </div>`;
-        }).join('');
-        
-        cartItemsList.innerHTML = cartHtml;
-    }
+                </div>
+            </div>`;
+    }).join('');
+    
+    cartItemsList.innerHTML = cartHtml;
+}
 
     function renderOrders() {
         const ordersList = document.getElementById('orders-list');
