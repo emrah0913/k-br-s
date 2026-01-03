@@ -11,15 +11,11 @@
             theme: { extend: { colors: { primary: '#5d3ebc' } } }
         }
     </script>
-    <style>
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #5d3ebc; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
 <div class="max-w-screen-lg mx-auto p-4">
-    <header class="flex justify-between items-center py-4 border-b bg-white px-4 rounded-t-xl shadow-sm">
+    <header class="flex justify-between items-center py-4 border-b bg-white px-4 rounded-xl shadow-sm">
         <div class="flex gap-4">
             <a href="index.html"><img src="getirkibris-logo.png" class="h-6"></a>
             <a href="getirhome.html"><img src="getirhome-logo.png" class="h-6"></a>
@@ -32,8 +28,7 @@
             <div class="flex-grow space-y-4">
                 <div class="bg-white p-6 rounded-xl shadow-sm border">
                     <h2 class="font-bold mb-4 flex items-center gap-2"><i class="ri-shopping-bag-line text-primary"></i> Ürünler</h2>
-                    <div id="cart-items-list" class="space-y-6">
-                        </div>
+                    <div id="cart-items-list" class="space-y-6"></div>
                 </div>
 
                 <div class="bg-white p-6 rounded-xl shadow-sm border">
@@ -67,7 +62,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getFirestore, doc, collection, onSnapshot, getDoc, addDoc, deleteDoc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getFirestore, doc, collection, onSnapshot, getDoc, addDoc, deleteDoc, writeBatch, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY", authDomain: "kibris-6b4f7.firebaseapp.com", projectId: "kibris-6b4f7", storageBucket: "kibris-6b4f7.firebasestorage.app", messagingSenderId: "141262926171", appId: "1:141262926171:web:07226845e51d4bbc0dea7e" };
     const app = initializeApp(firebaseConfig);
@@ -99,9 +94,11 @@
             const finalPrice = item.orderMethod === 'service' ? (item.productPrice || 0) + fee : fee;
             
             const isHome = item.orderMethod === 'service';
-            // DÜZELTME: Name ve Link kontrolü (index'ten gelen veriler için productLink kullanılır)
-            const displayName = item.productName || item.productLink || "Bilinmeyen Ürün";
+            
+            // --- LİNK VE İSİM DÜZELTMESİ ---
+            // Eğer isHome (GetirHome) ise detay sayfasına, değilse (Market) productLink'e gider.
             const itemUrl = isHome ? `getirhome.html?view=detail&id=${item.id}` : (item.productLink || "#");
+            const displayName = item.productName || item.productLink || "Market Ürünü";
 
             return `
                 <div class="flex items-center gap-4 border-b pb-4 last:border-0">
@@ -109,7 +106,8 @@
                     
                     <div class="flex-1 min-w-0">
                         <a href="${itemUrl}" ${!isHome ? 'target="_blank"' : ''} class="font-bold text-sm text-gray-800 hover:text-primary transition-colors flex items-center gap-1">
-                            ${displayName} ${isHome ? '<i class="ri-home-4-line text-xs opacity-50"></i>' : '<i class="ri-external-link-line text-xs opacity-50"></i>'}
+                            <span class="truncate">${displayName}</span>
+                            ${isHome ? '<i class="ri-home-4-line text-xs opacity-50"></i>' : '<i class="ri-external-link-line text-xs opacity-50"></i>'}
                         </a>
                         <p class="text-xs text-gray-400 mt-1">${finalPrice.toFixed(2)} ₺</p>
                     </div>
