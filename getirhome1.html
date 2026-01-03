@@ -300,29 +300,43 @@
     const content = document.getElementById("product-detail-content");
     let mediaItems = [p.image, ...(p.extraImages || [])];
     
-    // --- VARYANT ARAYÜZÜ (RESİM DESTEKLİ) ---
+    // --- VARYANT ARAYÜZÜ (RESİM VE OBJE HATASI DÜZELTİLDİ) ---
     let variantsHtml = '';
     if (p.variants) {
+        // Firebase'den gelen verinin tipini kontrol et
         const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
+        
         if (variantsArray.length > 0) {
             variantsHtml = `
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-gray-700 mb-2 italic underline">Seçenek Belirleyin:</label>
                     <div class="flex flex-wrap gap-3" id="variant-options">
                         ${variantsArray.map((v, index) => {
-                            // Admin panelindeki veriye göre: v.name (metin) ve v.urlResmi veya v.url (resim)
-                            const val = typeof v === 'object' ? (v.name || v.value || "Seçenek") : v;
-                            const imgUrl = typeof v === 'object' ? (v.urlResmi || v.url || v.image) : null;
-                            
+                            // Admin panelinden gelen objeyi metin ve resim olarak ayıkla
+                            let val = "Seçenek";
+                            let imgUrl = "";
+
+                            if (typeof v === 'object' && v !== null) {
+                                val = v.name || v.value || "Seçenek";
+                                // Admin panelindeki resim URL alanının adını kontrol et (urlResmi veya url)
+                                imgUrl = v.urlResmi || v.url || v.image || "";
+                            } else {
+                                val = v; // Eğer veri sadece düz metinse
+                            }
+
                             return `
-                                <button onclick="selectVariant(this, '${val}', '${imgUrl || ''}')" 
-                                    class="variant-btn group flex flex-col items-center gap-1 p-1 ${index === 0 ? 'active' : ''}">
+                                <button onclick="selectVariant(this, '${val}', '${imgUrl}')" 
+                                    class="variant-btn group flex flex-col items-center gap-1 ${index === 0 ? 'active' : ''}"
+                                    style="min-width: 60px;">
+                                    
                                     ${imgUrl ? `
                                         <div class="w-14 h-14 border-2 border-gray-200 rounded-xl overflow-hidden group-[.active]:border-primary group-[.active]:shadow-md transition-all">
                                             <img src="${imgUrl}" class="w-full h-full object-cover">
                                         </div>
                                     ` : `
-                                        <div class="px-4 py-2 border-2 border-gray-200 rounded-xl group-[.active]:border-primary">${val}</div>
+                                        <div class="px-4 py-2 border-2 border-gray-200 rounded-xl group-[.active]:border-primary font-bold text-sm bg-white">
+                                            ${val}
+                                        </div>
                                     `}
                                     <span class="text-[10px] font-bold text-gray-600">${val}</span>
                                 </button>
@@ -362,30 +376,17 @@
     renderRelatedProducts(p);
 }
 
-// Varyant Seçimi ve Resim Değiştirme
+// Varyant Seçimi ve Ana Resim Güncelleme
 window.selectVariant = (el, val, imgUrl) => {
     document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
     el.classList.add('active');
     
-    // Eğer varyanta özel resim varsa ana ekranı güncelle
-    if (imgUrl && imgUrl !== '' && imgUrl !== 'null') {
+    // Eğer seçilen varyantın resmi varsa ana resmi o resimle değiştir
+    if (imgUrl && imgUrl !== '' && imgUrl !== 'null' && imgUrl !== 'undefined') {
         const mainContainer = document.getElementById("main-media-container");
         mainContainer.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-contain fade-in">`;
     }
 };
-
-window.changeMedia = (type, url, el) => {
-    const container = document.getElementById("main-media-container");
-    document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
-    el.classList.add('active');
-    if (type === 'img') container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
-    else {
-        const finalUrl = getCleanEmbedUrl(url) || url;
-        if (finalUrl.includes("youtube.com")) container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-        else container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover"></video>`;
-    }
-};
-
     function renderRelatedProducts(currentProduct) {
         const listContainer = document.getElementById("related-products-list");
         const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
