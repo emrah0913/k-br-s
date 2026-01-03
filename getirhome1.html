@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JL9P6BRZTD');
+</script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title id="page-title">Getir Home - Kıbrıs</title>
+    <title>Getir Home - Getir Kıbrıs</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -308,45 +317,58 @@
     };
 
     function renderProductDetail(id) {
-        const p = allProducts.find(x => x.id === id);
-        if(!p) return;
-        const content = document.getElementById("product-detail-content");
-        let mediaItems = [p.image, ...(p.extraImages || [])];
-        content.innerHTML = `
-            <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
-                <div class="w-full md:w-1/2">
-                    <div class="main-media-wrapper mb-4">
-                        <div id="main-media-container" class="media-content"><img src="${p.image}" class="w-full h-full object-contain"></div>
-                    </div>
-                    <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
-                        ${mediaItems.map((img, index) => `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
-                        ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
-                    </div>
-                </div>
-                <div class="w-full md:w-1/2 flex flex-col">
-                    <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
-                    <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
-                    <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
-                    <div class="mt-auto">
-                        <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
-                    </div>
-                </div>
-            </div>`;
-        renderRelatedProducts(p);
-    }
+    const p = allProducts.find(x => x.id === id);
+    if(!p) return;
+    const content = document.getElementById("product-detail-content");
+    let mediaItems = [p.image, ...(p.extraImages || [])];
+    
+    // --- VARYANT ARAYÜZÜ ---
+    // Eğer veritabanında variants dizisi varsa butonları oluşturur
+    const variantsHtml = p.variants ? `
+        <div class="mb-6">
+            <label class="block text-sm font-bold text-gray-700 mb-2 italic">Seçenek Belirleyin:</label>
+            <div class="flex flex-wrap gap-2" id="variant-options">
+                ${p.variants.map((v, index) => `
+                    <button onclick="selectVariant(this, '${v}')" 
+                        class="variant-btn border-2 border-gray-200 px-4 py-2 rounded-xl text-sm font-semibold hover:border-primary transition-all ${index === 0 ? 'border-primary bg-primary/5' : ''}">
+                        ${v}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    ` : '';
 
-    window.changeMedia = (type, url, el) => {
-        const container = document.getElementById("main-media-container");
-        document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
-        el.classList.add('active');
-        if (type === 'img') container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
-        else {
-            const finalUrl = getCleanEmbedUrl(url) || url;
-            if (finalUrl.includes("youtube.com")) container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            else container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover"></video>`;
-        }
-    };
+    content.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
+            <div class="w-full md:w-1/2">
+                <div class="main-media-wrapper mb-4">
+                    <div id="main-media-container" class="media-content"><img src="${p.image}" class="w-full h-full object-contain"></div>
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
+                    ${mediaItems.map((img, index) => `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
+                    ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 flex flex-col">
+                <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
+                <div class="text-primary font-bold text-sm mb-4 uppercase tracking-widest">${p.category}</div>
+                
+                ${variantsHtml} <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
+                <div class="mt-auto">
+                    <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
+                    <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
+                </div>
+            </div>
+        </div>`;
+    renderRelatedProducts(p);
+}
+
+// Varyant seçme fonksiyonu
+window.selectVariant = (el, val) => {
+    document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('border-primary', 'bg-primary/5'));
+    el.classList.add('border-primary', 'bg-primary/5');
+    el.dataset.selected = val; // Seçilen değeri butona sakla
+};
 
     function renderRelatedProducts(currentProduct) {
         const listContainer = document.getElementById("related-products-list");
@@ -360,25 +382,32 @@
     }
 
     // --- SEPETE EKLEME DÜZELTİLDİ: NAME, LINK VE PRICE VERİLERİ ARTIK SEPET SAYFASIYLA TAM UYUMLU ---
-    window.addToCart = async (id) => {
-        if (!currentUserId) { showToast("Giriş yapın", true); return; }
-        const p = allProducts.find(x => x.id === id);
-        if(!p) return;
-        try {
-            await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                userId: currentUserId, 
-                productName: String(p.name), 
-                productLink: String(p.name), // Sepet sayfanız ismi buradan okuyor olabilir, garantiye alıyoruz
-                productPrice: parseFloat(p.price),
-                quantity: 1, 
-                image: p.image, 
-                addedAt: new Date(), 
-                category: p.category || 'genel', 
-                orderMethod: 'service'
-            }, { merge: true });
-            showToast(`"${p.name}" sepete eklendi!`);
-        } catch (e) { showToast("Hata!", true); }
-    };
+   window.addToCart = async (id) => {
+    if (!currentUserId) { showToast("Giriş yapın", true); return; }
+    const p = allProducts.find(x => x.id === id);
+    if(!p) return;
+
+    // Seçili varyantı al (eğer varsa)
+    const selectedBtn = document.querySelector('.variant-btn.border-primary');
+    const variantInfo = selectedBtn ? selectedBtn.innerText : "";
+
+    try {
+        await setDoc(doc(db, "users", currentUserId, "cart", id), {
+            id: id,
+            userId: currentUserId, 
+            productName: String(p.name), 
+            productLink: String(p.name),
+            productPrice: parseFloat(p.price),
+            quantity: 1, 
+            image: p.image, 
+            addedAt: new Date(), 
+            category: p.category || 'genel', 
+            orderMethod: 'service',
+            selectedVariant: variantInfo // --- VARYANT ARTIK SEPETE GİDİYOR ---
+        }, { merge: true });
+        showToast(`"${p.name}" ${variantInfo ? '(' + variantInfo + ')' : ''} sepete eklendi!`);
+    } catch (e) { showToast("Hata!", true); }
+};
 
     async function loadData() {
         const [pSnap, cSnap] = await Promise.all([ getDocs(collection(db, "homeProducts")), getDocs(collection(db, "homeCategories")) ]);
