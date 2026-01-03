@@ -349,20 +349,20 @@
     const categoryRates = pricingSettings.categoryRates || {};
     
     const cartHtml = cartItems.map(item => {
-        const itemServiceFee = item.productPrice * (categoryRates[item.category] || 0);
-        const itemFinalPrice = item.orderMethod === 'service' ? item.productPrice + itemServiceFee : itemServiceFee;
+        const itemServiceFee = (item.productPrice || 0) * (categoryRates[item.category] || 0);
+        const itemFinalPrice = item.orderMethod === 'service' ? (item.productPrice || 0) + itemServiceFee : itemServiceFee;
         const lineTotal = itemFinalPrice * item.quantity;
 
-        // --- KRİTİK AYRIM BURADA BAŞLIYOR ---
+        // --- AYRIM MANTIĞI ---
         const isHomeProduct = item.orderMethod === 'service';
         
-        // Link Belirleme: Home ise kendi sayfana, Market ise Trendyol/Dış siteye gider.
+        // Link: GetirHome ise detay sayfası, Market ise dış link (Trendyol vb.)
         const finalLink = isHomeProduct 
             ? `getirhome.html?view=detail&id=${item.id}` 
-            : item.productLink;
+            : (item.productLink || "#");
 
-        // İsim Belirleme: Market ürünlerinde link uzunsa çirkin durmasın diye productName kontrolü
-        const displayName = item.productName || item.productLink;
+        // Görünür İsim: Eğer isim yoksa linkin kendisini gösterir
+        const displayName = item.productName || item.productLink || "Ürün";
 
         return `
             <div class="flex items-start sm:items-center gap-4 border-b pb-4 flex-col sm:flex-row">
@@ -380,11 +380,11 @@
                     </a>
                     
                     ${item.selectedVariant ? `
-                    <p class="text-[10px] text-amber-600 font-medium mt-1">
+                    <p class="text-[10px] text-amber-600 font-medium mt-1 italic">
                         <i class="ri-settings-3-line"></i> ${item.selectedVariant}
                     </p>` : ''}
                     
-                    <p class="text-xs text-gray-500 mt-1">Birim: ${itemFinalPrice.toFixed(2)} ₺</p>
+                    <p class="text-xs text-gray-500 mt-1">Birim Fiyat: ${itemFinalPrice.toFixed(2)} ₺</p>
                 </div>
 
                 <div class="flex items-center gap-2 border rounded-md p-1 self-start sm:self-center bg-gray-50">
@@ -395,7 +395,7 @@
 
                 <div class="flex items-center gap-4 self-end sm:self-center">
                     <p class="font-bold text-gray-800 min-w-[80px] text-right">${lineTotal.toFixed(2)} ₺</p>
-                    <button data-id="${item.id}" class="delete-btn text-red-500 hover:text-red-700 transition-colors">
+                    <button data-id="${item.id}" class="delete-btn text-red-500 hover:text-red-700">
                         <i class="ri-delete-bin-line ri-lg"></i>
                     </button>
                 </div>
