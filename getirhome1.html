@@ -295,74 +295,96 @@
     };
 
     function renderProductDetail(id) {
-        const p = allProducts.find(x => x.id === id);
-        if(!p) return;
-        const content = document.getElementById("product-detail-content");
-        let mediaItems = [p.image, ...(p.extraImages || [])];
-        
-        // --- VARYANT ARAYÜZÜ (FIXED) ---
-        let variantsHtml = '';
-        if (p.variants) {
-            // Eğer variants bir dizi değilse (objeyse), değerlerini diziye çevir
-            const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
-            if (variantsArray.length > 0) {
-                variantsHtml = `
-                    <div class="mb-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-2 italic underline">Seçenek Belirleyin:</label>
-                        <div class="flex flex-wrap gap-2" id="variant-options">
-                            ${variantsArray.map((v, index) => {
-                                // Objeden metni ayıkla ([object Object] hatasını önler)
-                                const val = typeof v === 'object' ? (v.name || v.value || "Seçenek") : v;
-                                return `<button onclick="selectVariant(this, '${val}')" class="variant-btn ${index === 0 ? 'active' : ''}">${val}</button>`;
-                            }).join('')}
-                        </div>
-                    </div>`;
-            }
+    const p = allProducts.find(x => x.id === id);
+    if(!p) return;
+    const content = document.getElementById("product-detail-content");
+    let mediaItems = [p.image, ...(p.extraImages || [])];
+    
+    // --- VARYANT ARAYÜZÜ (RESİM DESTEKLİ) ---
+    let variantsHtml = '';
+    if (p.variants) {
+        const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
+        if (variantsArray.length > 0) {
+            variantsHtml = `
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-2 italic underline">Seçenek Belirleyin:</label>
+                    <div class="flex flex-wrap gap-3" id="variant-options">
+                        ${variantsArray.map((v, index) => {
+                            // Admin panelindeki veriye göre: v.name (metin) ve v.urlResmi veya v.url (resim)
+                            const val = typeof v === 'object' ? (v.name || v.value || "Seçenek") : v;
+                            const imgUrl = typeof v === 'object' ? (v.urlResmi || v.url || v.image) : null;
+                            
+                            return `
+                                <button onclick="selectVariant(this, '${val}', '${imgUrl || ''}')" 
+                                    class="variant-btn group flex flex-col items-center gap-1 p-1 ${index === 0 ? 'active' : ''}">
+                                    ${imgUrl ? `
+                                        <div class="w-14 h-14 border-2 border-gray-200 rounded-xl overflow-hidden group-[.active]:border-primary group-[.active]:shadow-md transition-all">
+                                            <img src="${imgUrl}" class="w-full h-full object-cover">
+                                        </div>
+                                    ` : `
+                                        <div class="px-4 py-2 border-2 border-gray-200 rounded-xl group-[.active]:border-primary">${val}</div>
+                                    `}
+                                    <span class="text-[10px] font-bold text-gray-600">${val}</span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>`;
         }
-
-        content.innerHTML = `
-            <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
-                <div class="w-full md:w-1/2">
-                    <div class="main-media-wrapper mb-4">
-                        <div id="main-media-container" class="media-content"><img src="${p.image}" class="w-full h-full object-contain"></div>
-                    </div>
-                    <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
-                        ${mediaItems.map((img, index) => `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
-                        ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
-                    </div>
-                </div>
-                <div class="w-full md:w-1/2 flex flex-col">
-                    <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
-                    <div class="text-primary font-bold text-sm mb-4 uppercase tracking-widest">${p.category}</div>
-                    
-                    ${variantsHtml}
-
-                    <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
-                    <div class="mt-auto">
-                        <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
-                    </div>
-                </div>
-            </div>`;
-        renderRelatedProducts(p);
     }
 
-    window.selectVariant = (el, val) => {
-        document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
-        el.classList.add('active');
-    };
+    content.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
+            <div class="w-full md:w-1/2">
+                <div class="main-media-wrapper mb-4">
+                    <div id="main-media-container" class="media-content">
+                        <img src="${p.image}" class="w-full h-full object-contain">
+                    </div>
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
+                    ${mediaItems.map((img, index) => `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
+                    ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 flex flex-col">
+                <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
+                <div class="text-primary font-bold text-sm mb-4 uppercase tracking-widest">${p.category}</div>
+                
+                ${variantsHtml}
 
-    window.changeMedia = (type, url, el) => {
-        const container = document.getElementById("main-media-container");
-        document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
-        el.classList.add('active');
-        if (type === 'img') container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
-        else {
-            const finalUrl = getCleanEmbedUrl(url) || url;
-            if (finalUrl.includes("youtube.com")) container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            else container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover"></video>`;
-        }
-    };
+                <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
+                <div class="mt-auto">
+                    <div class="text-3xl font-black text-primary mb-6">${parseFloat(p.price).toFixed(2)} ₺</div>
+                    <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
+                </div>
+            </div>
+        </div>`;
+    renderRelatedProducts(p);
+}
+
+// Varyant Seçimi ve Resim Değiştirme
+window.selectVariant = (el, val, imgUrl) => {
+    document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
+    
+    // Eğer varyanta özel resim varsa ana ekranı güncelle
+    if (imgUrl && imgUrl !== '' && imgUrl !== 'null') {
+        const mainContainer = document.getElementById("main-media-container");
+        mainContainer.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-contain fade-in">`;
+    }
+};
+
+window.changeMedia = (type, url, el) => {
+    const container = document.getElementById("main-media-container");
+    document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
+    el.classList.add('active');
+    if (type === 'img') container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
+    else {
+        const finalUrl = getCleanEmbedUrl(url) || url;
+        if (finalUrl.includes("youtube.com")) container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        else container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover"></video>`;
+    }
+};
 
     function renderRelatedProducts(currentProduct) {
         const listContainer = document.getElementById("related-products-list");
