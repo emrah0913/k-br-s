@@ -294,16 +294,15 @@
         }
     };
 
-    function renderProductDetail(id) {
+function renderProductDetail(id) {
     const p = allProducts.find(x => x.id === id);
     if(!p) return;
     const content = document.getElementById("product-detail-content");
     let mediaItems = [p.image, ...(p.extraImages || [])];
     
-    // --- VARYANT ARAYÜZÜ (RESİM VE OBJE HATASI DÜZELTİLDİ) ---
+    // --- VARYANT ARAYÜZÜ (ADMİN PANELİ extraImages DİZİSİNE UYUMLU) ---
     let variantsHtml = '';
     if (p.variants) {
-        // Firebase'den gelen verinin tipini kontrol et
         const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
         
         if (variantsArray.length > 0) {
@@ -312,17 +311,12 @@
                     <label class="block text-sm font-bold text-gray-700 mb-2 italic underline">Seçenek Belirleyin:</label>
                     <div class="flex flex-wrap gap-3" id="variant-options">
                         ${variantsArray.map((v, index) => {
-                            // Admin panelinden gelen objeyi metin ve resim olarak ayıkla
-                            let val = "Seçenek";
-                            let imgUrl = "";
-
-                            if (typeof v === 'object' && v !== null) {
-                                val = v.name || v.value || "Seçenek";
-                                // Admin panelindeki resim URL alanının adını kontrol et (urlResmi veya url)
-                                imgUrl = v.urlResmi || v.url || v.image || "";
-                            } else {
-                                val = v; // Eğer veri sadece düz metinse
-                            }
+                            // Admin panelinde varyant ismi 'name' içinde tutuluyor
+                            let val = typeof v === 'object' ? (v.name || "Seçenek") : v;
+                            
+                            // Admin panelinde varyant resimleri 'extraImages' dizisinin içinde tutuluyor
+                            // Dizinin ilk elemanını görsel olarak kullanıyoruz
+                            let imgUrl = (v.extraImages && v.extraImages.length > 0) ? v.extraImages[0] : "";
 
                             return `
                                 <button onclick="selectVariant(this, '${val}', '${imgUrl}')" 
@@ -381,7 +375,6 @@ window.selectVariant = (el, val, imgUrl) => {
     document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
     el.classList.add('active');
     
-    // Eğer seçilen varyantın resmi varsa ana resmi o resimle değiştir
     if (imgUrl && imgUrl !== '' && imgUrl !== 'null' && imgUrl !== 'undefined') {
         const mainContainer = document.getElementById("main-media-container");
         mainContainer.innerHTML = `<img src="${imgUrl}" class="w-full h-full object-contain fade-in">`;
