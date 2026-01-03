@@ -298,6 +298,7 @@ function renderProductDetail(id) {
     if(!p) return;
     const content = document.getElementById("product-detail-content");
     
+    // --- VARYANT ARAYÜZÜ (YUVARLAK VE TEMİZ TASARIM) ---
     let variantsHtml = '';
     if (p.variants) {
         const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
@@ -305,8 +306,8 @@ function renderProductDetail(id) {
         if (variantsArray.length > 0) {
             variantsHtml = `
                 <div class="mb-6">
-                    <label class="block text-sm font-bold text-gray-700 mb-2 italic underline text-primary">Seçenek Belirleyin:</label>
-                    <div class="flex flex-wrap gap-4" id="variant-options">
+                    <label class="block text-sm font-bold text-gray-700 mb-3 italic underline text-primary">Seçenek Belirleyin:</label>
+                    <div class="flex flex-wrap gap-5" id="variant-options">
                         ${variantsArray.map((v, index) => {
                             const val = typeof v === 'object' ? (v.name || "Seçenek") : v;
                             const imgUrl = (v.extraImages && v.extraImages.length > 0) ? v.extraImages[0] : "";
@@ -316,17 +317,16 @@ function renderProductDetail(id) {
 
                             return `
                                 <button onclick='selectVariant(this, ${vImages}, ${vVideos})' 
-                                    class="variant-btn group flex flex-col items-center gap-2 ${index === 0 ? 'active' : ''}"
-                                    style="min-width: 60px;">
+                                    class="variant-btn group flex flex-col items-center gap-2 outline-none">
                                     
-                                    <div class="w-16 h-16 border-2 border-gray-200 rounded-full overflow-hidden flex items-center justify-center group-[.active]:border-primary group-[.active]:ring-2 group-[.active]:ring-primary/20 transition-all shadow-sm bg-white p-1">
+                                    <div class="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 shadow-sm border-2 border-gray-100 group-[.active]:border-primary group-[.active]:ring-4 group-[.active]:ring-primary/10">
                                         ${imgUrl ? `
-                                            <img src="${imgUrl}" class="w-full h-full object-cover rounded-full">
+                                            <img src="${imgUrl}" class="w-full h-full object-cover">
                                         ` : `
-                                            <span class="text-sm font-bold text-gray-600">${val.substring(0, 1).toUpperCase()}</span>
+                                            <span class="text-xs font-bold text-gray-400 bg-gray-50 w-full h-full flex items-center justify-center">${val.substring(0,1)}</span>
                                         `}
                                     </div>
-                                    <span class="text-[11px] font-bold text-gray-700 underline group-[.active]:text-primary">${val}</span>
+                                    <span class="text-[11px] font-bold text-gray-600 group-[.active]:text-primary transition-colors">${val}</span>
                                 </button>
                             `;
                         }).join('')}
@@ -335,9 +335,6 @@ function renderProductDetail(id) {
         }
     }
 
-    // Gerisi aynı kalır...
-    // ...
-    // ...
     let initialMedia = [p.image, ...(p.extraImages || [])];
 
     content.innerHTML = `
@@ -348,7 +345,7 @@ function renderProductDetail(id) {
                         <img src="${p.image}" class="w-full h-full object-contain">
                     </div>
                 </div>
-                <div class="flex gap-2 overflow-x-auto pb-2" id="thumb-container">
+                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="thumb-container">
                     ${initialMedia.map((img, index) => `
                         <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
                             <img src="${img}">
@@ -373,8 +370,50 @@ function renderProductDetail(id) {
     renderRelatedProducts(p);
 }
 
-// selectVariant fonksiyonu aynı kalabilir, çünkü butonun görünümü renderProductDetail içinde değişiyor.
-// Diğer fonksiyonlar da aynı kalabilir.
+// --- DİNAMİK MEDYA DEĞİŞİMİ VE HATA ÇÖZÜMÜ ---
+window.selectVariant = (el, images, videos) => {
+    // 1. Aktiflik durumunu butonlar arasında değiştir
+    document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
+
+    const mainContainer = document.getElementById("main-media-container");
+    const thumbContainer = document.getElementById("thumb-container");
+
+    // 2. Büyük resmi güncelle (Varyantın ilk resmini koy)
+    if (images && images.length > 0) {
+        mainContainer.innerHTML = `<img src="${images[0]}" class="w-full h-full object-contain animate-pulse">`;
+        // Pulse efekti yüklendiğini göstermek için 300ms sonra kalkar
+        setTimeout(() => mainContainer.querySelector('img').classList.remove('animate-pulse'), 300);
+    }
+
+    // 3. Alt resimleri (thumbnails) varyanta göre baştan oluştur
+    let newThumbsHtml = '';
+    
+    if (images && images.length > 0) {
+        images.forEach((img, index) => {
+            newThumbsHtml += `
+                <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="changeMedia('img', '${img}', this)">
+                    <img src="${img}">
+                </div>`;
+        });
+    }
+
+    if (videos && videos.length > 0) {
+        videos.forEach(vid => {
+            newThumbsHtml += `
+                <div class="thumb-item video-thumb-btn" onclick="changeMedia('video', '${vid}', this)">
+                    <div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div>
+                </div>`;
+        });
+    }
+
+    // Eğer varyantın resmi yoksa ana ürün resimlerini tekrar göster (opsiyonel)
+    if (newThumbsHtml === '') {
+        // Bu kısmı ihtiyaca göre boş bırakabilir veya p.image'e döndürebilirsin
+    } else {
+        thumbContainer.innerHTML = newThumbsHtml;
+    }
+};
 function renderRelatedProducts(currentProduct) {
     const listContainer = document.getElementById("related-products-list");
     const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
