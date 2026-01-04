@@ -357,7 +357,7 @@
                     <div class="text-primary font-bold text-sm mb-6 uppercase tracking-widest">${p.category}</div>
                     <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                     <div class="mt-auto">
-                        <div class="text-3xl font-black text-primary mb-6">$Intl.NumberFormat('tr-TR').format(p.price)} ₺</div>
+                        <div class="text-3xl font-black text-primary mb-6">${new Intl.NumberFormat('tr-TR').format(p.price)} ₺</div>
                         <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
                     </div>
                 </div>
