@@ -113,6 +113,10 @@
         .add-btn:hover { background: #5D3EBC; color: white; border-color: #5D3EBC; }
         .variant-btn { border: 2px solid #e5e7eb; padding: 8px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; transition: all 0.2s; }
         .variant-btn.active { border-color: #5D3EBC; background-color: rgba(93, 62, 188, 0.05); color: #5D3EBC; }
+        
+        /* 🧩 Profil Modalı Animasyonu */
+        @keyframes fadeInModal { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeInModal 0.3s ease-out; }
     </style>
 </head>
 <body>
@@ -197,6 +201,28 @@
 
 <div id="toast" class="fixed bottom-6 right-6 z-[100] px-6 py-3 rounded-2xl text-white font-bold shadow-2xl hidden"></div>
 
+<div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[110] hidden">
+    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative animate-fade-in shadow-2xl">
+        <h3 class="text-2xl font-bold text-gray-800 text-center mb-2">Profilinizi Tamamlayın</h3>
+        <p class="text-sm text-gray-600 mt-1 text-center mb-6">Siparişleriniz için bu bilgilere ihtiyacımız var.</p>
+        <form id="profile-form" class="space-y-4">
+            <div>
+                <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad <span class="text-red-500">*</span></label>
+                <input type="text" id="full-name-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+            <div>
+                <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Telefon Numarası <span class="text-red-500">*</span></label>
+                <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="+90 5XX XXX XX XX">
+            </div>
+            <div>
+                <label for="address-input" class="block text-sm font-medium text-gray-700 mb-1">Teslimat Adresi <span class="text-red-500">*</span></label>
+                <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Tam adresinizi girin"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">Profili Kaydet</button>
+        </form>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
@@ -218,6 +244,43 @@
 
     let allProducts = [], allCategories = [], allBanners = [], currentUserId = null;
     let activeCategoryParent = null;
+
+    // --- 🧩 PROFiL TAMAMLAMA MANTIĞI ---
+    async function checkUserProfile(user) {
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (!userDocSnap.exists() || !userDocSnap.data().isProfileComplete) {
+                document.getElementById('profile-modal').classList.remove('hidden');
+                document.getElementById('full-name-input').value = user.displayName || '';
+            }
+        } catch (error) {
+            console.error("Profil kontrol hatası:", error);
+        }
+    }
+
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+        const userData = {
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            fullName: document.getElementById('full-name-input').value,
+            phone: document.getElementById('phone-input').value,
+            address: document.getElementById('address-input').value,
+            isProfileComplete: true,
+            updatedAt: new Date()
+        };
+        try {
+            await setDoc(doc(db, "users", user.uid), userData, { merge: true });
+            document.getElementById('profile-modal').classList.add('hidden');
+            showToast('Profiliniz başarıyla kaydedildi!');
+        } catch (error) {
+            showToast('Hata oluştu!', true);
+        }
+    });
 
     function updateUrl(params = {}) {
         const url = new URL(window.location);
@@ -293,18 +356,14 @@
             detail.classList.add("hidden"); sidebar.classList.remove("lg:hidden"); home.classList.remove("hidden");
         }
     };
-// --- ÜRÜN DETAYINI RENDER EDEN ANA FONKSİYON ---
-// --- ÜRÜN DETAYINI RENDER EDEN ANA FONKSİYON ---
+
 function renderProductDetail(id) {
     const p = allProducts.find(x => x.id === id);
     if(!p) return;
     const content = document.getElementById("product-detail-content");
-    
-    // --- VARYANT ARAYÜZÜ ---
     let variantsHtml = '';
     if (p.variants) {
         const variantsArray = Array.isArray(p.variants) ? p.variants : Object.values(p.variants);
-        
         if (variantsArray.length > 0) {
             variantsHtml = `
                 <div class="mb-6">
@@ -316,7 +375,6 @@ function renderProductDetail(id) {
                             const vImages = JSON.stringify(v.extraImages || []);
                             const vVideos = JSON.stringify(v.extraVideos || []);
                             const offset = v.price_offset || 0;
-
                             return `
                                 <button onclick='window.selectVariant(this, ${vImages}, ${vVideos}, ${offset})' 
                                     class="variant-btn group flex flex-col items-center gap-2 bg-transparent border-none p-0 outline-none cursor-pointer">
@@ -331,37 +389,25 @@ function renderProductDetail(id) {
                 </div>`;
         }
     }
-
     let initialMedia = [p.image, ...(p.extraImages || [])];
-
     content.innerHTML = `
         <div class="bg-white rounded-3xl p-6 shadow-sm border flex flex-col md:flex-row gap-10">
             <div class="w-full md:w-1/2">
                 <div class="main-media-wrapper mb-4">
-                    <div id="main-media-container" class="media-content">
-                        <img src="${p.image}" class="w-full h-full object-contain">
-                    </div>
+                    <div id="main-media-container" class="media-content"><img src="${p.image}" class="w-full h-full object-contain"></div>
                 </div>
                 <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="thumb-container">
-                    ${initialMedia.map((img, index) => `
-                        <div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="window.changeMedia('img', '${img}', this)">
-                            <img src="${img}">
-                        </div>
-                    `).join('')}
+                    ${initialMedia.map((img, index) => `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="window.changeMedia('img', '${img}', this)"><img src="${img}"></div>`).join('')}
                     ${p.video ? `<div class="thumb-item video-thumb-btn" onclick="window.changeMedia('video', '${p.video}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>` : ''}
                 </div>
             </div>
             <div class="w-full md:w-1/2 flex flex-col">
                 <h1 class="text-2xl md:text-4xl font-black text-gray-800 mb-2">${p.name}</h1>
                 <div class="text-primary font-bold text-sm mb-4 uppercase tracking-widest">${p.category}</div>
-                
                 ${variantsHtml}
-
                 <div class="text-gray-500 mb-8 leading-relaxed">${p.description || "Açıklama girilmemiştir."}</div>
                 <div class="mt-auto">
-                    <div id="product-detail-price" class="text-3xl font-black text-primary mb-6" data-base-price="${p.price}">
-                        ${parseFloat(p.price).toFixed(2)} ₺
-                    </div>
+                    <div id="product-detail-price" class="text-3xl font-black text-primary mb-6" data-base-price="${p.price}">${parseFloat(p.price).toFixed(2)} ₺</div>
                     <button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-xl shadow-lg transition-transform active:scale-95" onclick="addToCart('${p.id}')">Sepete Ekle</button>
                 </div>
             </div>
@@ -369,272 +415,212 @@ function renderProductDetail(id) {
     renderRelatedProducts(p);
 }
 
-// --- VARYANT SEÇİMİ (Fiyat ve Medya Güncelleme) ---
 window.selectVariant = (el, images, videos, offset) => {
     document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
     el.classList.add('active');
-
     const mainContainer = document.getElementById("main-media-container");
     const thumbContainer = document.getElementById("thumb-container");
     const priceDisplay = document.getElementById("product-detail-price");
-
-    // 1. Fiyatı Güncelle
     if (priceDisplay) {
         const basePrice = parseFloat(priceDisplay.getAttribute('data-base-price'));
         const newPrice = basePrice + parseFloat(offset || 0);
         priceDisplay.innerHTML = `${newPrice.toFixed(2)} ₺`;
     }
-
-    // 2. Büyük Resmi Güncelle
-    if (images && images.length > 0) {
-        mainContainer.innerHTML = `<img src="${images[0]}" class="w-full h-full object-contain">`;
-    }
-
-    // 3. Alt Resimleri (Thumbnails) Güncelle
+    if (images && images.length > 0) { mainContainer.innerHTML = `<img src="${images[0]}" class="w-full h-full object-contain">`; }
     let newThumbsHtml = '';
-    images.forEach((img, index) => {
-        newThumbsHtml += `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="window.changeMedia('img', '${img}', this)"><img src="${img}"></div>`;
-    });
-    if (videos && videos.length > 0) {
-        videos.forEach(vid => {
-            newThumbsHtml += `<div class="thumb-item video-thumb-btn" onclick="window.changeMedia('video', '${vid}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>`;
-        });
-    }
+    images.forEach((img, index) => { newThumbsHtml += `<div class="thumb-item ${index === 0 ? 'active' : ''}" onclick="window.changeMedia('img', '${img}', this)"><img src="${img}"></div>`; });
+    if (videos && videos.length > 0) { videos.forEach(vid => { newThumbsHtml += `<div class="thumb-item video-thumb-btn" onclick="window.changeMedia('video', '${vid}', this)"><div class="video-overlay-icon"><i class="ri-play-fill ri-2x"></i></div></div>`; }); }
     thumbContainer.innerHTML = newThumbsHtml;
 };
 
-// --- MEDYA DEĞİŞTİRME FONKSİYONU ---
 window.changeMedia = (type, url, el) => {
     const container = document.getElementById("main-media-container");
     document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
     el.classList.add('active');
-    
-    if (type === 'img') {
-        container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
-    } else {
+    if (type === 'img') { container.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`; } 
+    else {
         const finalUrl = getCleanEmbedUrl(url) || url;
-        if (finalUrl.includes("youtube.com")) {
-            container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen class="w-full h-full border-none rounded-2xl"></iframe>`;
-        } else {
-            container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover rounded-2xl"></video>`;
-        }
+        if (finalUrl.includes("youtube.com")) { container.innerHTML = `<iframe src="${finalUrl}" allow="autoplay; encrypted-media" allowfullscreen class="w-full h-full border-none rounded-2xl"></iframe>`; } 
+        else { container.innerHTML = `<video src="${finalUrl}" controls autoplay muted loop class="w-full h-full object-cover rounded-2xl"></video>`; }
     }
 };
 
-// --- SEPETE EKLEME (Güncel Görsel ve Fiyat ile) ---
 window.addToCart = async (id) => {
     if (!currentUserId) { showToast("Giriş yapın", true); return; }
     const p = allProducts.find(x => x.id === id);
     if(!p) return;
-
-    // 1. Seçili varyant ismini al
     const activeBtn = document.querySelector('.variant-btn.active');
     const selectedVariant = activeBtn ? activeBtn.querySelector('span').innerText.trim() : "";
-    
-    // 2. Ekranda o an görünen görseli al (Mavi seçiliyse mavi görseli alır)
     const mainImgElement = document.querySelector("#main-media-container img");
     const currentImage = mainImgElement ? mainImgElement.src : p.image;
-
-    // 3. Ekranda o an görünen güncel fiyatı al (Varyant farkı dahil)
     const priceDisplay = document.getElementById("product-detail-price");
     const currentPrice = priceDisplay ? parseFloat(priceDisplay.innerText.replace(" ₺", "")) : parseFloat(p.price);
-
     try {
-        // Firestore'a gönderirken 'id' yanına 'selectedVariant' ekleyerek her varyantın ayrı kalem olarak eklenmesini sağlıyoruz
-        // Eğer her varyantın ayrı satır olmasını istemiyorsan doc(db, ..., id) olarak bırakabilirsin
         const cartItemId = selectedVariant ? `${id}_${selectedVariant.replace(/\s+/g, '_')}` : id;
-
         await setDoc(doc(db, "users", currentUserId, "cart", cartItemId), {
-            id: id,
-            cartItemId: cartItemId,
-            userId: currentUserId, 
-            productName: String(p.name), 
-            productPrice: currentPrice, 
-            quantity: 1, 
-            image: currentImage, // Seçilen renk/varyant görseli gider
-            addedAt: new Date(), 
-            category: p.category || 'genel', 
-            selectedVariant: selectedVariant,
-            orderMethod: 'service'
+            id: id, cartItemId: cartItemId, userId: currentUserId, productName: String(p.name), productPrice: currentPrice, quantity: 1, image: currentImage, addedAt: new Date(), category: p.category || 'genel', selectedVariant: selectedVariant, orderMethod: 'service'
         }, { merge: true });
-        
         showToast(`"${p.name}" ${selectedVariant ? '('+selectedVariant+')' : ''} sepete eklendi!`);
-    } catch (e) { 
-        console.error("Sepet hatası:", e);
-        showToast("Hata oluştu!", true); 
-    }
+    } catch (e) { showToast("Hata oluştu!", true); }
 };
 
-// --- BENZER ÜRÜNLERİ LİSTELEME ---
 function renderRelatedProducts(currentProduct) {
     const listContainer = document.getElementById("related-products-list");
     if (!listContainer) return;
-
-    const related = allProducts
-        .filter(p => p.category === currentProduct.category && p.id !== currentProduct.id)
-        .slice(0, 10);
-
+    const related = allProducts.filter(p => p.category === currentProduct.category && p.id !== currentProduct.id).slice(0, 10);
     listContainer.innerHTML = related.length ? related.map(p => `
         <div class="flex-shrink-0 w-40 bg-white p-2 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onclick="handleNavigate('detail', '${p.id}')">
-            <div class="w-full h-24 flex items-center justify-center mb-2">
-                <img src="${p.image}" class="max-h-full object-contain">
-            </div>
+            <div class="w-full h-24 flex items-center justify-center mb-2"><img src="${p.image}" class="max-h-full object-contain"></div>
             <h4 class="text-[10px] font-bold text-gray-700 line-clamp-1">${p.name}</h4>
             <div class="text-sm font-black text-primary">${parseFloat(p.price).toFixed(2)} ₺</div>
         </div>`).join('') : '<p class="text-gray-400 text-sm">Benzer ürün bulunamadı.</p>';
 }
 
-    async function loadData() {
-        const [pSnap, cSnap] = await Promise.all([ getDocs(collection(db, "homeProducts")), getDocs(collection(db, "homeCategories")) ]);
-        allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
-        allCategories = cSnap.docs.map(d => d.data());
-        document.getElementById("desktop-menu").innerHTML = buildMenu();
-        document.getElementById("mobile-category-list").innerHTML = buildMenu();
-        renderPopularProducts();
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('view') === 'detail' && urlParams.get('id')) handleNavigate('detail', urlParams.get('id'));
-        else if (urlParams.get('category')) handleCardClick(null, urlParams.get('category'), true);
-        else renderCategoryShowcase(null);
-        loadBanners();
-    }
+async function loadData() {
+    const [pSnap, cSnap] = await Promise.all([ getDocs(collection(db, "homeProducts")), getDocs(collection(db, "homeCategories")) ]);
+    allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
+    allCategories = cSnap.docs.map(d => d.data());
+    document.getElementById("desktop-menu").innerHTML = buildMenu();
+    document.getElementById("mobile-category-list").innerHTML = buildMenu();
+    renderPopularProducts();
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('view') === 'detail' && urlParams.get('id')) handleNavigate('detail', urlParams.get('id'));
+    else if (urlParams.get('category')) handleCardClick(null, urlParams.get('category'), true);
+    else renderCategoryShowcase(null);
+    loadBanners();
+}
 
-    function renderPopularProducts() {
-        const grid = document.getElementById("popular-grid");
-        const categories = [...new Set(allProducts.map(p => p.category))];
-        const items = categories.map(cat => {
-            const catProds = allProducts.filter(p => p.category === cat);
-            return catProds[catProds.length - 1]; 
-        }).filter(Boolean).slice(0, 8);
-        grid.innerHTML = items.map(p => `
-            <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
-                <div class="free-shipping-tag">Ücretsiz Kargo</div>
-                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
-                <div class="flex flex-col flex-grow">
-                    <h3 class="font-bold text-xs text-gray-800 line-clamp-2 h-8 mb-1">${p.name}</h3>
-                    <div class="mt-auto">
-                        <div class="text-sm font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="add-btn text-[10px] py-1.5" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
-                    </div>
+function renderPopularProducts() {
+    const grid = document.getElementById("popular-grid");
+    const categories = [...new Set(allProducts.map(p => p.category))];
+    const items = categories.map(cat => { const catProds = allProducts.filter(p => p.category === cat); return catProds[catProds.length - 1]; }).filter(Boolean).slice(0, 8);
+    grid.innerHTML = items.map(p => `
+        <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
+            <div class="free-shipping-tag">Ücretsiz Kargo</div>
+            <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
+            <div class="flex flex-col flex-grow">
+                <h3 class="font-bold text-xs text-gray-800 line-clamp-2 h-8 mb-1">${p.name}</h3>
+                <div class="mt-auto">
+                    <div class="text-sm font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
+                    <button class="add-btn text-[10px] py-1.5" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
                 </div>
-            </div>`).join('');
-    }
+            </div>
+        </div>`).join('');
+}
 
-    function renderCategoryShowcase(parent = null) {
-        activeCategoryParent = parent;
-        const grid = document.getElementById("category-grid");
-        const title = document.getElementById("category-showcase-title");
-        const backBtn = document.getElementById("back-to-parent");
-        const items = allCategories.filter(c => c.parent === parent);
-        if (parent) { title.textContent = parent; backBtn.classList.remove("hidden"); document.getElementById("popular-section").classList.add("hidden"); }
-        else { title.textContent = "Kategorileri Keşfet"; backBtn.classList.add("hidden"); document.getElementById("popular-section").classList.remove("hidden"); }
-        if (items.length > 0) {
-            document.getElementById("product-section").classList.add("hidden"); grid.parentElement.classList.remove("hidden");
-            grid.innerHTML = items.map(cat => {
-                const hasSub = allCategories.some(c => c.parent === cat.name);
-                return `<div class="category-card" onclick="handleCardClick(event, '${cat.name}', ${!hasSub})"><img src="${cat.image || ''}" onerror="this.src='https://placehold.co/100x100?text=${cat.name}'"><span>${cat.name}</span></div>`;
-            }).join('');
-        } else { grid.parentElement.classList.add("hidden"); showProductsByCategory(parent); }
-    }
-
-    window.handleCardClick = (e, name, isLeaf) => {
-        if(e) { e.preventDefault(); e.stopPropagation(); }
-        if (isLeaf) { updateUrl({ category: name }); document.getElementById("category-showcase").classList.add("hidden"); document.getElementById("popular-section").classList.add("hidden"); showProductsByCategory(name); }
-        else { renderCategoryShowcase(name); }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    function showProductsByCategory(categoryName) {
-        const prodSection = document.getElementById("product-section");
-        document.getElementById("section-title").textContent = categoryName;
-        prodSection.classList.remove("hidden");
-        renderProducts(allProducts.filter(p => p.category === categoryName));
-    }
-
-  onAuthStateChanged(auth, user => {
-        if (user) {
-            currentUserId = user.uid;
-            document.getElementById("user-photo").src = user.photoURL || '';
-            document.getElementById("user-photo").classList.remove("hidden");
-            document.getElementById("loginBtn").classList.add("hidden");
-            
-            // Profil kontrolünü burada tetikliyoruz
-            checkUserProfile(user);
-
-            onSnapshot(collection(db, "users", user.uid, "cart"), snap => {
-                const badge = document.getElementById("cart-count");
-                badge.textContent = snap.docs.length;
-                badge.classList.toggle("hidden", snap.docs.length === 0);
-            });
-        } else {
-            currentUserId = null;
-            document.getElementById("user-photo").classList.add("hidden");
-            document.getElementById("loginBtn").classList.remove("hidden");
-            if(document.getElementById('profile-modal')) document.getElementById('profile-modal').classList.add('hidden');
-        }
-    });
-
-    document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
-    window.handleLogout = () => confirm("Çıkış?") && signOut(auth);
-
-    document.getElementById("search-input").oninput = (e) => {
-        const val = e.target.value.toLowerCase();
-        if(val.length > 0) {
-            document.getElementById("category-showcase").classList.add("hidden");
-            document.getElementById("popular-section").classList.add("hidden");
-            document.getElementById("product-section").classList.remove("hidden");
-            renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(val)));
-        } else { resetAndGoHome(); }
-    };
-
-    function buildMenu(parentName = null, level = 0) {
-        const children = allCategories.filter(c => c.parent === parentName);
-        if (!children.length) return '';
-        let html = `<ul class="${level > 0 ? 'hidden ml-4 border-l' : 'space-y-1'}">`;
-        children.forEach(cat => {
+function renderCategoryShowcase(parent = null) {
+    activeCategoryParent = parent;
+    const grid = document.getElementById("category-grid");
+    const title = document.getElementById("category-showcase-title");
+    const backBtn = document.getElementById("back-to-parent");
+    const items = allCategories.filter(c => c.parent === parent);
+    if (parent) { title.textContent = parent; backBtn.classList.remove("hidden"); document.getElementById("popular-section").classList.add("hidden"); }
+    else { title.textContent = "Kategorileri Keşfet"; backBtn.classList.add("hidden"); document.getElementById("popular-section").classList.remove("hidden"); }
+    if (items.length > 0) {
+        document.getElementById("product-section").classList.add("hidden"); grid.parentElement.classList.remove("hidden");
+        grid.innerHTML = items.map(cat => {
             const hasSub = allCategories.some(c => c.parent === cat.name);
-            html += `<li><div class="flex items-center justify-between p-2 rounded-xl hover:bg-gray-100 cursor-pointer" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})"><div class="flex items-center gap-3">${cat.image ? `<img src="${cat.image}" class="w-6 h-6 object-contain">` : '<i class="ri-checkbox-blank-circle-fill text-[8px] text-primary"></i>'}<span class="text-sm font-semibold">${cat.name}</span></div>${hasSub ? '<i class="ri-arrow-right-s-line rotate-icon"></i>' : ''}</div>${hasSub ? buildMenu(cat.name, level + 1) : ''}</li>`;
+            return `<div class="category-card" onclick="handleCardClick(event, '${cat.name}', ${!hasSub})"><img src="${cat.image || ''}" onerror="this.src='https://placehold.co/100x100?text=${cat.name}'"><span>${cat.name}</span></div>`;
+        }).join('');
+    } else { grid.parentElement.classList.add("hidden"); showProductsByCategory(parent); }
+}
+
+window.handleCardClick = (e, name, isLeaf) => {
+    if(e) { e.preventDefault(); e.stopPropagation(); }
+    if (isLeaf) { updateUrl({ category: name }); document.getElementById("category-showcase").classList.add("hidden"); document.getElementById("popular-section").classList.add("hidden"); showProductsByCategory(name); }
+    else { renderCategoryShowcase(name); }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function showProductsByCategory(categoryName) {
+    const prodSection = document.getElementById("product-section");
+    document.getElementById("section-title").textContent = categoryName;
+    prodSection.classList.remove("hidden");
+    renderProducts(allProducts.filter(p => p.category === categoryName));
+}
+
+onAuthStateChanged(auth, user => {
+    if (user) {
+        currentUserId = user.uid;
+        document.getElementById("user-photo").src = user.photoURL || '';
+        document.getElementById("user-photo").classList.remove("hidden");
+        document.getElementById("loginBtn").classList.add("hidden");
+        checkUserProfile(user);
+        onSnapshot(collection(db, "users", user.uid, "cart"), snap => {
+            const badge = document.getElementById("cart-count");
+            badge.textContent = snap.docs.length;
+            badge.classList.toggle("hidden", snap.docs.length === 0);
         });
-        return html + '</ul>';
+    } else {
+        currentUserId = null;
+        document.getElementById("user-photo").classList.add("hidden");
+        document.getElementById("loginBtn").classList.remove("hidden");
+        if(document.getElementById('profile-modal')) document.getElementById('profile-modal').classList.add('hidden');
     }
+});
 
-    window.handleCategoryClick = (e, name, isLeaf) => {
-        e.stopPropagation();
-        if (isLeaf) { updateUrl({ category: name }); document.getElementById("category-showcase").classList.add("hidden"); document.getElementById("popular-section").classList.add("hidden"); showProductsByCategory(name); if (window.innerWidth < 1024) toggleMobileMenu(); }
-        else { renderCategoryShowcase(name); const sub = e.currentTarget.nextElementSibling; if (sub && sub.tagName === 'UL') sub.classList.toggle('hidden'); const icon = e.currentTarget.querySelector('.rotate-icon'); if(icon) icon.classList.toggle('rotate-90'); }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
+window.handleLogout = () => confirm("Çıkış?") && signOut(auth);
 
-    function renderProducts(products) {
-        const grid = document.getElementById("products-grid");
-        grid.innerHTML = products.map(p => `
-            <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
-                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
-                <div class="flex flex-col flex-grow">
-                    <h3 class="font-bold text-xs md:text-sm text-gray-800 line-clamp-2 h-10 mb-2">${p.name}</h3>
-                    <div class="mt-auto">
-                        <div class="text-sm md:text-lg font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
-                        <button class="add-btn text-xs md:text-sm" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
-                    </div>
+document.getElementById("search-input").oninput = (e) => {
+    const val = e.target.value.toLowerCase();
+    if(val.length > 0) {
+        document.getElementById("category-showcase").classList.add("hidden");
+        document.getElementById("popular-section").classList.add("hidden");
+        document.getElementById("product-section").classList.remove("hidden");
+        renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(val)));
+    } else { resetAndGoHome(); }
+};
+
+function buildMenu(parentName = null, level = 0) {
+    const children = allCategories.filter(c => c.parent === parentName);
+    if (!children.length) return '';
+    let html = `<ul class="${level > 0 ? 'hidden ml-4 border-l' : 'space-y-1'}">`;
+    children.forEach(cat => {
+        const hasSub = allCategories.some(c => c.parent === cat.name);
+        html += `<li><div class="flex items-center justify-between p-2 rounded-xl hover:bg-gray-100 cursor-pointer" onclick="handleCategoryClick(event, '${cat.name}', ${!hasSub})"><div class="flex items-center gap-3">${cat.image ? `<img src="${cat.image}" class="w-6 h-6 object-contain">` : '<i class="ri-checkbox-blank-circle-fill text-[8px] text-primary"></i>'}<span class="text-sm font-semibold">${cat.name}</span></div>${hasSub ? '<i class="ri-arrow-right-s-line rotate-icon"></i>' : ''}</div>${hasSub ? buildMenu(cat.name, level + 1) : ''}</li>`;
+    });
+    return html + '</ul>';
+}
+
+window.handleCategoryClick = (e, name, isLeaf) => {
+    e.stopPropagation();
+    if (isLeaf) { updateUrl({ category: name }); document.getElementById("category-showcase").classList.add("hidden"); document.getElementById("popular-section").classList.add("hidden"); showProductsByCategory(name); if (window.innerWidth < 1024) toggleMobileMenu(); }
+    else { renderCategoryShowcase(name); const sub = e.currentTarget.nextElementSibling; if (sub && sub.tagName === 'UL') sub.classList.toggle('hidden'); const icon = e.currentTarget.querySelector('.rotate-icon'); if(icon) icon.classList.toggle('rotate-90'); }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function renderProducts(products) {
+    const grid = document.getElementById("products-grid");
+    grid.innerHTML = products.map(p => `
+        <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
+            <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Yok'"></div>
+            <div class="flex flex-col flex-grow">
+                <h3 class="font-bold text-xs md:text-sm text-gray-800 line-clamp-2 h-10 mb-2">${p.name}</h3>
+                <div class="mt-auto">
+                    <div class="text-sm md:text-lg font-black text-primary mb-2">${parseFloat(p.price).toFixed(2)} ₺</div>
+                    <button class="add-btn text-xs md:text-sm" onclick="event.stopPropagation(); addToCart('${p.id}')">Ekle</button>
                 </div>
-            </div>`).join('');
-    }
+            </div>
+        </div>`).join('');
+}
 
-    function showToast(msg, isError = false) {
-        const t = document.getElementById("toast");
-        t.textContent = msg;
-        t.className = `fixed bottom-6 right-6 z-[100] px-6 py-3 rounded-2xl text-white font-bold shadow-2xl transition-all ${isError ? 'bg-red-500' : 'bg-green-600'}`;
-        t.classList.remove("hidden");
-        setTimeout(() => t.classList.add("hidden"), 3000);
-    }
+function showToast(msg, isError = false) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = `fixed bottom-6 right-6 z-[100] px-6 py-3 rounded-2xl text-white font-bold shadow-2xl transition-all ${isError ? 'bg-red-500' : 'bg-green-600'}`;
+    t.classList.remove("hidden");
+    setTimeout(() => t.classList.add("hidden"), 3000);
+}
 
-    window.onpopstate = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('view') === 'detail') handleNavigate('detail', urlParams.get('id'));
-        else if (urlParams.get('category')) handleCardClick(null, urlParams.get('category'), true);
-        else resetAndGoHome();
-    };
+window.onpopstate = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('view') === 'detail') handleNavigate('detail', urlParams.get('id'));
+    else if (urlParams.get('category')) handleCardClick(null, urlParams.get('category'), true);
+    else resetAndGoHome();
+};
 
-    loadData();
+loadData();
 </script>
 </body>
 </html>
