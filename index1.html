@@ -21,23 +21,14 @@
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none; }
         .product-slider { overflow-x: auto; scrollbar-width: none; white-space: nowrap; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
         .product-slider::-webkit-scrollbar { display: none; }
         .product-card { display: inline-block; width: 280px; margin-right: 1rem; white-space: normal; scroll-snap-align: start; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
     </style>
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-JL9P6BRZTD');
-    </script>
 </head>
 <body class="bg-gray-50">
 
@@ -54,6 +45,7 @@
                     <option value="tr">TR</option>
                     <option value="en">EN</option>
                     <option value="ru">RU</option>
+                    <option value="el">EL</option>
                 </select>
             </div>
         </div>
@@ -183,10 +175,6 @@
         </div>
     </div>
 
-    <a href="https://wa.me/905471901988" target="_blank" class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors p-6">
-       <i class="ri-whatsapp-line ri-xl text-white"></i>
-    </a>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -204,7 +192,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 🧩 ÇEVİRİ SÖZLÜĞÜ (TÜM DETAYLAR DAHİL)
         const translations = {
             tr: {
                 navHome: "Ana Sayfa", heroTitle: "Şeffaf Fiyatlandırma", heroSub: "Sürpriz Maliyetlere Son",
@@ -241,10 +228,21 @@
                 calcBtn: "Рассчитать", addToCart: "В корзину", popularProducts: "🛒 Популярные товары",
                 warehouseTitle: "Наш склад на Кипре", warehouseAddress: "Промышленная зона Алайкёй, 1-й этап, Никосия",
                 legomKoltuk: "Диван Legom", legomXLKoltuk: "Диван Legom XL"
+            },
+            el: {
+                navHome: "Αρχική", heroTitle: "Διαφανής Τιμολόγηση", heroSub: "Τέλος στο Κρυφό Κόστος",
+                scopeLabel: "Εύρος Υπηρεσιών", scopeDetail: "Τελωνείο + Μεταφορά + Ναυτιλία", allInOne: "ΟΛΕΣ ΟΙ ΔΙΑΔΙΚΑΣΙΕΣ ΠΕΡΙΛΑΜΒΑΝΟΝΤΑΙ ΣΕ ΜΙΑ ΤΙΜΗ",
+                feature1: "Δεν απαιτείται επιπλέον τελωνειακός φόρος.", feature2: "Το υπολογισμένο ποσό είναι η καθαρή τιμή παράδοσης.", feature3: "Όλες οι λειτουργικές διαδικασίες διαχειρίζονται από εμάς.",
+                orderNow: "Παραγγελία", myCart: "Καλάθι", buyNow: "Αγορά", freeShipping: "ΔΩΡΕΑΝ ΜΕΤΑΦΟΡΙΚΑ",
+                calcStep1: "1. Εισάγετε Στοιχεία Προϊόντος", orderMethod: "Μέθοδος Παραγγελίας*", method1: "Παραγγείλετε για λογαριασμό μου", method2: "Θα το αγοράσω ο ίδιος, χρειάζομαι μόνο μεταφορά",
+                productLink: "Σύνδεσμος Προϊόντος*", productPrice: "Τιμή Προϊόντος (₺)*", category: "Κατηγορία*", loading: "Φόρτωση...",
+                calcResult: "Υπολογισμός Κόστους Παράδοσης", priceLabel: "Τιμή Προϊόντος:", feeLabel: "Χρέωση Κατηγορίας:", totalLabel: "Συνολική Τιμή Παράδοσης:",
+                calcBtn: "Υπολογισμός", addToCart: "Προσθήκη στο Καλάθι", popularProducts: "🛒 Δημοφιλή Προϊόντα",
+                warehouseTitle: "Η Αποθήκη μας στην Κύπρο", warehouseAddress: "Βιομηχανική Περιοχή Αλαϊκόι, Φάση 1, Λευκωσία",
+                legomKoltuk: "Καναπές Legom", legomXLKoltuk: "Καναπές Legom XL"
             }
         };
 
-        // 🧩 DİL DEĞİŞTİRME FONKSİYONU
         function changeLanguage(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
@@ -258,7 +256,7 @@
 
         function updateDynamicButtons(lang) {
             const btn = document.getElementById('main-action-btn');
-            if (btn.querySelector('span')) {
+            if (btn && btn.querySelector('span')) {
                 const span = btn.querySelector('span');
                 if (document.getElementById('calculation-result').classList.contains('hidden')) {
                     span.textContent = translations[lang].calcBtn;
@@ -273,7 +271,7 @@
         document.getElementById('lang-select').value = savedLang;
         changeLanguage(savedLang);
 
-        // --- HESAPLAMA VE SEPET ---
+        // HESAPLAMA
         let pricingSettings = { categoryRates: { furniture: 0.7, clothing: 0.45, cosmetics: 0.7, stationery: 0.4 } };
         document.getElementById('calculate-btn').onclick = () => { 
             const s = document.getElementById('calculator-section'); s.classList.remove('hidden'); s.scrollIntoView({behavior:'smooth'});
@@ -310,14 +308,14 @@
             }
         };
 
-        // Kategorileri Doldur
+        // Kategoriler
         const catSelect = document.getElementById('product-category');
         const catNames = { furniture: "Mobilya / Ev", clothing: "Giyim / Ayakkabı", cosmetics: "Kozmetik", stationery: "Kitap / Kırtasiye" };
         Object.keys(pricingSettings.categoryRates).forEach(k => {
             const o = document.createElement('option'); o.value = k; o.textContent = catNames[k]; catSelect.appendChild(o);
         });
 
-        // Auth Takibi
+        // Auth
         onAuthStateChanged(auth, user => {
             if (user) {
                 document.getElementById('login-btn').classList.add('hidden');
