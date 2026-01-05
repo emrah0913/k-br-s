@@ -45,12 +45,20 @@
         }
     </script>
 
-    <style>
-
-
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  <style>
+        /* Dil Seçici Kaydırma Engelleme (Mobil için) */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
+        /* Dropdown Menü Animasyonu ve Görünürlük Kontrolü */
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1;
+        }
+        .group:hover .group-hover\:visible {
+            visibility: visible;
+        }
+
+        /* Standart Stil Tanımlamaları */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f9f9f9;
@@ -68,6 +76,11 @@
         .hidden {
             display: none;
         }
+
+        /* Arapça (ar.html) sayfası için sağdan sola okuma desteği (opsiyonel) */
+        [dir="rtl"] .text-right-rtl {
+            text-align: right;
+        }
     </style>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
@@ -83,38 +96,43 @@
 
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-   <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
-        <div class="flex-1 flex gap-2 items-center overflow-x-auto no-scrollbar py-1">
-            <a href="en.html" title="English" class="flex-shrink-0 group">
-                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
-                    <img src="https://flagcdn.com/w80/gb.png" alt="English" class="w-full h-full object-cover">
+<header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+        <div class="flex-1 relative group">
+            <button class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 transition-all cursor-pointer">
+                <img src="https://flagcdn.com/w40/gb.png" class="w-5 h-5 rounded-full object-cover" alt="Selected Language">
+                <span class="text-[11px] font-bold text-gray-700 uppercase">EN</span>
+                <i class="ri-arrow-down-s-line text-gray-400"></i>
+            </button>
+
+            <div class="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60]">
+                <div class="p-2 space-y-1">
+                    <a href="en.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
+                        <img src="https://flagcdn.com/w40/gb.png" class="w-5 h-5 rounded-full object-cover" alt="English">
+                        <span class="text-xs font-medium text-gray-700">English</span>
+                    </a>
+                    <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
+                        <img src="https://flagcdn.com/w40/tr.png" class="w-5 h-5 rounded-full object-cover" alt="Türkçe">
+                        <span class="text-xs font-medium text-gray-700">Türkçe</span>
+                    </a>
+                    <a href="el.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
+                        <img src="https://flagcdn.com/w40/cy.png" class="w-5 h-5 rounded-full object-cover" alt="Greek">
+                        <span class="text-xs font-medium text-gray-700">Ελληνικά</span>
+                    </a>
+                    <a href="ru.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
+                        <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover" alt="Russian">
+                        <span class="text-xs font-medium text-gray-700">Русский</span>
+                    </a>
+                    <a href="ar.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
+                        <img src="https://flagcdn.com/w40/sa.png" class="w-5 h-5 rounded-full object-cover" alt="Arabic">
+                        <span class="text-xs font-medium text-gray-700">العربية</span>
+                    </a>
                 </div>
-            </a>
-            <a href="el.html" title="Ελληνικά" class="flex-shrink-0 group">
-                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
-                    <img src="https://flagcdn.com/w80/cy.png" alt="Greek" class="w-full h-full object-cover">
-                </div>
-            </a>
-            <a href="ru.html" title="Русский" class="flex-shrink-0 group">
-                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
-                    <img src="https://flagcdn.com/w80/ru.png" alt="Russian" class="w-full h-full object-cover">
-                </div>
-            </a>
-            <a href="index.html" title="Türkçe" class="flex-shrink-0 group">
-                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
-                    <img src="https://flagcdn.com/w80/tr.png" alt="Turkish" class="w-full h-full object-cover">
-                </div>
-            </a>
-            <a href="ar.html" title="العربية" class="flex-shrink-0 group">
-                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
-                    <img src="https://flagcdn.com/w80/sa.png" alt="Arabic" class="w-full h-full object-cover">
-                </div>
-            </a>
+            </div>
         </div>
 
         <div class="flex flex-col items-center">
             <img src="logom.png" alt="Getir Cyprus" class="h-12"> 
-            <a href="index.html" class="text-[10px] font-bold text-primary uppercase tracking-tighter mt-1">Home</a>
+            <a href="index.html" class="text-[10px] font-bold text-primary uppercase tracking-tighter mt-1">Main Page</a>
         </div>
 
         <div class="flex-1 flex justify-end">
