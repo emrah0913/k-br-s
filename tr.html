@@ -20,9 +20,25 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#5d3ebc', secondary: '#ffd300' },
-                    fontFamily: { inter: ['Inter', 'sans-serif'] },
-                    borderRadius: { 'button': '8px', DEFAULT: '8px' }
+                    colors: {
+                        primary: '#5d3ebc',
+                        secondary: '#ffd300'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'button': '8px',
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                    }
                 }
             }
         }
@@ -30,156 +46,259 @@
 
     <style>
         /* Ekran Kaymasını Engelleme */
-        html, body { overflow-x: hidden; width: 100%; position: relative; margin: 0; padding: 0; background-color: #f9f9f9; }
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
         .group:hover .group-hover\:opacity-100 { opacity: 1; }
         .group:hover .group-hover\:visible { visibility: visible; }
+
+        body { font-family: 'Inter', sans-serif; }
+        .copy-btn:active, .auth-button:active { transform: scale(0.95); }
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .hidden { display: none !important; }
 
-        /* Ürün Sliderı */
-        .product-slider { overflow-x: auto; white-space: nowrap; padding: 1rem; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; display: flex; gap: 1rem; }
-        .product-card { flex: 0 0 280px; white-space: normal; }
+        /* Sadece Görsel Kaydırıcı */
+        .product-slider-container {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            gap: 1rem;
+            padding: 1rem;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .product-slider-container::-webkit-scrollbar { display: none; }
+        .product-card {
+            flex: 0 0 280px;
+            scroll-snap-align: start;
+        }
+
+        [dir="rtl"] .text-right-rtl { text-align: right; }
     </style>
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date()); gtag('config', 'G-JL9P6BRZTD');
+      gtag('js', new Date());
+      gtag('config', 'G-JL9P6BRZTD');
     </script>
 </head>
 <body class="bg-gray-50">
 
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-    <header class="fixed top-0 max-w-screen-lg w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center left-1/2 -translate-x-1/2">
+    <header class="fixed top-0 w-full max-w-screen-lg bg-white shadow-sm z-50 px-4 py-3 flex items-center left-1/2 -translate-x-1/2">
         <div class="flex-1 relative group">
-            <button class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
-                <img src="https://flagcdn.com/w40/tr.png" class="w-5 h-5 rounded-full object-cover">
+            <button class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 transition-all cursor-pointer">
+                <img src="https://flagcdn.com/w40/tr.png" class="w-5 h-5 rounded-full object-cover" alt="Seçili Dil">
                 <span class="text-[11px] font-bold text-gray-700 uppercase">TR</span>
                 <i class="ri-arrow-down-s-line text-gray-400"></i>
             </button>
-            <div class="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+
+            <div class="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60]">
                 <div class="p-2 space-y-1">
-                    <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg"><span class="text-xs">Türkçe</span></a>
-                    <a href="en.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg"><span class="text-xs">English</span></a>
+                    <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors"><img src="https://flagcdn.com/w40/tr.png" class="w-5 h-5 rounded-full object-cover"><span class="text-xs font-medium text-gray-700">Türkçe</span></a>
+                    <a href="en.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors"><img src="https://flagcdn.com/w40/gb.png" class="w-5 h-5 rounded-full object-cover"><span class="text-xs font-medium text-gray-700">English</span></a>
+                    <a href="el.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors"><img src="https://flagcdn.com/w40/cy.png" class="w-5 h-5 rounded-full object-cover"><span class="text-xs font-medium text-gray-700">Ελληνικά</span></a>
+                    <a href="ru.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors"><img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover"><span class="text-xs font-medium text-gray-700">Русский</span></a>
+                    <a href="ar.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors"><img src="https://flagcdn.com/w40/sa.png" class="w-5 h-5 rounded-full object-cover"><span class="text-xs font-medium text-gray-700">العربية</span></a>
                 </div>
             </div>
         </div>
 
         <div class="flex flex-col items-center">
             <img src="logom.png" alt="Getir Kıbrıs" class="h-12"> 
-            <a href="index.html" class="text-[10px] font-bold text-primary uppercase mt-1">ANA SAYFA</a>
+            <a href="index.html" class="text-[10px] font-bold text-primary uppercase tracking-tighter mt-1">ANA SAYFA</a>
         </div>
 
         <div class="flex-1 flex justify-end">
             <div id="auth-section" class="flex items-center">
-                <button id="login-btn" class="text-primary font-medium p-2"><i class="ri-google-fill ri-lg"></i></button>
-                <div id="profile-container" class="hidden flex items-center gap-2">
-                    <img id="profile-img" src="" class="w-8 h-8 rounded-full cursor-pointer border border-primary/20">
+                <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
+                    <i class="ri-google-fill ri-lg"></i>
+                </button>
+                <div id="profile-container" class="hidden">
+                    <img id="profile-img" src="" alt="Profil" class="w-8 h-8 rounded-full cursor-pointer border border-primary/20">
                 </div>
             </div>
         </div>
     </header>
 
     <div class="px-4 pt-28 mb-6">
-        <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl" style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
-            <h2 class="text-2xl font-black uppercase mb-4 text-left">Şeffaf Fiyatlandırma <br><span class="text-[#ffd300] text-lg">Sürpriz Maliyetlere Son</span></h2>
-            <div class="bg-white/10 p-5 rounded-xl border border-white/10 text-left">
-                <p class="text-[11px] font-bold opacity-70">Hizmet Kapsamı</p>
-                <p class="text-lg font-extrabold">Gümrük + Kargo + Nakliye</p>
+        <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl border-b-4 border-[#ffd300]" style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
+            <div class="mb-6">
+                <h2 class="text-2xl font-black tracking-tight leading-none uppercase">Şeffaf Fiyatlandırma <br><span class="text-[#ffd300] text-lg font-bold italic opacity-90">Sürpriz Maliyetlere Son</span></h2>
+            </div>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white/10 backdrop-blur-md p-5 rounded-xl border border-white/10">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center border border-white/30"><i class="ri-box-3-line text-[#ffd300] text-2xl"></i></div>
+                        <div class="text-left">
+                            <p class="text-[11px] uppercase tracking-widest opacity-70 font-bold">Hizmet Kapsamı</p>
+                            <p class="text-lg font-extrabold text-white">Gümrük + Kargo + Nakliye</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-white/10 text-[#ffd300] font-bold text-sm flex items-center gap-2"><i class="ri-checkbox-circle-fill"></i> TÜM SÜREÇLER TEK FİYATA DAHİL</div>
+                </div>
+                <div class="grid grid-cols-1 gap-3 px-1 text-left">
+                    <div class="flex items-center gap-3 text-sm opacity-90 font-medium"><i class="ri-arrow-right-s-line text-[#ffd300]"></i><span>Ekstra gümrük vergisi talep edilmez.</span></div>
+                    <div class="flex items-center gap-3 text-sm opacity-90 font-medium"><i class="ri-arrow-right-s-line text-[#ffd300]"></i><span>Hesaplanan tutar net teslimat fiyatıdır.</span></div>
+                    <div class="flex items-center gap-3 text-sm opacity-90 font-medium"><i class="ri-arrow-right-s-line text-[#ffd300]"></i><span>Tüm operasyonel süreçler tarafımızca yönetilir.</span></div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="grid grid-cols-1 gap-4 px-4 mb-8">
-        <a href="getirhome.html" class="bg-[#ffd300] p-4 rounded-button flex flex-col items-center justify-center h-32 border border-[#ffd300]">
-            <img src="getirhome-logo.png" class="h-16 mb-1 object-contain">
+        <a href="getirhome.html" class="bg-[#ffd300] shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-[#ffd300] hover:bg-[#ffdf00] transition-all">
+            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm overflow-hidden p-1"><img src="getirhome-logo.png" alt="GetirHome" class="w-full h-full object-contain"></div>
             <span class="text-sm font-bold text-gray-900">GetirHome</span>
         </a>
-        <button id="calculate-btn-trigger" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100">
-            <i class="ri-calculator-line ri-2x text-primary mb-2"></i>
+        <button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100 hover:border-primary/20 transition-all">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2"><i class="ri-calculator-line ri-xl text-primary"></i></div>
             <span class="text-sm font-medium">Sipariş Oluştur</span>
         </button>
-        <a href="sepet.html" class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100">
-            <i class="ri-shopping-cart-line ri-2x text-primary mb-2"></i>
+        <a href="https://getirkibris.com/sepet.html" id="cart-page-btn" class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100 hover:border-primary/20 transition-all">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2"><i class="ri-shopping-cart-line ri-xl text-primary"></i></div>
             <span class="text-sm font-medium">Sepetim</span>
             <span id="cart-badge" class="absolute bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
         </a>
     </div>
 
-    <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-4 p-6 mb-8 fade-in hidden">
+    <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-4 p-6 mb-8 max-w-2xl fade-in hidden md:mx-auto">
         <h2 class="text-xl font-semibold mb-4 text-primary text-left">1. Ürün Bilgilerini Girin</h2>
         <form id="calculator-form" class="space-y-4">
             <div class="text-left">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi</label>
-                <select id="order-method" class="w-full p-2 border border-gray-300 rounded-md text-sm">
-                    <option value="service">Ürünü benim adıma satın al</option>
+                <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Sipariş Yöntemi<span class="text-red-500">*</span></label>
+                <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                    <option value="service" selected>Ürünü benim adıma satın al</option>
                     <option value="self">Ürünü ben alacağım, sadece nakliye istiyorum</option>
                 </select>
             </div>
             <div class="text-left">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki</label>
-                <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md" placeholder="https://...">
+                <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ürün Linki<span class="text-red-500">*</span></label>
+                <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.ornek.com/urun">
             </div>
             <div class="text-left">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)</label>
-                <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md" placeholder="0.00">
+                <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Ürün Fiyatı (₺)<span class="text-red-500">*</span></label>
+                <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
             </div>
             <div class="text-left">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md text-sm">
-                    <option value="" disabled selected>Yükleniyor...</option>
+                <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Kategori<span class="text-red-500">*</span></label>
+                <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                    <option value="" disabled selected>Kategoriler Yükleniyor...</option>
                 </select>
             </div>
             <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden text-left">
-                <div class="flex justify-between text-sm mb-1"><span>Ürün:</span> <span id="res-p">0₺</span></div>
-                <div class="flex justify-between text-sm mb-1"><span>Hizmet Bedeli:</span> <span id="res-f">0₺</span></div>
-                <div class="flex justify-between font-bold text-primary border-t pt-2"><span>Toplam:</span> <span id="res-t">0₺</span></div>
+                <h3 class="font-medium text-gray-800 mb-2">Getirme Maliyeti</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span id="result-price-label">Ürün Fiyatı:</span><span id="result-price">0 ₺</span></div>
+                    <div class="flex justify-between"><span>Kategori Hizmet Bedeli:</span><span id="result-category-fee">0 ₺</span></div>
+                    <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200"><span>Teslimat Dahil Toplam:</span><span id="result-total">0 ₺</span></div>
+                </div>
             </div>
-            <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold">Maliyeti Hesapla</button>
+            <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
+                <i class="ri-calculator-line"></i><span>Maliyeti Hesapla</span>
+            </button>
         </form>
     </section>
 
     <h2 class="text-2xl font-extrabold text-gray-800 mb-4 px-4 border-l-4 border-primary ml-4 text-left">🛒 Popüler Ürünler</h2>
-    <div class="product-slider no-scrollbar">
-        <div class="product-card relative shadow-lg rounded-2xl overflow-hidden border border-gray-100 bg-white p-4">
-            <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" class="h-40 mx-auto object-contain">
-            <h3 class="font-bold text-sm mt-2">Legom Koltuk</h3>
-            <p class="text-red-600 font-black">19,000.00 ₺</p>
-            <a href="#" class="block bg-primary text-white text-xs font-bold py-2 mt-2 rounded">Hemen Al</a>
+    <div class="product-slider-container no-scrollbar">
+        <div class="product-card relative shadow-lg rounded-2xl overflow-hidden border border-gray-100 bg-white">
+            <div class="absolute top-3 left-3 z-10"><span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1"><i class="ri-truck-fill"></i> ÜCRETSİZ KARGO</span></div>
+            <div class="h-48 bg-gray-50 flex items-center justify-center p-4"><img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" class="max-h-full object-contain mix-blend-multiply"></div>
+            <div class="p-4 text-center">
+                <h3 class="text-sm font-bold text-gray-800 truncate">Legom Koltuk</h3>
+                <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Getir Home'dan Gönderilir</p>
+                <p class="text-lg font-black text-red-600">19,000.00 ₺</p>
+                <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" class="block w-full bg-primary text-white text-sm font-bold py-2 mt-3 rounded-lg">Hemen Al</a>
+            </div>
         </div>
+        <div class="product-card relative shadow-lg rounded-2xl overflow-hidden border border-gray-100 bg-white">
+            <div class="h-48 bg-gray-50 flex items-center justify-center p-4"><img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536" class="max-h-full object-contain mix-blend-multiply"></div>
+            <div class="p-4 text-center">
+                <h3 class="text-sm font-bold text-gray-800 truncate">Legom XL Koltuk</h3>
+                <p class="text-[10px] text-gray-500 mb-2">Getir Home'dan Gönderilir</p>
+                <p class="text-lg font-black text-red-600">32,000.00 ₺</p>
+                <a href="#" class="block w-full bg-primary text-white text-sm font-bold py-2 mt-3 rounded-lg">Hemen Al</a>
+            </div>
         </div>
-
-    <div class="px-4 my-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-        </div>
-
-    <div class="px-4 text-left mb-20">
-        <h4 class="font-bold mb-2">Depo Adresi</h4>
-        <p class="text-xs text-gray-600">Alayköy Sanayi Bölgesi, Lefkoşa, KKTC</p>
     </div>
 
-</div>
-
-<a href="https://wa.me/905471901988" class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full p-4 shadow-lg">
-    <i class="ri-whatsapp-line ri-2x text-white"></i>
-</a>
-
-<div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative">
-        <button id="close-modal" class="absolute top-4 right-4"><i class="ri-close-line"></i></button>
-        <h3 class="text-xl font-bold mb-4 text-center">Giriş Yap</h3>
-        <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border p-3 rounded-button font-semibold">
-            <i class="ri-google-fill text-red-500"></i> Google ile Giriş
-        </button>
+    <div class="px-4 my-8">
+        <h3 class="text-lg font-semibold mb-4 text-left">Popüler Alışveriş Siteleri</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+            <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100"><img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" class="w-16 h-16 object-contain"></a>
+            <a href="https://www.hepsiburada.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100"><img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" class="w-16 h-16 object-contain"></a>
+            <a href="https://www.amazon.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s" class="w-16 h-16 object-contain"></a>
+            <a href="https://www.zara.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100"><img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png" class="w-16 h-16 object-contain"></a>
+        </div>
     </div>
-</div>
 
-<div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all z-[110]">
-    <span id="toast-message"></span>
+    <div class="px-4 space-y-8 mb-20 text-left">
+        <div class="bg-gray-50 p-6 rounded-xl shadow-sm">
+            <h3 class="text-xl font-semibold mb-3">Sipariş Yöntemleri</h3>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-indigo-700">1️⃣ Benim Adıma Sipariş Et</h4>
+                    <p class="text-gray-700 text-sm">Ürünü sizin için biz sipariş ediyoruz. Ödemeyi bize yapıyorsunuz.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-indigo-700">2️⃣ Kendim Satın Alacağım</h4>
+                    <div class="bg-gray-100 p-3 rounded-lg mt-2 text-xs">
+                        <strong>Adres:</strong> Aydın, Nazilli, Bozyurt Mah. Kanal Üstü 3281 sk. No:3 <br>
+                        <strong>Telefon:</strong> +90 547 190 19 88 | <strong>Ad Soyad:</strong> Emrah Kutlu
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <h4 class="text-lg font-semibold mb-4">Kıbrıs Depo Adresimiz</h4>
+            <p class="text-sm text-gray-600">Alayköy Sanayi Bölgesi 1. Etap, 3. Cadde, 8. Sokak, Lefkoşa, KKTC</p>
+        </div>
+    </div>
+
+    <a href="https://wa.me/905471901988" target="_blank" class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center p-5 hover:scale-110 transition-transform">
+        <i class="ri-whatsapp-line ri-2x text-white"></i>
+    </a>
+
+    <div class="mt-8 px-4 pb-24 text-center">
+        <div class="space-x-4">
+            <a href="#" class="text-xs text-gray-600">Gizlilik Politikası</a>
+            <a href="#" class="text-xs text-gray-600">Kullanım Şartları</a>
+        </div>
+    </div>
+
+    <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+            <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400"><i class="ri-close-line ri-lg"></i></button>
+            <div class="text-center mb-6"><h3 class="text-2xl font-bold">Hoş Geldiniz!</h3></div>
+            <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-button py-3 font-semibold hover:bg-gray-50">
+                <i class="ri-google-fill text-red-500"></i><span>Google ile Giriş Yap</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110]">
+        <span id="toast-message"></span>
+    </div>
+
 </div>
 
 <script type="module">
@@ -201,45 +320,38 @@
     const db = getFirestore(app);
 
     // --- BUTON KONTROLLERİ ---
-
-    // 1. Sipariş Oluştur Butonu (Hesaplayıcıyı Açma)
-    const calcTrigger = document.getElementById('calculate-btn-trigger');
-    const calcSection = document.getElementById('calculator-section');
-    calcTrigger.addEventListener('click', () => {
-        calcSection.classList.remove('hidden');
-        calcSection.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    // 2. Google Giriş ve Çıkış Kontrolü
-    const loginBtn = document.getElementById('login-btn');
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    const loginModal = document.getElementById('login-modal');
-    const profileContainer = document.getElementById('profile-container');
-    const profileImg = document.getElementById('profile-img');
-
-    // Modal aç/kapat
-    loginBtn.onclick = () => loginModal.classList.remove('hidden');
-    document.getElementById('close-modal').onclick = () => loginModal.classList.add('hidden');
-
-    // Google ile Giriş
-    googleLoginBtn.onclick = async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-            await signInWithPopup(auth, provider);
-            loginModal.classList.add('hidden');
-            showToast("Giriş başarılı!");
-        } catch (e) { showToast("Giriş hatası!", "error"); }
+    const calculateBtn = document.getElementById('calculate-btn');
+    const calculatorSection = document.getElementById('calculator-section');
+    calculateBtn.onclick = () => {
+        calculatorSection.classList.remove('hidden');
+        calculatorSection.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // Çıkış Yapma (Profil resmine basınca)
+    // --- AUTH KONTROLLERİ ---
+    const loginBtn = document.getElementById('login-btn');
+    const profileContainer = document.getElementById('profile-container');
+    const profileImg = document.getElementById('profile-img');
+    const loginModal = document.getElementById('login-modal');
+
+    loginBtn.onclick = () => loginModal.classList.remove('hidden');
+    document.getElementById('close-login-modal').onclick = () => loginModal.classList.add('hidden');
+
+    document.getElementById('google-login-btn').onclick = async () => {
+        try {
+            await signInWithPopup(auth, new GoogleAuthProvider());
+            loginModal.classList.add('hidden');
+            showToast("Giriş başarılı!");
+        } catch (e) { showToast("Hata oluştu!", "error"); }
+    };
+
+    // Çıkış yapma (Profil resmine basınca)
     profileImg.onclick = async () => {
         if(confirm("Çıkış yapmak istiyor musunuz?")) {
             await signOut(auth);
-            showToast("Çıkış yapıldı.");
+            showToast("Başarıyla çıkış yapıldı.");
         }
     };
 
-    // Auth Durum Takibi
     onAuthStateChanged(auth, user => {
         if (user) {
             loginBtn.classList.add('hidden');
@@ -249,20 +361,18 @@
         } else {
             loginBtn.classList.remove('hidden');
             profileContainer.classList.add('hidden');
-            document.getElementById('cart-badge').classList.add('hidden');
         }
     });
 
-    // --- DİĞER FONKSİYONLAR ---
+    // --- HESAPLAYICI MANTIĞI ---
     let pricing = { categoryRates: { furniture: 0.70, clothing: 0.45, cosmetics: 0.70, stationery: 0.40 } };
-
     async function loadSettings() {
         const snap = await getDoc(doc(db, "settings", "pricing"));
         if(snap.exists()) pricing = snap.data();
         const select = document.getElementById('product-category');
-        select.innerHTML = '<option value="" disabled selected>Kategori Seçin</option>';
-        for(let key in pricing.categoryRates) {
-            let opt = document.createElement('option'); opt.value = key; opt.textContent = key.toUpperCase();
+        select.innerHTML = '<option value="" disabled selected>Seçin</option>';
+        for(let k in pricing.categoryRates) {
+            let opt = document.createElement('option'); opt.value = k; opt.textContent = k.toUpperCase();
             select.appendChild(opt);
         }
     }
@@ -271,12 +381,12 @@
         e.preventDefault();
         const btn = document.getElementById('main-action-btn');
         if (btn.innerText.includes('Hesapla')) {
-            const price = parseFloat(document.getElementById('product-price').value);
-            const cat = document.getElementById('product-category').value;
-            const fee = price * (pricing.categoryRates[cat] || 0);
-            document.getElementById('res-p').innerText = price + "₺";
+            const p = parseFloat(document.getElementById('product-price').value);
+            const c = document.getElementById('product-category').value;
+            const fee = p * (pricing.categoryRates[c] || 0);
+            document.getElementById('res-p').innerText = p + "₺";
             document.getElementById('res-f').innerText = fee.toFixed(2) + "₺";
-            document.getElementById('res-t').innerText = (price + fee).toFixed(2) + "₺";
+            document.getElementById('res-t').innerText = (p + fee).toFixed(2) + "₺";
             document.getElementById('calculation-result').classList.remove('hidden');
             btn.innerText = "Sepete Ekle";
         } else {
@@ -287,7 +397,7 @@
                 price: parseFloat(document.getElementById('product-price').value),
                 addedAt: new Date()
             });
-            window.location.href = 'sepet.html';
+            window.location.href = 'https://getirkibris.com/sepet.html';
         }
     };
 
@@ -299,9 +409,9 @@
         });
     }
 
-    function showToast(msg) {
+    function showToast(m) {
         const t = document.getElementById('toast');
-        document.getElementById('toast-message').innerText = msg;
+        document.getElementById('toast-message').innerText = m;
         t.classList.remove('opacity-0');
         setTimeout(() => t.classList.add('opacity-0'), 3000);
     }
