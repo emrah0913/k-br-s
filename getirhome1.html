@@ -200,7 +200,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
@@ -550,17 +550,26 @@ function renderRelatedProducts(currentProduct) {
         renderProducts(allProducts.filter(p => p.category === categoryName));
     }
 
-    onAuthStateChanged(auth, user => {
+  onAuthStateChanged(auth, user => {
         if (user) {
             currentUserId = user.uid;
             document.getElementById("user-photo").src = user.photoURL || '';
             document.getElementById("user-photo").classList.remove("hidden");
             document.getElementById("loginBtn").classList.add("hidden");
+            
+            // Profil kontrolünü burada tetikliyoruz
+            checkUserProfile(user);
+
             onSnapshot(collection(db, "users", user.uid, "cart"), snap => {
                 const badge = document.getElementById("cart-count");
                 badge.textContent = snap.docs.length;
                 badge.classList.toggle("hidden", snap.docs.length === 0);
             });
+        } else {
+            currentUserId = null;
+            document.getElementById("user-photo").classList.add("hidden");
+            document.getElementById("loginBtn").classList.remove("hidden");
+            if(document.getElementById('profile-modal')) document.getElementById('profile-modal').classList.add('hidden');
         }
     });
 
