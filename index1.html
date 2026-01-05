@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Getir Kıbrıs | Türkiye'den Kıbrıs'a Sipariş Getirme Hizmeti</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
@@ -26,8 +27,17 @@
         .hidden { display: none; }
         .product-slider { overflow-x: auto; scrollbar-width: none; white-space: nowrap; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
         .product-slider::-webkit-scrollbar { display: none; }
-        .product-card { display: inline-block; width: 300px; margin-right: 1.5rem; white-space: normal; scroll-snap-align: start; }
+        .product-card { display: inline-block; width: 280px; margin-right: 1rem; white-space: normal; scroll-snap-align: start; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
     </style>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JL9P6BRZTD');
+    </script>
 </head>
 <body class="bg-gray-50">
 
@@ -43,6 +53,7 @@
                 <select id="lang-select" class="text-[10px] font-bold text-primary bg-transparent outline-none cursor-pointer uppercase border border-primary/20 rounded px-1">
                     <option value="tr">TR</option>
                     <option value="en">EN</option>
+                    <option value="ru">RU</option>
                 </select>
             </div>
         </div>
@@ -147,31 +158,40 @@
     </section>
 
     <h2 class="text-2xl font-extrabold text-gray-800 mb-4 px-4 border-l-4 border-primary ml-4" data-i18n="popularProducts">🛒 Popüler Ürünler</h2>
-
     <div class="product-slider flex overflow-x-auto gap-4 p-4 scrollbar-hide">
         <div class="product-card bg-white rounded-2xl shadow-lg border p-4 text-center">
             <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded mb-2 inline-block uppercase" data-i18n="freeShipping">ÜCRETSİZ KARGO</span>
             <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" class="h-32 mx-auto object-contain mb-2">
-            <h3 class="text-sm font-bold truncate">Legom Koltuk</h3>
+            <h3 class="text-sm font-bold truncate" data-i18n="legomKoltuk">Legom Koltuk</h3>
             <p class="text-lg font-black text-red-600">19.000,00 ₺</p>
             <a href="getirhome.html?category=Legom+Koltuk" class="block w-full bg-primary text-white text-xs py-2 mt-2 rounded" data-i18n="buyNow">Satın Al</a>
         </div>
+        <div class="product-card bg-white rounded-2xl shadow-lg border p-4 text-center">
+            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded mb-2 inline-block uppercase" data-i18n="freeShipping">ÜCRETSİZ KARGO</span>
+            <img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536" class="h-32 mx-auto object-contain mb-2">
+            <h3 class="text-sm font-bold truncate" data-i18n="legomXLKoltuk">Legom XL Koltuk</h3>
+            <p class="text-lg font-black text-red-600">32.000,00 ₺</p>
+            <a href="getirhome.html?view=detail&id=4EB3NPv3gcV20oDbgH1S" class="block w-full bg-primary text-white text-xs py-2 mt-2 rounded" data-i18n="buyNow">Satın Al</a>
         </div>
+    </div>
 
     <div class="p-6 bg-white rounded-xl shadow-sm mx-4 mt-8">
         <h4 class="text-lg font-semibold mb-4 text-primary" data-i18n="warehouseTitle">Kıbrıs Depo Adresimiz</h4>
         <div class="space-y-3 text-sm text-gray-600">
-            <p><i class="ri-map-pin-2-line text-primary"></i> Alayköy Sanayi Bölgesi 1.Etap, Lefkoşa</p>
+            <p><i class="ri-map-pin-2-line text-primary"></i> <span data-i18n="warehouseAddress">Alayköy Sanayi Bölgesi 1.Etap, Lefkoşa</span></p>
             <p><i class="ri-phone-line text-primary"></i> +90 533 860 71 82</p>
         </div>
     </div>
+
+    <a href="https://wa.me/905471901988" target="_blank" class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors p-6">
+       <i class="ri-whatsapp-line ri-xl text-white"></i>
+    </a>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-        // Firebase Config (Aynen Korundu)
         const firebaseConfig = {
             apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
             authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -184,7 +204,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // 🧩 ÇEVİRİ SÖZLÜĞÜ
+        // 🧩 ÇEVİRİ SÖZLÜĞÜ (TÜM DETAYLAR DAHİL)
         const translations = {
             tr: {
                 navHome: "Ana Sayfa", heroTitle: "Şeffaf Fiyatlandırma", heroSub: "Sürpriz Maliyetlere Son",
@@ -194,19 +214,33 @@
                 calcStep1: "1. Ürün Bilgilerini Girin", orderMethod: "Sipariş Yöntemi*", method1: "Ürünü benim yerime siz sipariş edin", method2: "Ürünü ben alacağım, sadece kargo hizmeti istiyorum",
                 productLink: "Ürün Linki*", productPrice: "Ürün Fiyatı (₺)*", category: "Kategori*", loading: "Yükleniyor...",
                 calcResult: "Ürün Getirme Maliyeti", priceLabel: "Ürün Fiyatı:", feeLabel: "Kategori Hizmet Bedeli:", totalLabel: "Getirme Dahil Toplam:",
-                calcBtn: "Maliyeti Hesapla", addToCart: "Sepete Ekle", popularProducts: "🛒 Popüler Ürünler", warehouseTitle: "Kıbrıs Depo Adresimiz",
-                errorAll: "Lütfen tüm alanları doldurun!", successCart: "Ürün sepete eklendi!"
+                calcBtn: "Maliyeti Hesapla", addToCart: "Sepete Ekle", popularProducts: "🛒 Popüler Ürünler", 
+                warehouseTitle: "Kıbrıs Depo Adresimiz", warehouseAddress: "Alayköy Sanayi Bölgesi 1.Etap, Lefkoşa",
+                legomKoltuk: "Legom Koltuk", legomXLKoltuk: "Legom XL Koltuk"
             },
             en: {
                 navHome: "Home", heroTitle: "Transparent Pricing", heroSub: "No More Surprise Costs",
                 scopeLabel: "Service Scope", scopeDetail: "Customs + Cargo + Shipping", allInOne: "ALL PROCESSES INCLUDED IN ONE PRICE",
                 feature1: "No extra customs tax requested.", feature2: "Calculated amount is net delivery price.", feature3: "All operational processes are managed by us.",
                 orderNow: "Order Now", myCart: "My Cart", buyNow: "Buy Now", freeShipping: "FREE SHIPPING",
-                calcStep1: "1. Enter Product Details", orderMethod: "Order Method*", method1: "Order on my behalf", method2: "I will buy, I only need shipping service",
+                calcStep1: "1. Enter Product Details", orderMethod: "Order Method*", method1: "Order on my behalf", method2: "I only need shipping service",
                 productLink: "Product Link*", productPrice: "Product Price (₺)*", category: "Category*", loading: "Loading...",
                 calcResult: "Delivery Cost Calculation", priceLabel: "Product Price:", feeLabel: "Service Category Fee:", totalLabel: "Total Delivery Price:",
-                calcBtn: "Calculate Cost", addToCart: "Add to Cart", popularProducts: "🛒 Popular Products", warehouseTitle: "Our Cyprus Warehouse",
-                errorAll: "Please fill all fields!", successCart: "Product added to cart!"
+                calcBtn: "Calculate Cost", addToCart: "Add to Cart", popularProducts: "🛒 Popular Products",
+                warehouseTitle: "Our Cyprus Warehouse", warehouseAddress: "Alayköy Industrial Zone Phase 1, Nicosia",
+                legomKoltuk: "Legom Sofa", legomXLKoltuk: "Legom XL Sofa"
+            },
+            ru: {
+                navHome: "Главная", heroTitle: "Прозрачные цены", heroSub: "Никаких скрытых платежей",
+                scopeLabel: "Объем услуг", scopeDetail: "Таможня + Груз + Доставка", allInOne: "ВСЕ ВКЛЮЧЕНО В ОДНУ ЦЕНУ",
+                feature1: "Никаких дополнительных налогов.", feature2: "Рассчитанная сумма — итоговая цена.", feature3: "Мы берем на себя все процессы.",
+                orderNow: "Заказать", myCart: "Корзина", buyNow: "Купить", freeShipping: "БЕСПЛАТНАЯ ДОСТАВКА",
+                calcStep1: "1. Введите данные товара", orderMethod: "Способ заказа*", method1: "Закажите за меня", method2: "Мне нужна только доставка",
+                productLink: "Ссылка на товар*", productPrice: "Цена товара (₺)*", category: "Категория*", loading: "Загрузка...",
+                calcResult: "Расчет стоимости доставки", priceLabel: "Цена товара:", feeLabel: "Комиссия за категорию:", totalLabel: "Итого с доставкой:",
+                calcBtn: "Рассчитать", addToCart: "В корзину", popularProducts: "🛒 Популярные товары",
+                warehouseTitle: "Наш склад на Кипре", warehouseAddress: "Промышленная зона Алайкёй, 1-й этап, Никосия",
+                legomKoltuk: "Диван Legom", legomXLKoltuk: "Диван Legom XL"
             }
         };
 
@@ -215,11 +249,23 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang][key]) {
-                    if (el.tagName === 'INPUT') el.placeholder = translations[lang][key];
-                    else el.textContent = translations[lang][key];
+                    el.textContent = translations[lang][key];
                 }
             });
             localStorage.setItem('prefLang', lang);
+            updateDynamicButtons(lang);
+        }
+
+        function updateDynamicButtons(lang) {
+            const btn = document.getElementById('main-action-btn');
+            if (btn.querySelector('span')) {
+                const span = btn.querySelector('span');
+                if (document.getElementById('calculation-result').classList.contains('hidden')) {
+                    span.textContent = translations[lang].calcBtn;
+                } else {
+                    span.textContent = translations[lang].addToCart;
+                }
+            }
         }
 
         document.getElementById('lang-select').onchange = (e) => changeLanguage(e.target.value);
@@ -227,23 +273,21 @@
         document.getElementById('lang-select').value = savedLang;
         changeLanguage(savedLang);
 
-        // --- HESAPLAMA MANTIĞI ---
+        // --- HESAPLAMA VE SEPET ---
         let pricingSettings = { categoryRates: { furniture: 0.7, clothing: 0.45, cosmetics: 0.7, stationery: 0.4 } };
-        
-        const mainActionBtn = document.getElementById('main-action-btn');
-        const calcSection = document.getElementById('calculator-section');
-        
-        document.getElementById('calculate-btn').onclick = () => { calcSection.classList.remove('hidden'); calcSection.scrollIntoView({behavior: 'smooth'}); };
+        document.getElementById('calculate-btn').onclick = () => { 
+            const s = document.getElementById('calculator-section'); s.classList.remove('hidden'); s.scrollIntoView({behavior:'smooth'});
+        };
 
         document.getElementById('calculator-form').onsubmit = async (e) => {
             e.preventDefault();
             const lang = document.getElementById('lang-select').value;
-            if (mainActionBtn.innerText.includes("Calculate") || mainActionBtn.innerText.includes("Hesapla")) {
+            const actionBtn = document.getElementById('main-action-btn');
+            
+            if (actionBtn.innerText.includes(translations[lang].calcBtn)) {
                 const price = parseFloat(document.getElementById('product-price').value);
                 const cat = document.getElementById('product-category').value;
                 const method = document.getElementById('order-method').value;
-                if (!price || !cat) return alert(translations[lang].errorAll);
-
                 const fee = price * (pricingSettings.categoryRates[cat] || 0);
                 const total = (method === 'self') ? fee : price + fee;
 
@@ -251,8 +295,7 @@
                 document.getElementById('result-category-fee').textContent = fee.toFixed(2) + " ₺";
                 document.getElementById('result-total').textContent = total.toFixed(2) + " ₺";
                 document.getElementById('calculation-result').classList.remove('hidden');
-                
-                mainActionBtn.innerHTML = `<i class="ri-shopping-cart-add-line"></i><span>${translations[lang].addToCart}</span>`;
+                actionBtn.querySelector('span').textContent = translations[lang].addToCart;
             } else {
                 const user = auth.currentUser;
                 if (!user) return alert("Please Login");
@@ -267,23 +310,22 @@
             }
         };
 
-        // Kategorileri yükle
+        // Kategorileri Doldur
         const catSelect = document.getElementById('product-category');
-        catSelect.innerHTML = '<option value="" disabled selected>Category...</option>';
-        const catNames = { furniture: "Furniture / Home", clothing: "Clothing / Shoes", cosmetics: "Cosmetics", stationery: "Books / Stationery" };
+        const catNames = { furniture: "Mobilya / Ev", clothing: "Giyim / Ayakkabı", cosmetics: "Kozmetik", stationery: "Kitap / Kırtasiye" };
         Object.keys(pricingSettings.categoryRates).forEach(k => {
-            const opt = document.createElement('option'); opt.value = k; opt.textContent = catNames[k]; catSelect.appendChild(opt);
+            const o = document.createElement('option'); o.value = k; o.textContent = catNames[k]; catSelect.appendChild(o);
         });
 
-        // Firebase Auth ve Cart Takibi
+        // Auth Takibi
         onAuthStateChanged(auth, user => {
             if (user) {
                 document.getElementById('login-btn').classList.add('hidden');
                 document.getElementById('profile-container').classList.remove('hidden');
                 document.getElementById('profile-img').src = user.photoURL;
                 onSnapshot(collection(db, 'users', user.uid, 'cart'), s => {
-                    document.getElementById('cart-badge').textContent = s.size;
-                    document.getElementById('cart-badge').classList.toggle('hidden', s.size === 0);
+                    const b = document.getElementById('cart-badge');
+                    b.textContent = s.size; b.classList.toggle('hidden', s.size === 0);
                 });
             }
         });
