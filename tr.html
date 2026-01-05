@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Türkiye'den Kıbrıs'a Sipariş Teslimat Hizmeti | Getir Kıbrıs</title>
+
+    <meta name="description" content="Trendyol, Hepsiburada ve diğer Türk web sitelerinden Kıbrıs'a kolayca ürün sipariş edin.">
+    <link rel="canonical" href="https://getirkibris.com" />
+    <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#5d3ebc', secondary: '#ffd300' },
+                    fontFamily: { inter: ['Inter', 'sans-serif'] },
+                    borderRadius: { 'button': '8px' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Yatay kaymayı global olarak engelle */
+        html, body { 
+            overflow-x: hidden; 
+            width: 100%;
+            position: relative;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .group:hover .group-hover\:opacity-100 { opacity: 1; }
+        .group:hover .group-hover\:visible { visibility: visible; }
+
+        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slider için taşıma engelleme */
+        .product-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 1rem;
+            padding: 1rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .product-card {
+            flex: 0 0 280px;
+            scroll-snap-align: start;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16 overflow-x-hidden">
+
+    <header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50 px-4 py-3 flex items-center justify-between">
+        <div class="relative group">
+            <button class="flex items-center gap-2 bg-gray-50 px-2 py-1.5 rounded-full border border-gray-200">
+                <img src="https://flagcdn.com/w40/tr.png" class="w-5 h-5 rounded-full object-cover">
+                <span class="text-[11px] font-bold text-gray-700">TR</span>
+                <i class="ri-arrow-down-s-line text-gray-400"></i>
+            </button>
+            <div class="absolute top-full left-0 mt-2 w-32 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <div class="p-2">
+                    <a href="index.html" class="flex items-center gap-2 px-2 py-2 hover:bg-gray-50 rounded-lg">
+                        <img src="https://flagcdn.com/w40/tr.png" class="w-4 h-4">
+                        <span class="text-xs">Türkçe</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center">
+            <img src="logom.png" alt="Getir Kıbrıs" class="h-10"> 
+            <span class="text-[9px] font-bold text-primary uppercase">Ana Sayfa</span>
+        </div>
+
+        <div id="auth-button">
+            <button id="login-btn" class="text-primary"><i class="ri-google-fill ri-xl"></i></button>
+            <div id="profile-container" class="hidden">
+                <img id="profile-img" src="" class="w-8 h-8 rounded-full border border-primary">
+            </div>
+        </div>
+    </header>
+
+    <div class="px-4 pt-24 mb-6">
+        <div class="relative overflow-hidden rounded-2xl p-6 text-white shadow-xl bg-gradient-to-br from-[#6b46e5] to-[#4a329d] border-b-4 border-secondary">
+            <h2 class="text-xl font-black uppercase leading-tight">
+                Şeffaf Fiyatlandırma <br>
+                <span class="text-secondary text-base italic opacity-90">Gizli Ücretlere Son</span>
+            </h2>
+            
+            <div class="mt-4 space-y-4">
+                <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                    <div class="flex items-center gap-3">
+                        <i class="ri-box-3-line text-secondary text-2xl"></i>
+                        <div>
+                            <p class="text-[10px] uppercase font-bold opacity-70">Hizmet Kapsamı</p>
+                            <p class="text-base font-bold">Gümrük + Kargo + Teslimat</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 px-4 mb-8">
+        <a href="getirhome.html" class="bg-secondary p-4 rounded-xl flex items-center justify-between shadow-sm border border-secondary">
+            <span class="font-bold text-gray-900">GetirHome</span>
+            <img src="getirhome-logo.png" class="h-8">
+        </a>
+        <button id="calculate-btn" class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm border border-gray-100">
+            <span class="font-bold">Sipariş Oluştur</span>
+            <i class="ri-calculator-line text-primary text-xl"></i>
+        </button>
+        <a href="sepet.html" class="bg-white p-4 rounded-xl flex items-center justify-between shadow-sm border border-gray-100 relative">
+            <span class="font-bold">Sepetim</span>
+            <i class="ri-shopping-cart-line text-primary text-xl"></i>
+            <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+        </a>
+    </div>
+
+    <section id="calculator-section" class="bg-white rounded-2xl shadow-lg mx-4 p-6 mb-8 hidden fade-in">
+        <h2 class="text-lg font-bold text-primary mb-4">Ürün Bilgilerini Girin</h2>
+        <form id="calculator-form" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Sipariş Yöntemi</label>
+                <select id="order-method" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+                    <option value="service">Benim adıma satın al</option>
+                    <option value="self">Sadece nakliye istiyorum</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Ürün Linki</label>
+                <input type="url" id="product-link" required placeholder="https://..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fiyat (₺)</label>
+                <input type="number" id="product-price" required placeholder="0.00" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Kategori</label>
+                <select id="product-category" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
+                    <option value="" disabled selected>Yükleniyor...</option>
+                </select>
+            </div>
+
+            <div id="calculation-result" class="hidden p-4 bg-primary/5 rounded-xl border border-primary/10">
+                <div class="flex justify-between text-sm mb-2">
+                    <span id="result-price-label">Ürün Bedeli:</span>
+                    <span id="result-price" class="font-bold">0 ₺</span>
+                </div>
+                <div class="flex justify-between font-black text-primary text-lg border-t border-primary/10 pt-2">
+                    <span>Toplam:</span>
+                    <span id="result-total">0 ₺</span>
+                </div>
+            </div>
+
+            <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2">
+                <i class="ri-calculator-line"></i><span>Maliyeti Hesapla</span>
+            </button>
+        </form>
+    </section>
+
+    <h2 class="text-xl font-black text-gray-800 px-4 mb-2 border-l-4 border-primary ml-4 uppercase">Popüler Ürünler</h2>
+    <div class="product-slider no-scrollbar">
+        <div class="product-card bg-white rounded-2xl p-4 shadow-md border border-gray-50">
+            <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" class="h-40 w-full object-contain mb-4">
+            <h3 class="font-bold text-sm truncate text-center">Legom Koltuk</h3>
+            <p class="text-red-600 font-black text-center text-lg mt-2">19,000 ₺</p>
+            <a href="#" class="block w-full bg-primary text-white text-xs text-center py-2 mt-3 rounded-lg font-bold">Hemen Al</a>
+        </div>
+        <div class="product-card bg-white rounded-2xl p-4 shadow-md border border-gray-50">
+            <img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536" class="h-40 w-full object-contain mb-4">
+            <h3 class="font-bold text-sm truncate text-center">Legom XL Koltuk</h3>
+            <p class="text-red-600 font-black text-center text-lg mt-2">32,000 ₺</p>
+            <a href="#" class="block w-full bg-primary text-white text-xs text-center py-2 mt-3 rounded-lg font-bold">Hemen Al</a>
+        </div>
+    </div>
+
+    <div class="px-4 mt-8">
+        <h3 class="font-bold mb-4">Popüler Mağazalar</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+            <a href="https://trendyol.com" target="_blank" class="bg-white p-3 rounded-xl border border-gray-100 flex items-center justify-center h-16 shadow-sm">
+                <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" class="max-h-6">
+            </a>
+            <a href="https://hepsiburada.com" target="_blank" class="bg-white p-3 rounded-xl border border-gray-100 flex items-center justify-center h-16 shadow-sm">
+                <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" class="max-h-6">
+            </a>
+            <a href="https://amazon.com.tr" target="_blank" class="bg-white p-3 rounded-xl border border-gray-100 flex items-center justify-center h-16 shadow-sm">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s" class="max-h-6">
+            </a>
+        </div>
+    </div>
+
+    <a href="https://wa.me/905471901988" class="fixed bottom-6 right-6 z-50 bg-[#25D366] w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white hover:scale-110 transition-transform">
+        <i class="ri-whatsapp-line text-3xl"></i>
+    </a>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
+        authDomain: "kibris-6b4f7.firebaseapp.com",
+        projectId: "kibris-6b4f7",
+        storageBucket: "kibris-6b4f7.firebasestorage.app",
+        messagingSenderId: "141262926171",
+        appId: "1:141262926171:web:07226845e51d4bbc0dea7e"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let pricingSettings = {
+        categoryRates: { furniture: 0.70, clothing: 0.45, cosmetics: 0.70, stationery: 0.40 }
+    };
+
+    // Sipariş Ver Butonu Mantığı
+    document.getElementById('calculate-btn').addEventListener('click', () => {
+        const sec = document.getElementById('calculator-section');
+        sec.classList.toggle('hidden');
+        if(!sec.classList.contains('hidden')) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // Form İşlemleri
+    const form = document.getElementById('calculator-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('main-action-btn');
+        
+        if(btn.innerText.includes("Hesapla")) {
+            const price = parseFloat(document.getElementById('product-price').value);
+            const cat = document.getElementById('product-category').value;
+            const rate = pricingSettings.categoryRates[cat] || 0;
+            const total = price + (price * rate);
+
+            document.getElementById('result-price').innerText = price.toFixed(2) + " ₺";
+            document.getElementById('result-total').innerText = total.toFixed(2) + " ₺";
+            document.getElementById('calculation-result').classList.remove('hidden');
+            btn.innerHTML = '<i class="ri-shopping-cart-line"></i><span>Sepete Ekle</span>';
+        } else {
+            // Sepet Mantığı Buraya
+            alert("Ürün başarıyla sepete eklendi!");
+            window.location.reload();
+        }
+    });
+
+    // Kategori Yükleme
+    async function init() {
+        const select = document.getElementById('product-category');
+        select.innerHTML = '<option value="" disabled selected>Kategori Seçin</option>';
+        const map = { furniture: "Mobilya", clothing: "Giyim", cosmetics: "Kozmetik", stationery: "Kırtasiye" };
+        Object.keys(pricingSettings.categoryRates).forEach(k => {
+            const opt = document.createElement('option');
+            opt.value = k;
+            opt.textContent = map[k] || k;
+            select.appendChild(opt);
+        });
+    }
+
+    onAuthStateChanged(auth, user => {
+        if(user) {
+            document.getElementById('login-btn').classList.add('hidden');
+            document.getElementById('profile-container').classList.remove('hidden');
+            document.getElementById('profile-img').src = user.photoURL;
+        }
+    });
+
+    init();
+</script>
+
+</body>
+</html>
