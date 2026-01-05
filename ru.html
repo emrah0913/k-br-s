@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Доставка из Турции на Кипр | Getir Cyprus</title>
+    <title>Доставка заказов из Турции на Кипр | Getir Cyprus</title>
 
-    <meta name="description" content="Заказывайте товары с Trendyol, Hepsiburada и других турецких сайтов на Северный Кипр. Узнайте стоимость доставки онлайн.">
+    <meta name="description" content="Заказывайте товары с Trendyol, Hepsiburada и других турецких сайтов с доставкой на Северный Кипр. Прозрачный расчет стоимости и удобная доставка.">
     <link rel="canonical" href="https://getirkibris.com" />
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 
@@ -17,219 +20,186 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#5d3ebc', secondary: '#ffd300' },
-                    fontFamily: { inter: ['Inter', 'sans-serif'] },
-                    borderRadius: { 'button': '8px', DEFAULT: '8px' }
+                    colors: {
+                        primary: '#5d3ebc',
+                        secondary: '#ffd300'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'button': '8px',
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                    }
                 }
             }
         }
     </script>
 
-    <style>
+<style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .group:hover .group-hover\:opacity-100 { opacity: 1; }
-        .group:hover .group-hover\:visible { visibility: visible; }
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .hidden { display: none; }
-        .product-slider { overflow-x: auto; scrollbar-width: none; white-space: nowrap; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-        .product-card { display: inline-block; width: 280px; margin-right: 1rem; white-space: normal; scroll-snap-align: start; }
-    </style>
+        
+        .group:hover .group-hover\:opacity-100 {
+            opacity: 1;
+        }
+        .group:hover .group-hover\:visible {
+            visibility: visible;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .copy-btn:active, .auth-button:active {
+            transform: scale(0.95);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden {
+            display: none;
+        }
+
+        [dir="rtl"] .text-right-rtl {
+            text-align: right;
+        }
+</style>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JL9P6BRZTD');
+</script>
+
 </head>
 <body class="bg-gray-50">
 
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-    <header class="fixed top-0 w-full max-w-screen-lg bg-white shadow-sm z-50 px-4 py-3 flex items-center justify-between">
-        <div class="relative group">
-            <button class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
-                <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover" alt="RU">
+<header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+        <div class="flex-1 relative group">
+            <button class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 transition-all cursor-pointer">
+                <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover" alt="Выбранный язык">
                 <span class="text-[11px] font-bold text-gray-700 uppercase">RU</span>
                 <i class="ri-arrow-down-s-line text-gray-400"></i>
             </button>
-            <div class="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[60]">
+
+            <div class="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60]">
                 <div class="p-2 space-y-1">
-                    <a href="index.html" class="block px-3 py-2 hover:bg-primary/5 rounded-lg text-xs">Türkçe</a>
-                    <a href="en.html" class="block px-3 py-2 hover:bg-primary/5 rounded-lg text-xs">English</a>
+                    <a href="ru.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
+                        <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover" alt="Русский">
+                        <span class="text-xs font-medium text-gray-700">Русский</span>
+                    </a>
                 </div>
             </div>
         </div>
 
         <div class="flex flex-col items-center">
             <img src="logom.png" alt="Getir Cyprus" class="h-12"> 
-            <a href="index.html" class="text-[10px] font-bold text-primary uppercase mt-1">Главная страница</a>
+            <a href="index.html" class="text-[10px] font-bold text-primary uppercase tracking-tighter mt-1">Главная</a>
         </div>
 
-        <div id="auth-button-container" class="w-8 h-8 flex items-center justify-center">
-            <button id="login-btn" class="text-primary cursor-pointer"><i class="ri-google-fill ri-lg"></i></button>
-            <div id="profile-container" class="hidden relative">
-                <img id="profile-img" src="" alt="Profile" class="w-8 h-8 rounded-full cursor-pointer border-2 border-primary/20 hover:border-primary transition-all">
+        <div class="flex-1 flex justify-end">
+            <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
+                <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
+                    <i class="ri-google-fill ri-lg"></i>
+                </button>
+                <div id="profile-container" class="hidden">
+                    <img id="profile-img" src="" alt="Профиль" class="w-8 h-8 rounded-full cursor-pointer">
+                </div>
             </div>
         </div>
-    </header>
+</header>
 
-    <main class="pt-28">
-        <div class="px-4 mb-6">
-            <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl border-b-4 border-secondary" style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
-                <h2 class="text-2xl font-black uppercase tracking-tight">Прозрачные Цены<br><span class="text-secondary text-lg font-bold italic opacity-90">Больше никаких сюрпризов</span></h2>
-                <div class="mt-4 flex items-center gap-2 text-sm font-bold bg-white/10 p-3 rounded-lg border border-white/20">
-                    <i class="ri-checkbox-circle-fill text-secondary"></i> Таможня + Карго + Доставка включены
+<div class="px-4 pt-28 mb-6">
+    <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl border-b-4 border-[#ffd300]" 
+         style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
+        
+        <div class="mb-6">
+            <h2 class="text-2xl font-black tracking-tight leading-none uppercase">
+                Прозрачные цены <br>
+                <span class="text-[#ffd300] text-lg font-bold italic opacity-90">Без скрытых платежей</span>
+            </h2>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-4">
+            <div class="bg-white/10 backdrop-blur-md p-5 rounded-xl border border-white/10">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center border border-white/30">
+                        <i class="ri-box-3-line text-[#ffd300] text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[11px] uppercase tracking-widest opacity-70 font-bold">Объём услуг</p>
+                        <p class="text-lg font-extrabold text-white">Таможня + Карго + Доставка</p>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-white/10 text-[#ffd300] font-bold text-sm flex items-center gap-2">
+                    <i class="ri-checkbox-circle-fill"></i>
+                    ВСЕ ПРОЦЕССЫ ВКЛЮЧЕНЫ В ЦЕНУ
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 px-1">
+                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
+                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
+                    <span>Без дополнительных таможенных сборов.</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
+                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
+                    <span>Рассчитанная сумма — итоговая цена доставки.</span>
+                </div>
+                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
+                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
+                    <span>Мы берём на себя все операционные процессы.</span>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 px-4 mb-8">
-            <button id="open-calc-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100 hover:border-primary/30 transition-all">
-                <i class="ri-calculator-line ri-xl text-primary mb-2"></i>
-                <span class="text-sm font-bold">Рассчитать стоимость</span>
-            </button>
-            <a href="https://getirkibris.com/sepet.html" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100 hover:border-primary/30 transition-all">
-                <i class="ri-shopping-cart-line ri-xl text-primary mb-2"></i>
-                <span class="text-sm font-bold">Моя корзина</span>
-            </a>
-        </div>
-
-        <h2 class="text-xl font-extrabold text-gray-800 mb-4 px-4 border-l-4 border-primary ml-4 uppercase tracking-tighter">🛒 Популярные товары</h2>
-        <div class="product-slider px-4 mb-8 flex gap-4 overflow-x-auto scrollbar-hide">
-            <div class="product-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex-shrink-0">
-                <div class="h-44 bg-gray-50 flex items-center justify-center p-4">
-                    <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" class="max-h-full object-contain">
-                </div>
-                <div class="p-4 text-center">
-                    <h3 class="text-sm font-bold truncate">Диван Legom</h3>
-                    <p class="text-lg font-black text-red-600">19,000.00 ₺</p>
-                    <p class="text-[9px] text-primary font-bold uppercase mt-1 bg-primary/5 py-1 rounded-full">Таможня + Карго включены</p>
-                    <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" class="mt-3 block w-full bg-primary text-white text-xs py-2 rounded-lg font-bold">Купить</a>
-                </div>
-            </div>
-            </div>
-
-        <section id="calculator-section" class="bg-white rounded-lg shadow-lg p-6 mb-8 mx-4 fade-in hidden">
-            <h2 class="text-xl font-bold mb-4 text-primary">Введите данные о товаре</h2>
-            <form id="calculator-form" class="space-y-4">
-                <select id="order-method" required class="w-full p-3 border rounded-lg text-sm bg-gray-50">
-                    <option value="service">Закажите товар для меня</option>
-                    <option value="self">Куплю сам, нужна только доставка</option>
-                </select>
-                <input type="url" id="product-link" required class="w-full p-3 border rounded-lg" placeholder="Ссылка на товар">
-                <input type="number" id="product-price" required class="w-full p-3 border rounded-lg" placeholder="Цена в Турции (₺)">
-                <select id="product-category" required class="w-full p-3 border rounded-lg text-sm">
-                    <option value="" disabled selected>Выберите категорию</option>
-                </select>
-                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-4 rounded-lg font-bold">Рассчитать стоимость</button>
-            </form>
-        </section>
-
-        <div class="px-4 mb-12">
-            <h3 class="text-lg font-bold mb-4">Популярные сайты для покупок</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                <a href="https://www.trendyol.com" target="_blank" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center h-20"><img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" class="h-8"></a>
-                <a href="https://www.hepsiburada.com" target="_blank" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center h-20"><img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" class="h-8"></a>
-                <a href="https://www.amazon.com.tr" target="_blank" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center h-20"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" class="h-6"></a>
-                <a href="https://www.zara.com.tr" target="_blank" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center h-20"><img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png" class="h-6"></a>
-            </div>
-        </div>
-    </main>
-
-    <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
-            <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400"><i class="ri-close-line ri-lg"></i></button>
-            <div class="text-center mb-6">
-                <h3 class="text-2xl font-bold">Добро пожаловать!</h3>
-                <p class="text-sm text-gray-600 mt-2">Войдите через Google, чтобы продолжить.</p>
-            </div>
-            <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border py-3 rounded-lg font-bold hover:bg-gray-50 transition-all">
-                <i class="ri-google-fill text-red-500"></i><span>Войти через Google</span>
-            </button>
+        <div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60 border-t border-white/5 pt-4">
+            <i class="ri-shield-check-line text-lg"></i>
+            <span>Международные стандарты перевозки</span>
         </div>
     </div>
-
-    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4"><span id="toast-message"></span></div>
-
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<div class="grid grid-cols-1 gap-4 px-4 mb-8">
+    <a href="getirhome.html"
+        class="bg-[#ffd300] shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-[#ffd300] hover:bg-[#ffdf00] transition-all">
+        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm overflow-hidden p-1">
+            <img src="getirhome-logo.png" alt="GetirHome" class="w-full h-full object-contain">
+        </div>
+        <span class="text-sm font-bold text-gray-900">GetirHome</span>
+    </a>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
-        authDomain: "kibris-6b4f7.firebaseapp.com",
-        projectId: "kibris-6b4f7",
-        storageBucket: "kibris-6b4f7.firebasestorage.app",
-        messagingSenderId: "141262926171",
-        appId: "1:141262926171:web:07226845e51d4bbc0dea7e",
-        measurementId: "G-JL9P6BRZTD"
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    <button id="calculate-btn"
+        class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <i class="ri-calculator-line ri-xl text-primary"></i>
+        </div>
+        <span class="text-sm font-medium">Оформить заказ</span>
+    </button>
 
-    const loginBtn = document.getElementById('login-btn');
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    const profileContainer = document.getElementById('profile-container');
-    const profileImg = document.getElementById('profile-img');
-    const loginModal = document.getElementById('login-modal');
-
-    // AUTH DURUM TAKİBİ
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            loginBtn.classList.add('hidden');
-            profileContainer.classList.remove('hidden');
-            profileImg.src = user.photoURL || '';
-        } else {
-            loginBtn.classList.remove('hidden');
-            profileContainer.classList.add('hidden');
-        }
-    });
-
-    // GOOGLE LOGIN
-    googleLoginBtn.addEventListener('click', async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-            await signInWithPopup(auth, provider);
-            loginModal.classList.add('hidden');
-            showToast('Вход выполнен!');
-        } catch (e) { showToast('Ошибка входа', 'error'); }
-    });
-
-    // ÇIKIŞ YAPMA (TAM ÇALIŞAN VERSİYON)
-    profileImg.addEventListener('click', async () => {
-        if (confirm('Вы уверены, что хотите выйти из аккаунта?')) {
-            await signOut(auth);
-            showToast('Вы вышли из системы');
-        }
-    });
-
-    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
-    document.getElementById('close-login-modal').addEventListener('click', () => loginModal.classList.add('hidden'));
-
-    function showToast(message, type = 'success') {
-        const toast = document.getElementById('toast');
-        document.getElementById('toast-message').textContent = message;
-        toast.className = `fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl transition-all duration-300 z-[110] transform ${type === 'error' ? 'bg-red-500' : 'bg-gray-800'}`;
-        toast.classList.remove('opacity-0', 'translate-y-4');
-        setTimeout(() => toast.classList.add('opacity-0', 'translate-y-4'), 3000);
-    }
-
-    // HESAPLAMA BUTONU AKSİYONU
-    document.getElementById('open-calc-btn').addEventListener('click', () => {
-        const sect = document.getElementById('calculator-section');
-        sect.classList.remove('hidden');
-        sect.scrollIntoView({ behavior: 'smooth' });
-    });
-
-    // KATEGORİLER
-    const cats = { furniture: "Мебель и Дом", clothing: "Одежда", cosmetics: "Косметика", stationery: "Канцелярия" };
-    const sel = document.getElementById('product-category');
-    for (const [k, v] of Object.entries(cats)) {
-        const o = document.createElement('option'); o.value = k; o.textContent = v; sel.appendChild(o);
-    }
-</script>
-
-</body>
-</html>
+    <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
+        class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <i class="ri-shopping-cart-line ri-xl text-primary"></i>
+        </div>
+        <span class="text-sm font-medium">Моя корзина</span>
+        <span id="cart-badge" class="absolute bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
+    </a>
+</div>
