@@ -46,6 +46,11 @@
     </script>
 
     <style>
+
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f9f9f9;
@@ -78,13 +83,40 @@
 
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-    <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
-        <div class="flex-1">
+   <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+        <div class="flex-1 flex gap-2 items-center overflow-x-auto no-scrollbar py-1">
+            <a href="en.html" title="English" class="flex-shrink-0 group">
+                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
+                    <img src="https://flagcdn.com/w80/gb.png" alt="English" class="w-full h-full object-cover">
+                </div>
+            </a>
+            <a href="el.html" title="Ελληνικά" class="flex-shrink-0 group">
+                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
+                    <img src="https://flagcdn.com/w80/cy.png" alt="Greek" class="w-full h-full object-cover">
+                </div>
+            </a>
+            <a href="ru.html" title="Русский" class="flex-shrink-0 group">
+                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
+                    <img src="https://flagcdn.com/w80/ru.png" alt="Russian" class="w-full h-full object-cover">
+                </div>
+            </a>
+            <a href="index.html" title="Türkçe" class="flex-shrink-0 group">
+                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
+                    <img src="https://flagcdn.com/w80/tr.png" alt="Turkish" class="w-full h-full object-cover">
+                </div>
+            </a>
+            <a href="ar.html" title="العربية" class="flex-shrink-0 group">
+                <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-transparent hover:border-primary transition-all duration-300 shadow-sm">
+                    <img src="https://flagcdn.com/w80/sa.png" alt="Arabic" class="w-full h-full object-cover">
+                </div>
+            </a>
         </div>
+
         <div class="flex flex-col items-center">
-            <img src="logom.png" alt="Getir Cyprus" class="h-12"> <a href="https://getirkibris.com/index.html" data-readdy="true"
-                class="text-sm font-medium text-primary mt-1">Home</a>
+            <img src="logom.png" alt="Getir Cyprus" class="h-12"> 
+            <a href="index.html" class="text-[10px] font-bold text-primary uppercase tracking-tighter mt-1">Home</a>
         </div>
+
         <div class="flex-1 flex justify-end">
             <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
                 <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
@@ -96,7 +128,6 @@
             </div>
         </div>
     </header>
-
 <div class="px-4 pt-28 mb-6">
     <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl border-b-4 border-[#ffd300]" 
          style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
