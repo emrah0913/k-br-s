@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Delivery Service from Turkey to Cyprus | Getir Cyprus</title>
+    <title>Order Delivery Service from Turkey to Cyprus | Getir Cyprus</title>
 
-    <meta name="description" content="Easily bring products from Trendyol, Hepsiburada and other Turkish sites to Cyprus. Calculate and add to your cart.">
-    <link rel="canonical" href="https://getirkibris.com/en.html" />
+    <meta name="description" content="Order products easily from Trendyol, Hepsiburada, and other Turkish websites to Cyprus. Calculate costs and add to your cart.">
+    <link rel="canonical" href="https://getirkibris.com" />
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,29 +17,52 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 
     <script>
+        // Tailwind CSS Configuration (Strictly Preserved)
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#5d3ebc', secondary: '#ffd300' },
-                    fontFamily: { inter: ['Inter', 'sans-serif'] },
-                    borderRadius: { 'button': '8px', 'none': '0px', 'sm': '4px', DEFAULT: '8px', 'md': '12px', 'lg': '16px', 'xl': '20px', '2xl': '24px', '3xl': '32px', 'full': '9999px' }
+                    colors: {
+                        primary: '#5d3ebc',
+                        secondary: '#ffd300'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'button': '8px',
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                    }
                 }
             }
         }
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
-        .copy-btn:active, .auth-button:active { transform: scale(0.95); }
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .hidden { display: none; }
-        .product-slider { overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; white-space: nowrap; padding-bottom: 1rem; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-        .product-slider::-webkit-scrollbar { display: none; }
-        .product-card { display: inline-block; width: 300px; margin-right: 1.5rem; white-space: normal; scroll-snap-align: start; }
-        .product-slider > div:first-child { margin-left: 1rem; }
-        .product-slider > div:last-child { margin-right: 1rem; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .copy-btn:active, .auth-button:active {
+            transform: scale(0.95);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
@@ -56,19 +79,11 @@
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
     <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
-        <div class="flex-1"></div>
+        <div class="flex-1">
+        </div>
         <div class="flex flex-col items-center">
-            <img src="logom.png" alt="Getir Cyprus" class="h-12"> 
-            <div class="flex items-center gap-2 mt-1">
-                <a href="en.html" class="text-sm font-medium text-primary uppercase">Home</a>
-                <span class="text-gray-300">|</span>
-                <select id="lang-select" onchange="location = this.value;" class="text-xs font-bold text-primary bg-transparent outline-none cursor-pointer uppercase border border-primary/20 rounded px-1">
-                    <option value="index.html">TR</option>
-                    <option value="en.html" selected>EN</option>
-                    <option value="ru.html">RU</option>
-                    <option value="el.html">EL</option>
-                </select>
-            </div>
+            <img src="logom.png" alt="Getir Cyprus" class="h-12"> <a href="https://getirkibris.com/index.html" data-readdy="true"
+                class="text-sm font-medium text-primary mt-1">Home</a>
         </div>
         <div class="flex-1 flex justify-end">
             <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
@@ -113,11 +128,11 @@
             <div class="grid grid-cols-1 gap-3 px-1">
                 <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
                     <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
-                    <span>No extra customs tax requested.</span>
+                    <span>No extra customs duty requested.</span>
                 </div>
                 <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
                     <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
-                    <span>Calculated amount is the net delivery price.</span>
+                    <span>The calculated amount is the net delivery price.</span>
                 </div>
                 <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
                     <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
@@ -128,7 +143,7 @@
 
         <div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60 border-t border-white/5 pt-4">
             <i class="ri-shield-check-line text-lg"></i>
-            <span>International Shipping Standards</span>
+            <span>International Transport Standards</span>
         </div>
     </div>
 </div>
@@ -147,7 +162,7 @@
         <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
             <i class="ri-calculator-line ri-xl text-primary"></i>
         </div>
-        <span class="text-sm font-medium">Order Now</span>
+        <span class="text-sm font-medium">Place Order</span>
     </button>
 
     <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
@@ -160,364 +175,672 @@
     </a>
 </div>
 
-<section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
-    <h2 class="text-xl font-semibold mb-4 text-primary">1. Enter Product Details</h2>
-    <form id="calculator-form" class="space-y-4">
-        <div>
-            <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Order Method<span class="text-red-500">*</span></label>
-            <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                <option value="service" selected>Order on my behalf</option>
-                <option value="self">I will buy it, only shipping service needed</option>
-            </select>
-        </div>
-        <div>
-            <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Product Link<span class="text-red-500">*</span></label>
-            <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/product">
-        </div>
-        <div>
-            <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Product Price (₺)<span class="text-red-500">*</span></label>
-            <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
-        </div>
-        <div>
-            <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Category<span class="text-red-500">*</span></label>
-            <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                <option value="" disabled selected>Loading Categories...</option>
-            </select>
-        </div>
-        
-        <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-            <h3 class="font-medium text-gray-800 mb-2">Product Delivery Cost</h3>
-            <div class="space-y-2 text-sm">
-                <div class="flex justify-between">
-                    <span id="result-price-label">Product Price:</span>
-                    <span id="result-price">0 ₺</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>Category Service Fee:</span>
-                    <span id="result-category-fee">0 ₺</span>
-                </div>
-                <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
-                    <span>Total Incl. Delivery:</span>
-                    <span id="result-total">0 ₺</span>
-                </div>
-            </div>
-        </div>
 
-        <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
-            <i class="ri-calculator-line"></i>
-            <span>Calculate Cost</span>
-        </button>
-    </form>
-</section>
+        <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
+            <h2 class="text-xl font-semibold mb-4 text-primary">1. Enter Product Information</h2>
+            <form id="calculator-form" class="space-y-4">
+                <div>
+                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Ordering Method<span class="text-red-500">*</span></label>
+                    <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                        <option value="service" selected>Order the product for me</option>
+                        <option value="self">I will buy the product, I only want shipping service</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Product Link<span class="text-red-500">*</span></label>
+                    <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/product">
+                </div>
+                <div>
+                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Product Price (₺)<span class="text-red-500">*</span></label>
+                    <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
+                </div>
+                <div>
+                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Category<span class="text-red-500">*</span></label>
+                    <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                        <option value="" disabled selected>Loading Categories...</option>
+                    </select>
+                </div>
+                
+                <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+                    <h3 class="font-medium text-gray-800 mb-2">Importing Cost</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span id="result-price-label">Product Price:</span>
+                            <span id="result-price">0 ₺</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Category Service Fee:</span>
+                            <span id="result-category-fee">0 ₺</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
+                            <span>Total Including Delivery:</span>
+                            <span id="result-total">0 ₺</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
+                    <i class="ri-calculator-line"></i>
+                    <span>Calculate Cost</span>
+                </button>
+            </form>
+        </section>
+
+
+
+<style>
+    /* EXTRA CSS: For Scrollable Structure */
+    .product-slider {
+        overflow-x: auto; 
+        scrollbar-width: none; 
+        -ms-overflow-style: none; 
+        white-space: nowrap; 
+        padding-bottom: 1rem; 
+        scroll-behavior: smooth; 
+        -webkit-overflow-scrolling: touch; 
+    }
+    .product-slider::-webkit-scrollbar {
+        display: none; 
+    }
+    .product-card {
+        display: inline-block;
+        width: 300px; 
+        margin-right: 1.5rem; 
+        white-space: normal;
+        scroll-snap-align: start; 
+    }
+    .product-slider > div:first-child {
+        margin-left: 1rem;
+    }
+    .product-slider > div:last-child {
+        margin-right: 1rem;
+    }
+</style>
 
 <h2 class="text-2xl font-extrabold text-gray-800 mb-4 px-4 border-l-4 border-primary ml-4">
     🛒 Popular Products
 </h2>
 
 <div class="product-slider">
-    <div class="product-slider flex overflow-x-auto gap-4 p-4 snap-x snap-mandatory scrollbar-hide">
 
-        <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-            <div class="absolute top-3 left-3 z-10">
-                <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1 uppercase">
-                    <i class="ri-truck-fill"></i> FREE SHIPPING
-                </span>
-            </div>
-            <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-                <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900"
-                     alt="Legom Sofa" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-            </div>
-            <div class="p-4 text-center">
-                <h3 class="text-sm font-bold text-gray-800 truncate">Legom Sofa</h3>
-                <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipping from Getir Home</p>
-                <div class="mb-3">
-                    <p class="text-lg font-black text-red-600 leading-none">19.000,00 ₺</p>
-                    <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                        <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
-                    </p>
-                </div>
-                <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" 
-                   class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
-            </div>
+ <div class="product-slider flex overflow-x-auto gap-4 p-4 snap-x snap-mandatory scrollbar-hide">
+
+    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                <i class="ri-truck-fill"></i> FREE SHIPPING
+            </span>
         </div>
-
-        <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-            <div class="absolute top-3 left-3 z-10">
-                <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1 uppercase">
-                    <i class="ri-truck-fill"></i> FREE SHIPPING
-                </span>
-            </div>
-            <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-                <img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536"
-                     alt="Legom XL Sofa" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-            </div>
-            <div class="p-4 text-center">
-                <h3 class="text-sm font-bold text-gray-800 truncate">Legom XL Sofa</h3>
-                <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipping from Getir Home</p>
-                <div class="mb-3">
-                    <p class="text-lg font-black text-red-600 leading-none">32.000,00 ₺</p>
-                    <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                        <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
-                    </p>
-                </div>
-                <a href="https://getirkibris.com/getirhome?view=detail&id=4EB3NPv3gcV20oDbgH1S" 
-                   class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
-            </div>
+        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
+            <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900"
+                 alt="Legom Sofa" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
         </div>
-
-        <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-            <div class="absolute top-3 left-3 z-10">
-                <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1 uppercase">
-                    <i class="ri-truck-fill"></i> FREE SHIPPING
-                </span>
+        <div class="p-4 text-center">
+            <h3 class="text-sm font-bold text-gray-800 truncate">Legom Sofa</h3>
+            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipped from Getir Home</p>
+            <div class="mb-3">
+                <p class="text-lg font-black text-red-600 leading-none">19,000.00 ₺</p>
+                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
+                    <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
+                </p>
             </div>
-            <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-                <img src="https://omhucph.com/cdn/shop/files/Frame_321.png?v=1761396673&width=1900"
-                     alt="Legom Corner Sofa" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-            </div>
-            <div class="p-4 text-center">
-                <h3 class="text-sm font-bold text-gray-800 truncate">Legom Corner Sofa</h3>
-                <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipping from Getir Home</p>
-                <div class="mb-3">
-                    <p class="text-lg font-black text-red-600 leading-none">38.000,00 ₺</p>
-                    <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                        <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
-                    </p>
-                </div>
-                <a href="https://getirkibris.com/getirhome?view=detail&id=2vm7INjnWYYGsM1E1zai" 
-                   class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
-            </div>
+            <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" 
+               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
         </div>
-
-        <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-            <div class="absolute top-3 left-3 z-10">
-                <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1 uppercase">
-                    <i class="ri-truck-fill"></i> FREE SHIPPING
-                </span>
-            </div>
-            <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-                <img src="https://omhucph.com/cdn/shop/files/Frame_191_f3c383bb-5ccf-48a4-a13d-5c102a8baf20.png?v=1761404019&width=1536"
-                     alt="Legom Armchair" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-            </div>
-            <div class="p-4 text-center">
-                <h3 class="text-sm font-bold text-gray-800 truncate">Legom Armchair</h3>
-                <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipping from Getir Home</p>
-                <div class="mb-3">
-                    <p class="text-lg font-black text-red-600 leading-none">13.000,00 ₺</p>
-                    <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                        <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
-                    </p>
-                </div>
-                <a href="https://getirkibris.com/getirhome?view=detail&id=qNeAieAEZNOvBaG7nVRv" 
-                   class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
-            </div>
-        </div>
-
-        <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-            <div class="absolute top-3 left-3 z-10">
-                <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1 uppercase">
-                    <i class="ri-truck-fill"></i> FREE SHIPPING
-                </span>
-            </div>
-            <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-                <img src="https://omhucph.com/cdn/shop/files/yellow_8c0fb6a4-b7a0-40d3-9845-fb891b61ce70.png?v=1761415660&width=1536"
-                     alt="Legom Pouf" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-            </div>
-            <div class="p-4 text-center">
-                <h3 class="text-sm font-bold text-gray-800 truncate">Legom Pouf</h3>
-                <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipping from Getir Home</p>
-                <div class="mb-3">
-                    <p class="text-lg font-black text-red-600 leading-none">10.000,00 ₺</p>
-                    <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                        <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
-                    </p>
-                </div>
-                <a href="https://getirkibris.com/getirhome?view=detail&id=LEBDrGvQ456nImSfAqgE" 
-                   class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
-            </div>
-        </div>
-
     </div>
+
+      <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                <i class="ri-truck-fill"></i> FREE SHIPPING
+            </span>
+        </div>
+        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
+            <img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536"
+                 alt="Legom XL Sofa" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
+        </div>
+        <div class="p-4 text-center">
+            <h3 class="text-sm font-bold text-gray-800 truncate">Legom XL Sofa</h3>
+            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipped from Getir Home</p>
+            <div class="mb-3">
+                <p class="text-lg font-black text-red-600 leading-none">32,000.00 ₺</p>
+                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
+                    <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
+                </p>
+            </div>
+            <a href="https://getirkibris.com/getirhome?view=detail&id=4EB3NPv3gcV20oDbgH1S" 
+               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
+        </div>
+    </div>
+
+    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                <i class="ri-truck-fill"></i> FREE SHIPPING
+            </span>
+        </div>
+        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
+            <img src="https://omhucph.com/cdn/shop/files/Frame_321.png?v=1761396673&width=1900"
+                 alt="Legom Corner Sofa" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
+        </div>
+        <div class="p-4 text-center">
+            <h3 class="text-sm font-bold text-gray-800 truncate">Legom Corner Sofa</h3>
+            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipped from Getir Home</p>
+            <div class="mb-3">
+                <p class="text-lg font-black text-red-600 leading-none">38,000.00 ₺</p>
+                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
+                    <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
+                </p>
+            </div>
+            <a href="https://getirkibris.com/getirhome?view=detail&id=2vm7INjnWYYGsM1E1zai" 
+               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
+        </div>
+    </div>
+
+    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                <i class="ri-truck-fill"></i> FREE SHIPPING
+            </span>
+        </div>
+        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
+            <img src="https://omhucph.com/cdn/shop/files/Frame_191_f3c383bb-5ccf-48a4-a13d-5c102a8baf20.png?v=1761404019&width=1536"
+                 alt="Legom Armchair" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
+        </div>
+        <div class="p-4 text-center">
+            <h3 class="text-sm font-bold text-gray-800 truncate">Legom Armchair</h3>
+            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipped from Getir Home</p>
+            <div class="mb-3">
+                <p class="text-lg font-black text-red-600 leading-none">13,000.00 ₺</p>
+                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
+                    <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
+                </p>
+            </div>
+            <a href="https://getirkibris.com/getirhome?view=detail&id=qNeAieAEZNOvBaG7nVRv" 
+               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
+        </div>
+    </div>
+
+    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                <i class="ri-truck-fill"></i> FREE SHIPPING
+            </span>
+        </div>
+        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
+            <img src="https://omhucph.com/cdn/shop/files/yellow_8c0fb6a4-b7a0-40d3-9845-fb891b61ce70.png?v=1761415660&width=1536"
+                 alt="Legom Pouf" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
+        </div>
+        <div class="p-4 text-center">
+            <h3 class="text-sm font-bold text-gray-800 truncate">Legom Pouf</h3>
+            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Shipped from Getir Home</p>
+            <div class="mb-3">
+                <p class="text-lg font-black text-red-600 leading-none">10,000.00 ₺</p>
+                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
+                    <i class="ri-checkbox-circle-fill"></i> Customs + Cargo Included
+                </p>
+            </div>
+            <a href="https://getirkibris.com/getirhome?view=detail&id=LEBDrGvQ456nImSfAqgE" 
+               class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Buy Now</a>
+        </div>
+    </div>
+
 </div>
+
+<style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 
 <div class="px-4 mb-8">
     <h3 class="text-lg font-semibold mb-4">Popular Shopping Sites</h3>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
 
-        <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" alt="Trendyol" class="w-16 h-16 object-contain">
-            <span class="hidden">Trendyol Cyprus delivery, shipping from Turkey to Cyprus, Trendyol online shopping North Cyprus, order from Trendyol in TRNC</span>
+        <a href="https://www.trendyol.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png"
+                 alt="Trendyol" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.hepsiburada.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" alt="Hepsiburada" class="w-16 h-16 object-contain">
-            <span class="hidden">Hepsiburada Cyprus shipping, online delivery from Turkey to North Cyprus, TRNC Hepsiburada orders</span>
+        <a href="https://www.hepsiburada.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png"
+                 alt="Hepsiburada" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.zara.com.tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png" alt="Zara" class="w-16 h-16 object-contain">
-            <span class="hidden">Zara Cyprus online shopping, Zara Turkey to Cyprus cargo, TRNC fashion shipping</span>
+        <a href="https://www.n11.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/N11_logo.svg"
+                 alt="N11" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://shop.mango.com/tr/tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/29/1/mango-logo-png_seeklogo-299348.png" alt="Mango" class="w-16 h-16 object-contain">
-            <span class="hidden">Mango Cyprus shipping, Mango Turkey online store delivery North Cyprus</span>
+        <a href="https://www.amazon.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvIiXt3ogobFi7dC0k1dMgpNvrwiTQl6cbA&s"
+                 alt="Amazon" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.englishhome.com/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV2piQJf3LUJ22rzNUvgJyjcI0i6d8i01oDw&s" alt="English Home" class="w-16 h-16 object-contain">
-            <span class="hidden">English Home TRNC, home decor shipping Turkey to Cyprus, English Home Cyprus delivery</span>
+
+        <a href="https://www.temu.com/tr" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Temu_logo_icon.svg/2048px-Temu_logo_icon.svg.png"
+        alt="Temu" class="w-16 h-16 object-contain">
+</a>
+
+
+<a href="https://www.englishhome.com/" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV2piQJf3LUJ22rzNUvgJyjcI0i6d8i01oDw&s"
+        alt="englishhome" class="w-16 h-16 object-contain">
+</a>
+        
+     <a href="https://www.zara.com.tr" target="_blank"
+    class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+    <img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png"
+        alt="Zara" class="w-16 h-16 object-contain">
+</a>
+
+<a href="https://www.pullandbear.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.logo.wine/a/logo/Pull%26Bear/Pull%26Bear-Logo.wine.svg"
+                 alt="pullandbear" class="w-16 h-16 object-contain">
+        </a>
+        
+
+        <a href="https://www2.hm.com/tr_tr/index.html" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/23/1/hm-logo-png_seeklogo-234240.png"
+                 alt="hm" class="w-16 h-16 object-contain">
+        </a>
+      
+    <a href="https://tr.uspoloassn.com/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/61/1/u-s-polo-assn-logo-png_seeklogo-617334.png"
+                 alt="uspolo" class="w-16 h-16 object-contain">
+        </a>
+        
+        <a href="https://shop.mango.com/tr/tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/29/1/mango-logo-png_seeklogo-299348.png"
+                 alt="mango" class="w-16 h-16 object-contain">
+        </a>
+     
+        
+        <a href="https://www.lacoste.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/31/1/lacoste-logo-png_seeklogo-318446.png"
+                 alt="lacoste" class="w-16 h-16 object-contain">
+        </a>
+        
+        <a href="https://www.bershka.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://1000logos.net/wp-content/uploads/2020/03/Bershka-Logo.png"
+                 alt="bershka" class="w-16 h-16 object-contain">
+        </a>
+        
+        
+        
+        <a href="https://www.avva.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://static.tildacdn.com/tild3339-3139-4733-b331-623033333733/avva.png"
+                 alt="Decathlon" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.adidas.com.tr/tr" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/16/2/adidas-logo-png_seeklogo-168370.png" alt="Adidas" class="w-16 h-16 object-contain">
-            <span class="hidden">Adidas Cyprus online, TRNC sportswear delivery, Adidas Turkey to Cyprus shipping</span>
+<a href="https://www.underarmour.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://download.logo.wine/logo/Under_Armour/Under_Armour-Logo.wine.png"
+                 alt="Underarmour" class="w-16 h-16 object-contain">
+        </a>
+        
+<a href="https://www.dr.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/tr/5/52/D%26R_logo.jpg"
+                 alt="Drstore" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.nike.com/tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://images.seeklogo.com/logo-png/9/1/nike-logo-png_seeklogo-99478.png" alt="Nike" class="w-16 h-16 object-contain">
-            <span class="hidden">Nike Cyprus, TRNC sports shoes delivery, Nike Turkey online shopping North Cyprus</span>
+        
+<a href="https://gap.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://logos-world.net/wp-content/uploads/2020/09/Gap-Logo-700x394.png"
+                 alt="Gap" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.underarmour.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://download.logo.wine/logo/Under_Armour/Under_Armour-Logo.wine.png" alt="Under Armour" class="w-16 h-16 object-contain">
-            <span class="hidden">Under Armour TRNC, sportswear shipping Turkey to Cyprus</span>
+<a href="https://www.adidas.com.tr/tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/16/2/adidas-logo-png_seeklogo-168370.png"
+                 alt="Adidas" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.boyner.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Boyner_Logo.jpg/1200px-Boyner_Logo.jpg" alt="Boyner" class="w-16 h-16 object-contain">
-            <span class="hidden">Boyner Cyprus delivery, Boyner Turkey to TRNC cargo</span>
+        
+<a href="https://www.nike.com/tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/9/1/nike-logo-png_seeklogo-99478.png"
+                 alt="Nike" class="w-16 h-16 object-contain">
+        </a>
+        
+        <a href="https://www.gant.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/26/1/gant-logo-png_seeklogo-261630.png"
+                 alt="Gant" class="w-16 h-16 object-contain">
+        </a>
+        
+    <a href="https://hummel.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://images.seeklogo.com/logo-png/16/1/hummel-logo-png_seeklogo-168403.png"
+                 alt="Hummel" class="w-16 h-16 object-contain">
         </a>
 
-        <a href="https://www.decathlon.com.tr/" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center border border-gray-100">
-            <img src="https://1000logos.net/wp-content/uploads/2020/03/Decathlon-Logo-768x431.png" alt="Decathlon" class="w-16 h-16 object-contain">
-            <span class="hidden">Decathlon TRNC, sports equipment delivery from Turkey to North Cyprus</span>
+        
+        
+        <a href="https://www.columbia.com.tr" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://www.logo.wine/a/logo/Columbia_Sportswear/Columbia_Sportswear-Logo.wine.svg"
+                 alt="columbia" class="w-16 h-16 object-contain">
+        </a>
+
+        
+<a href="https://www.e-bebek.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://worldef.com/wp-content/uploads/2023/08/ebebek-logo-.-1024x1024-1.png"
+                 alt="Ebebek" class="w-16 h-16 object-contain">
+        </a>
+        
+        <a href="https://www.boyner.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Boyner_Logo.jpg/1200px-Boyner_Logo.jpg"
+                 alt="Boyner" class="w-16 h-16 object-contain">
+        </a>
+        
+        <a href="https://www.decathlon.com.tr/" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://1000logos.net/wp-content/uploads/2020/03/Decathlon-Logo-768x431.png"
+                 alt="Decathlon" class="w-16 h-16 object-contain">
+        </a>
+        
+        <a href="https://www.ciceksepeti.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://1000logos.net/wp-content/uploads/2022/02/Ciceksepeti-Logo.jpg"
+                 alt="ÇiçekSepeti" class="w-16 h-16 object-contain">
+        </a>
+
+        <a href="https://www.gittigidiyor.com" target="_blank"
+           class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBRDMxa35X5jhducAD-rgHdlJ9Nxw0O4NSFw&s"
+                 alt="GittiGidiyor" class="w-16 h-16 object-contain">
         </a>
 
     </div>
 </div>
 
-<div class="mt-8 bg-gray-50 p-6 rounded-xl shadow-sm mx-4">
-    <h3 class="text-xl font-semibold mb-3 text-gray-800">Order Methods</h3>
-    <p class="text-gray-700 mb-4">
-        We provide two different methods for your orders. You can choose the one that suits you best:
-    </p>
 
-    <div class="space-y-6">
-        <div class="bg-white p-4 rounded-lg shadow">
-            <h4 class="font-semibold text-lg text-indigo-700 mb-2">1️⃣ We Order For You</h4>
-            <p class="text-gray-700">
-                We place the order on your behalf. You pay us, and we handle the entire process. 
-                You are under the guarantee of Getir Cyprus until the product is delivered to you.
-            </p>
-        </div>
+       <div class="mt-8 bg-gray-50 p-6 rounded-xl shadow-sm">
+  <h3 class="text-xl font-semibold mb-3 text-gray-800">Ordering Methods</h3>
+  <p class="text-gray-700 mb-4">
+    We provide services at Getir Cyprus with two different ordering methods. You can choose the one that suits you best from the options below:
+  </p>
 
-        <div class="bg-white p-4 rounded-lg shadow">
-            <h4 class="font-semibold text-lg text-indigo-700 mb-2">2️⃣ You Buy, We Only Ship</h4>
-            <p class="text-gray-700">
-                In this method, you do the shopping yourself. Just enter the <strong>Getir Cyprus Warehouse Address</strong> as the shipping address in Turkey:
-            </p>
+  <div class="space-y-6">
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h4 class="font-semibold text-lg text-indigo-700 mb-2">1️⃣ Order on My Behalf</h4>
+      <p class="text-gray-700">
+        We order the product for you. 
+        You make the payment to us, and we handle the entire tracking process.
+        You are under the guarantee of Getir Cyprus until the product is delivered to you.
+      </p>
+    </div>
 
-            <div class="bg-gray-100 p-3 rounded-lg mt-3">
-                <p class="font-semibold text-sm text-gray-800">Getir Cyprus Turkey Address:</p>
-                <p class="text-sm text-gray-700">
-                    <strong>Address:</strong> Aydın, Nazilli, Bozyurt Mah. Kanal Üstü 3281 sk. No:3 <br>
-                    <strong>Phone:</strong> +90 547 190 19 88 <br>
-                    <strong>Name:</strong> Emrah Kutlu
-                </p>
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h4 class="font-semibold text-lg text-indigo-700 mb-2">2️⃣ I Will Buy It Myself, I Only Want Shipping Service</h4>
+      <p class="text-gray-700">
+        In this method, you do the shopping yourself. You should enter the <strong>Getir Cyprus warehouse address</strong> as the shipping address in Turkey:
+      </p>
+
+      <div class="bg-gray-100 p-3 rounded-lg mt-3">
+        <p class="font-semibold text-sm text-gray-800">Getir Cyprus Turkey Address:</p>
+        <p class="text-sm text-gray-700">
+          <strong>Address:</strong> Aydın, Nazilli, Bozyurt Mah. Kanal Üstü 3281 sk. No:3 <br>
+          <strong>Phone:</strong> +90 547 190 19 88 <br>
+            <strong>Name Surname:</strong> Emrah Kutlu
+        </p>
+      </div>
+
+      <p class="text-gray-700 mt-3">
+        When the product reaches this address, we receive it on your behalf and ensure its delivery to Cyprus via cargo.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+    
+            
+            <div class="mt-6">
+                <h4 class="text-lg font-semibold mb-4">Our Cyprus Warehouse Address</h4>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-map-pin-2-line"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-medium text-gray-800">Address</h5>
+                            <p class="text-sm text-gray-600">Alayköy Industrial Zone 1st Stage, 3rd Avenue, 8th Street, Nicosia, TRNC  Moben Trading</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-phone-line"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-medium text-gray-800">Phone</h5>
+                            <p class="text-sm text-gray-600">+90 533 860 71 82</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary">
+                            <i class="ri-mail-line"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-medium text-gray-800">Email</h5>
+                            <p class="text-sm text-gray-600">info@getirkibris.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 relative">
+                    <div class="absolute top-4 left-4 z-10 bg-white px-4 py-2 rounded-lg shadow-md">
+                        <h5 class="font-medium text-gray-800">Our Cyprus Address</h5>
+                    </div>
+                    <div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
+                        <a href="https://maps.app.goo.gl/8kmoWBNWWsJrxPDz7" data-readdy="true" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Lefko%C5%9Fa%2C_KKTC.svg/1200px-Lefko%C5%9Fa%2C_KKTC.svg.png" alt="Map"
+                                class="w-full h-full object-cover">
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-8 space-y-6">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Shopping Procedures</h4>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i class="ri-shopping-cart-line text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Placing Order</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Select products from any e-commerce site in Turkey, fill out the order form, and make your payment.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i class="ri-calculator-line text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Cost Calculation</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Calculate the total cost based on the product price and category, and learn about additional fees in advance.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                      <h4 class="text-lg font-semibold mb-4">Delivery and Tracking</h4>
+<div class="grid grid-cols-1 gap-4">
+    
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+            <div
+                class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="ri-truck-line text-primary"></i>
             </div>
-            <p class="text-gray-700 mt-3">
-                Once the product reaches this address, we receive it on your behalf and ship it to Cyprus.
-            </p>
-        </div>
-    </div>
-</div>
-
-<div class="mt-6 px-4">
-    <h4 class="text-lg font-semibold mb-4">Our Cyprus Warehouse Address</h4>
-    <div class="space-y-4">
-        <div class="flex items-start gap-3">
-            <div class="w-6 h-6 flex items-center justify-center text-primary"><i class="ri-map-pin-2-line"></i></div>
             <div>
-                <h5 class="font-medium text-gray-800">Address</h5>
-                <p class="text-sm text-gray-600">Alayköy Industrial Zone Phase 1, 3rd Avenue, 8th Street, Nicosia, TRNC Moben Trading</p>
+                <h5 class="font-medium text-gray-800">Cargo Tracking</h5>
+                <p class="text-sm text-gray-600 mt-1">Track your order status in real-time and control the delivery process.</p>
             </div>
         </div>
-        <div class="flex items-start gap-3">
-            <div class="w-6 h-6 flex items-center justify-center text-primary"><i class="ri-phone-line"></i></div>
+    </div>
+    
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+            <div
+                class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="ri-time-line text-primary"></i> 
+            </div>
             <div>
-                <h5 class="font-medium text-gray-800">Phone</h5>
-                <p class="text-sm text-gray-600">+90 533 860 71 82</p>
+                <h5 class="font-medium text-gray-800">Delivery Time</h5>
+                <p class="text-sm text-gray-600 mt-1">The product is delivered to you within 10 business days after it reaches our Turkey warehouse from online shopping sites.</p>
             </div>
         </div>
     </div>
-    <div class="mt-6 relative">
-        <div class="absolute top-4 left-4 z-10 bg-white px-4 py-2 rounded-lg shadow-md">
-            <h5 class="font-medium text-gray-800">Our Cyprus Office</h5>
-        </div>
-        <div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
-            <a href="https://maps.google.com" target="_blank">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Lefko%C5%9Fa%2C_KKTC.svg/1200px-Lefko%C5%9Fa%2C_KKTC.svg.png" alt="Map" class="w-full h-full object-cover">
-            </a>
+    
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div class="flex items-start gap-4">
+            <div
+                class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="ri-map-pin-line text-primary"></i>
+            </div>
+            <div>
+                <h5 class="font-medium text-gray-800">Delivery Options</h5>
+                <p class="text-sm text-gray-600 mt-1">Choose between warehouse pickup or address delivery, whichever suits you best.</p>
+            </div>
         </div>
     </div>
+    
 </div>
+                        <h4 class="text-lg font-semibold mb-4">Customer Service</h4>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i class="ri-customer-service-line text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">24/7 Support</h5>
+                                        <p class="text-sm text-gray-600 mt-1">Contact us via WhatsApp; we will answer your questions and find solutions to your problems.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i class="ri-file-list-3-line text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Order History</h5>
+                                        <p class="text-sm text-gray-600 mt-1">View all your orders and check your past shopping history.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="px-4 py-6 text-center">
+            <h1 class="text-2xl sm:text-4xl font-bold text-primary mb-4">Product Delivery Service from Turkey to Cyprus</h1>
+            <p class="text-lg text-gray-700">
+                Getir Cyprus delivers your orders from online shopping sites in Turkey to Northern Cyprus for you. 
+                Receive products from sites like Trendyol, Hepsiburada, N11, and Amazon at affordable prices.
+            </p>
+        </section>
+    </main>
 
-<section class="px-4 py-12 text-center">
-    <h1 class="text-2xl sm:text-4xl font-bold text-primary mb-4">Shipping Service from Turkey to Cyprus</h1>
-    <p class="text-lg text-gray-700">
-        Getir Cyprus delivers orders from online shopping sites in Turkey directly to Northern Cyprus. 
-        Get products from Trendyol, Hepsiburada, Amazon and more at affordable shipping rates.
-    </p>
-</section>
-
-<a href="https://wa.me/905471901988" target="_blank"
-   class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center p-6 transition-colors hover:bg-[#20bd5a]">
+<a href="https://wa.me/905471901988" target="_blank" data-readdy="true"
+   class="fixed bottom-20 right-4 z-50 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center hover:bg-[#20bd5a] transition-colors p-6">
    <i class="ri-whatsapp-line ri-xl text-white"></i>
 </a>
 
-<div class="mt-8 px-4 pb-20 text-center">
+
+
+
+  <div class="mt-8 px-4 pb-20 text-center">
     <div class="space-x-4">
-        <a href="privacy-policy.html" class="text-xs text-gray-600 hover:text-primary">Privacy Policy</a>
-        <a href="terms-of-use.html" class="text-xs text-gray-600 hover:text-primary">Terms of Use</a>
+        <a href="gizlilik-politikasi.html" class="text-xs text-gray-600 hover:text-primary">Privacy Policy</a>
+        <a href="kullanim-sartlari.html" class="text-xs text-gray-600 hover:text-primary">Terms of Use</a>
         <a href="sss.html" class="text-xs text-gray-600 hover:text-primary">F.A.Q.</a>
     </div>
 </div>
 
-<div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
-        <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
-        <div class="text-center mb-6">
-            <h3 class="text-2xl font-bold text-gray-800">Welcome!</h3>
-            <p class="text-sm text-gray-600 mt-1">Please login to use our services.</p>
+    <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+            <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Welcome!</h3>
+                <p class="text-sm text-gray-600 mt-1">Log in to use our services.</p>
+            </div>
+            <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-button py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                <i class="ri-google-fill ri-lg text-red-500"></i>
+                <span>Sign in with Google</span>
+            </button>
         </div>
-        <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-button py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-            <i class="ri-google-fill ri-lg text-red-500"></i>
-            <span>Login with Google</span>
-        </button>
     </div>
-</div>
 
-<div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
-        <h3 class="text-2xl font-bold text-gray-800 text-center mb-2">Complete Your Profile</h3>
-        <p class="text-sm text-gray-600 mt-1 text-center mb-6">We need this information to serve you better.</p>
-        <form id="profile-form" class="space-y-4">
-            <div>
-                <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
-                <input type="text" id="full-name-input" required class="w-full p-2 border border-gray-300 rounded-md">
-            </div>
-            <div>
-                <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
-                <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md" placeholder="+90 5XX XXX XX XX">
-            </div>
-            <div>
-                <label for="address-input" class="block text-sm font-medium text-gray-700 mb-1">Default Delivery Address <span class="text-red-500">*</span></label>
-                <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter your full address"></textarea>
-            </div>
-            <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-semibold">Save Profile</button>
-        </form>
+    <div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-2">Complete Your Profile</h3>
+            <p class="text-sm text-gray-600 mt-1 text-center mb-6">We need this information to serve you better.</p>
+            <form id="profile-form" class="space-y-4">
+                <div>
+                    <label for="full-name-input" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="full-name-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+                </div>
+                <div>
+                    <label for="phone-input" class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
+                    <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="+90 5XX XXX XX XX">
+                </div>
+                <div>
+                    <label for="address-input" class="block text-sm font-medium text-gray-700 mb-1">Default Delivery Address <span class="text-red-500">*</span></label>
+                    <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Enter your full address (e.g., Street, No, Apt, City)"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors">Save Profile</button>
+            </form>
+        </div>
     </div>
+
+    <div id="auth-required-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 text-center fade-in">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ri-lock-line ri-2x text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Login Required</h3>
+            <p class="text-sm text-gray-600 mt-2 mb-6">Please log in to use this feature.</p>
+            <div class="space-y-2">
+                <button id="auth-modal-login-btn" class="w-full bg-primary text-white py-2 rounded-button font-medium hover:bg-primary/90 transition-colors">Log In</button>
+                <button id="close-auth-modal" class="w-full text-gray-600 py-2 font-medium hover:bg-gray-100 rounded-button transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4">
+        <span id="toast-message"></span>
+    </div>
+
 </div>
 
 <script type="module">
@@ -539,96 +862,267 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     let cartUnsubscribe = null;
-    let pricingSettings = {};
 
-    const categoryNames = {
-        furniture: "Furniture & Home Decor",
-        clothing: "Clothing & Shoes",
-        cosmetics: "Cosmetics",
-        stationery: "Books & Stationery"
+    // --- GLOBAL SETTINGS ---
+    let pricingSettings = {};
+    const DEFAULT_SETTINGS = {
+        categoryRates: { 'furniture': 0.70, 'clothing': 0.45, 'cosmetics': 0.70, 'stationery': 0.40 },
+        cityFees: { 'Lefkoşa': 200, 'Girne': 350, 'Gazimağusa': 300, 'Güzelyurt': 400, 'İskele': 450 }
     };
 
+    // --- DOM Elements ---
+    const loginBtn = document.getElementById('login-btn');
+    const profileContainer = document.getElementById('profile-container');
+    const profileImg = document.getElementById('profile-img');
+    const loginModal = document.getElementById('login-modal');
+    const closeLoginModal = document.getElementById('close-login-modal');
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const authRequiredModal = document.getElementById('auth-required-modal');
+    const closeAuthModal = document.getElementById('close-auth-modal');
+    const authModalLoginBtn = document.getElementById('auth-modal-login-btn');
+    const profileModal = document.getElementById('profile-modal');
+    const profileForm = document.getElementById('profile-form');
+    const cartBadge = document.getElementById('cart-badge');
+
+    // ---- SETTINGS LOADER ----
     async function loadPricingSettings() {
         try {
             const docRef = doc(db, "settings", "pricing");
             const docSnap = await getDoc(docRef);
-            pricingSettings = docSnap.exists() ? docSnap.data() : { categoryRates: { furniture: 0.70, clothing: 0.45, cosmetics: 0.70, stationery: 0.40 } };
-            populateCategoryDropdown();
-        } catch (error) { console.error(error); }
+            if (docSnap.exists() && docSnap.data().categoryRates) {
+                pricingSettings = docSnap.data();
+                console.log("Pricing settings loaded successfully.");
+            } else {
+                pricingSettings = DEFAULT_SETTINGS;
+                console.log("Pricing settings not found, using defaults.");
+            }
+        } catch (error) {
+            console.error("Error loading pricing settings:", error);
+            pricingSettings = DEFAULT_SETTINGS;
+        }
+        populateCategoryDropdown();
     }
 
     function populateCategoryDropdown() {
-        const select = document.getElementById('product-category');
-        select.innerHTML = '<option value="" disabled selected>Select Category</option>';
-        for (const key in pricingSettings.categoryRates) {
-            const opt = document.createElement('option');
-            opt.value = key;
-            opt.textContent = categoryNames[key] || key;
-            select.appendChild(opt);
+        const categorySelect = document.getElementById('product-category');
+        if (!categorySelect || !pricingSettings.categoryRates) return;
+        
+        categorySelect.innerHTML = '<option value="" disabled selected>Select category</option>';
+        
+        const categoryDisplayNames = {
+            furniture: "Furniture & Home Goods",
+            clothing: "Clothing & Shoes",
+            cosmetics: "Cosmetics",
+            stationery: "Stationery & Books"
+        };
+
+        for (const categoryKey in pricingSettings.categoryRates) {
+            const option = document.createElement('option');
+            option.value = categoryKey;
+            option.textContent = categoryDisplayNames[categoryKey] || categoryKey;
+            categorySelect.appendChild(option);
         }
     }
 
+
+    // ---- AUTHENTICATION ---- //
     onAuthStateChanged(auth, user => {
+        updateAuthUI(user);
         if (user) {
-            document.getElementById('login-btn').classList.add('hidden');
-            document.getElementById('profile-container').classList.remove('hidden');
-            document.getElementById('profile-img').src = user.photoURL;
+            checkUserProfile(user);
             listenToCart(user.uid);
         } else {
-            document.getElementById('login-btn').classList.remove('hidden');
-            document.getElementById('profile-container').classList.add('hidden');
+            if (cartUnsubscribe) cartUnsubscribe();
+            cartBadge.classList.add('hidden');
         }
     });
 
-    document.getElementById('calculator-form').onsubmit = async (e) => {
-        e.preventDefault();
-        const btnText = document.querySelector('#main-action-btn span').textContent;
-        if (btnText === 'Calculate Cost') {
-            const price = parseFloat(document.getElementById('product-price').value);
-            const cat = document.getElementById('product-category').value;
-            const method = document.getElementById('order-method').value;
-            const fee = price * (pricingSettings.categoryRates[cat] || 0);
-            const total = (method === 'self') ? fee : price + fee;
-
-            document.getElementById('result-price').textContent = price.toFixed(2) + " ₺";
-            document.getElementById('result-category-fee').textContent = fee.toFixed(2) + " ₺";
-            document.getElementById('result-total').textContent = total.toFixed(2) + " ₺";
-            document.getElementById('calculation-result').classList.remove('hidden');
-            document.querySelector('#main-action-btn span').textContent = 'Add to Cart';
+    function updateAuthUI(user) {
+        if (user) {
+            loginBtn.classList.add('hidden');
+            profileContainer.classList.remove('hidden');
+            profileImg.src = user.photoURL || 'https://placehold.co/40x40/cccccc/000000?text=P';
+            profileImg.alt = user.displayName || 'Profile';
         } else {
-            const user = auth.currentUser;
-            if (!user) return document.getElementById('login-modal').classList.remove('hidden');
-            await addDoc(collection(db, 'users', user.uid, 'cart'), {
-                productLink: document.getElementById('product-link').value,
-                productPrice: parseFloat(document.getElementById('product-price').value),
-                category: document.getElementById('product-category').value,
-                orderMethod: document.getElementById('order-method').value,
-                addedAt: new Date()
-            });
-            window.location.href = 'sepet.html';
+            loginBtn.classList.remove('hidden');
+            profileContainer.classList.add('hidden');
         }
-    };
+    }
+    
+    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+    closeLoginModal.addEventListener('click', () => loginModal.classList.add('hidden'));
+    profileContainer.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to log out?')) {
+            await signOut(auth);
+            showToast('Logged out successfully.');
+        }
+    });
+    
+    googleLoginBtn.addEventListener('click', async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            await signInWithPopup(auth, provider);
+            loginModal.classList.add('hidden');
+            showToast('Login successful!');
+        } catch (error) {
+            console.error("Google login error:", error);
+            showToast('An error occurred during login.', 'error');
+        }
+    });
 
-    document.getElementById('calculate-btn').onclick = () => {
-        const s = document.getElementById('calculator-section');
-        s.classList.remove('hidden');
-        s.scrollIntoView({ behavior: 'smooth' });
-    };
+    window.showAuthRequiredModal = () => authRequiredModal.classList.remove('hidden');
+    closeAuthModal.addEventListener('click', () => authRequiredModal.classList.add('hidden'));
+    authModalLoginBtn.addEventListener('click', () => {
+        authRequiredModal.classList.add('hidden');
+        loginModal.classList.remove('hidden');
+    });
 
-    function listenToCart(uid) {
-        onSnapshot(collection(db, 'users', uid, 'cart'), s => {
-            const b = document.getElementById('cart-badge');
-            b.textContent = s.size;
-            b.classList.toggle('hidden', s.size === 0);
+    // ---- USER PROFILE ---- //
+    async function checkUserProfile(user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (!userDocSnap.exists() || !userDocSnap.data().isProfileComplete) {
+            profileModal.classList.remove('hidden');
+            document.getElementById('full-name-input').value = user.displayName || '';
+        }
+    }
+    
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = auth.currentUser;
+        if (!user) return;
+        const userData = {
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            fullName: document.getElementById('full-name-input').value,
+            phone: document.getElementById('phone-input').value,
+            address: document.getElementById('address-input').value,
+            isProfileComplete: true,
+        };
+        try {
+            await setDoc(doc(db, "users", user.uid), userData, { merge: true });
+            profileModal.classList.add('hidden');
+            showToast('Profile updated successfully!');
+        } catch (error) {
+            console.error("Profile save error:", error);
+            showToast('An error occurred while saving profile.', 'error');
+        }
+    });
+    
+    // ---- CALCULATOR & CART ---- //
+    const calculatorSection = document.getElementById('calculator-section');
+    const calculatorForm = document.getElementById('calculator-form');
+    const mainActionBtn = document.getElementById('main-action-btn');
+    const calculationResult = document.getElementById('calculation-result');
+
+    const formInputs = calculatorForm.querySelectorAll('input, select');
+    formInputs.forEach(input => input.addEventListener('input', resetCalculatorState));
+
+    const calculateBtn = document.getElementById('calculate-btn'); 
+    calculateBtn.addEventListener('click', () => {
+        calculatorSection.classList.remove('hidden');
+        calculatorSection.scrollIntoView({ behavior: 'smooth' });
+        calculatorForm.reset(); 
+        resetCalculatorState(); 
+    });
+
+
+    function resetCalculatorState() {
+        mainActionBtn.innerHTML = `<i class="ri-calculator-line"></i><span>Calculate Cost</span>`;
+        calculationResult.classList.add('hidden');
+    }
+    
+    calculatorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const buttonText = mainActionBtn.textContent.trim();
+
+        if (buttonText === 'Calculate Cost') {
+            handleCalculation();
+        } else if (buttonText === 'Add to Cart') {
+            await handleAddToCart();
+        }
+    });
+
+    function handleCalculation() {
+        const price = parseFloat(document.getElementById('product-price').value);
+        const category = document.getElementById('product-category').value;
+        const orderMethod = document.getElementById('order-method').value;
+        const productLink = document.getElementById('product-link').value.trim();
+
+        if (isNaN(price) || price <= 0 || !category || !productLink) {
+            showToast('Please fill in all required fields correctly.', 'error');
+            return;
+        }
+
+        const categoryRates = pricingSettings.categoryRates || {};
+        const categoryFee = price * (categoryRates[category] || 0);
+        let total = (orderMethod === 'self') ? categoryFee : price + categoryFee;
+        
+        document.getElementById('result-price-label').textContent = orderMethod === 'self' ? 'Product Price (Paid by You):' : 'Product Price:';
+        document.getElementById('result-price').textContent = `${price.toFixed(2)} ₺`;
+        document.getElementById('result-category-fee').textContent = `${categoryFee.toFixed(2)} ₺`;
+        document.getElementById('result-total').textContent = `${total.toFixed(2)} ₺`;
+        
+        calculationResult.classList.remove('hidden');
+        mainActionBtn.innerHTML = `<i class="ri-shopping-cart-add-line"></i><span>Add to Cart</span>`;
+    }
+
+    async function handleAddToCart() {
+        const user = auth.currentUser;
+        if (!user) {
+            window.showAuthRequiredModal();
+            return;
+        }
+
+        const productData = {
+            productLink: document.getElementById('product-link').value,
+            productPrice: parseFloat(document.getElementById('product-price').value),
+            category: document.getElementById('product-category').value,
+            orderMethod: document.getElementById('order-method').value,
+            quantity: 1,
+            addedAt: new Date()
+        };
+
+        try {
+            await addDoc(collection(db, 'users', user.uid, 'cart'), productData);
+            showToast('Product successfully added to cart!');
+            calculatorForm.reset();
+            resetCalculatorState();
+            window.location.href = 'https://getirkibris.com/sepet.html'; 
+        } catch (error) {
+            console.error("Add to cart error:", error);
+            showToast('An error occurred while adding to cart: ' + error.message, 'error');
+        }
+    }
+    
+    function listenToCart(userId) {
+        if (cartUnsubscribe) cartUnsubscribe();
+        const cartRef = collection(db, 'users', userId, 'cart');
+        cartUnsubscribe = onSnapshot(cartRef, (snapshot) => {
+            const itemCount = snapshot.size;
+            cartBadge.textContent = itemCount;
+            cartBadge.classList.toggle('hidden', itemCount === 0);
         });
     }
 
-    document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-    document.getElementById('close-login-modal').onclick = () => document.getElementById('login-modal').classList.add('hidden');
-
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        toastMessage.textContent = message;
+        toast.className = 'fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl transition-all duration-300 z-[110] transform';
+        toast.classList.add(type === 'error' ? 'bg-red-500' : 'bg-gray-800');
+        toast.classList.remove('opacity-0', 'translate-y-4');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-4');
+        }, 3000);
+    }
+    
     loadPricingSettings();
+
 </script>
 
-</div>
 </body>
 </html>
