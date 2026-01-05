@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Доставка товаров из Турции на Кипр | Getir Cyprus</title>
 
-    <meta name="description" content="Легко заказывайте товары с Trendyol, Hepsiburada и других турецких сайтов на Кипр. Рассчитайте стоимость и добавьте в корзину.">
+    <meta name="description" content="Заказывайте товары с Trendyol, Hepsiburada и других турецких сайтов на Северный Кипр. Узнайте стоимость доставки онлайн.">
     <link rel="canonical" href="https://getirkibris.com" />
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon">
     
@@ -17,421 +17,184 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
 
     <script>
-        // Tailwind CSS Configuration (Strictly Preserved)
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: '#5d3ebc',
-                        secondary: '#ffd300'
-                    },
-                    fontFamily: {
-                        inter: ['Inter', 'sans-serif'],
-                    },
-                    borderRadius: {
-                        'button': '8px',
-                        'none': '0px',
-                        'sm': '4px',
-                        DEFAULT: '8px',
-                        'md': '12px',
-                        'lg': '16px',
-                        'xl': '20px',
-                        '2xl': '24px',
-                        '3xl': '32px',
-                        'full': '9999px',
-                    }
+                    colors: { primary: '#5d3ebc', secondary: '#ffd300' },
+                    fontFamily: { inter: ['Inter', 'sans-serif'] },
+                    borderRadius: { 'button': '8px', DEFAULT: '8px' }
                 }
             }
         }
     </script>
 
-  <style>
-        /* Блокировка прокрутки переключателя языков (для мобильных устройств) */
+    <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .group:hover .group-hover\:opacity-100 { opacity: 1; }
+        .group:hover .group-hover\:visible { visibility: visible; }
+        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none; }
         
-        /* Анимация выпадающего меню и контроль видимости */
-        .group:hover .group-hover\:opacity-100 {
-            opacity: 1;
+        /* Slider Styles */
+        .product-slider {
+            overflow-x: auto; 
+            scrollbar-width: none; 
+            white-space: nowrap; 
+            scroll-behavior: smooth; 
+            -webkit-overflow-scrolling: touch; 
         }
-        .group:hover .group-hover\:visible {
-            visibility: visible;
-        }
-
-        /* Стандартные определения стилей */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9f9f9;
-        }
-        .copy-btn:active, .auth-button:active {
-            transform: scale(0.95);
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .hidden {
-            display: none;
-        }
-
-        /* Поддержка чтения справа налево для страницы (ar.html) */
-        [dir="rtl"] .text-right-rtl {
-            text-align: right;
+        .product-card {
+            display: inline-block;
+            width: 280px; 
+            margin-right: 1rem; 
+            white-space: normal;
+            scroll-snap-align: start; 
         }
     </style>
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JL9P6BRZTD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-JL9P6BRZTD');
-</script>
-
 </head>
 <body class="bg-gray-50">
 
 <div class="w-full max-w-screen-lg mx-auto relative min-h-screen pb-16">
 
-<header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
+    <header class="fixed top-0 w-full bg-white shadow-sm z-50 px-4 py-3 flex items-center">
         <div class="flex-1 relative group">
-            <button class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 transition-all cursor-pointer">
-                <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover" alt="Selected Language">
+            <button class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200">
+                <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover" alt="RU">
                 <span class="text-[11px] font-bold text-gray-700 uppercase">RU</span>
                 <i class="ri-arrow-down-s-line text-gray-400"></i>
             </button>
-
-            <div class="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60]">
+            <div class="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-100 shadow-xl rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[60]">
                 <div class="p-2 space-y-1">
-                    <a href="en.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
-                        <img src="https://flagcdn.com/w40/gb.png" class="w-5 h-5 rounded-full object-cover" alt="English">
-                        <span class="text-xs font-medium text-gray-700">English</span>
-                    </a>
-                    <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
-                        <img src="https://flagcdn.com/w40/tr.png" class="w-5 h-5 rounded-full object-cover" alt="Türkçe">
-                        <span class="text-xs font-medium text-gray-700">Türkçe</span>
-                    </a>
-                    <a href="el.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
-                        <img src="https://flagcdn.com/w40/cy.png" class="w-5 h-5 rounded-full object-cover" alt="Greek">
-                        <span class="text-xs font-medium text-gray-700">Ελληνικά</span>
-                    </a>
-                    <a href="ru.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
-                        <img src="https://flagcdn.com/w40/ru.png" class="w-5 h-5 rounded-full object-cover" alt="Russian">
-                        <span class="text-xs font-medium text-gray-700">Русский</span>
-                    </a>
-                    <a href="ar.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg transition-colors">
-                        <img src="https://flagcdn.com/w40/sa.png" class="w-5 h-5 rounded-full object-cover" alt="Arabic">
-                        <span class="text-xs font-medium text-gray-700">العربية</span>
-                    </a>
+                    <a href="index.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg text-xs">Türkçe</a>
+                    <a href="en.html" class="flex items-center gap-3 px-3 py-2 hover:bg-primary/5 rounded-lg text-xs">English</a>
                 </div>
             </div>
         </div>
 
         <div class="flex flex-col items-center">
             <img src="logom.png" alt="Getir Cyprus" class="h-12"> 
-            <a href="index.html" class="text-[10px] font-bold text-primary uppercase tracking-tighter mt-1">Главная</a>
+            <a href="index.html" class="text-[10px] font-bold text-primary uppercase mt-1">Главная</a>
         </div>
 
         <div class="flex-1 flex justify-end">
             <div id="auth-button" class="w-8 h-8 flex items-center justify-center">
-                <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer">
-                    <i class="ri-google-fill ri-lg"></i>
-                </button>
+                <button id="login-btn" class="text-xs text-primary font-medium cursor-pointer"><i class="ri-google-fill ri-lg"></i></button>
                 <div id="profile-container" class="hidden">
-                    <img id="profile-img" src="" alt="Profile" class="w-8 h-8 rounded-full cursor-pointer">
+                    <img id="profile-img" src="" alt="Profile" class="w-8 h-8 rounded-full cursor-pointer border border-primary/20">
                 </div>
             </div>
         </div>
     </header>
 
-<div class="px-4 pt-28 mb-6">
-    <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl border-b-4 border-[#ffd300]" 
-         style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
-        
-        <div class="mb-6">
-            <h2 class="text-2xl font-black tracking-tight leading-none uppercase">
-                Прозрачные Цены <br>
-                <span class="text-[#ffd300] text-lg font-bold italic opacity-90">Больше никаких скрытых расходов</span>
-            </h2>
-        </div>
-        
-        <div class="grid grid-cols-1 gap-4">
-            <div class="bg-white/10 backdrop-blur-md p-5 rounded-xl border border-white/10">
-                <div class="flex items-center gap-4">
-                    <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center border border-white/30">
-                        <i class="ri-box-3-line text-[#ffd300] text-2xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-[11px] uppercase tracking-widest opacity-70 font-bold">Охват услуг</p>
-                        <p class="text-lg font-extrabold text-white">Таможня + Карго + Доставка</p>
-                    </div>
-                </div>
-                <div class="mt-3 pt-3 border-t border-white/10 text-[#ffd300] font-bold text-sm flex items-center gap-2">
-                    <i class="ri-checkbox-circle-fill"></i>
-                    ВСЕ ПРОЦЕССЫ ВКЛЮЧЕНЫ В ОДНУ ЦЕНУ
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 gap-3 px-1">
-                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
-                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
-                    <span>Дополнительная пошлина не взимается.</span>
-                </div>
-                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
-                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
-                    <span>Рассчитанная сумма — это чистая цена доставки.</span>
-                </div>
-                <div class="flex items-center gap-3 text-sm opacity-90 font-medium">
-                    <i class="ri-arrow-right-s-line text-[#ffd300]"></i>
-                    <span>Мы управляем всеми операционными процессами.</span>
-                </div>
+    <main class="pt-28">
+        <div class="px-4 mb-6">
+            <div class="relative overflow-hidden rounded-2xl p-7 text-white shadow-xl border-b-4 border-secondary" style="background: radial-gradient(circle at center, #6b46e5 0%, #4a329d 100%);">
+                <h2 class="text-2xl font-black uppercase">Прозрачные Цены<br><span class="text-secondary text-lg font-bold italic">Никаких скрытых комиссий</span></h2>
+                <p class="mt-4 text-sm opacity-90 font-medium italic">Таможня, карго и доставка уже включены в расчет.</p>
             </div>
         </div>
 
-        <div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60 border-t border-white/5 pt-4">
-            <i class="ri-shield-check-line text-lg"></i>
-            <span>Международные стандарты перевозок</span>
+        <div class="grid grid-cols-2 gap-4 px-4 mb-8">
+            <button id="calculate-btn" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100">
+                <i class="ri-calculator-line ri-xl text-primary mb-2"></i>
+                <span class="text-sm font-bold">Рассчитать и Заказать</span>
+            </button>
+            <a href="https://getirkibris.com/sepet.html" class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 border border-gray-100">
+                <i class="ri-shopping-cart-line ri-xl text-primary mb-2"></i>
+                <span class="text-sm font-bold">Моя корзина</span>
+            </a>
         </div>
-    </div>
-</div>
 
-<div class="grid grid-cols-1 gap-4 px-4 mb-8">
-    <a href="getirhome.html"
-        class="bg-[#ffd300] shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-[#ffd300] hover:bg-[#ffdf00] transition-all">
-        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-1 shadow-sm overflow-hidden p-1">
-            <img src="getirhome-logo.png" alt="GetirHome" class="w-full h-full object-contain">
+        <h2 class="text-xl font-extrabold text-gray-800 mb-4 px-4 border-l-4 border-primary ml-4">🛒 Популярные товары</h2>
+        <div class="product-slider px-4 mb-8 flex gap-4 overflow-x-auto scrollbar-hide">
+            <div class="product-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex-shrink-0">
+                <div class="h-40 bg-gray-50 flex items-center justify-center p-4">
+                    <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" class="max-h-full object-contain">
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="text-sm font-bold truncate">Диван Legom</h3>
+                    <p class="text-lg font-black text-red-600">19,000.00 ₺</p>
+                    <p class="text-[9px] text-primary font-bold uppercase mt-1">Таможня + Карго ВКЛЮЧЕНЫ</p>
+                    <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" class="mt-3 block w-full bg-primary text-white text-xs py-2 rounded-lg font-bold">Купить</a>
+                </div>
+            </div>
+            <div class="product-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex-shrink-0">
+                <div class="h-40 bg-gray-50 flex items-center justify-center p-4">
+                    <img src="https://omhucph.com/cdn/shop/files/Omhu126018_W_CREAM_WHITE_-_5769_1.png?v=1761578226&width=1536" class="max-h-full object-contain">
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="text-sm font-bold truncate">Диван Legom XL</h3>
+                    <p class="text-lg font-black text-red-600">32,000.00 ₺</p>
+                    <p class="text-[9px] text-primary font-bold uppercase mt-1">Таможня + Карго ВКЛЮЧЕНЫ</p>
+                    <a href="https://getirkibris.com/getirhome?view=detail&id=4EB3NPv3gcV20oDbgH1S" class="mt-3 block w-full bg-primary text-white text-xs py-2 rounded-lg font-bold">Купить</a>
+                </div>
+            </div>
+            <div class="product-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex-shrink-0">
+                <div class="h-40 bg-gray-50 flex items-center justify-center p-4">
+                    <img src="https://omhucph.com/cdn/shop/files/Frame_321.png?v=1761396673&width=1900" class="max-h-full object-contain">
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="text-sm font-bold truncate">Угловой диван Legom</h3>
+                    <p class="text-lg font-black text-red-600">38,000.00 ₺</p>
+                    <p class="text-[9px] text-primary font-bold uppercase mt-1">Таможня + Карго ВКЛЮЧЕНЫ</p>
+                    <a href="https://getirkibris.com/getirhome?view=detail&id=2vm7INjnWYYGsM1E1zai" class="mt-3 block w-full bg-primary text-white text-xs py-2 rounded-lg font-bold">Купить</a>
+                </div>
+            </div>
         </div>
-        <span class="text-sm font-bold text-gray-900">GetirHome</span>
-    </a>
 
-    <button id="calculate-btn"
-        class="bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-            <i class="ri-calculator-line ri-xl text-primary"></i>
+        <h3 class="text-lg font-bold mb-4 px-4">Популярные сайты Турции</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 px-4 mb-8">
+            <a href="https://www.trendyol.com" target="_blank" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center justify-center">
+                <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" class="h-8 object-contain">
+            </a>
+            <a href="https://www.hepsiburada.com" target="_blank" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center justify-center">
+                <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" class="h-8 object-contain">
+            </a>
+            <a href="https://www.amazon.com.tr" target="_blank" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center justify-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" class="h-6 object-contain">
+            </a>
+            <a href="https://www.zara.com.tr" target="_blank" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center justify-center">
+                <img src="https://logodownload.org/wp-content/uploads/2014/05/zara-logo-0.png" class="h-6 object-contain">
+            </a>
         </div>
-        <span class="text-sm font-medium">Сделать заказ</span>
-    </button>
 
-    <a href="https://getirkibris.com/sepet.html" id="cart-page-btn"
-        class="relative bg-white shadow-md p-4 rounded-button flex flex-col items-center justify-center h-32 cursor-pointer border border-gray-100 hover:border-primary/20 transition-all">
-        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-            <i class="ri-shopping-cart-line ri-xl text-primary"></i>
-        </div>
-        <span class="text-sm font-medium">Корзина</span>
-        <span id="cart-badge" class="absolute bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center hidden" style="top: 10px; right: 10px;">0</span>
-    </a>
-</div>
-
-        <section id="calculator-section" class="bg-white rounded-lg shadow-lg mx-auto p-6 mb-8 max-w-2xl fade-in hidden">
-            <h2 class="text-xl font-semibold mb-4 text-primary">1. Введите информацию о товаре</h2>
+        <section id="calculator-section" class="bg-white rounded-lg shadow-lg p-6 mb-8 mx-4 fade-in hidden">
+            <h2 class="text-xl font-bold mb-4 text-primary">1. Данные о товаре</h2>
             <form id="calculator-form" class="space-y-4">
-                <div>
-                    <label for="order-method" class="block text-sm font-medium text-gray-700 mb-1">Способ заказа<span class="text-red-500">*</span></label>
-                    <select id="order-method" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                        <option value="service" selected>Закажите товар для меня</option>
-                        <option value="self">Я куплю сам, нужна только доставка</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="product-link" class="block text-sm font-medium text-gray-700 mb-1">Ссылка на товар<span class="text-red-500">*</span></label>
-                    <input type="url" id="product-link" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="https://www.example.com/product">
-                </div>
-                <div>
-                    <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Цена товара (₺)<span class="text-red-500">*</span></label>
-                    <input type="number" id="product-price" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="150.00" step="any" min="0.01">
-                </div>
-                <div>
-                    <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Категория<span class="text-red-500">*</span></label>
-                    <select id="product-category" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                        <option value="" disabled selected>Загрузка категорий...</option>
-                    </select>
-                </div>
-                
-                <div id="calculation-result" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-                    <h3 class="font-medium text-gray-800 mb-2">Стоимость доставки</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span id="result-price-label">Цена товара:</span>
-                            <span id="result-price">0 ₺</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Сбор за категорию:</span>
-                            <span id="result-category-fee">0 ₺</span>
-                        </div>
-                        <div class="flex justify-between font-bold text-primary pt-2 border-t border-gray-200">
-                            <span>Итого с доставкой:</span>
-                            <span id="result-total">0 ₺</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-3 rounded-button font-semibold hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-2">
-                    <i class="ri-calculator-line"></i>
-                    <span>Рассчитать стоимость</span>
-                </button>
+                <select id="order-method" required class="w-full p-3 border rounded-lg">
+                    <option value="service">Закажите товар для меня</option>
+                    <option value="self">Я куплю сам, нужна только доставка</option>
+                </select>
+                <input type="url" id="product-link" required class="w-full p-3 border rounded-lg" placeholder="Ссылка на товар (URL)">
+                <input type="number" id="product-price" required class="w-full p-3 border rounded-lg" placeholder="Цена в Турции (₺)">
+                <select id="product-category" required class="w-full p-3 border rounded-lg">
+                    <option value="" disabled selected>Загрузка категорий...</option>
+                </select>
+                <button type="submit" id="main-action-btn" class="w-full bg-primary text-white py-4 rounded-lg font-bold">Рассчитать стоимость</button>
             </form>
         </section>
+    </main>
 
-<style>
-    .product-slider {
-        overflow-x: auto; 
-        scrollbar-width: none; 
-        -ms-overflow-style: none; 
-        white-space: nowrap; 
-        padding-bottom: 1rem; 
-        scroll-behavior: smooth; 
-        -webkit-overflow-scrolling: touch; 
-    }
-    .product-slider::-webkit-scrollbar { display: none; }
-    .product-card {
-        display: inline-block;
-        width: 300px; 
-        margin-right: 1.5rem; 
-        white-space: normal;
-        scroll-snap-align: start; 
-    }
-    .product-slider > div:first-child { margin-left: 1rem; }
-    .product-slider > div:last-child { margin-right: 1rem; }
-</style>
-
-<h2 class="text-2xl font-extrabold text-gray-800 mb-4 px-4 border-l-4 border-primary ml-4">
-    🛒 Популярные товары
-</h2>
-
-<div class="product-slider flex overflow-x-auto gap-4 p-4 snap-x snap-mandatory scrollbar-hide">
-    <div class="product-card relative flex-shrink-0 w-[280px] shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden border border-gray-100 bg-white snap-start">
-        <div class="absolute top-3 left-3 z-10">
-            <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
-                <i class="ri-truck-fill"></i> БЕСПЛАТНАЯ ДОСТАВКА
-            </span>
-        </div>
-        <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-            <img src="https://omhucph.com/cdn/shop/files/Sommer2025_omhu4754_POSO_40_sRGB_Low.png?v=1761298437&width=1900" alt="Legom Sofa" class="max-h-full object-contain mix-blend-multiply" loading="lazy">
-        </div>
-        <div class="p-4 text-center">
-            <h3 class="text-sm font-bold text-gray-800 truncate">Диван Legom</h3>
-            <p class="text-[10px] text-gray-500 uppercase tracking-tighter mb-2">Отправка из Getir Home</p>
-            <div class="mb-3">
-                <p class="text-lg font-black text-red-600 leading-none">19,000.00 ₺</p>
-                <p class="text-[9px] font-bold text-primary mt-1 uppercase tracking-widest bg-primary/5 py-1 rounded-full">
-                    <i class="ri-checkbox-circle-fill"></i> Таможня + Карго включены
-                </p>
+    <div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
+            <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400"><i class="ri-close-line ri-lg"></i></button>
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold">Добро пожаловать!</h3>
+                <p class="text-sm text-gray-600 mt-2">Войдите, чтобы оформлять заказы.</p>
             </div>
-            <a href="https://getirkibris.com/getirhome?category=Legom+Koltuk" class="block w-full bg-primary text-white text-sm font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">Купить сейчас</a>
+            <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border py-3 rounded-lg font-bold hover:bg-gray-50 transition-all">
+                <i class="ri-google-fill text-red-500"></i><span>Войти через Google</span>
+            </button>
         </div>
     </div>
+
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4">
+        <span id="toast-message"></span>
     </div>
 
-<div class="px-4 mb-8">
-   <h3 class="text-lg font-semibold mb-4">Популярные сайты для покупок</h3>
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-    <a href="https://www.trendyol.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-        <img src="https://www.freelogovectors.net/wp-content/uploads/2024/01/trendyol_logo-freelogovectors.net_.png" alt="Trendyol" class="w-16 h-16 object-contain">
-    </a>
-    <a href="https://www.hepsiburada.com" target="_blank" class="bg-white rounded-lg shadow-sm p-3 h-20 flex items-center justify-center cursor-pointer border border-gray-100">
-        <img src="https://www.ideasoft.com.tr/wp-content/uploads/2022/05/Hepsiburada-Logo-Transparan.png" alt="Hepsiburada" class="w-16 h-16 object-contain">
-    </a>
-    </div>
-
-<div class="mt-8 bg-gray-50 p-6 rounded-xl shadow-sm">
-  <h3 class="text-xl font-semibold mb-3 text-gray-800">Способы заказа</h3>
-  <p class="text-gray-700 mb-4">
-    Мы предоставляем услуги Getir Cyprus двумя различными способами заказа. Вы можете выбрать наиболее подходящий для вас:
-  </p>
-
-  <div class="space-y-6">
-    <div class="bg-white p-4 rounded-lg shadow">
-      <h4 class="font-semibold text-lg text-indigo-700 mb-2">1️⃣ Закажите от моего имени</h4>
-      <p class="text-gray-700">
-        Мы заказываем товар для вас. Вы производите оплату нам, и мы берем на себя весь процесс отслеживания. Вы находитесь под гарантией Getir Cyprus до момента доставки товара.
-      </p>
-    </div>
-
-    <div class="bg-white p-4 rounded-lg shadow">
-      <h4 class="font-semibold text-lg text-indigo-700 mb-2">2️⃣ Я куплю сам, мне нужна только доставка</h4>
-      <p class="text-gray-700">
-        В этом методе вы совершаете покупки самостоятельно. Вы должны указать <strong>адрес склада Getir Cyprus</strong> в качестве адреса доставки в Турции:
-      </p>
-
-      <div class="bg-gray-100 p-3 rounded-lg mt-3">
-        <p class="font-semibold text-sm text-gray-800">Адрес Getir Cyprus в Турции:</p>
-        <p class="text-sm text-gray-700">
-          <strong>Адрес:</strong> Aydın, Nazilli, Bozyurt Mah. Kanal Üstü 3281 sk. No:3 <br>
-          <strong>Телефон:</strong> +90 547 190 19 88 <br>
-          <strong>Имя Фамилия:</strong> Emrah Kutlu
-        </p>
-      </div>
-      <p class="text-gray-700 mt-3">Когда товар поступит по этому адресу, мы получим его от вашего имени и обеспечим доставку на Кипр.</p>
-    </div>
-  </div>
-</div>
-
-<div class="mt-6">
-    <h4 class="text-lg font-semibold mb-4">Наш адрес склада на Кипре</h4>
-    <div class="space-y-4">
-        <div class="flex items-start gap-3">
-            <div class="w-6 h-6 flex items-center justify-center text-primary"><i class="ri-map-pin-2-line"></i></div>
-            <div>
-                <h5 class="font-medium text-gray-800">Адрес</h5>
-                <p class="text-sm text-gray-600">Alayköy Industrial Zone 1st Stage, 3rd Avenue, 8th Street, Nicosia, TRNC Moben Trading</p>
-            </div>
-        </div>
-        </div>
-</div>
-
-<section class="px-4 py-6 text-center">
-    <h1 class="text-2xl sm:text-4xl font-bold text-primary mb-4">Служба доставки товаров из Турции на Кипр</h1>
-    <p class="text-lg text-gray-700">Getir Cyprus доставляет ваши заказы из интернет-магазинов Турции на Северный Кипр. Получайте товары с таких сайтов, как Trendyol, Hepsiburada, N11 и Amazon по доступным ценам.</p>
-</section>
-
-<div class="mt-8 px-4 pb-20 text-center">
-    <div class="space-x-4">
-        <a href="gizlilik-politikasi.html" class="text-xs text-gray-600 hover:text-primary">Политика конфиденциальности</a>
-        <a href="kullanim-sartlari.html" class="text-xs text-gray-600 hover:text-primary">Условия использования</a>
-        <a href="sss.html" class="text-xs text-gray-600 hover:text-primary">Часто задаваемые вопросы</a>
-    </div>
-</div>
-
-<div id="login-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
-        <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="ri-close-line ri-lg"></i></button>
-        <div class="text-center mb-6">
-            <h3 class="text-2xl font-bold text-gray-800">Добро пожаловать!</h3>
-            <p class="text-sm text-gray-600 mt-1">Войдите, чтобы пользоваться нашими услугами.</p>
-        </div>
-        <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-button py-3 font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-            <i class="ri-google-fill ri-lg text-red-500"></i>
-            <span>Войти через Google</span>
-        </button>
-    </div>
-</div>
-
-<div id="profile-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] hidden">
-    <div class="bg-white rounded-lg p-8 w-full max-w-sm m-4 relative fade-in">
-        <h3 class="text-2xl font-bold text-gray-800 text-center mb-2">Заполните профиль</h3>
-        <form id="profile-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ФИО <span class="text-red-500">*</span></label>
-                <input type="text" id="full-name-input" required class="w-full p-2 border border-gray-300 rounded-md">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Номер телефона <span class="text-red-500">*</span></label>
-                <input type="tel" id="phone-input" required class="w-full p-2 border border-gray-300 rounded-md">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Адрес доставки <span class="text-red-500">*</span></label>
-                <textarea id="address-input" required rows="3" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
-            </div>
-            <button type="submit" class="w-full bg-primary text-white py-3 rounded-button font-semibold">Сохранить</button>
-        </form>
-    </div>
-</div>
-
-<div id="toast" class="fixed bottom-24 right-6 bg-gray-800 text-white px-5 py-3 rounded-lg shadow-xl opacity-0 transition-all duration-300 z-[110] transform translate-y-4">
-    <span id="toast-message"></span>
 </div>
 
 <script type="module">
@@ -452,36 +215,66 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    let cartUnsubscribe = null;
 
-    // ... Rest of the JavaScript logic (unchanged) ...
-    // Note: All UI logic for Google Auth is preserved 1:1.
-    // Toast and messages updated to Russian in the functions below:
+    const loginBtn = document.getElementById('login-btn');
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const loginModal = document.getElementById('login-modal');
+    const profileContainer = document.getElementById('profile-container');
+    const profileImg = document.getElementById('profile-img');
 
-    function updateAuthUI(user) {
-        if (user) {
-            loginBtn.classList.add('hidden');
-            profileContainer.classList.remove('hidden');
-            profileImg.src = user.photoURL || 'https://placehold.co/40x40/cccccc/000000?text=P';
-        } else {
-            loginBtn.classList.remove('hidden');
-            profileContainer.classList.add('hidden');
-        }
-    }
-
+    // Google Login İşlemi (Çalışan Versiyon)
     googleLoginBtn.addEventListener('click', async () => {
         const provider = new GoogleAuthProvider();
         try {
             await signInWithPopup(auth, provider);
             loginModal.classList.add('hidden');
-            showToast('Вход выполнен успешно!');
+            showToast('Успешный вход!');
         } catch (error) {
-            showToast('Ошибка при входе.', 'error');
+            console.error(error);
+            showToast('Ошибка при входе', 'error');
         }
     });
 
-    // ... Rest of the script preserved ...
-    loadPricingSettings();
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            loginBtn.classList.add('hidden');
+            profileContainer.classList.remove('hidden');
+            profileImg.src = user.photoURL || '';
+        } else {
+            loginBtn.classList.remove('hidden');
+            profileContainer.classList.add('hidden');
+        }
+    });
+
+    loginBtn.addEventListener('click', () => loginModal.classList.remove('hidden'));
+    document.getElementById('close-login-modal').addEventListener('click', () => loginModal.classList.add('hidden'));
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').textContent = message;
+        toast.className = `fixed bottom-24 right-6 text-white px-5 py-3 rounded-lg shadow-xl transition-all duration-300 z-[110] transform ${type === 'error' ? 'bg-red-500' : 'bg-gray-800'}`;
+        toast.classList.remove('opacity-0', 'translate-y-4');
+        setTimeout(() => toast.classList.add('opacity-0', 'translate-y-4'), 3000);
+    }
+
+    // Kategori Listesi
+    const categories = {
+        furniture: "Мебель и Дом",
+        clothing: "Одежда и Обувь",
+        cosmetics: "Косметика",
+        stationery: "Канцелярия"
+    };
+    const categorySelect = document.getElementById('product-category');
+    categorySelect.innerHTML = '<option value="" disabled selected>Выберите категорию</option>';
+    for (const [key, value] of Object.entries(categories)) {
+        const opt = document.createElement('option'); opt.value = key; opt.textContent = value;
+        categorySelect.appendChild(opt);
+    }
+
+    document.getElementById('calculate-btn').addEventListener('click', () => {
+        document.getElementById('calculator-section').classList.remove('hidden');
+        document.getElementById('calculator-section').scrollIntoView({ behavior: 'smooth' });
+    });
 </script>
 
 </body>
