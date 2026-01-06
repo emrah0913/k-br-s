@@ -12,88 +12,46 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: '#5D3EBC',
-                        secondary: '#FFD300',
-                        dark: '#0F172A',
-                        surface: '#F8FAFC'
-                    },
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
+                    colors: { primary: '#5D3EBC', secondary: '#FFD300', dark: '#0F172A', surface: '#F8FAFC' },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
                 },
             }
         }
     </script>
     <style>
         body { background-color: #F1F5F9; }
-        .sidebar-link.active {
-            background-color: rgba(93, 62, 188, 0.1);
-            color: #5D3EBC;
-            border-right: 4px solid #5D3EBC;
-        }
-        .custom-card { 
-            background: white; 
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border-radius: 16px;
-        }
-        .form-input {
-            border: 1px solid #E2E8F0;
-            padding: 0.6rem 1rem;
-            border-radius: 10px;
-            transition: all 0.2s;
-            outline: none;
-        }
-        .form-input:focus {
-            border-color: #5D3EBC;
-            box-shadow: 0 0 0 3px rgba(93, 62, 188, 0.1);
-        }
-        .product-image-preview:hover { transform: scale(1.1); z-index: 50; }
+        .sidebar-link.active { background-color: rgba(93, 62, 188, 0.1); color: #5D3EBC; border-right: 4px solid #5D3EBC; }
+        .custom-card { background: white; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 16px; }
+        .form-input { border: 1px solid #E2E8F0; padding: 0.6rem 1rem; border-radius: 10px; transition: all 0.2s; outline: none; width: 100%; }
+        .form-input:focus { border-color: #5D3EBC; box-shadow: 0 0 0 3px rgba(93, 62, 188, 0.1); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .btn-icon { width: 36px; height: 36px; display: flex; items-center; justify-center; border-radius: 10px; transition: all 0.2s; }
     </style>
 </head>
 <body class="font-sans antialiased text-dark">
 
-<!-- Mobil Sidebar Toggle -->
-<div class="lg:hidden fixed bottom-6 right-6 z-[100]">
-    <button id="mobileMenuBtn" class="bg-primary text-white p-4 rounded-full shadow-2xl">
-        <i class="ri-menu-fold-line text-2xl"></i>
-    </button>
-</div>
-
 <div class="flex min-h-screen">
     <!-- SIDEBAR -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 lg:translate-x-0 transition-transform duration-300 ease-in-out">
         <div class="p-8">
             <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
-                    <i class="ri-home-gear-line text-xl"></i>
-                </div>
+                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg"><i class="ri-home-gear-line text-xl"></i></div>
                 <h1 class="text-xl font-extrabold tracking-tight">LUXE <span class="text-primary">Admin</span></h1>
             </div>
-
             <nav class="space-y-2">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 ml-2">Menü</p>
-                <button id="btnBanner" class="sidebar-link active flex items-center gap-3 w-full p-3.5 font-semibold text-slate-600 rounded-xl transition-all">
+                <button onclick="activateTab('banner')" id="btnBanner" class="sidebar-link active flex items-center gap-3 w-full p-3.5 font-semibold text-slate-600 rounded-xl transition-all">
                     <i class="ri-advertisement-line text-lg"></i> Banner Yönetimi
                 </button>
-                <button id="btnCategory" class="sidebar-link flex items-center gap-3 w-full p-3.5 font-semibold text-slate-600 rounded-xl transition-all">
+                <button onclick="activateTab('category')" id="btnCategory" class="sidebar-link flex items-center gap-3 w-full p-3.5 font-semibold text-slate-600 rounded-xl transition-all">
                     <i class="ri-folders-line text-lg"></i> Kategoriler
                 </button>
-                <button id="btnProduct" class="sidebar-link flex items-center gap-3 w-full p-3.5 font-semibold text-slate-600 rounded-xl transition-all">
+                <button onclick="activateTab('product')" id="btnProduct" class="sidebar-link flex items-center gap-3 w-full p-3.5 font-semibold text-slate-600 rounded-xl transition-all">
                     <i class="ri-shopping-bag-3-line text-lg"></i> Ürün Listesi
                 </button>
-                
                 <div class="pt-10">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 ml-2">Profil</p>
-                    <div class="bg-surface p-4 rounded-2xl border border-slate-100 mb-4">
-                        <div id="admin-email" class="text-xs font-bold truncate text-slate-700">Yükleniyor...</div>
-                        <div class="text-[10px] text-slate-400 mt-1 uppercase">Süper Admin</div>
-                    </div>
-                    <button id="logoutBtn" class="flex items-center gap-3 w-full p-3.5 font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-all">
-                        <i class="ri-logout-circle-line text-lg"></i> Güvenli Çıkış
-                    </button>
+                    <div id="admin-email" class="bg-surface p-4 rounded-2xl border border-slate-100 text-xs font-bold truncate text-slate-700 mb-4">Misafir</div>
+                    <button id="logoutBtn" class="flex items-center gap-3 w-full p-3.5 font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-all"><i class="ri-logout-circle-line text-lg"></i> Çıkış Yap</button>
                 </div>
             </nav>
         </div>
@@ -101,202 +59,108 @@
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 lg:ml-72 p-4 md:p-10">
-        
-        <!-- TOP HEADER -->
-        <header id="header-bar" class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4 hidden">
-            <div>
-                <h2 id="pageTitle" class="text-3xl font-extrabold text-dark">Hoş Geldiniz</h2>
-                <p class="text-slate-500 mt-1">Getir Home mağazanızda neler olup bittiğine göz atın.</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="#" class="bg-white px-5 py-2.5 rounded-xl border border-slate-200 font-bold text-sm hover:bg-slate-50 transition-all flex items-center gap-2">
-                    <i class="ri-external-link-line"></i> Siteyi Gör
-                </a>
+        <!-- Dashboard Header -->
+        <header id="top-nav" class="flex items-center justify-between mb-10 hidden">
+            <h2 id="pageTitle" class="text-3xl font-extrabold text-dark tracking-tight">Panel</h2>
+            <div id="statsRow" class="hidden md:flex gap-6">
+                <div class="bg-white px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold">Ürünler: <span id="statProductCount" class="text-primary">0</span></div>
             </div>
         </header>
-
-        <!-- STATS ROW -->
-        <div id="statsRow" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 hidden">
-            <div class="custom-card p-6 flex items-center gap-5">
-                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl"><i class="ri-box-3-line"></i></div>
-                <div>
-                    <div class="text-2xl font-black" id="statProductCount">0</div>
-                    <div class="text-sm text-slate-400 font-medium">Toplam Ürün</div>
-                </div>
-            </div>
-            <div class="custom-card p-6 flex items-center gap-5">
-                <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl"><i class="ri-folders-line"></i></div>
-                <div>
-                    <div class="text-2xl font-black" id="statCategoryCount">0</div>
-                    <div class="text-sm text-slate-400 font-medium">Kategori Sayısı</div>
-                </div>
-            </div>
-            <div class="custom-card p-6 flex items-center gap-5">
-                <div class="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-2xl"><i class="ri-image-line"></i></div>
-                <div>
-                    <div class="text-2xl font-black" id="statBannerCount">0</div>
-                    <div class="text-sm text-slate-400 font-medium">Aktif Banner</div>
-                </div>
-            </div>
-        </div>
 
         <!-- LOGIN SCREEN -->
         <section id="login-screen" class="min-h-[80vh] flex items-center justify-center hidden">
             <div class="custom-card p-10 max-w-md w-full text-center">
-                <div class="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6">
-                    <i class="ri-shield-user-line"></i>
-                </div>
-                <h2 class="text-2xl font-black mb-2 tracking-tight uppercase">Admin Girişi</h2>
-                <p class="text-slate-400 text-sm mb-8">Devam etmek için yönetici hesabı ile Google girişi yapın.</p>
-                <button id="googleSignIn" class="w-full bg-dark hover:bg-black text-white p-4 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all shadow-xl shadow-slate-200">
-                    <i class="ri-google-fill text-xl"></i> Google Hesabı ile Giriş
-                </button>
+                <div class="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6"><i class="ri-shield-user-line"></i></div>
+                <h2 class="text-2xl font-black mb-8 uppercase tracking-tight">Admin Girişi</h2>
+                <button id="googleSignIn" class="w-full bg-dark text-white p-4 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all"><i class="ri-google-fill text-xl"></i> Google ile Giriş</button>
             </div>
         </section>
 
-        <!-- ADMIN PANEL SECTIONS -->
+        <!-- SECTIONS -->
         <div id="admin-panel" class="hidden">
-            
-            <!-- SECTION BANNER -->
+            <!-- BANNER SECTION -->
             <section id="sectionBanner" class="space-y-6">
                 <div class="custom-card p-8">
-                    <div class="flex items-center gap-2 mb-6">
-                        <i class="ri-add-circle-line text-2xl text-primary"></i>
-                        <h3 class="text-xl font-bold uppercase tracking-tight">Yeni Banner Oluştur</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <input id="bannerUrl" placeholder="Görsel/Video URL (Zorunlu)" class="form-input md:col-span-2" />
-                        <input id="bannerTitle" placeholder="Başlık (Zorunlu)" class="form-input" />
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2"><i class="ri-add-circle-line text-primary"></i> YENİ BANNER</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input id="bannerUrl" placeholder="Görsel/Video URL" class="form-input md:col-span-2" />
+                        <input id="bannerTitle" placeholder="Başlık" class="form-input" />
                         <input id="bannerDescription" placeholder="Açıklama" class="form-input" />
-                        <input id="bannerLink" placeholder="Yönlendirilecek Link (Opsiyonel)" class="form-input md:col-span-2" />
-                        <div class="md:col-span-2 flex justify-end">
-                            <button id="addBannerBtn" class="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-                                <i class="ri-save-line"></i> Banner Yayınla
-                            </button>
-                        </div>
+                        <button id="addBannerBtn" class="bg-primary text-white p-3 rounded-xl font-bold md:col-span-2 shadow-lg shadow-primary/20">Banner Ekle</button>
                     </div>
                 </div>
-                
-                <div class="flex items-center justify-between">
-                    <h4 class="font-bold text-slate-500 uppercase tracking-widest text-xs">Mevcut Bannerlar</h4>
-                    <button id="refreshBannerBtn" class="p-2 text-primary hover:bg-white rounded-lg transition-all"><i class="ri-refresh-line"></i> Yenile</button>
-                </div>
-                <div id="bannerList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                <div id="bannerList" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
             </section>
 
-            <!-- SECTION CATEGORY -->
+            <!-- CATEGORY SECTION -->
             <section id="sectionCategory" class="hidden space-y-6">
                 <div class="custom-card p-8">
-                    <div id="categoryEditingStatus" class="bg-secondary/20 p-4 rounded-xl mb-6 flex items-center justify-between hidden">
-                        <span class="font-bold text-dark"><i class="ri-edit-line"></i> Düzenlenen: <span id="editingCategoryNameDisplay"></span></span>
-                        <input type="hidden" id="editingCategoryId" />
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <h3 class="text-lg font-bold mb-6 uppercase tracking-widest text-primary">Kategori Yönetimi</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input id="categoryName" placeholder="Kategori Adı" class="form-input" />
-                        <select id="parentCategory" class="form-input">
-                            <option value="">Üst Kategori Yok</option>
-                        </select>
-                        <input id="categoryImage" placeholder="Kategori İkon/Görsel URL" class="form-input md:col-span-2" />
-                        <div class="md:col-span-2 flex gap-3 justify-end">
-                            <button id="cancelCategoryEditBtn" class="bg-slate-200 px-6 py-3 rounded-xl font-bold hidden">İptal</button>
-                            <button id="addCategoryBtn" class="bg-primary text-white px-8 py-3 rounded-xl font-bold">Kategori Ekle</button>
-                            <button id="updateCategoryBtn" class="bg-secondary text-dark px-8 py-3 rounded-xl font-bold hidden">Güncelle</button>
-                        </div>
+                        <select id="parentCategory" class="form-input"><option value="">Üst Kategori Yok</option></select>
+                        <input id="categoryImage" placeholder="Kategori Görsel URL" class="form-input md:col-span-2" />
+                        <button id="addCategoryBtn" class="bg-primary text-white p-3 rounded-xl font-bold md:col-span-2">Kategori Kaydet</button>
                     </div>
                 </div>
-                <div id="categoryList" class="grid grid-cols-1 gap-4"></div>
+                <div id="categoryList" class="grid grid-cols-1 gap-3"></div>
             </section>
 
-            <!-- SECTION PRODUCT -->
+            <!-- PRODUCT SECTION -->
             <section id="sectionProduct" class="hidden space-y-6">
                 <div class="custom-card p-8">
-                    <div id="editingStatus" class="bg-secondary/20 p-4 rounded-xl mb-6 flex items-center justify-between hidden">
-                        <span class="font-bold text-dark uppercase text-xs"><i class="ri-edit-line"></i> Düzenlenen Ürün: <span id="editingProductName"></span></span>
-                        <input type="hidden" id="editingProductId" />
+                    <div id="editingStatus" class="bg-secondary/20 p-3 rounded-xl mb-4 text-xs font-bold hidden flex items-center justify-between">
+                        <span>DÜZENLENİYOR: <span id="editingProductName"></span></span>
+                        <input type="hidden" id="editingProductId">
+                        <button onclick="resetProductForm()" class="text-red-500">İPTAL</button>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                        <input id="productName" placeholder="Ürün Adı" class="form-input col-span-2" />
-                        <select id="productCategorySelect" class="form-input col-span-2">
-                            <option value="">Kategori Seçin</option>
-                        </select>
-                        <textarea id="productDescription" placeholder="Ürün Açıklaması" class="form-input col-span-4 h-24"></textarea>
+                    <h3 class="text-lg font-bold mb-6 uppercase tracking-widest text-primary">Ürün Bilgileri</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input id="productName" placeholder="Ürün Adı" class="form-input md:col-span-2" />
+                        <select id="productCategorySelect" class="form-input md:col-span-2"><option value="">Kategori Seçin</option></select>
+                        <textarea id="productDescription" placeholder="Açıklama" class="form-input md:col-span-4 h-24"></textarea>
+                        <input id="productPrice" type="number" step="0.01" placeholder="Fiyat (₺)" class="form-input md:col-span-2" />
+                        <input id="productOldPrice" type="number" step="0.01" placeholder="Eski Fiyat (₺)" class="form-input md:col-span-2" />
+                        <input id="productImage" placeholder="Ana Görsel URL" class="form-input md:col-span-2" />
+                        <input id="productVideo" placeholder="Video URL (Opsiyonel)" class="form-input md:col-span-2" />
                         
-                        <div class="space-y-1 col-span-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Satış Fiyatı (₺)</label>
-                            <input id="productPrice" type="number" step="0.01" class="form-input w-full" />
-                        </div>
-                        <div class="space-y-1 col-span-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Eski Fiyat (₺)</label>
-                            <input id="productOldPrice" type="number" step="0.01" class="form-input w-full" />
-                        </div>
-
-                        <div class="col-span-2">
-                            <input id="productImage" placeholder="Ana Görsel URL" class="form-input w-full mb-3" />
-                            <div class="bg-surface rounded-2xl p-4 border border-dashed flex justify-center">
-                                <img id="productImagePreview" src="" class="max-h-32 object-contain" />
+                        <div class="md:col-span-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="text-xs font-black uppercase mb-4 text-slate-400">Varyant Ekle (Boyut/Renk)</h5>
+                            <div class="flex gap-2 mb-4">
+                                <input id="variantName" placeholder="XL Kırmızı vb." class="form-input" />
+                                <input id="variantPriceOffset" type="number" placeholder="+/- Fiyat" class="form-input w-32" />
+                                <button id="addVariantBtn" class="bg-dark text-white px-4 rounded-xl text-xs font-bold">EKLE</button>
                             </div>
-                        </div>
-                        <div class="col-span-2">
-                            <input id="productVideo" placeholder="Video URL (Opsiyonel)" class="form-input w-full mb-3" />
-                            <div class="p-4 bg-primary/5 rounded-2xl text-xs font-semibold text-primary leading-relaxed italic">
-                                <i class="ri-information-line"></i> YouTube veya doğrudan MP4 linki ekleyebilirsiniz.
-                            </div>
+                            <div id="variantList" class="flex flex-wrap gap-2"></div>
                         </div>
 
-                        <!-- Ek Görseller -->
-                        <div class="col-span-4 bg-surface p-6 rounded-2xl border border-slate-100">
-                            <h5 class="font-bold text-sm mb-4 uppercase tracking-wider flex items-center gap-2">
-                                <i class="ri-images-line"></i> Ek Ürün Görselleri
-                            </h5>
-                            <div id="extraImagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-                            <button id="addExtraImageBtn" class="mt-4 text-primary font-bold text-xs flex items-center gap-1 hover:underline">
-                                <i class="ri-add-line"></i> Yeni Resim Alanı
-                            </button>
+                        <div class="md:col-span-4 flex items-center gap-2">
+                            <input id="productActive" type="checkbox" checked class="w-5 h-5 accent-primary">
+                            <label class="text-sm font-bold">Ürünü hemen satışa çıkar</label>
                         </div>
-
-                        <!-- Varyantlar -->
-                        <div class="col-span-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                            <h5 class="font-bold text-sm mb-4 uppercase tracking-wider flex items-center gap-2 text-dark">
-                                <i class="ri-list-settings-line"></i> Varyant Sistemi (Boyut, Renk vb.)
-                            </h5>
-                            <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
-                                <input id="variantName" placeholder="Varyant (Örn: XL Kırmızı)" class="form-input md:col-span-3" />
-                                <input id="variantPriceOffset" type="number" placeholder="Fiyat Farkı" class="form-input md:col-span-2" />
-                                <button id="addVariantBtn" class="bg-dark text-white rounded-xl font-bold text-xs uppercase transition-all hover:bg-black">Varyantı Ekle</button>
-                            </div>
-                            
-                            <!-- Varyant Medya Alanları (Gizli, sadece logic için gerekli containerlar) -->
-                            <div id="variantImagesContainer" class="hidden"></div>
-                            <div id="variantVideosContainer" class="hidden"></div>
-
-                            <div id="variantList" class="flex flex-wrap gap-2">
-                                <p class="text-xs text-slate-400 italic" id="no-variants-msg">Varyant eklenmedi.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-span-4 flex items-center gap-3 p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                            <input id="productActive" type="checkbox" class="w-5 h-5 accent-primary" />
-                            <label for="productActive" class="font-bold text-sm text-blue-900 cursor-pointer">Ürünü hemen web sitesinde aktif et</label>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 justify-end mt-10">
-                        <button id="cancelEditBtn" class="bg-slate-200 px-8 py-3 rounded-xl font-bold hidden transition-all hover:bg-slate-300">Vazgeç</button>
-                        <button id="addProductBtn" class="bg-primary text-white px-10 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-xl shadow-primary/20">Ürünü Yayınla</button>
-                        <button id="updateProductBtn" class="bg-secondary text-dark px-10 py-3 rounded-xl font-bold hidden transition-all hover:scale-105">Değişiklikleri Kaydet</button>
+                        
+                        <button id="addProductBtn" class="bg-primary text-white p-4 rounded-xl font-bold md:col-span-2 shadow-lg">Ürünü Yayınla</button>
+                        <button id="updateProductBtn" class="bg-secondary text-dark p-4 rounded-xl font-bold md:col-span-2 hidden">Güncelleme Kaydet</button>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between">
-                    <h4 class="font-bold text-slate-500 uppercase tracking-widest text-xs">Tüm Ürünler</h4>
-                    <button id="refreshProductsBtn" class="p-2 text-primary hover:bg-white rounded-lg transition-all"><i class="ri-refresh-line"></i> Listeyi Yenile</button>
+                <!-- PRODUCT LIST VIEWS -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-10 mb-6">
+                    <h4 class="font-black text-xs uppercase tracking-widest text-slate-400">Mağaza Ürünleri</h4>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
+                        <i class="ri-filter-3-line text-slate-400 ml-2"></i>
+                        <select id="viewFilter" class="bg-transparent text-xs font-bold outline-none cursor-pointer p-1">
+                            <option value="all">Tüm Ürünleri Göster</option>
+                            <!-- Kategoriler JS ile gelecek -->
+                        </select>
+                    </div>
                 </div>
                 <div id="productList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </section>
         </div>
 
-        <!-- TOAST MESSAGE -->
-        <div id="msg" class="fixed top-10 right-10 z-[200] max-w-xs transition-all animate-bounce"></div>
+        <!-- TOASTS -->
+        <div id="msg" class="fixed top-6 right-6 z-[200] space-y-2"></div>
     </main>
 </div>
 
@@ -322,183 +186,125 @@ const provider = new GoogleAuthProvider();
 
 const ADMIN_EMAIL = "emirmob09@gmail.com"; 
 
-let allAdminCategories = {}; 
 let currentProducts = [];
 let productVariants = [];
+let allAdminCategories = [];
 
-// UI Switcher
-const sections = {
-    banner: document.getElementById("sectionBanner"),
-    category: document.getElementById("sectionCategory"),
-    product: document.getElementById("sectionProduct")
-};
-const tabs = {
-    banner: document.getElementById("btnBanner"),
-    category: document.getElementById("btnCategory"),
-    product: document.getElementById("btnProduct")
-};
-
-function activateTab(target) {
-    Object.keys(sections).forEach(key => {
-        sections[key].classList.add("hidden");
-        tabs[key].classList.remove("active");
-    });
-    sections[target].classList.remove("hidden");
-    tabs[target].classList.add("active");
-    document.getElementById("pageTitle").textContent = 
-        target === "banner" ? "Banner Yönetimi" : 
-        target === "category" ? "Kategori Yönetimi" : "Ürün Yönetimi";
+// --- UI Logic ---
+window.activateTab = (target) => {
+    ["sectionBanner", "sectionCategory", "sectionProduct"].forEach(id => document.getElementById(id).classList.add("hidden"));
+    ["btnBanner", "btnCategory", "btnProduct"].forEach(id => document.getElementById(id).classList.remove("active"));
+    
+    document.getElementById("section" + target.charAt(0).toUpperCase() + target.slice(1)).classList.remove("hidden");
+    document.getElementById("btn" + target.charAt(0).toUpperCase() + target.slice(1)).classList.add("active");
     
     if(target === "banner") loadBanners();
     if(target === "category") loadCategories();
     if(target === "product") { loadCategories(); loadProducts(); }
-}
+};
 
-Object.keys(tabs).forEach(key => tabs[key].addEventListener("click", () => activateTab(key)));
-
-// --- DOM References (Logic-Related) ---
-const loginScreen = document.getElementById("login-screen");
-const adminPanel = document.getElementById("admin-panel");
-const headerBar = document.getElementById("header-bar");
-const statsRow = document.getElementById("statsRow");
-const adminEmailSpan = document.getElementById("admin-email");
-
-// Msg Function
-function showMsg(text, isError=true) {
+function showMsg(text, isError=false) {
     const msg = document.getElementById("msg");
-    msg.innerHTML = `
-        <div class="${isError ? 'bg-red-500' : 'bg-green-500'} text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3">
-            <i class="${isError ? 'ri-error-warning-line' : 'ri-checkbox-circle-line'} text-xl"></i>
-            <span class="font-bold text-sm">${text}</span>
-        </div>
-    `;
-    setTimeout(() => { msg.innerHTML = ""; }, 4000);
+    const div = document.createElement("div");
+    div.className = `${isError ? 'bg-red-500' : 'bg-green-500'} text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce`;
+    div.innerHTML = `<i class="ri-notification-line text-xl"></i><span class="font-bold text-xs">${text}</span>`;
+    msg.appendChild(div);
+    setTimeout(() => div.remove(), 4000);
 }
 
-// --- AUTH LOGIC ---
-onAuthStateChanged(auth, async (user)=>{
-    if(!user){ 
-        loginScreen.classList.remove("hidden"); 
-        adminPanel.classList.add("hidden"); 
-        headerBar.classList.add("hidden");
-        statsRow.classList.add("hidden");
-        return; 
+// --- Auth ---
+onAuthStateChanged(auth, async (user) => {
+    const login = document.getElementById("login-screen");
+    const panel = document.getElementById("admin-panel");
+    const nav = document.getElementById("top-nav");
+    
+    if(!user || user.email !== ADMIN_EMAIL) {
+        login.classList.remove("hidden");
+        panel.classList.add("hidden");
+        nav.classList.add("hidden");
+        if(user) signOut(auth);
+        return;
     }
-    if(user.email !== ADMIN_EMAIL){ 
-        showMsg("Bu panel sadece yetkili admin içindir.", true); 
-        await signOut(auth); 
-        return; 
-    }
-    loginScreen.classList.add("hidden"); 
-    adminPanel.classList.remove("hidden"); 
-    headerBar.classList.remove("hidden");
-    statsRow.classList.remove("hidden");
-    adminEmailSpan.textContent = user.email;
+    
+    login.classList.add("hidden");
+    panel.classList.remove("hidden");
+    nav.classList.remove("hidden");
+    document.getElementById("admin-email").textContent = user.email;
     activateTab("banner");
     updateStats();
 });
 
-document.getElementById("googleSignIn").onclick = async () => signInWithPopup(auth, provider);
+document.getElementById("googleSignIn").onclick = () => signInWithPopup(auth, provider);
 document.getElementById("logoutBtn").onclick = () => signOut(auth);
-document.getElementById("mobileMenuBtn").onclick = () => document.getElementById("sidebar").classList.toggle("-translate-x-full");
 
+// --- Stats ---
 async function updateStats() {
-    const pSnap = await getDocs(collection(db, "homeProducts"));
-    const cSnap = await getDocs(collection(db, "homeCategories"));
-    const bSnap = await getDocs(collection(db, "homeBanners"));
-    document.getElementById("statProductCount").textContent = pSnap.size;
-    document.getElementById("statCategoryCount").textContent = cSnap.size;
-    document.getElementById("statBannerCount").textContent = bSnap.size;
+    const snap = await getDocs(collection(db, "homeProducts"));
+    document.getElementById("statProductCount").textContent = snap.size;
 }
 
-// --- BANNER LOGIC ---
+// --- Banner Logic ---
 document.getElementById("addBannerBtn").onclick = async () => {
     const url = document.getElementById("bannerUrl").value.trim();
     const title = document.getElementById("bannerTitle").value.trim();
     const description = document.getElementById("bannerDescription").value.trim();
-    const link = document.getElementById("bannerLink").value.trim();
-
-    if(!url || !title) { showMsg("Url ve Başlık zorunludur.", true); return; }
-
-    try {
-        await addDoc(collection(db, "homeBanners"), { url, title, description, link: link || null, createdAt: new Date() });
-        showMsg("Banner yayınlandı!", false);
-        loadBanners();
-        document.getElementById("bannerUrl").value = "";
-        document.getElementById("bannerTitle").value = "";
-    } catch(e) { showMsg(e.message); }
+    if(!url || !title) return showMsg("Gerekli alanları doldurun", true);
+    await addDoc(collection(db, "homeBanners"), { url, title, description, createdAt: new Date() });
+    showMsg("Banner yayınlandı!");
+    loadBanners();
 };
 
 async function loadBanners() {
     const list = document.getElementById("bannerList");
-    list.innerHTML = `<div class="p-10 text-center col-span-3 text-slate-400"><i class="ri-loader-4-line animate-spin text-4xl"></i></div>`;
+    list.innerHTML = `<i class="ri-loader-4-line animate-spin"></i>`;
     const snap = await getDocs(collection(db, "homeBanners"));
     list.innerHTML = "";
-    snap.forEach(docSnap => {
-        const d = docSnap.data();
+    snap.forEach(dDoc => {
+        const d = dDoc.data();
         const div = document.createElement("div");
-        div.className = "custom-card overflow-hidden group";
+        div.className = "custom-card overflow-hidden p-4 space-y-3";
         div.innerHTML = `
-            <div class="h-40 bg-slate-100 relative">
-                <img src="${d.url}" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-dark/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-                     <button class="delete-banner-btn bg-red-500 text-white px-4 py-2 rounded-xl font-bold" data-id="${docSnap.id}">SİL</button>
-                </div>
-            </div>
-            <div class="p-5">
-                <h5 class="font-bold text-dark truncate">${d.title}</h5>
-                <p class="text-xs text-slate-400 mt-1 truncate">${d.description || '-'}</p>
-            </div>
+            <img src="${d.url}" class="h-32 w-full object-cover rounded-xl">
+            <h5 class="font-bold text-sm truncate">${d.title}</h5>
+            <button class="bg-red-50 text-red-500 w-full p-2 rounded-lg font-bold text-[10px]" onclick="deleteBanner('${dDoc.id}')">KALDIR</button>
         `;
-        div.querySelector(".delete-banner-btn").onclick = async () => {
-            await deleteDoc(doc(db, "homeBanners", docSnap.id));
-            showMsg("Banner kaldırıldı.", false);
-            loadBanners();
-        };
         list.appendChild(div);
     });
 }
+window.deleteBanner = async (id) => { await deleteDoc(doc(db, "homeBanners", id)); loadBanners(); };
 
-// --- CATEGORY LOGIC ---
+// --- Category Logic ---
 async function loadCategories() {
     const list = document.getElementById("categoryList");
+    const select = document.getElementById("productCategorySelect");
     const parentSelect = document.getElementById("parentCategory");
-    const productSelect = document.getElementById("productCategorySelect");
+    const viewFilter = document.getElementById("viewFilter");
     
-    list.innerHTML = `<i class="ri-loader-4-line animate-spin"></i>`;
-    parentSelect.innerHTML = `<option value="">Üst Kategori Yok</option>`;
-    productSelect.innerHTML = `<option value="">Kategori Seçin</option>`;
-
-    const snap = await getDocs(collection(db, "homeCategories"));
     list.innerHTML = "";
-    snap.forEach(docSnap => {
-        const d = docSnap.data();
-        allAdminCategories[d.name] = { id: docSnap.id, ...d };
+    select.innerHTML = '<option value="">Kategori Seçin</option>';
+    parentSelect.innerHTML = '<option value="">Üst Kategori Yok</option>';
+    viewFilter.innerHTML = '<option value="all">Tüm Ürünleri Göster</option>';
+    
+    const snap = await getDocs(collection(db, "homeCategories"));
+    allAdminCategories = [];
+    snap.forEach(dDoc => {
+        const d = dDoc.data();
+        allAdminCategories.push({ id: dDoc.id, ...d });
         
-        const el = document.createElement("div");
-        el.className = "custom-card p-4 flex items-center justify-between";
-        el.innerHTML = `
-            <div class="flex items-center gap-4">
-                <img src="${d.image || 'https://placehold.co/40x40?text=?'}" class="w-10 h-10 rounded-lg object-cover">
-                <div>
-                    <div class="font-bold text-sm">${d.parent ? '<span class="text-slate-400">'+d.parent+' > </span>' : ''}${d.name}</div>
-                </div>
+        const div = document.createElement("div");
+        div.className = "custom-card p-4 flex items-center justify-between";
+        div.innerHTML = `
+            <div class="flex items-center gap-3">
+                <img src="${d.image || ''}" class="w-8 h-8 rounded-lg object-cover">
+                <span class="text-xs font-bold">${d.parent ? d.parent + ' > ' : ''}${d.name}</span>
             </div>
-            <div class="flex gap-2">
-                <button onclick="editCategory('${docSnap.id}')" class="p-2 bg-slate-50 text-slate-400 hover:text-primary rounded-lg transition-all"><i class="ri-edit-line"></i></button>
-                <button class="del-cat p-2 bg-slate-50 text-slate-400 hover:text-red-500 rounded-lg transition-all" data-id="${docSnap.id}"><i class="ri-delete-bin-line"></i></button>
-            </div>
+            <button onclick="deleteCategory('${dDoc.id}')" class="text-red-500"><i class="ri-delete-bin-line"></i></button>
         `;
-        el.querySelector(".del-cat").onclick = async () => {
-            if(confirm("Bu kategoriyi silmek istediğinize emin misiniz?")) {
-                await deleteDoc(doc(db, "homeCategories", docSnap.id));
-                loadCategories();
-            }
-        };
-        list.appendChild(el);
-
+        list.appendChild(div);
+        
+        select.innerHTML += `<option value="${d.name}">${d.name}</option>`;
         parentSelect.innerHTML += `<option value="${d.name}">${d.name}</option>`;
-        productSelect.innerHTML += `<option value="${d.name}">${d.name}</option>`;
+        viewFilter.innerHTML += `<option value="${d.name}">${d.name}</option>`;
     });
 }
 
@@ -508,58 +314,23 @@ document.getElementById("addCategoryBtn").onclick = async () => {
     const image = document.getElementById("categoryImage").value.trim();
     if(!name) return;
     await addDoc(collection(db, "homeCategories"), { name, parent, image, createdAt: new Date() });
-    document.getElementById("categoryName").value = "";
+    showMsg("Kategori kaydedildi!");
     loadCategories();
-    showMsg("Kategori eklendi.", false);
 };
+window.deleteCategory = async (id) => { await deleteDoc(doc(db, "homeCategories", id)); loadCategories(); };
 
-window.editCategory = (id) => {
-    const cat = Object.values(allAdminCategories).find(c => c.id === id);
-    if(!cat) return;
-    document.getElementById("categoryName").value = cat.name;
-    document.getElementById("parentCategory").value = cat.parent || "";
-    document.getElementById("categoryImage").value = cat.image || "";
-    document.getElementById("editingCategoryId").value = id;
-    document.getElementById("editingCategoryNameDisplay").textContent = cat.name;
-    
-    document.getElementById("categoryEditingStatus").classList.remove("hidden");
-    document.getElementById("addCategoryBtn").classList.add("hidden");
-    document.getElementById("updateCategoryBtn").classList.remove("hidden");
-    document.getElementById("cancelCategoryEditBtn").classList.remove("hidden");
+// --- Product Logic ---
+window.resetProductForm = () => {
+    const fields = ["productName", "productPrice", "productOldPrice", "productImage", "productVideo", "productDescription", "editingProductId"];
+    fields.forEach(f => document.getElementById(f).value = "");
+    document.getElementById("productCategorySelect").value = "";
+    document.getElementById("productActive").checked = true;
+    productVariants = [];
+    renderVariants();
+    document.getElementById("editingStatus").classList.add("hidden");
+    document.getElementById("addProductBtn").classList.remove("hidden");
+    document.getElementById("updateProductBtn").classList.add("hidden");
 };
-
-document.getElementById("cancelCategoryEditBtn").onclick = () => {
-    document.getElementById("categoryEditingStatus").classList.add("hidden");
-    document.getElementById("addCategoryBtn").classList.remove("hidden");
-    document.getElementById("updateCategoryBtn").classList.add("hidden");
-    document.getElementById("cancelCategoryEditBtn").classList.add("hidden");
-    document.getElementById("categoryName").value = "";
-};
-
-document.getElementById("updateCategoryBtn").onclick = async () => {
-    const id = document.getElementById("editingCategoryId").value;
-    const name = document.getElementById("categoryName").value.trim();
-    const parent = document.getElementById("parentCategory").value || null;
-    const image = document.getElementById("categoryImage").value.trim();
-    await updateDoc(doc(db, "homeCategories", id), { name, parent, image });
-    document.getElementById("cancelCategoryEditBtn").click();
-    loadCategories();
-    showMsg("Kategori güncellendi.", false);
-};
-
-// --- PRODUCT LOGIC ---
-const extraImagesContainer = document.getElementById("extraImagesContainer");
-document.getElementById("addExtraImageBtn").onclick = () => addExtraImageInput();
-
-function addExtraImageInput(val = "") {
-    const div = document.createElement("div");
-    div.className = "flex gap-2";
-    div.innerHTML = `
-        <input type="url" class="form-input flex-1 extra-img-url" value="${val}" placeholder="Resim URL">
-        <button class="text-red-500 p-2" onclick="this.parentElement.remove()"><i class="ri-close-line"></i></button>
-    `;
-    extraImagesContainer.appendChild(div);
-}
 
 document.getElementById("addVariantBtn").onclick = () => {
     const name = document.getElementById("variantName").value.trim();
@@ -573,118 +344,107 @@ document.getElementById("addVariantBtn").onclick = () => {
 
 function renderVariants() {
     const list = document.getElementById("variantList");
-    const msg = document.getElementById("no-variants-msg");
     list.innerHTML = "";
-    if(productVariants.length === 0) { list.appendChild(msg); return; }
     productVariants.forEach((v, idx) => {
-        const badge = document.createElement("div");
-        badge.className = "bg-primary/10 text-primary px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-2";
-        badge.innerHTML = `${v.name} (+${v.price_offset} ₺) <i class="ri-close-circle-fill cursor-pointer" onclick="removeVariant(${idx})"></i>`;
-        list.appendChild(badge);
+        const div = document.createElement("div");
+        div.className = "bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-[10px] font-black flex items-center gap-2";
+        div.innerHTML = `${v.name.toUpperCase()} (+${v.price_offset}₺) <i class="ri-close-line cursor-pointer" onclick="removeVar(${idx})"></i>`;
+        list.appendChild(div);
     });
 }
-window.removeVariant = (idx) => { productVariants.splice(idx, 1); renderVariants(); };
-
-document.getElementById("productImage").oninput = (e) => {
-    document.getElementById("productImagePreview").src = e.target.value || '';
-};
+window.removeVar = (idx) => { productVariants.splice(idx, 1); renderVariants(); };
 
 document.getElementById("addProductBtn").onclick = async () => {
     const name = document.getElementById("productName").value.trim();
     const price = parseFloat(document.getElementById("productPrice").value);
-    const old_price = parseFloat(document.getElementById("productOldPrice").value) || null;
     const category = document.getElementById("productCategorySelect").value;
     const image = document.getElementById("productImage").value.trim();
-    const video = document.getElementById("productVideo").value.trim();
-    const description = document.getElementById("productDescription").value.trim();
-    const active = document.getElementById("productActive").checked;
-    const extraImages = [...document.querySelectorAll(".extra-img-url")].map(i => i.value).filter(v => v);
+    
+    if(!name || isNaN(price) || !category || !image) return showMsg("Zorunlu alanları doldurun", true);
 
-    if(!name || !price || !category || !image) { showMsg("Eksik alanları doldurun.", true); return; }
-
-    try {
-        await addDoc(collection(db, "homeProducts"), {
-            name, price, old_price, category, image, video, description, active, extraImages, variants: productVariants, createdAt: new Date()
-        });
-        showMsg("Ürün başarıyla yayınlandı!", false);
-        resetProductForm();
-        loadProducts();
-        updateStats();
-    } catch(e) { showMsg(e.message); }
+    const data = {
+        name, price, 
+        old_price: parseFloat(document.getElementById("productOldPrice").value) || null,
+        category, image,
+        video: document.getElementById("productVideo").value.trim(),
+        description: document.getElementById("productDescription").value.trim(),
+        active: document.getElementById("productActive").checked,
+        variants: productVariants,
+        createdAt: new Date()
+    };
+    
+    await addDoc(collection(db, "homeProducts"), data);
+    showMsg("Ürün yayınlandı!");
+    resetProductForm();
+    loadProducts();
 };
 
-function resetProductForm() {
-    document.getElementById("productName").value = "";
-    document.getElementById("productPrice").value = "";
-    document.getElementById("productOldPrice").value = "";
-    document.getElementById("productCategorySelect").value = "";
-    document.getElementById("productImage").value = "";
-    document.getElementById("productVideo").value = "";
-    document.getElementById("productDescription").value = "";
-    document.getElementById("productActive").checked = false;
-    extraImagesContainer.innerHTML = "";
-    productVariants = [];
-    renderVariants();
-    document.getElementById("productImagePreview").src = "";
-    document.getElementById("editingProductId").value = "";
-    document.getElementById("editingStatus").classList.add("hidden");
-    document.getElementById("addProductBtn").classList.remove("hidden");
-    document.getElementById("updateProductBtn").classList.add("hidden");
-    document.getElementById("cancelEditBtn").classList.add("hidden");
-}
-
-document.getElementById("cancelEditBtn").onclick = resetProductForm;
-
 async function loadProducts() {
+    const filter = document.getElementById("viewFilter").value;
     const list = document.getElementById("productList");
-    list.innerHTML = `<div class="p-10 text-center col-span-3 text-slate-400"><i class="ri-loader-4-line animate-spin text-4xl"></i></div>`;
+    list.innerHTML = `<i class="ri-loader-4-line animate-spin"></i>`;
+    
     const snap = await getDocs(collection(db, "homeProducts"));
     list.innerHTML = "";
     currentProducts = [];
-    snap.forEach(docSnap => {
-        const d = docSnap.data();
-        currentProducts.push({ id: docSnap.id, ...d });
+    
+    snap.forEach(dDoc => {
+        const d = dDoc.data();
+        currentProducts.push({ id: dDoc.id, ...d });
+        
+        if(filter !== "all" && d.category !== filter) return;
+
         const div = document.createElement("div");
-        div.className = "custom-card overflow-hidden";
+        div.className = "custom-card overflow-hidden flex flex-col";
         div.innerHTML = `
-            <div class="h-48 bg-surface relative">
-                <img src="${d.image}" class="w-full h-full object-contain p-4 product-image-preview transition-all">
-                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black ${d.active?'text-green-500':'text-red-500'} border border-slate-100 shadow-sm uppercase">
-                    ${d.active?'AKTİF':'PASİF'}
-                </div>
+            <div class="h-44 bg-surface p-4 relative">
+                <img src="${d.image}" class="w-full h-full object-contain">
+                <div class="absolute top-3 left-3 bg-white/80 px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border border-slate-100">${d.category}</div>
             </div>
-            <div class="p-6">
-                <p class="text-[10px] font-bold text-primary uppercase mb-1">${d.category}</p>
-                <h5 class="font-extrabold text-dark truncate mb-3">${d.name}</h5>
-                <div class="flex items-center gap-3 mb-6">
-                    <span class="text-xl font-black text-dark">${d.price} ₺</span>
-                    ${d.old_price ? `<span class="text-xs text-slate-300 line-through font-bold">${d.old_price} ₺</span>` : ''}
-                </div>
-                <div class="flex gap-2">
-                    <button class="edit-prod flex-1 bg-slate-100 hover:bg-primary hover:text-white p-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2" data-id="${docSnap.id}">
-                        <i class="ri-edit-line"></i> DÜZENLE
-                    </button>
-                    <button class="del-prod bg-slate-100 hover:bg-red-500 hover:text-white p-3 rounded-xl transition-all" data-id="${docSnap.id}">
-                        <i class="ri-delete-bin-line text-lg"></i>
-                    </button>
+            <div class="p-5 flex-1 flex flex-col">
+                <h5 class="font-extrabold text-sm truncate mb-3">${d.name}</h5>
+                <div class="text-xl font-black text-primary mb-6">${d.price} ₺</div>
+                <div class="flex gap-2 mt-auto">
+                    <button onclick="editProduct('${dDoc.id}')" class="btn-icon bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-600"><i class="ri-edit-line"></i></button>
+                    <button onclick="copyProduct('${dDoc.id}')" class="btn-icon bg-slate-100 text-slate-500 hover:bg-green-50 hover:text-green-600"><i class="ri-file-copy-line"></i></button>
+                    <button onclick="deleteProduct('${dDoc.id}')" class="btn-icon bg-slate-100 text-slate-500 hover:bg-red-50 hover:text-red-600"><i class="ri-delete-bin-line"></i></button>
                 </div>
             </div>
         `;
-        div.querySelector(".edit-prod").onclick = () => startEditProduct(docSnap.id);
-        div.querySelector(".del-prod").onclick = async () => {
-            if(confirm("Bu ürün silinecektir. Onaylıyor musunuz?")) {
-                await deleteDoc(doc(db, "homeProducts", docSnap.id));
-                loadProducts();
-                updateStats();
-            }
-        };
         list.appendChild(div);
     });
 }
 
-function startEditProduct(id) {
+document.getElementById("viewFilter").onchange = loadProducts;
+
+window.editProduct = (id) => {
     const p = currentProducts.find(x => x.id === id);
     if(!p) return;
+    
+    fillForm(p);
+    document.getElementById("editingProductId").value = id;
+    document.getElementById("editingProductName").textContent = p.name;
+    document.getElementById("editingStatus").classList.remove("hidden");
+    document.getElementById("addProductBtn").classList.add("hidden");
+    document.getElementById("updateProductBtn").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.copyProduct = (id) => {
+    const p = currentProducts.find(x => x.id === id);
+    if(!p) return;
+    
+    fillForm(p);
+    document.getElementById("productName").value = p.name + " (Kopya)";
+    document.getElementById("editingProductId").value = ""; // ID'yi boş bırak ki yeni ürün olarak kaydetsin
+    document.getElementById("editingStatus").classList.add("hidden");
+    document.getElementById("addProductBtn").classList.remove("hidden");
+    document.getElementById("updateProductBtn").classList.add("hidden");
+    showMsg("Ürün kopyalandı, düzenleyip yayınlayabilirsiniz.");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function fillForm(p) {
     document.getElementById("productName").value = p.name;
     document.getElementById("productPrice").value = p.price;
     document.getElementById("productOldPrice").value = p.old_price || "";
@@ -693,48 +453,31 @@ function startEditProduct(id) {
     document.getElementById("productVideo").value = p.video || "";
     document.getElementById("productDescription").value = p.description || "";
     document.getElementById("productActive").checked = p.active;
-    
-    extraImagesContainer.innerHTML = "";
-    (p.extraImages || []).forEach(url => addExtraImageInput(url));
-    
     productVariants = [...(p.variants || [])];
     renderVariants();
-    
-    document.getElementById("productImagePreview").src = p.image;
-    document.getElementById("editingProductId").value = id;
-    document.getElementById("editingProductName").textContent = p.name;
-    
-    document.getElementById("editingStatus").classList.remove("hidden");
-    document.getElementById("addProductBtn").classList.add("hidden");
-    document.getElementById("updateProductBtn").classList.remove("hidden");
-    document.getElementById("cancelEditBtn").classList.remove("hidden");
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 document.getElementById("updateProductBtn").onclick = async () => {
     const id = document.getElementById("editingProductId").value;
-    const name = document.getElementById("productName").value.trim();
-    const price = parseFloat(document.getElementById("productPrice").value);
-    const old_price = parseFloat(document.getElementById("productOldPrice").value) || null;
-    const category = document.getElementById("productCategorySelect").value;
-    const image = document.getElementById("productImage").value.trim();
-    const video = document.getElementById("productVideo").value.trim();
-    const description = document.getElementById("productDescription").value.trim();
-    const active = document.getElementById("productActive").checked;
-    const extraImages = [...document.querySelectorAll(".extra-img-url")].map(i => i.value).filter(v => v);
-
-    await updateDoc(doc(db, "homeProducts", id), {
-        name, price, old_price, category, image, video, description, active, extraImages, variants: productVariants
-    });
-    
-    showMsg("Ürün başarıyla güncellendi.", false);
+    const data = {
+        name: document.getElementById("productName").value.trim(),
+        price: parseFloat(document.getElementById("productPrice").value),
+        old_price: parseFloat(document.getElementById("productOldPrice").value) || null,
+        category: document.getElementById("productCategorySelect").value,
+        image: document.getElementById("productImage").value.trim(),
+        video: document.getElementById("productVideo").value.trim(),
+        description: document.getElementById("productDescription").value.trim(),
+        active: document.getElementById("productActive").checked,
+        variants: productVariants,
+        updatedAt: new Date()
+    };
+    await updateDoc(doc(db, "homeProducts", id), data);
+    showMsg("Güncellendi!");
     resetProductForm();
     loadProducts();
 };
 
-document.getElementById("refreshProductsBtn").onclick = loadProducts;
-document.getElementById("refreshBannerBtn").onclick = loadBanners;
+window.deleteProduct = async (id) => { if(confirm("Onay?")) { await deleteDoc(doc(db, "homeProducts", id)); loadProducts(); } };
 
 </script>
 </body>
