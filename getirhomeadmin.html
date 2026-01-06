@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>LUXE Admin | Modüler Ürün Yönetimi</title>
+    <title>LUXE Admin | Getir Home Yönetim</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -42,141 +42,135 @@
             <nav class="space-y-1">
                 <button onclick="activateTab('banner')" id="btnBanner" class="sidebar-link active flex items-center gap-3 w-full p-4 font-bold text-slate-500 rounded-2xl transition-all"><i class="ri-image-line text-lg"></i> Bannerlar</button>
                 <button onclick="activateTab('category')" id="btnCategory" class="sidebar-link flex items-center gap-3 w-full p-4 font-bold text-slate-500 rounded-2xl transition-all"><i class="ri-folders-line text-lg"></i> Kategoriler</button>
-                <button onclick="activateTab('product')" id="btnProduct" class="sidebar-link flex items-center gap-3 w-full p-4 font-bold text-slate-500 rounded-2xl transition-all"><i class="ri-sofa-line text-lg"></i> Ürün Modülatörü</button>
+                <button onclick="activateTab('product')" id="btnProduct" class="sidebar-link flex items-center gap-3 w-full p-4 font-bold text-slate-500 rounded-2xl transition-all"><i class="ri-sofa-line text-lg"></i> Ürün Yönetimi</button>
                 <div class="pt-20">
-                    <div id="admin-email" class="bg-surface p-4 rounded-xl text-[10px] font-black text-slate-400 uppercase mb-4 border border-slate-100">...</div>
+                    <div id="admin-email" class="bg-surface p-4 rounded-xl text-[10px] font-black text-slate-400 uppercase mb-4 border border-slate-100">Yükleniyor...</div>
                     <button id="logoutBtn" class="flex items-center gap-3 w-full p-4 font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-all"><i class="ri-logout-circle-line text-lg"></i> Güvenli Çıkış</button>
                 </div>
             </nav>
         </div>
     </aside>
 
-    <!-- CONTENT -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 lg:ml-72 p-6 md:p-12">
         <header id="top-nav" class="flex items-center justify-between mb-10 hidden">
-            <h2 id="pageTitle" class="text-3xl font-black text-dark tracking-tighter">Modüler Ürünler</h2>
+            <h2 id="pageTitle" class="text-3xl font-black text-dark tracking-tighter">Panel</h2>
             <div class="bg-primary/5 p-2 px-4 rounded-full border border-primary/10 flex items-center gap-2">
                 <i class="ri-checkbox-circle-fill text-primary"></i>
                 <span class="text-[10px] font-black uppercase text-primary">Canlı Veritabanı Aktif</span>
             </div>
         </header>
 
+        <!-- LOGIN SCREEN -->
         <section id="login-screen" class="min-h-[80vh] flex items-center justify-center hidden">
             <div class="custom-card p-12 max-w-md w-full text-center">
                 <div class="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8"><i class="ri-shield-keyhole-line"></i></div>
-                <h2 class="text-2xl font-black mb-8 uppercase tracking-tighter">Sistem Girişi</h2>
+                <h2 class="text-2xl font-black mb-8 uppercase tracking-tighter">Admin Girişi</h2>
                 <button id="googleSignIn" class="w-full bg-dark text-white p-4 rounded-2xl flex items-center justify-center gap-4 font-bold hover:bg-black transition-all shadow-xl shadow-dark/20"><i class="ri-google-fill text-xl"></i> Google Admin</button>
             </div>
         </section>
 
         <div id="admin-panel" class="hidden">
-            <!-- BANNER VE KATEGORİ BÖLÜMLERİ (Önceki Turn'de Tamamlandı, Aynı Kaldı) -->
-            <section id="sectionBanner" class="space-y-6 animate-in fade-in duration-500">
+            <!-- SECTION BANNER -->
+            <section id="sectionBanner" class="space-y-6">
                 <div class="custom-card p-8">
-                    <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">Banner Tasarımı</h3>
+                    <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">Banner Ekle</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input id="bannerUrl" placeholder="Görsel URL" class="form-input md:col-span-2" />
                         <input id="bannerTitle" placeholder="Başlık" class="form-input" />
                         <input id="bannerDescription" placeholder="Alt Metin" class="form-input" />
-                        <button id="addBannerBtn" class="bg-primary text-white p-4 rounded-xl font-bold">Banner Yayınla</button>
+                        <button id="addBannerBtn" class="bg-primary text-white p-4 rounded-xl font-bold">Yayınla</button>
                     </div>
                 </div>
                 <div id="bannerList" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
             </section>
 
-            <section id="sectionCategory" class="hidden space-y-6 animate-in fade-in duration-500">
+            <!-- SECTION CATEGORY -->
+            <section id="sectionCategory" class="hidden space-y-6">
                 <div class="custom-card p-8 border-b-4 border-primary">
                     <div id="catEditingStatus" class="bg-secondary/20 p-4 rounded-xl mb-6 text-xs font-bold hidden flex items-center justify-between">
                         <span>DÜZENLENİYOR: <span id="editingCatName"></span></span>
                         <input type="hidden" id="editingCatId">
-                        <button onclick="resetCategoryForm()" class="text-red-500">İPTAL</button>
+                        <button onclick="resetCategoryForm()" class="text-red-500 font-bold">İPTAL</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input id="categoryName" placeholder="Kategori Adı" class="form-input" />
                         <select id="parentCategory" class="form-input"><option value="">Üst Kategori Yok</option></select>
-                        <input id="categoryImage" placeholder="Kategori İkon URL" class="form-input md:col-span-2" />
-                        <button id="addCategoryBtn" class="bg-primary text-white p-4 rounded-xl font-bold md:col-span-2">Kategoriyi Kaydet</button>
-                        <button id="updateCategoryBtn" class="bg-secondary text-dark p-4 rounded-xl font-bold md:col-span-2 hidden">Kategoriyi Güncelle</button>
+                        <input id="categoryImage" placeholder="İkon URL" class="form-input md:col-span-2" />
+                        <button id="addCategoryBtn" class="bg-primary text-white p-4 rounded-xl font-bold md:col-span-2">Kaydet</button>
+                        <button id="updateCategoryBtn" class="bg-secondary text-dark p-4 rounded-xl font-bold md:col-span-2 hidden">Güncelle</button>
                     </div>
                 </div>
                 <div id="categoryList" class="grid grid-cols-1 gap-3"></div>
             </section>
 
-            <!-- PRODUCT SECTION (YENİ MODÜLER YAPI) -->
-            <section id="sectionProduct" class="hidden space-y-8 animate-in fade-in duration-500">
+            <!-- SECTION PRODUCT -->
+            <section id="sectionProduct" class="hidden space-y-8">
                 <div class="custom-card p-8 border-t-4 border-primary">
                     <div id="editingStatus" class="bg-secondary/20 p-4 rounded-xl mb-8 text-[10px] font-black hidden flex items-center justify-between uppercase">
                         <span>Düzenlenen Ürün: <span id="editingProductName" class="text-primary"></span></span>
                         <input type="hidden" id="editingProductId">
-                        <button onclick="resetProductForm()" class="text-red-500">İşlemi İptal Et</button>
+                        <button onclick="resetProductForm()" class="text-red-500 font-bold underline">İŞLEMİ İPTAL ET</button>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <!-- Temel Bilgiler -->
                         <div class="md:col-span-2 space-y-4">
-                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-2">Genel Bilgiler</label>
-                            <input id="productName" placeholder="Ürün Adı (Örn: Chester Koltuk Takımı)" class="form-input" />
-                            <textarea id="productDescription" placeholder="Ürün Tanıtım Yazısı" class="form-input h-24"></textarea>
+                            <input id="productName" placeholder="Ürün Adı" class="form-input" />
+                            <textarea id="productDescription" placeholder="Ürün Açıklaması" class="form-input h-24"></textarea>
                             <div class="grid grid-cols-2 gap-4">
-                                <input id="productPrice" type="number" placeholder="Başlangıç Fiyatı (₺)" class="form-input font-bold" />
+                                <input id="productPrice" type="number" placeholder="Fiyat (₺)" class="form-input font-bold" />
                                 <input id="productOldPrice" type="number" placeholder="Eski Fiyat (₺)" class="form-input" />
                             </div>
                         </div>
 
-                        <!-- Kategori ve Resim -->
                         <div class="md:col-span-2 space-y-4">
-                            <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-2">Kategori ve Görsel</label>
-                            <div class="flex gap-2">
-                                <select id="categoryPickList" class="form-input flex-1"></select>
-                                <button id="addCategoryTagBtn" class="bg-dark text-white px-4 rounded-xl text-[10px] font-bold uppercase">EKLE</button>
+                            <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200">
+                                <h5 class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Çoklu Kategori Seçimi</h5>
+                                <div class="flex gap-2 mb-4">
+                                    <select id="categoryPickList" class="form-input flex-1"></select>
+                                    <button id="addCategoryTagBtn" class="bg-dark text-white px-4 rounded-xl text-[10px] font-bold">EKLE</button>
+                                </div>
+                                <div id="selectedCategoriesList" class="flex flex-wrap gap-2"></div>
                             </div>
-                            <div id="selectedCategoriesList" class="flex flex-wrap gap-2 min-h-[40px] p-2 bg-slate-50 rounded-xl border border-dashed"></div>
-                            <input id="productImage" placeholder="Ana Ürün Görsel URL" class="form-input" />
+                            <input id="productImage" placeholder="Ana Görsel URL" class="form-input" />
                         </div>
 
-                        <!-- MODÜLER PARÇALAR (ALT PARÇALAR) -->
+                        <!-- MODÜLER PARÇALAR -->
                         <div class="md:col-span-2 bg-slate-50 p-6 rounded-3xl border border-slate-200">
-                            <h5 class="text-[10px] font-black uppercase text-slate-500 mb-4 flex items-center gap-2"><i class="ri-stack-line"></i> Takım Parçaları (Modüller)</h5>
+                            <h5 class="text-[10px] font-black uppercase text-slate-500 mb-4">Takım Parçaları</h5>
                             <div class="flex gap-2 mb-4">
-                                <input id="partName" placeholder="Parça Adı (Örn: 3'lü Koltuk)" class="form-input" />
+                                <input id="partName" placeholder="Parça" class="form-input" />
                                 <input id="partPrice" type="number" placeholder="+ Fark" class="form-input w-24" />
                                 <button id="addPartBtn" class="bg-primary text-white px-4 rounded-xl"><i class="ri-add-line"></i></button>
                             </div>
                             <div id="partList" class="space-y-2"></div>
                         </div>
 
-                        <!-- GENEL ÖZELLİKLER (RENK/KUMAŞ) -->
+                        <!-- GENEL ÖZELLİKLER -->
                         <div class="md:col-span-2 bg-slate-50 p-6 rounded-3xl border border-slate-200">
-                            <h5 class="text-[10px] font-black uppercase text-slate-500 mb-4 flex items-center gap-2"><i class="ri-equalizer-line"></i> Ortak Özellikler (Renk/Kumaş)</h5>
+                            <h5 class="text-[10px] font-black uppercase text-slate-500 mb-4">Ortak Özellikler</h5>
                             <div class="flex gap-2 mb-4">
-                                <input id="attrType" placeholder="Özellik (Örn: Kumaş Türü)" class="form-input" />
-                                <input id="attrValue" placeholder="Değer (Örn: Kadife)" class="form-input" />
+                                <input id="attrType" placeholder="Örn: Renk" class="form-input" />
+                                <input id="attrValue" placeholder="Örn: Gri" class="form-input" />
                                 <button id="addAttrBtn" class="bg-primary text-white px-4 rounded-xl"><i class="ri-add-line"></i></button>
                             </div>
                             <div id="attrList" class="space-y-2"></div>
                         </div>
 
-                        <div class="md:col-span-4 flex items-center gap-4 bg-primary/5 p-4 rounded-2xl border border-primary/10">
-                            <input id="productActive" type="checkbox" checked class="w-6 h-6 accent-primary cursor-pointer">
-                            <label class="text-xs font-bold text-primary uppercase tracking-widest">Bu ürün web sitesinde satışa hazır.</label>
-                        </div>
-
-                        <button id="addProductBtn" class="md:col-span-2 bg-primary text-white p-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:scale-[1.01] transition-all">Ürünü Kaydet ve Yayınla</button>
-                        <button id="updateProductBtn" class="md:col-span-2 bg-secondary text-dark p-5 rounded-2xl font-black uppercase tracking-[0.2em] hidden">Değişiklikleri Güncelle</button>
+                        <button id="addProductBtn" class="md:col-span-2 bg-primary text-white p-5 rounded-2xl font-black uppercase shadow-xl hover:scale-[1.01] transition-all">Yayınla</button>
+                        <button id="updateProductBtn" class="md:col-span-2 bg-secondary text-dark p-5 rounded-2xl font-black uppercase hidden">Güncelle</button>
                     </div>
                 </div>
 
-                <!-- LİSTELEME VE FİLTRE -->
                 <div class="flex items-center justify-between mb-6">
-                    <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 italic">Envanter Arşivi</h4>
-                    <select id="viewFilter" class="bg-white border border-slate-200 text-[10px] font-black p-3 rounded-xl outline-none uppercase tracking-widest shadow-sm"></select>
+                    <h4 class="text-xs font-black uppercase text-slate-400 italic">Ürün Arşivi</h4>
+                    <select id="viewFilter" class="bg-white border border-slate-200 text-[10px] font-black p-3 rounded-xl outline-none uppercase shadow-sm"></select>
                 </div>
                 <div id="productList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
             </section>
         </div>
 
-        <!-- BILDIRIMLER -->
-        <div id="msg" class="fixed top-6 right-6 z-[200] max-w-sm"></div>
+        <div id="msg" class="fixed top-6 right-6 z-[200]"></div>
     </main>
 </div>
 
@@ -185,7 +179,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebas
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-// --- CONFIG ---
 const firebaseConfig = {
     apiKey: "AIzaSyCHms5Y5x-KOu3Y43FrfRoljmW_4m3H4yY",
     authDomain: "kibris-6b4f7.firebaseapp.com",
@@ -202,7 +195,6 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const ADMIN_EMAIL = "emirmob09@gmail.com"; 
 
-// --- STATE ---
 let currentProducts = [];
 let allAdminCategories = [];
 let selectedCategories = [];
@@ -215,15 +207,14 @@ window.activateTab = (target) => {
     ["btnBanner", "btnCategory", "btnProduct"].forEach(id => document.getElementById(id).classList.remove("active"));
     document.getElementById("section" + target.charAt(0).toUpperCase() + target.slice(1)).classList.remove("hidden");
     document.getElementById("btn" + target.charAt(0).toUpperCase() + target.slice(1)).classList.add("active");
-    document.getElementById("pageTitle").innerText = target === 'product' ? 'Ürün Modülatörü' : target.toUpperCase();
     if(target === 'category') loadCategories();
     if(target === 'product') { loadCategories(); loadProducts(); }
 };
 
 function showMsg(text, isError=false) {
     const msg = document.getElementById("msg");
-    msg.innerHTML = `<div class="${isError ? 'bg-red-500' : 'bg-primary'} text-white p-5 rounded-2xl shadow-2xl font-black text-[10px] uppercase tracking-widest animate-in slide-in-from-right duration-300">${text}</div>`;
-    setTimeout(() => msg.innerHTML = "", 4000);
+    msg.innerHTML = `<div class="${isError ? 'bg-red-500' : 'bg-primary'} text-white p-5 rounded-2xl shadow-2xl font-black text-[10px] uppercase tracking-widest">${text}</div>`;
+    setTimeout(() => msg.innerHTML = "", 3000);
 }
 
 // --- AUTH ---
@@ -235,77 +226,58 @@ onAuthStateChanged(auth, async (user) => {
     }
     l.classList.add("hidden"); p.classList.remove("hidden"); n.classList.remove("hidden");
     document.getElementById("admin-email").innerText = user.email;
-    activateTab("product");
+    activateTab("banner");
 });
 document.getElementById("googleSignIn").onclick = () => signInWithPopup(auth, provider);
 document.getElementById("logoutBtn").onclick = () => signOut(auth);
 
-// --- MODULAR COMPONENT LOGIC ---
+// --- MODULAR LOGIC ---
 document.getElementById("addPartBtn").onclick = () => {
-    const name = document.getElementById("partName").value.trim();
-    const price = parseFloat(document.getElementById("partPrice").value) || 0;
-    if(!name) return;
-    productSubComponents.push({ name, priceOffset: price });
-    renderSubComponents();
-    document.getElementById("partName").value = "";
-    document.getElementById("partPrice").value = "";
+    const n = document.getElementById("partName").value, p = parseFloat(document.getElementById("partPrice").value) || 0;
+    if(!n) return; productSubComponents.push({ name: n, priceOffset: p });
+    renderSubComponents(); document.getElementById("partName").value = ""; document.getElementById("partPrice").value = "";
 };
-
 function renderSubComponents() {
-    const list = document.getElementById("partList");
-    list.innerHTML = "";
-    productSubComponents.forEach((p, idx) => {
-        const div = document.createElement("div");
-        div.className = "flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 text-[10px] font-bold";
-        div.innerHTML = `<span>${p.name.toUpperCase()} <span class="text-primary ml-2">+${p.priceOffset}₺</span></span> <i class="ri-delete-bin-line text-red-400 cursor-pointer" onclick="removePart(${idx})"></i>`;
-        list.appendChild(div);
+    const l = document.getElementById("partList"); l.innerHTML = "";
+    productSubComponents.forEach((p, i) => {
+        const d = document.createElement("div"); d.className = "flex justify-between bg-white p-2 rounded-xl text-[10px] font-bold border";
+        d.innerHTML = `${p.name} (+${p.priceOffset}₺) <i class="ri-delete-bin-line text-red-400 cursor-pointer" onclick="removePart(${i})"></i>`;
+        l.appendChild(d);
     });
 }
-window.removePart = (idx) => { productSubComponents.splice(idx, 1); renderSubComponents(); };
+window.removePart = (i) => { productSubComponents.splice(i, 1); renderSubComponents(); };
 
-// --- ATTRIBUTE LOGIC ---
 document.getElementById("addAttrBtn").onclick = () => {
-    const type = document.getElementById("attrType").value.trim();
-    const val = document.getElementById("attrValue").value.trim();
-    if(!type || !val) return;
-    productAttributes.push({ type, val });
-    renderAttributes();
-    document.getElementById("attrType").value = "";
-    document.getElementById("attrValue").value = "";
+    const t = document.getElementById("attrType").value, v = document.getElementById("attrValue").value;
+    if(!t || !v) return; productAttributes.push({ type: t, val: v });
+    renderAttributes(); document.getElementById("attrType").value = ""; document.getElementById("attrValue").value = "";
 };
-
 function renderAttributes() {
-    const list = document.getElementById("attrList");
-    list.innerHTML = "";
-    productAttributes.forEach((a, idx) => {
-        const div = document.createElement("div");
-        div.className = "flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 text-[10px] font-bold";
-        div.innerHTML = `<span><span class="text-slate-400">${a.type.toUpperCase()}:</span> ${a.val.toUpperCase()}</span> <i class="ri-delete-bin-line text-red-400 cursor-pointer" onclick="removeAttr(${idx})"></i>`;
-        list.appendChild(div);
+    const l = document.getElementById("attrList"); l.innerHTML = "";
+    productAttributes.forEach((a, i) => {
+        const d = document.createElement("div"); d.className = "flex justify-between bg-white p-2 rounded-xl text-[10px] font-bold border";
+        d.innerHTML = `${a.type}: ${a.val} <i class="ri-delete-bin-line text-red-400 cursor-pointer" onclick="removeAttr(${i})"></i>`;
+        l.appendChild(d);
     });
 }
-window.removeAttr = (idx) => { productAttributes.splice(idx, 1); renderAttributes(); };
+window.removeAttr = (i) => { productAttributes.splice(i, 1); renderAttributes(); };
 
-// --- CATEGORY TAGS (Multi-Selection) ---
 document.getElementById("addCategoryTagBtn").onclick = () => {
-    const val = document.getElementById("categoryPickList").value;
-    if(!val || selectedCategories.includes(val)) return;
-    selectedCategories.push(val);
-    renderCategoryTags();
+    const v = document.getElementById("categoryPickList").value;
+    if(!v || selectedCategories.includes(v)) return;
+    selectedCategories.push(v); renderCategoryTags();
 };
 function renderCategoryTags() {
-    const list = document.getElementById("selectedCategoriesList");
-    list.innerHTML = "";
+    const l = document.getElementById("selectedCategoriesList"); l.innerHTML = "";
     selectedCategories.forEach((c, i) => {
-        const tag = document.createElement("div");
-        tag.className = "tag-blue uppercase";
-        tag.innerHTML = `${c} <i class="ri-close-line cursor-pointer" onclick="removeCat(${i})"></i>`;
-        list.appendChild(tag);
+        const t = document.createElement("div"); t.className = "tag-blue uppercase";
+        t.innerHTML = `${c} <i class="ri-close-line cursor-pointer" onclick="removeCat(${i})"></i>`;
+        l.appendChild(t);
     });
 }
 window.removeCat = (i) => { selectedCategories.splice(i, 1); renderCategoryTags(); };
 
-// --- PRODUCT CORE CRUD ---
+// --- CORE PRODUCT CRUD ---
 window.resetProductForm = () => {
     ["productName", "productDescription", "productPrice", "productOldPrice", "productImage", "editingProductId"].forEach(id => document.getElementById(id).value = "");
     selectedCategories = []; productSubComponents = []; productAttributes = [];
@@ -321,18 +293,12 @@ document.getElementById("addProductBtn").onclick = async () => {
     if(!name || isNaN(price) || selectedCategories.length === 0) return showMsg("Zorunlu alanları doldurun!", true);
 
     await addDoc(collection(db, "homeProducts"), {
-        name, price,
-        old_price: parseFloat(document.getElementById("productOldPrice").value) || null,
-        categories: selectedCategories,
-        subComponents: productSubComponents,
-        attributes: productAttributes,
-        image: document.getElementById("productImage").value.trim(),
-        description: document.getElementById("productDescription").value.trim(),
-        active: document.getElementById("productActive").checked,
-        createdAt: new Date()
+        name, price, old_price: parseFloat(document.getElementById("productOldPrice").value) || null,
+        categories: selectedCategories, subComponents: productSubComponents, attributes: productAttributes,
+        image: document.getElementById("productImage").value.trim(), description: document.getElementById("productDescription").value.trim(),
+        active: true, createdAt: new Date()
     });
-    showMsg("Modüler Ürün Başarıyla Eklendi!");
-    resetProductForm(); loadProducts();
+    showMsg("Ürün Yayınlandı!"); resetProductForm(); loadProducts();
 };
 
 async function loadProducts() {
@@ -344,7 +310,10 @@ async function loadProducts() {
     snap.forEach(dDoc => {
         const d = dDoc.data();
         currentProducts.push({ id: dDoc.id, ...d });
-        if(filter !== "all" && !d.categories.includes(filter)) return;
+
+        // KRİTİK DÜZELTME: Eski verilerde categories yoksa boş dizi kabul et
+        const itemCategories = d.categories || [];
+        if(filter !== "all" && !itemCategories.includes(filter)) return;
 
         const div = document.createElement("div");
         div.className = "custom-card overflow-hidden flex flex-col group hover:border-primary transition-all";
@@ -352,16 +321,12 @@ async function loadProducts() {
             <div class="h-52 bg-slate-50 relative p-6">
                 <img src="${d.image}" class="w-full h-full object-contain group-hover:scale-105 transition-all">
                 <div class="absolute top-4 left-4 flex flex-wrap gap-1 max-w-[200px]">
-                    ${d.categories.map(c => `<span class="tag-purple">${c.toUpperCase()}</span>`).join('')}
+                    ${itemCategories.map(c => `<span class="tag-purple uppercase">${c}</span>`).join('')}
                 </div>
             </div>
             <div class="p-6 flex-1 flex flex-col">
-                <h5 class="font-black text-sm uppercase tracking-tight mb-2">${d.name}</h5>
-                <p class="text-2xl font-black text-primary tracking-tighter mb-4">${d.price} ₺ <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest ml-1">Başlayan Fiyat</span></p>
-                <div class="space-y-1 mb-6">
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">${d.subComponents?.length || 0} Modül Tanımlı</p>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">${d.attributes?.length || 0} Özellik Seçeneği</p>
-                </div>
+                <h5 class="font-black text-sm uppercase mb-2">${d.name}</h5>
+                <p class="text-2xl font-black text-primary mb-4 tracking-tighter">${d.price} ₺</p>
                 <div class="flex gap-2 mt-auto">
                     <button onclick="editProduct('${dDoc.id}')" class="flex-1 bg-slate-100 p-3 rounded-xl font-bold text-[10px] hover:bg-primary hover:text-white transition-all">DÜZENLE</button>
                     <button onclick="copyProduct('${dDoc.id}')" class="bg-slate-100 p-3 rounded-xl text-slate-400 hover:text-green-500"><i class="ri-file-copy-line"></i></button>
@@ -374,21 +339,17 @@ async function loadProducts() {
 }
 
 window.editProduct = (id) => {
-    const p = currentProducts.find(x => x.id === id);
-    if(!p) return;
+    const p = currentProducts.find(x => x.id === id); if(!p) return;
     document.getElementById("productName").value = p.name;
     document.getElementById("productPrice").value = p.price;
     document.getElementById("productOldPrice").value = p.old_price || "";
     document.getElementById("productImage").value = p.image;
     document.getElementById("productDescription").value = p.description || "";
-    document.getElementById("productActive").checked = p.active;
     document.getElementById("editingProductId").value = id;
     document.getElementById("editingProductName").innerText = p.name;
-    
     selectedCategories = [...(p.categories || [])];
     productSubComponents = [...(p.subComponents || [])];
     productAttributes = [...(p.attributes || [])];
-    
     renderCategoryTags(); renderSubComponents(); renderAttributes();
     document.getElementById("editingStatus").classList.remove("hidden");
     document.getElementById("addProductBtn").classList.add("hidden");
@@ -402,66 +363,59 @@ document.getElementById("updateProductBtn").onclick = async () => {
         name: document.getElementById("productName").value.trim(),
         price: parseFloat(document.getElementById("productPrice").value),
         old_price: parseFloat(document.getElementById("productOldPrice").value) || null,
-        categories: selectedCategories,
-        subComponents: productSubComponents,
-        attributes: productAttributes,
-        image: document.getElementById("productImage").value.trim(),
-        description: document.getElementById("productDescription").value.trim(),
-        active: document.getElementById("productActive").checked,
+        categories: selectedCategories, subComponents: productSubComponents, attributes: productAttributes,
+        image: document.getElementById("productImage").value.trim(), description: document.getElementById("productDescription").value.trim(),
         updatedAt: new Date()
     });
-    showMsg("Sistem Güncellendi!");
-    resetProductForm(); loadProducts();
+    showMsg("Güncellendi!"); resetProductForm(); loadProducts();
 };
 
-// --- CATEGORY CRUD ---
+window.copyProduct = (id) => {
+    const p = currentProducts.find(x => x.id === id); if(!p) return;
+    document.getElementById("productName").value = p.name + " (Kopya)";
+    document.getElementById("productPrice").value = p.price;
+    document.getElementById("productImage").value = p.image;
+    document.getElementById("productDescription").value = p.description;
+    selectedCategories = [...(p.categories || [])];
+    productSubComponents = [...(p.subComponents || [])];
+    productAttributes = [...(p.attributes || [])];
+    renderCategoryTags(); renderSubComponents(); renderAttributes();
+    showMsg("Ürün Kopyalandı! Düzenleyip Yayınlayın.");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// --- CATEGORY LOGIC ---
 async function loadCategories() {
     const list = document.getElementById("categoryList"), pSel = document.getElementById("parentCategory");
-    const pickList = document.getElementById("categoryPickList"), viewFilter = document.getElementById("viewFilter");
+    const pickList = document.getElementById("categoryPickList"), vF = document.getElementById("viewFilter");
     list.innerHTML = ""; pSel.innerHTML = '<option value="">Üst Kategori Yok</option>';
-    pickList.innerHTML = '<option value="">Kategori Seç...</option>';
-    viewFilter.innerHTML = '<option value="all">Tüm Ürünler</option>';
+    pickList.innerHTML = '<option value="">Seç...</option>'; vF.innerHTML = '<option value="all">Tüm Ürünler</option>';
 
     const snap = await getDocs(collection(db, "homeCategories"));
     snap.forEach(dDoc => {
-        const d = dDoc.data();
-        allAdminCategories.push({ id: dDoc.id, ...d });
-        const div = document.createElement("div");
-        div.className = "custom-card p-4 flex items-center justify-between";
-        div.innerHTML = `
-            <div class="flex items-center gap-4">
-                <img src="${d.image || ''}" class="w-10 h-10 rounded-lg object-contain">
-                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">${d.parent || 'ANA KATEGORİ'}</p><h4 class="font-bold text-sm">${d.name}</h4></div>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="editCategory('${dDoc.id}')" class="p-2 bg-slate-50 text-slate-400 hover:text-primary rounded-lg"><i class="ri-edit-line"></i></button>
-                <button onclick="deleteCategory('${dDoc.id}')" class="p-2 bg-slate-50 text-slate-400 hover:text-red-500 rounded-lg"><i class="ri-delete-bin-line"></i></button>
-            </div>
-        `;
+        const d = dDoc.data(); allAdminCategories.push({ id: dDoc.id, ...d });
+        const div = document.createElement("div"); div.className = "custom-card p-4 flex items-center justify-between";
+        div.innerHTML = `<div class="flex items-center gap-4"><img src="${d.image || ''}" class="w-10 h-10 rounded-lg object-contain"><div><h4 class="font-bold text-sm">${d.name}</h4></div></div><div class="flex gap-2"><button onclick="editCategory('${dDoc.id}')" class="p-2 bg-slate-50 text-slate-400 hover:text-primary rounded-lg"><i class="ri-edit-line"></i></button><button onclick="deleteCategory('${dDoc.id}')" class="p-2 bg-slate-50 text-slate-400 hover:text-red-500 rounded-lg"><i class="ri-delete-bin-line"></i></button></div>`;
         list.appendChild(div);
         pSel.innerHTML += `<option value="${d.name}">${d.name}</option>`;
         pickList.innerHTML += `<option value="${d.name}">${d.name}</option>`;
-        viewFilter.innerHTML += `<option value="${d.name}">${d.name}</option>`;
+        vF.innerHTML += `<option value="${d.name}">${d.name}</option>`;
     });
 }
 
 document.getElementById("addCategoryBtn").onclick = async () => {
-    const name = document.getElementById("categoryName").value.trim();
-    if(!name) return;
-    await addDoc(collection(db, "homeCategories"), { 
-        name, parent: document.getElementById("parentCategory").value || null, image: document.getElementById("categoryImage").value.trim(), createdAt: new Date() 
-    });
-    showMsg("Kategori Yayına Alındı!");
-    document.getElementById("categoryName").value = ""; loadCategories();
+    const n = document.getElementById("categoryName").value.trim(); if(!n) return;
+    await addDoc(collection(db, "homeCategories"), { name: n, parent: document.getElementById("parentCategory").value || null, image: document.getElementById("categoryImage").value.trim(), createdAt: new Date() });
+    showMsg("Kategori Kaydedildi"); loadCategories();
 };
 
 window.editCategory = (id) => {
-    const cat = allAdminCategories.find(c => c.id === id);
-    if(!cat) return;
+    const cat = allAdminCategories.find(c => c.id === id); if(!cat) return;
     document.getElementById("categoryName").value = cat.name;
     document.getElementById("parentCategory").value = cat.parent || "";
     document.getElementById("categoryImage").value = cat.image || "";
     document.getElementById("editingCatId").value = id;
+    document.getElementById("editingCatName").textContent = cat.name;
     document.getElementById("catEditingStatus").classList.remove("hidden");
     document.getElementById("addCategoryBtn").classList.add("hidden");
     document.getElementById("updateCategoryBtn").classList.remove("hidden");
@@ -469,13 +423,8 @@ window.editCategory = (id) => {
 
 document.getElementById("updateCategoryBtn").onclick = async () => {
     const id = document.getElementById("editingCatId").value;
-    await updateDoc(doc(db, "homeCategories", id), {
-        name: document.getElementById("categoryName").value.trim(),
-        parent: document.getElementById("parentCategory").value || null,
-        image: document.getElementById("categoryImage").value.trim()
-    });
-    showMsg("Kategori Güncellendi");
-    resetCategoryForm(); loadCategories();
+    await updateDoc(doc(db, "homeCategories", id), { name: document.getElementById("categoryName").value.trim(), parent: document.getElementById("parentCategory").value || null, image: document.getElementById("categoryImage").value.trim() });
+    showMsg("Güncellendi"); resetCategoryForm(); loadCategories();
 };
 
 window.resetCategoryForm = () => {
@@ -485,28 +434,29 @@ window.resetCategoryForm = () => {
     document.getElementById("updateCategoryBtn").classList.add("hidden");
 };
 
-// --- DELETE & COPY ---
+// --- DELETE ---
 window.deleteProduct = async (id) => { if(confirm("Silinsin mi?")) { await deleteDoc(doc(db, "homeProducts", id)); loadProducts(); } };
 window.deleteCategory = async (id) => { if(confirm("Silinsin mi?")) { await deleteDoc(doc(db, "homeCategories", id)); loadCategories(); } };
-window.copyProduct = (id) => { 
-    const p = currentProducts.find(x => x.id === id);
-    if(!p) return;
-    fillFormForCopy(p);
-    showMsg("Ürün Kopyalandı! Düzenleyip Yayınlayın.");
+document.getElementById("viewFilter").onchange = loadProducts;
+
+// Banner Logic (Simplified)
+async function loadBanners() {
+    const l = document.getElementById("bannerList"); l.innerHTML = "";
+    const snap = await getDocs(collection(db, "homeBanners"));
+    snap.forEach(docSnap => {
+        const d = docSnap.data(); const div = document.createElement("div"); div.className = "custom-card p-4";
+        div.innerHTML = `<img src="${d.url}" class="h-32 w-full object-cover rounded-xl mb-2"><h5 class="font-bold text-xs truncate">${d.title}</h5><button onclick="deleteBanner('${docSnap.id}')" class="text-red-500 text-[10px] mt-2 font-bold">SİL</button>`;
+        l.appendChild(div);
+    });
+}
+window.deleteBanner = async (id) => { await deleteDoc(doc(db, "homeBanners", id)); loadBanners(); };
+document.getElementById("addBannerBtn").onclick = async () => {
+    const u = document.getElementById("bannerUrl").value, t = document.getElementById("bannerTitle").value;
+    if(!u || !t) return;
+    await addDoc(collection(db, "homeBanners"), { url: u, title: t, description: document.getElementById("bannerDescription").value, createdAt: new Date() });
+    loadBanners();
 };
 
-function fillFormForCopy(p) {
-    document.getElementById("productName").value = p.name + " (Kopya)";
-    document.getElementById("productPrice").value = p.price;
-    document.getElementById("productImage").value = p.image;
-    document.getElementById("productDescription").value = p.description;
-    selectedCategories = [...(p.categories || [])];
-    productSubComponents = [...(p.subComponents || [])];
-    productAttributes = [...(p.attributes || [])];
-    renderCategoryTags(); renderSubComponents(); renderAttributes();
-}
-
-document.getElementById("viewFilter").onchange = loadProducts;
 </script>
 </body>
 </html>
