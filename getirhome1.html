@@ -8,70 +8,33 @@
       gtag('js', new Date());
       gtag('config', 'G-JL9P6BRZTD');
     </script>
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Getir Home - Getir Kıbrıs</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css" rel="stylesheet">
-
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: '#5D3EBC', secondary: '#FFD300' },
-                    fontFamily: { inter: ['Inter', 'sans-serif'] }
-                }
-            }
+            theme: { extend: { colors: { primary: '#5D3EBC', secondary: '#FFD300' }, fontFamily: { inter: ['Inter', 'sans-serif'] } } }
         }
     </script>
-
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overflow-x: hidden; }
-        .category-card {
-            background: white; border-radius: 1.25rem; padding: 1rem;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; transition: all 0.3s ease; border: 1px solid #e5e7eb; cursor: pointer;
-            min-height: 120px;
-        }
+        .category-card { background: white; border-radius: 1.25rem; padding: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: all 0.3s ease; border: 1px solid #e5e7eb; cursor: pointer; min-height: 120px; }
         .category-card:hover { transform: scale(1.03); border-color: #5D3EBC; }
         .category-card img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 0.75rem; }
-
-        .product-card {
-            display: flex; flex-direction: column; height: 100%; background: white;
-            border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease;
-            border: 1px solid #e5e7eb; cursor: pointer; position: relative;
-        }
+        .product-card { display: flex; flex-direction: column; height: 100%; background: white; border-radius: 1rem; padding: 0.75rem; transition: all 0.3s ease; border: 1px solid #e5e7eb; cursor: pointer; position: relative; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-
-        .product-image-container {
-            position: relative; width: 100%; padding-top: 100%; 
-            background-color: #f9fafb; border-radius: 0.75rem; overflow: hidden; margin-bottom: 0.75rem;
-        }
-        .product-image-container img {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: contain; padding: 10px;
-        }
-
+        .product-image-container { position: relative; width: 100%; padding-top: 100%; background-color: #f9fafb; border-radius: 0.75rem; overflow: hidden; margin-bottom: 0.75rem; }
+        .product-image-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; padding: 10px; }
         .banner-wrapper { width: 100%; margin-bottom: 1.5rem; position: relative; }
-        .banner-scroll {
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-            scrollbar-width: none; -ms-overflow-style: none; border-radius: 1.5rem;
-        }
-        .banner-item {
-            flex: 0 0 100%; scroll-snap-align: start; position: relative;
-            aspect-ratio: 16 / 6; overflow: hidden;
-        }
-
-        .component-selector {
-            border: 2px solid #f3f4f6; border-radius: 12px; padding: 12px;
-            transition: 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-        }
+        .banner-scroll { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; border-radius: 1.5rem; }
+        .banner-item { flex: 0 0 100%; scroll-snap-align: start; position: relative; aspect-ratio: 16 / 6; overflow: hidden; }
+        .component-selector { border: 2px solid #f3f4f6; border-radius: 12px; padding: 12px; transition: 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .component-selector.active { border-color: #5D3EBC; background-color: #5D3EBC10; }
-
         .badge-cat { font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: #5D3EBC10; color: #5D3EBC; text-transform: uppercase; }
+        .no-products { padding: 40px; text-align: center; color: #94a3b8; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -110,7 +73,7 @@
 <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8">
     <aside id="main-sidebar" class="hidden lg:block w-72 flex-shrink-0">
         <div class="bg-white rounded-2xl shadow-sm border p-4 sticky top-28">
-            <h2 class="font-extrabold text-gray-800 mb-4 pb-2 border-b uppercase text-xs tracking-widest">Kategoriler</h2>
+            <h2 class="font-extrabold text-gray-800 mb-4 pb-2 border-b uppercase text-[10px] tracking-widest">Mağaza Menüsü</h2>
             <nav id="desktop-menu" class="space-y-1"></nav>
         </div>
     </aside>
@@ -127,6 +90,12 @@
                 <div id="banner-scroll-container" class="banner-scroll"></div>
             </div>
 
+            <!-- POPÜLER ÜRÜNLER (Varsayılan Görünüm) -->
+            <div id="popular-section" class="mb-10">
+                <h2 class="text-xl font-extrabold text-gray-800 mb-4">Popüler Ürünler</h2>
+                <div id="popular-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+            </div>
+
             <div id="category-showcase" class="mb-8">
                 <div class="flex items-center gap-2 mb-4">
                     <button id="back-to-parent" class="hidden text-primary" onclick="goUpCategory()"><i class="ri-arrow-left-s-line ri-2x"></i></button>
@@ -135,8 +104,9 @@
                 <div id="category-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
             </div>
 
+            <!-- ÜRÜN LİSTELEME -->
             <div id="product-section" class="hidden">
-                <h2 id="section-title" class="text-xl font-extrabold text-gray-800 mb-4 tracking-tight">Ürünler</h2>
+                <h2 id="section-title" class="text-xl font-extrabold text-gray-800 mb-4">Ürünler</h2>
                 <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
             </div>
         </div>
@@ -150,8 +120,6 @@
         </div>
     </section>
 </main>
-
-<div id="toast" class="fixed bottom-6 right-6 z-[100] px-6 py-3 rounded-2xl text-white font-bold shadow-2xl hidden"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -175,24 +143,32 @@
     let allProducts = [], allCategories = [], currentUserId = null;
     let activeCategoryParent = null;
 
-    // --- DATA LOADING ---
-    async function loadInitialData() {
-        const [pSnap, cSnap, bSnap] = await Promise.all([
-            getDocs(collection(db, "homeProducts")),
-            getDocs(collection(db, "homeCategories")),
-            getDocs(collection(db, "homeBanners"))
-        ]);
+    async function loadData() {
+        try {
+            const [pSnap, cSnap, bSnap] = await Promise.all([
+                getDocs(collection(db, "homeProducts")),
+                getDocs(collection(db, "homeCategories")),
+                getDocs(collection(db, "homeBanners"))
+            ]);
 
-        allProducts = pSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(x => x.active);
-        allCategories = cSnap.docs.map(d => d.data());
-        
-        renderBanners(bSnap.docs.map(d => d.data()));
-        renderSidebar();
-        renderCategoryShowcase(null);
+            // UYUMLULUK KATMANI: Eski 'category' (string) verisini 'categories' (array) yapar
+            allProducts = pSnap.docs.map(d => {
+                const data = d.data();
+                const categories = Array.isArray(data.categories) ? data.categories : (data.category ? [data.category] : []);
+                return { id: d.id, ...data, categories };
+            }).filter(x => x.active);
 
-        // URL check
-        const urlParams = new URLSearchParams(window.location.search);
-        if(urlParams.get('view') === 'detail') handleNavigate('detail', urlParams.get('id'));
+            allCategories = cSnap.docs.map(d => ({id: d.id, ...d.data()}));
+            
+            renderBanners(bSnap.docs.map(d => d.data()));
+            renderSidebar();
+            renderCategoryShowcase(null);
+            renderPopularProducts();
+
+            // URL check for SPA
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('view') === 'detail') handleNavigate('detail', urlParams.get('id'));
+        } catch (e) { console.error("Yükleme hatası:", e); }
     }
 
     function renderBanners(banners) {
@@ -202,11 +178,35 @@
             <div class="banner-item">
                 <img src="${b.url}" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8 text-white">
-                    <h2 class="text-2xl font-bold">${b.title || ''}</h2>
-                    <p class="text-sm opacity-80">${b.description || ''}</p>
+                    <h2 class="text-xl font-bold">${b.title || ''}</h2>
+                    <p class="text-xs opacity-80">${b.description || ''}</p>
                 </div>
             </div>
         `).join('');
+    }
+
+    function renderPopularProducts() {
+        const grid = document.getElementById("popular-grid");
+        // Son eklenen 8 ürünü göster
+        const popular = allProducts.slice(-8).reverse();
+        if(popular.length === 0) { grid.innerHTML = '<p class="no-products col-span-4">Henüz ürün eklenmemiş.</p>'; return; }
+        grid.innerHTML = popular.map(p => productCardTemplate(p)).join('');
+    }
+
+    function productCardTemplate(p) {
+        return `
+            <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
+                <div class="product-image-container"><img src="${p.image}" onerror="this.src='https://placehold.co/400x400?text=Resim+Yok'"></div>
+                <div class="flex flex-wrap gap-1 mb-2">
+                    ${(p.categories || []).slice(0, 1).map(c => `<span class="badge-cat">${c}</span>`).join('')}
+                </div>
+                <h3 class="font-bold text-[11px] text-gray-800 line-clamp-2 h-8 mb-1 uppercase tracking-tighter">${p.name}</h3>
+                <div class="mt-auto">
+                    <div class="text-sm font-black text-primary">${new Intl.NumberFormat('tr-TR').format(p.price)} ₺</div>
+                    <button class="w-full bg-primary/5 text-primary font-bold text-[9px] py-2 rounded-lg mt-2 hover:bg-primary hover:text-white transition-all">İNCELE</button>
+                </div>
+            </div>
+        `;
     }
 
     function renderSidebar() {
@@ -230,19 +230,18 @@
         document.getElementById("mobile-category-list").innerHTML = buildMenu(null);
     }
 
-    // --- NAVIGATION ---
     window.handleCatClick = (e, name, isLeaf) => {
-        e.stopPropagation();
+        if(e) e.stopPropagation();
         if(isLeaf) {
-            document.getElementById("home-view").classList.remove("hidden");
-            document.getElementById("detail-view").classList.add("hidden");
+            document.getElementById("popular-section").classList.add("hidden");
             document.getElementById("category-showcase").classList.add("hidden");
             document.getElementById("product-section").classList.remove("hidden");
             document.getElementById("section-title").innerText = name;
             
-            // MULTI-CATEGORY FILTER: Admin panelinden gelen categories dizisini kontrol eder
             const filtered = allProducts.filter(p => (p.categories || []).includes(name));
-            renderProducts(filtered);
+            const grid = document.getElementById("products-grid");
+            grid.innerHTML = filtered.length > 0 ? filtered.map(p => productCardTemplate(p)).join('') : '<p class="no-products col-span-4">Bu kategoride ürün bulunamadı.</p>';
+            
             if(window.innerWidth < 1024) toggleMobileMenu();
         } else {
             const sub = e.currentTarget.nextElementSibling;
@@ -265,41 +264,22 @@
         grid.innerHTML = items.map(cat => `
             <div class="category-card" onclick="handleCatClick(event, '${cat.name}', ${!allCategories.some(c => c.parent === cat.name)})">
                 <img src="${cat.image || ''}" onerror="this.src='https://placehold.co/100x100?text=${cat.name}'">
-                <span>${cat.name}</span>
+                <span class="text-[11px] font-bold">${cat.name}</span>
             </div>
         `).join('');
     }
 
-    function renderProducts(products) {
-        const grid = document.getElementById("products-grid");
-        grid.innerHTML = products.map(p => `
-            <div class="product-card" onclick="handleNavigate('detail', '${p.id}')">
-                <div class="product-image-container"><img src="${p.image}"></div>
-                <div class="flex flex-wrap gap-1 mb-2">
-                    ${(p.categories || []).slice(0, 2).map(c => `<span class="badge-cat">${c}</span>`).join('')}
-                </div>
-                <h3 class="font-bold text-xs text-gray-800 line-clamp-2 h-8 mb-1 uppercase tracking-tighter leading-tight">${p.name}</h3>
-                <div class="mt-auto">
-                    <div class="text-sm font-black text-primary">${new Intl.NumberFormat('tr-TR').format(p.price)} ₺</div>
-                    <button class="add-btn mt-2 text-[10px] py-1.5" onclick="event.stopPropagation(); handleNavigate('detail', '${p.id}')">İncele</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // --- DETAIL VIEW & MODULAR CALCULATION ---
     window.handleNavigate = (view, id = null) => {
+        const home = document.getElementById("home-view"), detail = document.getElementById("detail-view");
         if(view === 'detail') {
             const p = allProducts.find(x => x.id === id);
             if(!p) return;
-            document.getElementById("home-view").classList.add("hidden");
-            document.getElementById("detail-view").classList.remove("hidden");
+            home.classList.add("hidden"); detail.classList.remove("hidden");
             renderProductDetail(p);
             window.scrollTo(0,0);
             window.history.pushState({}, '', `?view=detail&id=${id}`);
         } else {
-            document.getElementById("detail-view").classList.add("hidden");
-            document.getElementById("home-view").classList.remove("hidden");
+            detail.classList.add("hidden"); home.classList.remove("hidden");
             window.history.pushState({}, '', `index.html`);
         }
     };
@@ -308,108 +288,56 @@
         const container = document.getElementById("product-detail-content");
         container.innerHTML = `
             <div class="bg-white rounded-3xl p-6 shadow-sm border grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div>
-                    <div class="product-image-container mb-4 shadow-inner border rounded-2xl">
-                        <img id="main-detail-img" src="${p.image}" class="p-8">
-                    </div>
-                </div>
+                <div class="product-image-container border rounded-2xl"><img src="${p.image}" class="p-8"></div>
                 <div>
                     <h1 class="text-2xl font-black text-gray-800 mb-2">${p.name}</h1>
                     <div class="text-3xl font-black text-primary mb-6" id="dynamic-price">${new Intl.NumberFormat('tr-TR').format(p.price)} ₺</div>
                     <p class="text-gray-500 text-sm mb-8 leading-relaxed">${p.description || 'Açıklama bulunmuyor.'}</p>
-
-                    <!-- MODÜLLER (TAKIM PARÇALARI) -->
+                    
                     ${p.subComponents?.length > 0 ? `
                         <div class="mb-8">
-                            <h4 class="font-bold text-xs uppercase text-slate-400 mb-4 tracking-widest">Takım Modüllerini Seçin</h4>
-                            <div class="space-y-3" id="modular-parts">
-                                ${p.subComponents.map((comp, idx) => `
-                                    <div class="component-selector" onclick="toggleComponent(this, ${comp.priceOffset})">
-                                        <div class="flex items-center gap-3">
-                                            <i class="ri-checkbox-blank-circle-line text-gray-300 text-xl"></i>
-                                            <span class="font-bold text-sm text-gray-700">${comp.name}</span>
-                                        </div>
+                            <h4 class="font-bold text-[10px] uppercase text-slate-400 mb-4 tracking-widest">Takım Parçalarını Seçin</h4>
+                            <div class="space-y-3">
+                                ${p.subComponents.map(comp => `
+                                    <div class="component-selector" onclick="toggleComp(this, ${comp.priceOffset}, '${p.id}')">
+                                        <span class="font-bold text-sm">${comp.name}</span>
                                         <span class="text-xs font-black text-primary">+${comp.priceOffset} ₺</span>
                                     </div>
                                 `).join('')}
                             </div>
                         </div>
                     ` : ''}
-
-                    <!-- ÖZELLİKLER (RENK/KUMAŞ) -->
-                    ${p.attributes?.length > 0 ? `
-                        <div class="mb-10">
-                             <h4 class="font-bold text-xs uppercase text-slate-400 mb-4 tracking-widest">Genel Özellikler</h4>
-                             <div class="flex flex-wrap gap-2">
-                                ${p.attributes.map(attr => `
-                                    <div class="px-4 py-2 bg-gray-100 rounded-full text-[10px] font-bold text-gray-600">
-                                        ${attr.type}: ${attr.val}
-                                    </div>
-                                `).join('')}
-                             </div>
-                        </div>
-                    ` : ''}
-
-                    <button class="w-full bg-primary text-white py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-all" onclick="addToCart('${p.id}')">Sepete Ekle</button>
+                    
+                    <button class="w-full bg-primary text-white py-4 rounded-2xl font-black text-lg shadow-xl" onclick="addToCart('${p.id}')">Sepete Ekle</button>
                 </div>
             </div>
         `;
     }
 
-    // --- MODULAR PRICE CALC ---
-    let totalPrice = 0;
-    window.toggleComponent = (el, offset) => {
+    window.toggleComp = (el, offset, pid) => {
         el.classList.toggle('active');
-        const icon = el.querySelector('i');
-        icon.className = el.classList.contains('active') ? 'ri-checkbox-circle-fill text-primary text-xl' : 'ri-checkbox-blank-circle-line text-gray-300 text-xl';
-        
-        // Fiyatı güncelle
-        const currentId = new URLSearchParams(window.location.search).get('id');
-        const p = allProducts.find(x => x.id === currentId);
-        let base = parseFloat(p.price);
-        
+        const p = allProducts.find(x => x.id === pid);
+        let total = parseFloat(p.price);
         document.querySelectorAll('.component-selector.active').forEach(item => {
-            // Basitlik için her tıklamada tüm aktifleri topluyoruz
+            const val = parseFloat(item.querySelector('.text-primary').innerText.replace('+',''));
+            total += val;
         });
-        
-        calculateModularPrice(base);
+        document.getElementById('dynamic-price').innerText = new Intl.NumberFormat('tr-TR').format(total) + " ₺";
     };
 
-    function calculateModularPrice(base) {
-        let extra = 0;
-        // Tüm aktif modülleri bul ve fiyatlarını topla
-        const activeOffsets = Array.from(document.querySelectorAll('.component-selector.active')).map(el => {
-            return parseFloat(el.querySelector('.text-primary').innerText.replace('+', '').replace('₺', ''));
-        });
-        extra = activeOffsets.reduce((a, b) => a + b, 0);
-        document.getElementById('dynamic-price').innerText = new Intl.NumberFormat('tr-TR').format(base + extra) + " ₺";
-    }
-
-    // --- CART LOGIC ---
     window.addToCart = async (id) => {
-        if(!currentUserId) { showToast("Giriş yapmalısınız", true); return; }
+        if(!currentUserId) { alert("Lütfen giriş yapın."); return; }
         const p = allProducts.find(x => x.id === id);
-        
-        // Seçilen modülleri al
-        const selectedParts = Array.from(document.querySelectorAll('.component-selector.active')).map(el => el.querySelector('span').innerText);
-        const finalPrice = parseFloat(document.getElementById('dynamic-price').innerText.replace('.', '').replace('₺', ''));
-
+        const finalPrice = parseFloat(document.getElementById('dynamic-price').innerText.replace(/\./g, '').replace(' ₺', ''));
         try {
             await setDoc(doc(db, "users", currentUserId, "cart", id), {
-                userId: currentUserId,
-                productName: p.name,
-                productPrice: finalPrice,
-                selectedParts: selectedParts, // Sepet sayfasında detay göstermek için
-                quantity: 1,
-                image: p.image,
-                addedAt: new Date(),
-                orderMethod: 'service'
+                userId: currentUserId, productName: p.name, productPrice: finalPrice,
+                quantity: 1, image: p.image, addedAt: new Date(), orderMethod: 'service'
             }, { merge: true });
-            showToast("Sepete eklendi!");
-        } catch(e) { showToast("Hata oluştu!", true); }
+            alert("Sepete eklendi!");
+        } catch(e) { alert("Hata!"); }
     };
 
-    // --- AUTH & UI ---
     onAuthStateChanged(auth, user => {
         if(user) {
             currentUserId = user.uid;
@@ -424,26 +352,26 @@
         }
     });
 
-    document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
-    window.handleLogout = () => confirm("Çıkış?") && signOut(auth).then(() => location.reload());
     window.toggleMobileMenu = () => {
         const s = document.getElementById("mobile-sidebar"), o = document.getElementById("sidebar-overlay");
-        if(s.classList.contains("-translate-x-full")) { s.classList.remove("-translate-x-full"); o.classList.remove("hidden"); setTimeout(()=>o.classList.add("opacity-100"),10); }
-        else { s.classList.add("-translate-x-full"); o.classList.remove("opacity-100"); setTimeout(()=>o.classList.add("hidden"),300); }
+        s.classList.toggle("-translate-x-full"); o.classList.toggle("hidden");
+        setTimeout(() => o.classList.toggle("opacity-100"), 10);
     };
-    window.resetAndGoHome = () => { handleNavigate('home'); renderCategoryShowcase(null); };
+
+    window.resetAndGoHome = () => {
+        document.getElementById("search-input").value = "";
+        document.getElementById("popular-section").classList.remove("hidden");
+        document.getElementById("category-showcase").classList.remove("hidden");
+        document.getElementById("product-section").classList.add("hidden");
+        handleNavigate('home');
+    };
+
     window.goUpCategory = () => {
         const cur = allCategories.find(c => c.name === activeCategoryParent);
         renderCategoryShowcase(cur ? cur.parent : null);
     };
 
-    function showToast(m, e=false) {
-        const t = document.getElementById("toast");
-        t.innerText = m; t.className = `fixed bottom-6 right-6 z-[100] px-6 py-3 rounded-2xl text-white font-bold shadow-2xl ${e?'bg-red-500':'bg-green-600'}`;
-        t.classList.remove("hidden"); setTimeout(() => t.classList.add("hidden"), 3000);
-    }
-
-    loadInitialData();
+    loadData();
 </script>
 </body>
 </html>
