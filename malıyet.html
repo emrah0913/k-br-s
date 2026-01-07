@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DolapHUB | Mobilya Teklif Sistemi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel for JSX -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            .print-block, .print-block * { visibility: visible; }
+            .print-block { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20mm; }
+            .print-hidden { display: none !important; }
+        }
+        /* Custom Select Style */
+        select { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='C19 9l-7 7-7-7'/%3E%3C/svg%3E"); 
+            background-position: right 0.75rem center; 
+            background-repeat: no-repeat; 
+            background-size: 1em; 
+            padding-right: 2.5rem; 
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+</head>
+<body class="bg-[#FAFAFA]">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        const { 
+            ShoppingCart, Settings, Package, ChevronRight, Trash2, Plus, Minus, Menu, X,
+            Calculator, ClipboardList, Home, ChevronLeft, Info, ChevronDown, LayoutGrid, Printer, User 
+        } = lucide;
+
+        // --- ADMİN AYARLARI ---
+        const INITIAL_SETTINGS = {
+            materialPrices: { 'Suntalam': 320, 'MDFlam': 480, 'Lake': 1200, 'Membran': 850, 'Akrilik': 950 },
+            glassDoorPrice: 1100,
+            hardwarePrices: {
+                hinges: { 'Blum': 130, 'Hettich': 110, 'Samet': 65 },
+                slides: { 'Blum': 480, 'Hettich': 420, 'Samet': 280 },
+                slidingSystem: 850,
+                liftSystemBrands: { 'Samet': 450, 'Blum': 1200, 'Hettich': 950 }
+            },
+            laborFactor: 1.4, 
+            profitMargin: 1.25
+        };
+
+        // --- ÜRÜN KATALOĞU ---
+        const PRODUCTS = [
+            { id: 100, parentCat: 'Alt Dolaplar', subCat: 'Kapaklı', name: 'Kapaklı Alt Dolap', type: 'hinged_base', image: 'https://images.unsplash.com/photo-1556911223-e45242d50730?auto=format&fit=crop&q=80&w=400', defaultWidth: 60, defaultHeight: 72, defaultDepth: 56 },
+            { id: 105, parentCat: 'Alt Dolaplar', subCat: 'Köşe', name: 'Köşe Alt Dolap (L)', type: 'corner_base', image: 'https://images.unsplash.com/photo-1556912161-0062402d2948?auto=format&fit=crop&q=80&w=400', defaultWidth: 90, defaultHeight: 72, defaultDepth: 56 },
+            { id: 106, parentCat: 'Alt Dolaplar', subCat: 'Kör Köşe', name: 'Kör Alt Dolap', type: 'blind_corner_base', image: 'https://images.unsplash.com/photo-1556911223-e45242d50730?auto=format&fit=crop&q=80&w=400', defaultWidth: 100, defaultHeight: 72, defaultDepth: 56 },
+            { id: 2, parentCat: 'Alt Dolaplar', subCat: 'Çekmeceli', name: 'Çekmeceli Alt Dolap', type: 'drawer', image: 'https://images.unsplash.com/photo-1556912170-4537da395983?auto=format&fit=crop&q=80&w=400', defaultWidth: 60, defaultHeight: 72, defaultDepth: 56, drawerCount: 3 },
+            { id: 201, parentCat: 'Üst Dolaplar', subCat: 'Kapaklı', name: 'Kapaklı Üst Modül', type: 'hinged_upper', image: 'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&q=80&w=600', defaultWidth: 60, defaultHeight: 60, defaultDepth: 32 },
+            { id: 202, parentCat: 'Üst Dolaplar', subCat: 'Devirme', name: 'Devirme Kapak Üst Modül', type: 'lift_upper', image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&q=80&w=600', defaultWidth: 80, defaultHeight: 40, defaultDepth: 32 },
+            { id: 203, parentCat: 'Üst Dolaplar', subCat: 'Kör Köşe', name: 'Kör Üst Modül', type: 'blind_upper', image: 'https://images.unsplash.com/photo-1556911223-e45242d50730?auto=format&fit=crop&q=80&w=600', defaultWidth: 90, defaultHeight: 60, defaultDepth: 32 },
+            { id: 204, parentCat: 'Üst Dolaplar', subCat: 'Köşe', name: 'Köşe Üst Modül (L)', type: 'corner_upper', image: 'https://images.unsplash.com/photo-1556912161-0062402d2948?auto=format&fit=crop&q=80&w=600', defaultWidth: 60, defaultHeight: 60, defaultDepth: 32 },
+            { id: 300, parentCat: 'Duvar Dolapları', subCat: 'Özel Üretim', name: 'Duvar Ünitesi Dolabı', type: 'wall_cabinet', image: 'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80&w=400', defaultWidth: 150, defaultHeight: 220, defaultDepth: 60, doorCount: 2 }
+        ];
+
+        const App = () => {
+            const [view, setView] = useState('home');
+            const [selectedProduct, setSelectedProduct] = useState(null);
+            const [cart, setCart] = useState([]);
+            const [settings, setSettings] = useState(INITIAL_SETTINGS);
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+            const [activeFilter, setActiveFilter] = useState({ parent: null });
+            const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
+            const [showTeklifPreview, setShowTeklifPreview] = useState(false);
+            const [bulkConfig, setBulkConfig] = useState({ bodyMaterial: 'Suntalam', doorMaterial: 'MDFlam', hardwareBrand: 'Samet' });
+
+            // Fiyat Hesaplama Mantığı
+            const calculateItemPrice = (item, currentSettings) => {
+                const { config, product } = item;
+                const w1 = parseFloat(config.width) || 0;
+                const w2 = parseFloat(config.width2) || 0;
+                const w3 = parseFloat(config.width3) || 0;
+                const h = parseFloat(config.height) || 0;
+                const d = parseFloat(config.depth) || 0;
+                const drawerCount = parseInt(config.drawerCount) || 0;
+                const shelfCount = parseInt(config.shelfCount) || 0;
+                const doorCount = parseInt(config.doorCount) || 1;
+
+                let bodyArea = 0;
+                let doorArea = 0;
+                let hardwareCost = 0;
+
+                if (product.type === 'wall_cabinet') {
+                    let totalWidth = w1;
+                    if (config.cabinetShape === 'L') totalWidth = w1 + w2;
+                    if (config.cabinetShape === 'U') totalWidth = w1 + w2 + w3;
+                    bodyArea = ((totalWidth + d) * (h + d)) / 10000;
+                    doorArea = (totalWidth * h) / 10000; 
+                    if (config.doorType === 'sliding') hardwareCost += currentSettings.hardwarePrices.slidingSystem || 0;
+                    else hardwareCost += (Math.ceil(totalWidth / 45) || 2) * 2 * currentSettings.hardwarePrices.hinges[config.hardwareBrand];
+                } 
+                else if (['corner_base', 'corner_upper'].includes(product.type)) {
+                    let totalWidth = w1 + w2;
+                    bodyArea = (((totalWidth * d * 2) + (totalWidth * h)) / 10000) * 1.25; 
+                    doorArea = (totalWidth * h) / 10000;
+                    hardwareCost = doorCount * 2 * currentSettings.hardwarePrices.hinges[config.hardwareBrand];
+                }
+                else if (['blind_corner_base', 'blind_upper'].includes(product.type)) {
+                    bodyArea = (((h * d * 2) + (w1 * d * 2) + (w1 * h)) / 10000) * 1.15;
+                    if (shelfCount > 0) bodyArea += (shelfCount * (w1 * d)) / 10000;
+                    doorArea = ((w1 / 2) * h) / 10000;
+                    hardwareCost = doorCount * 2 * currentSettings.hardwarePrices.hinges[config.hardwareBrand];
+                }
+                else {
+                    bodyArea = ((h * d * 2) + (w1 * d * 2) + (w1 * h)) / 10000;
+                    if (shelfCount > 0) bodyArea += (shelfCount * (w1 * d)) / 10000;
+                    doorArea = (w1 * h) / 10000;
+                    if (product.type === 'lift_upper') {
+                        hardwareCost = currentSettings.hardwarePrices.liftSystemBrands[config.hardwareBrand] || 0;
+                    } else if (product.type === 'drawer') {
+                        hardwareCost = drawerCount * currentSettings.hardwarePrices.slides[config.hardwareBrand];
+                    } else {
+                        hardwareCost = doorCount * 2 * currentSettings.hardwarePrices.hinges[config.hardwareBrand];
+                    }
+                }
+
+                const doorPrice = config.doorStyle === 'glass' ? currentSettings.glassDoorPrice : currentSettings.materialPrices[config.doorMaterial];
+                const total = (bodyArea * currentSettings.materialPrices[config.bodyMaterial] + doorArea * (doorPrice || 0) + hardwareCost) * currentSettings.laborFactor * currentSettings.profitMargin;
+                return Math.round(total) || 0;
+            };
+
+            const cartTotal = useMemo(() => cart.reduce((sum, item) => sum + (calculateItemPrice(item, settings) * (item.qty || 1)), 0), [cart, settings]);
+
+            const addToCart = (product) => {
+                const isSpecial = ['hinged_base', 'corner_base', 'blind_corner_base', 'hinged_upper', 'lift_upper', 'blind_upper', 'corner_upper'].includes(product.type);
+                const newItem = {
+                    id: Date.now(),
+                    product,
+                    qty: 1,
+                    config: {
+                        width: product.defaultWidth, width2: 90, width3: 100,
+                        height: product.defaultHeight, depth: product.defaultDepth,
+                        bodyMaterial: bulkConfig.bodyMaterial, doorMaterial: bulkConfig.doorMaterial,
+                        hardwareBrand: bulkConfig.hardwareBrand, cabinetShape: ['corner_base', 'corner_upper'].includes(product.type) ? 'L' : 'Düz', 
+                        doorType: product.type === 'lift_upper' ? 'lift' : 'hinged', doorStyle: 'normal',
+                        drawerCount: product.type === 'drawer' ? 3 : 0, shelfCount: isSpecial ? 2 : 0, doorCount: product.type === 'lift_upper' ? 1 : (product.doorCount || 2)
+                    }
+                };
+                setCart([...cart, newItem]);
+                setView('cart');
+            };
+
+            const updateItemConfig = (id, field, value) => setCart(cart.map(item => item.id === id ? { ...item, config: { ...item.config, [field]: value } } : item));
+            const applyBulkToAll = () => setCart(cart.map(item => ({ ...item, config: { ...item.config, bodyMaterial: bulkConfig.bodyMaterial, doorMaterial: bulkConfig.doorMaterial, hardwareBrand: bulkConfig.hardwareBrand } })));
+
+            // --- BİLEŞENLER ---
+
+            const Nav = () => (
+                <header className="p-4 flex justify-between items-center bg-white border-b border-slate-50 sticky top-0 z-50 print-hidden shadow-sm italic uppercase tracking-tighter">
+                    <div className="flex items-center gap-3">
+                        <button onClick={() => setIsMenuOpen(true)} className="p-2.5 bg-slate-50 rounded-xl hover:bg-slate-100 transition border border-slate-100"><Menu size={20} /></button>
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('home'); setActiveFilter({parent:null}); }}>
+                            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white"><Package size={16} /></div>
+                            <span className="font-black text-lg">DOLAP<span className="text-slate-300 italic">HUB</span></span>
+                        </div>
+                    </div>
+                    <div className="flex gap-4 items-center">
+                        <button onClick={() => setView('admin')} className="text-slate-300 hover:text-black transition"><Settings size={18} /></button>
+                        <button onClick={() => setView('cart')} className="relative p-2.5 bg-black text-white rounded-xl shadow-lg transition active:scale-95">
+                            <ShoppingCart size={18} />
+                            {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">{cart.length}</span>}
+                        </button>
+                    </div>
+                </header>
+            );
+
+            const HomeView = () => (
+                <div className="max-w-6xl mx-auto italic uppercase tracking-tighter">
+                    <h2 className="text-xl font-black mb-6 tracking-tight flex items-center gap-2 px-1 text-slate-900"><LayoutGrid size={18} className="text-slate-300"/> {activeFilter.parent || 'Tüm Modüller'}</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                        {PRODUCTS.filter(p => !activeFilter.parent || p.parentCat === activeFilter.parent).map(p => (
+                            <div key={p.id} className="bg-white p-2.5 rounded-2xl border border-slate-100 hover:border-black transition-all cursor-pointer group shadow-sm hover:shadow-xl" onClick={() => setSelectedProduct(p)}>
+                                <div className="aspect-square rounded-xl overflow-hidden bg-slate-50 mb-3 shadow-inner"><img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" /></div>
+                                <h4 className="font-bold text-[11px] leading-tight mb-3 h-8 line-clamp-2 px-1 text-slate-800 uppercase italic leading-none">{p.name}</h4>
+                                <button onClick={(e) => { e.stopPropagation(); addToCart(p); }} className="w-full py-2 bg-slate-50 text-black text-[9px] font-black rounded-xl hover:bg-black hover:text-white transition uppercase shadow-sm italic">HIZLI EKLE</button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-[#FAFAFA] text-slate-900 font-sans">
+                    <Nav />
+                    
+                    {/* SIDEBAR */}
+                    <div className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transition-opacity duration-300 print-hidden ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMenuOpen(false)} />
+                    <aside className={`fixed top-0 left-0 h-full w-64 bg-white z-[70] shadow-xl transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                        <div className="p-4 border-b flex justify-between items-center bg-slate-50/50 italic uppercase tracking-tighter leading-none"><span className="font-black text-lg">Kategoriler</span><button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-white rounded-lg transition shadow-sm"><X size={20} /></button></div>
+                        <div className="p-4 space-y-2">
+                            <button onClick={() => { setActiveFilter({parent:null}); setView('home'); setIsMenuOpen(false); }} className={`w-full text-left font-black text-[10px] p-4 rounded-xl uppercase tracking-[0.2em] transition ${!activeFilter.parent ? 'bg-black text-white' : 'text-slate-400 hover:bg-slate-50'}`}>Tüm Ürünler</button>
+                            {['Alt Dolaplar', 'Üst Dolaplar', 'Duvar Dolapları'].map(cat => (
+                                <button key={cat} onClick={() => { setActiveFilter({parent:cat}); setView('home'); setIsMenuOpen(false); }} className={`w-full text-left font-black text-[10px] p-4 rounded-xl uppercase tracking-[0.2em] transition ${activeFilter.parent === cat ? 'bg-black text-white shadow-xl shadow-black/20' : 'text-slate-400 hover:bg-slate-50'}`}>{cat}</button>
+                            ))}
+                        </div>
+                    </aside>
+
+                    <main className="py-6 px-4 print-hidden">
+                        {view === 'home' && <HomeView />}
+                        
+                        {view === 'cart' && (
+                            <div className="max-w-6xl mx-auto italic uppercase tracking-tighter leading-none">
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                                    <div className="lg:col-span-8 space-y-4">
+                                        <h2 className="text-2xl font-black tracking-tight text-slate-800 flex items-center gap-2 uppercase">Sepetim <span className="text-slate-200 font-normal italic">/ {cart.length}</span></h2>
+                                        {cart.length > 0 ? (
+                                            <>
+                                                <div className="bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm flex flex-col md:flex-row items-center gap-4 border-l-4 border-l-slate-900 italic">
+                                                    <Settings size={22} className="text-slate-300" />
+                                                    <div className="grid grid-cols-2 gap-3 flex-grow w-full">
+                                                        <select value={bulkConfig.bodyMaterial} onChange={e => setBulkConfig({...bulkConfig, bodyMaterial: e.target.value})} className="bg-slate-50 rounded-xl p-3 text-[10px] font-bold outline-none italic">{Object.keys(settings.materialPrices).map(m => <option key={m} value={m}>{m}</option>)}</select>
+                                                        <select value={bulkConfig.doorMaterial} onChange={e => setBulkConfig({...bulkConfig, doorMaterial: e.target.value})} className="bg-slate-50 rounded-xl p-3 text-[10px] font-bold outline-none italic">{Object.keys(settings.materialPrices).map(m => <option key={m} value={m}>{m}</option>)}</select>
+                                                    </div>
+                                                    <button onClick={applyBulkToAll} className="bg-black text-white text-[10px] font-black px-6 py-5 rounded-xl hover:scale-105 transition italic uppercase">Tümüne Uygula</button>
+                                                </div>
+                                                {cart.map(item => (
+                                                    <div key={item.id} className="bg-white p-5 rounded-[32px] border border-slate-100 shadow-sm flex flex-col gap-4 border-l-4 border-l-slate-100 hover:border-l-black transition-all">
+                                                        <div className="flex items-center gap-4 border-b pb-4">
+                                                            <img src={item.product.image} className="w-12 h-12 rounded-xl object-cover shadow-inner" />
+                                                            <div className="flex-grow"><h4 className="font-black text-sm italic uppercase">{item.product.name}</h4><p className="text-[10px] font-black bg-slate-900 text-white px-3 py-1 rounded-lg inline-block">{(calculateItemPrice(item, settings)).toLocaleString('tr-TR')} TL</p></div>
+                                                            <button onClick={() => setCart(cart.filter(c => c.id !== item.id))} className="text-slate-200 hover:text-red-500 transition-colors p-2"><Trash2 size={18} /></button>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 md:grid-cols-6 lg:grid-cols-12 gap-2 text-[10px] font-black uppercase">
+                                                            <div><label>En 1</label><input type="number" value={item.config.width} onChange={e => updateItemConfig(item.id, 'width', e.target.value)} className="w-full bg-slate-50 p-2 rounded-lg text-center" /></div>
+                                                            {['corner_base', 'corner_upper', 'wall_cabinet'].includes(item.product.type) && item.config.cabinetShape !== 'Düz' && (
+                                                                <div><label>En 2</label><input type="number" value={item.config.width2} onChange={e => updateItemConfig(item.id, 'width2', e.target.value)} className="w-full bg-slate-50 p-2 rounded-lg text-center" /></div>
+                                                            )}
+                                                            <div><label>Boy</label><input type="number" value={item.config.height} onChange={e => updateItemConfig(item.id, 'height', e.target.value)} className="w-full bg-slate-50 p-2 rounded-lg text-center" /></div>
+                                                            <div><label>Derin</label><input type="number" value={item.config.depth} onChange={e => updateItemConfig(item.id, 'depth', e.target.value)} className="w-full bg-slate-50 p-2 rounded-lg text-center" /></div>
+                                                            <div className="col-span-2"><label>Gövde / Kapak</label>
+                                                                <div className="flex gap-1"><select value={item.config.bodyMaterial} onChange={e => updateItemConfig(item.id, 'bodyMaterial', e.target.value)} className="flex-1 bg-slate-50 p-2 rounded-lg uppercase">{Object.keys(settings.materialPrices).map(m => <option key={m} value={m}>{m.slice(0,3)} (G)</option>)}</select><select value={item.config.doorMaterial} onChange={e => updateItemConfig(item.id, 'doorMaterial', e.target.value)} className="flex-1 bg-slate-50 p-2 rounded-lg uppercase">{Object.keys(settings.materialPrices).map(m => <option key={m} value={m}>{m.slice(0,3)} (K)</option>)}</select></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            <div className="text-center py-32 bg-white rounded-[40px] border-2 border-dashed border-slate-100 uppercase italic tracking-widest leading-none">Sepetiniz Boş</div>
+                                        )}
+                                    </div>
+                                    <div className="lg:col-span-4 space-y-6 uppercase leading-none">
+                                        <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm relative overflow-hidden italic">
+                                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 mb-8 flex items-center gap-3"><User size={16}/> Müşteri</h3>
+                                            <input type="text" placeholder="Ad Soyad" value={customer.name} onChange={e => setCustomer({...customer, name: e.target.value})} className="w-full bg-slate-50 p-4 rounded-2xl mb-4 text-sm font-bold shadow-inner" />
+                                            <input type="tel" placeholder="Telefon" value={customer.phone} onChange={e => setCustomer({...customer, phone: e.target.value})} className="w-full bg-slate-50 p-4 rounded-2xl text-sm font-bold shadow-inner" />
+                                        </div>
+                                        <div className="bg-white p-10 rounded-[48px] shadow-sm border border-slate-100 italic"><p className="text-[10px] font-black text-slate-300 uppercase mb-4 italic">Toplam Tutar</p><h3 className="text-6xl font-black mb-12 tracking-tighter text-slate-900 italic">{(cartTotal).toLocaleString('tr-TR')} <span className="text-base text-slate-300">TL</span></h3><button disabled={cart.length === 0} onClick={() => setShowTeklifPreview(true)} className="w-full py-5 bg-black text-white rounded-[24px] font-black text-[11px] uppercase tracking-widest shadow-xl hover:bg-slate-800 disabled:opacity-20">TEKLİF HAZIRLA</button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'admin' && (
+                            <div className="max-w-2xl mx-auto space-y-8 py-4 italic uppercase tracking-tighter leading-none">
+                                <h2 className="text-3xl font-black tracking-tighter italic uppercase">Admin Ayarları</h2>
+                                <div className="bg-white p-10 rounded-[48px] border border-slate-100 shadow-sm">
+                                    <h3 className="text-[10px] font-black text-slate-300 uppercase mb-10">Birim Fiyatlar (m²)</h3>
+                                    {Object.keys(settings.materialPrices).map(m => (
+                                        <div key={m} className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-2 italic">
+                                            <span className="text-sm font-black text-slate-600 uppercase tracking-tighter">{m}</span>
+                                            <input type="number" value={settings.materialPrices[m]} onChange={e => setSettings({...settings, materialPrices: {...settings.materialPrices, [m]: Number(e.target.value)}})} className="w-24 bg-white p-2.5 rounded-xl text-right font-black outline-none italic" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* PRINT BLOCK (Gizli) */}
+                    <div className="hidden print-block p-10 bg-white min-h-screen text-black italic uppercase tracking-tighter leading-none">
+                        <h1 className="text-4xl font-black border-b-4 border-black pb-4 mb-10">TEKLİF FORMU</h1>
+                        <p className="mb-10 font-bold">Müşteri: {customer.name || '---'} | Tel: {customer.phone || '---'}</p>
+                        <table class="w-full text-left">
+                            <tr class="border-b-2 border-black font-black text-[10px]"><th class="py-2">Modül</th><th class="py-2">Boyutlar</th><th class="py-2 text-right">Tutar</th></tr>
+                            {cart.map(i => (
+                                <tr class="border-b border-slate-200 py-2"><td class="py-4 font-bold text-sm">{i.product.name}</td><td class="py-4 text-xs">{i.config.width}x{i.config.height}x{i.config.depth}</td><td class="py-4 text-right font-black">{(calculateItemPrice(i, settings)).toLocaleString('tr-TR')} TL</td></tr>
+                            ))}
+                        </table>
+                        <h2 class="text-5xl font-black text-right mt-12 border-t-4 border-black pt-8">{(cartTotal).toLocaleString('tr-TR')} TL</h2>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
